@@ -19,8 +19,9 @@ Route::get('/', function () {
 
 Route::get('/dashboard', function(){
     return 'teste';
-})->middleware('auth');
+})->name('dashboard');
 
-Route::get('/login', function(){
-    return 'página de login';
-})->name('login');
+Route::get('/login', 'App\Http\Controllers\LoginController@login')->name('login-view');
+Route::get('/logout', 'App\Http\Controllers\LoginController@logout')->name('logout');
+Route::post('/autenticar', 'App\Http\Controllers\LoginController@autenticarUsuario')->name('autenticar');
+Route::get('/auth', 'App\Http\Controllers\LoginController@auth')->name('login-auth');
