@@ -43,7 +43,7 @@ class LocaisService
 
     public static function coletarComFiltro($filtros, $tipo)
     {
-        $url = env('APP_URL_API') . "/extratoMaquina";
+        $url = env('APP_URL_API') . "/locais";
 
         $token = AuthService::getToken();
         $response = Http::withHeaders([
@@ -74,7 +74,7 @@ class LocaisService
     }
 
     public function atualizar($dados, $id){
-        $url = env('APP_URL_API') . "/extratoMaquina/$id";
+        $url = env('APP_URL_API') . "/locais/$id";
 
         $token = AuthService::getToken();
         $response = Http::withHeaders([
