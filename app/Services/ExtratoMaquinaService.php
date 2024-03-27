@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Http;
 
 
 
-class ExtratoMaquinasService
+class ExtratoMaquinaService
 {
 
     public static function criar($dados){
