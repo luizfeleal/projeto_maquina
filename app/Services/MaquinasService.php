@@ -25,7 +25,7 @@ class MaquinasService
         return $maquinas;
     }
 
-    public static function coletarMaquinas(string $id = Null)
+    public static function coletar(string $id = Null)
     {
         if(is_null($id)){
             $url = env('APP_URL_API') . "/maquinas";
