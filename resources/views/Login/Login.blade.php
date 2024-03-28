@@ -5,7 +5,7 @@
 @section('content')
         <div id="login" class="login w-100 div-center-column"
                 style="padding-top: 99px;">
-                
+
                 <h1 style="padding-top: 80px; text-align: center;">Login</h1>
 
                 <div class="container section container-platform div-center-column"
@@ -30,7 +30,7 @@
                             </div>
                         </div>
                     </div>
-                    <a href="/">Esqueci minha senha</a>
+                    <a href="{{route('login-redefinir-view')}}">Esqueci minha senha</a>
                     <div class="div-button" style="padding-top: 70px;">
                         <button class="btn btn-primary" type="submit" style="width: 120px;">Acessar</button>
                     </div>

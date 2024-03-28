@@ -20,6 +20,7 @@ $currentRoute = Request::route()->getName();
 
     <nav class="navbar navbar-expand-lg bg-body-tertiary fixed-top">
       <div class="container-fluid">
+        <a class="navbar-brand" href="#"><h1>LOGO</h1></a>
         <!--<a class="navbar-brand" href="#"><img src="{{ asset('site/img/logo_hc.png') }}" width="250" height="63" alt="Hospital Angelina Caron"></a>-->
         <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasScrolling" aria-controls="offcanvasScrolling">
           <span class="navbar-toggler-icon"></span>
@@ -36,6 +37,7 @@ $currentRoute = Request::route()->getName();
 
 
 
+    <script src="{{ asset('site/functions.js') }}"></script>
     <script src="{{ asset('site/jquery.js') }}"></script>
     <script src="{{ asset('site/bootstrap.js') }}"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"
