@@ -45,26 +45,30 @@ $currentRoute = Request::route()->getName();
 
                     <ul class="list-unstyled ps-0">
                         <li class="mb-1">
-                            <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed" data-bs-toggle="collapse" data-bs-target="#procedimentos-collapse" aria-expanded="false">
+                            <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed" data-bs-toggle="collapse" data-bs-target="#maquinas-collapse" aria-expanded="false">
                                 <a href="/" class="text-decoration-none">
-                                    <i class="fa-solid fa-table icon-sidebar" style=" font-size: 25px;padding-right:5px;"></i>Local e Máquinas
+                                    <i class="fa-solid fa-desktop"></i> Máquinas
                                 </a>
                             </button>
-                            <div class="collapse {{ $currentRoute === 'procedimentos-criar' || $currentRoute === 'procedimentos-incluir' || $currentRoute === 'procedimentos-detalhar' || $currentRoute === 'procedimentos-editar'  ? 'show' : '' }}" id="procedimentos-collapse">
+                            <div class="collapse {{$currentRoute === 'maquinas-criar'  ? 'show' : '' }}" id="maquinas-collapse">
                             <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                                <li><a href="/" class="d-inline-flex text-decoration-none rounded" style="{{ $currentRoute === 'procedimentos-criar' ? 'color:grey' : ' ' }}">Criar nova máquina</a></li>
-                                <li><a href="/" class=" d-inline-flex text-decoration-none rounded" style="{{  $currentRoute === 'procedimentos-incluir' || $currentRoute === 'procedimentos-detalhar' || $currentRoute === 'procedimentos-editar' ? 'color:grey': ' ' }}">Incluir usuários</a></li>
-                                <li><a href="/" class=" d-inline-flex text-decoration-none rounded" style="{{  $currentRoute === 'procedimentos-incluir' || $currentRoute === 'procedimentos-detalhar' || $currentRoute === 'procedimentos-editar' ? 'color:grey': ' ' }}">Criar local</a></li>
+                                <li><a href="{{route('maquinas-criar')}}" class="d-inline-flex text-decoration-none rounded" style="{{ $currentRoute === 'maquinas-criar' ? 'color:grey' : ' ' }}">Criar nova máquina</a></li>
                             </ul>
                             </div>
                         </li>
                         <li class="mb-1">
-                            <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0">
-                                <a href="/" class="text-decoration-none" style="{{ $currentRoute === 'planos-exibir' || $currentRoute === 'planos-detalhar' || $currentRoute === 'planos-criar' || $currentRoute === 'planos-editar' ? 'color:grey' : ' ' }}">
-                                    <i class="fa-solid fa-square-poll-vertical icon-sidebar" style=" font-size: 25px;padding-right:5px;"></i>Clientes
+                            <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed" data-bs-toggle="collapse" data-bs-target="#local-collapse" aria-expanded="false">
+                                <a href="/" class="text-decoration-none">
+                                <i class="fa-solid fa-location-dot icon-sidebar" style=" font-size: 25px;padding-right:5px;"></i>Local
                                 </a>
                             </button>
-
+                            <div class="collapse {{ $currentRoute === 'local-criar' || $currentRoute === 'local-incluir-usuario' || $currentRoute === 'local'  ? 'show' : '' }}" id="local-collapse">
+                            <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                                <li><a href="{{route('local')}}" class=" d-inline-flex text-decoration-none rounded" style="{{  $currentRoute === 'local' ? 'color:grey': ' ' }}">Exibir locais</a></li>
+                                <li><a href="{{route('local-incluir-usuario')}}" class=" d-inline-flex text-decoration-none rounded" style="{{  $currentRoute === 'local-incluir-usuario' ? 'color:grey': ' ' }}">Incluir usuários</a></li>
+                                <li><a href="{{route('local-criar')}}" class=" d-inline-flex text-decoration-none rounded" style="{{  $currentRoute === 'local-criar' ? 'color:grey': ' ' }}">Criar local</a></li>
+                            </ul>
+                            </div>
                         </li>
                         <li class="mb-1">
                             <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0">
@@ -82,15 +86,15 @@ $currentRoute = Request::route()->getName();
                             </button>
                             <div class="collapse {{ $currentRoute === 'termo-adesao-detalhar' || $currentRoute === 'termo-adesao-criar' || $currentRoute === 'termo-adesao-editar' || $currentRoute === 'extrato-termo-editar' || $currentRoute === 'termo-adesao-exibir' || $currentRoute === 'extrato-termo-criar' || $currentRoute === 'extrato-termo-exibir' || $currentRoute === 'extrato-termo-gerar' ? 'show' : '' }}" id="termo-collapse">
                             <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                                <li><a href="/" class=" d-inline-flex text-decoration-none rounded" style="{{ $currentRoute === 'termo-adesao-exibir' || $currentRoute === 'termo-adesao-criar' || $currentRoute === 'termo-adesao-detalhar' || $currentRoute === 'termo-adesao-editar' ? 'color:grey' : ' ' }}">Transações</a></li>
-                                <li><a href="/" class=" d-inline-flex text-decoration-none rounded">Acumulado</a></li>
+                                <li><a href="{{route('maquinas-transacoes')}}" class=" d-inline-flex text-decoration-none rounded" style="{{ $currentRoute === 'termo-adesao-exibir' || $currentRoute === 'termo-adesao-criar' || $currentRoute === 'termo-adesao-detalhar' || $currentRoute === 'termo-adesao-editar' ? 'color:grey' : ' ' }}">Transações</a></li>
+                                <li><a href="{{route('maquinas-acumulado')}}" class=" d-inline-flex text-decoration-none rounded">Acumulado</a></li>
                             </ul>
                             </div>
                         </li>
                         <li class="mb-1">
                             <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed" data-bs-toggle="collapse" data-bs-target="#prestadores-collapse" aria-expanded="false">
                                 <a href="/" class="text-decoration-none">
-                                    <i class="fa-solid fa-people-group icon-sidebar" style=" font-size: 25px;padding-right:5px;"></i>Gerar QR
+                                <i class="fa-solid fa-qrcode icon-sidebar" style=" font-size: 25px;padding-right:5px;"></i>Gerar QR
                                 </a>
                             </button>
                         </li>
@@ -98,7 +102,7 @@ $currentRoute = Request::route()->getName();
                         <li class="mb-1">
                             <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed" data-bs-toggle="collapse" data-bs-target="#guias-collapse" aria-expanded="false">
                                 <a href="/"  class="text-decoration-none">
-                                    <i class="fa-solid fa-bell icon-sidebar" style=" font-size: 25px;padding-right:5px;"></i>Novo usuário
+                                <i class="fa-solid fa-user-plus icon-sidebar"  style=" font-size: 25px;padding-right:5px;"></i>Novo usuário
                                 </a>
                             </button>
 
@@ -126,6 +130,11 @@ $currentRoute = Request::route()->getName();
         @yield('content')
 
 
+        <div id="loader" class="loader" style="display: none;">
+            <div class="spinner-border spinner-load" style="width: 3rem; height: 3rem;" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
     </div>
 
 
@@ -212,32 +221,11 @@ const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstra
         });
     });
 
-    function prestadoresShow(){
-        setTimeout(() => {
-            document.getElementById('prestadores-collapse').classList.add('show')
-        }, 10);
-    }
+
 
     /*$("#plano_margem").mask('##0,00%', {reverse: true});
     $("#plano_taxa_adm").mask('##0,00%', {reverse: true});
     $("#plano_taxa_recarga").mask('##0,00%', {reverse: true});*/
-
-    $('#procedimentosLista').on("change", () => {
-        if($('#procedimentosLista').val() != " "){
-            var partes = $('#procedimentosLista').val().split('.');
-            var extensao = partes.pop();
-            if(extensao == "xlsx"){
-                //$("#botao-enviar-lista").attr("disabled", false);
-                $("#procedimentosLista").removeClass("is-invalid");
-            }else{
-                //$("#botao-enviar-lista").attr("disabled", true);
-                $("#procedimentosLista").addClass("is-invalid");
-                $(".invalid-p-arquivo").empty();
-                $(".invalid-p-arquivo").append('A extensão precisa ser .xlsx');
-
-            }
-        }
-    })
 
     const buttons = document.querySelectorAll('[data-bs-toggle="collapse"]');
 
@@ -263,10 +251,6 @@ const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstra
             }
         });
     });
-
-    aplicaMascaraDinamica();
-    validaDataMascara();
-    validarData();
 
 
     </script>

@@ -8,43 +8,42 @@ use Illuminate\Support\Facades\Http;
 
 
 
-class MaquinasService
+class GruposAcessoService
 {
 
-
     public static function criar($dados){
-        $url = env('APP_URL_API') . "/maquinas";
+        $url = env('APP_URL_API') . "/gruposAcesso";
 
         $token = AuthService::getToken();
         $response = Http::withHeaders([
             'Authorization' => 'Bearer ' . $token
         ])->post($url, $dados);
 
-        $maquinas = $response->json();
+        $grupos = $response->json();
 
-        return $maquinas;
+        return $grupos;
     }
 
     public static function coletar(string $id = Null)
     {
         if(is_null($id)){
-            $url = env('APP_URL_API') . "/maquinas";
+            $url = env('APP_URL_API') . "/gruposAcesso";
         }else{
-            $url = env('APP_URL_API') . "/maquinas/$id";
+            $url = env('APP_URL_API') . "/gruposAcesso/$id";
         }
         $token = AuthService::getToken();
         $response = Http::withHeaders([
             'Authorization' => 'Bearer ' . $token
         ])->get($url);
 
-        $maquinas = $response->json();
+        $grupos = $response->json();
 
-        return $maquinas;
+        return $grupos;
     }
 
     public static function coletarComFiltro($filtros, $tipo)
     {
-        $url = env('APP_URL_API') . "/maquinas";
+        $url = env('APP_URL_API') . "/gruposAcesso";
 
         $token = AuthService::getToken();
         $response = Http::withHeaders([
@@ -53,21 +52,21 @@ class MaquinasService
 
         if ($response->successful()) {
             // Obtenha os clientes da resposta JSON
-            $maquinas = $response->json();
+            $grupos = $response->json();
 
             // Filtrar os clientes com base nos filtros fornecidos
             foreach ($filtros as $chave => $valor) {
                 // Verifique se a chave existe e se o valor não está vazio
-                if (isset($chave) && $valor !== null) {
+                if (isset($grupos[$chave]) && $valor !== null) {
                     // Filtrar os clientes com base no valor do filtro
-                    $maquinas = array_filter($maquinas, function ($maquina) use ($chave, $valor) {
-                        return $maquina[$chave] === $valor;
+                    $grupos = array_filter($grupos, function ($grupo) use ($chave, $valor) {
+                        return $grupo[$chave] === $valor;
                     });
                 }
             }
 
             // Retorna os clientes filtrados
-            return $maquinas;
+            return $grupos;
         } else {
             // Em caso de falha na chamada à API, retorne um array vazio ou uma mensagem de erro
             return [];
@@ -75,17 +74,16 @@ class MaquinasService
     }
 
     public function atualizar($dados, $id){
-        $url = env('APP_URL_API') . "/maquinas/$id";
+        $url = env('APP_URL_API') . "/gruposAcesso/$id";
 
         $token = AuthService::getToken();
         $response = Http::withHeaders([
             'Authorization' => 'Bearer ' . $token
         ])->post($url, $dados);
 
-        $maquina = $response->json();
+        $local = $response->json();
 
-        return $maquina;
+        return $grupo;
     }
-
 
 }

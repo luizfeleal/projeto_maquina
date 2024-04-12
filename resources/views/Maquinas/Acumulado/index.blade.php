@@ -1,11 +1,11 @@
 @extends('layouts.app')
-@section('title', 'Local')
+@section('title', 'Minhas Máquinas -> Acumulado')
 @section('content')
 
         <div id="guias" class="guias w-100 div-center-column"
                 style=" padding-top: 99px; padding-bottom: 100px;">
 
-                <h1 style="padding-top: 80px; text-align: center; padding-bottom: 50px;">Local</h1>
+                <h1 style="padding-top: 80px; text-align: center; padding-bottom: 50px;">Minhas Máquinas -> Acumulado</h1>
 
             <div class="container section container-platform div-center-column"
                 style="margin-top: 15px; height: 100%;">
@@ -17,67 +17,33 @@
 
                     </div>
                 </div>
-                <div class="collapse w-100" id="collapseExample">
-                    <div class="row div-center-row" style=" margin-bottom: 30px; width: 100%;">
-                        <div class="form-check form-check-inline col-md-3">
-                            <label for="input_data_inicio_filtro">Local:</label>
-                            <select id="input_filtro_local" class="form-control js-example-basic-multiple js-states" data-column="0">
-                                <option value=""></option>
-                                @foreach($locais as $local)
-                                    <option value="{{$local['id_local']}}">{{$local['local_nome']}}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="form-check form-check-inline col-md-3">
-                            <label for="input_data_inicio_filtro">Cliente:</label>
-                            <select id="input_filtro_cliente" class="form-control js-example-basic-multiple js-states" data-column="0">
-                            <option value=""></option>
-                                @foreach($clientes as $cliente)
-                                    <option value="{{$cliente['id_cliente']}}">{{$cliente['cliente_nome']}}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="form-check form-check-inline col-md-3">
-                            <label for="input_data_inicio_filtro ">Máquina:</label>
-                            <select id="input_filtro_maquina" class="form-control js-example-basic-multiple js-states" data-column="0">
-                            <option value=""></option>
 
-                                @foreach($maquinas as $maquina)
-                                    <option value="{{$maquina['id_maquina']}}">{{$maquina['maquina_nome']}}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                    </div>
-                </div>
                 <table id="tabela-local" class="table table-striped" style="width:100%">
                     <thead>
                         <tr>
                             <th>Local</th>
-                            <th>Cliente</th>
                             <th>Máquina</th>
-                            <th>Status</th>
-                            <th>Total acumulado</th>
+                            <th>Total máquina</th>
                             <th>Total PIX</th>
                             <th>Total cartão</th>
+                            <th>Total físico</th>
 
 
                         </tr>
                     </thead>
                     <tbody>
 
-                    @foreach($locais as $local)
                     
-                    <td>{{$local['local_nome']}}</td>
+                    <td></td>
                     
-                    <td>{{$local['cliente_nome']}}</td>
+                    <td></td>
                     
-                    <td>{{$local['maquina_nome']}}</td>
-                    <td>{{$local['maquina_status']}}</td>
+                    <td></td>
+                    <td></td>
                         
                     <td></td>
                     <td></td>
                     <td></td>
-                    @endforeach
 
 
 
@@ -85,12 +51,11 @@
                     <tfoot>
                         <tr>
                             <th>Local</th>
-                            <th>Cliente</th>
                             <th>Máquina</th>
-                            <th>Status</th>
-                            <th>Total acumulado</th>
+                            <th>Total máquina</th>
                             <th>Total PIX</th>
                             <th>Total cartão</th>
+                            <th>Total físico</th>
                         </tr>
                     </tfoot>
                 </table>

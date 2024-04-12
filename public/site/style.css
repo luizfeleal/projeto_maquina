@@ -90,15 +90,14 @@ button,
   align-items: center;
 }
 
-.procedimentos,
+.usuarios,
 .planos,
 .termoAdesao,
 .prestadores,
 .cobrancas,
 .guias,
 .termosAdesao,
-.reports,
-.usuarios {
+.reports {
   padding-left: 280px;
 }
 
@@ -141,6 +140,20 @@ ul .list-unstyled {
 .botao-acionado {
   background-color: #b45a07 !important;
 }
+
+.loader {
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  z-index: 20002;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  color: blue;
+  }
 
 @media screen and (max-width: 960px) {
   .procedimentos,

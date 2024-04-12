@@ -1,23 +1,16 @@
 @extends('layouts.app')
-@section('title', 'Local')
+@section('title', 'QR Code')
 @section('content')
 
         <div id="guias" class="guias w-100 div-center-column"
                 style=" padding-top: 99px; padding-bottom: 100px;">
 
-                <h1 style="padding-top: 80px; text-align: center; padding-bottom: 50px;">Local</h1>
+                <h1 style="padding-top: 80px; text-align: center; padding-bottom: 50px;">QR Code</h1>
 
             <div class="container section container-platform div-center-column"
                 style="margin-top: 15px; height: 100%;">
-                <div class="row" style="display: flex; flex-direction: row; justify-content: center; margin-bottom: 20px; width: 100%;">
-                    <div class="col-md-4">
-                    <a class="btn btn-primary" href="#" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample" role="button"><i class="fa-solid fa-filter"></i> Filtros</a>
-                    </div>
-                    <div class="col-md-4" style="display: flex; flex-direction: row; justify-content: end; align-items: center;">
-
-                    </div>
-                </div>
-                <div class="collapse w-100" id="collapseExample">
+                
+                
                     <div class="row div-center-row" style=" margin-bottom: 30px; width: 100%;">
                         <div class="form-check form-check-inline col-md-3">
                             <label for="input_data_inicio_filtro">Local:</label>
@@ -48,53 +41,11 @@
                             </select>
                         </div>
                     </div>
-                </div>
-                <table id="tabela-local" class="table table-striped" style="width:100%">
-                    <thead>
-                        <tr>
-                            <th>Local</th>
-                            <th>Cliente</th>
-                            <th>Máquina</th>
-                            <th>Status</th>
-                            <th>Total acumulado</th>
-                            <th>Total PIX</th>
-                            <th>Total cartão</th>
+                
 
-
-                        </tr>
-                    </thead>
-                    <tbody>
-
-                    @foreach($locais as $local)
-                    
-                    <td>{{$local['local_nome']}}</td>
-                    
-                    <td>{{$local['cliente_nome']}}</td>
-                    
-                    <td>{{$local['maquina_nome']}}</td>
-                    <td>{{$local['maquina_status']}}</td>
-                        
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    @endforeach
-
-
-
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <th>Local</th>
-                            <th>Cliente</th>
-                            <th>Máquina</th>
-                            <th>Status</th>
-                            <th>Total acumulado</th>
-                            <th>Total PIX</th>
-                            <th>Total cartão</th>
-                        </tr>
-                    </tfoot>
-                </table>
-
+                    <div><h1>
+                        Aqui vai o qr code
+                    </h1></div>
 
                             @if(session('success'))
 

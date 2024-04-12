@@ -7,26 +7,31 @@ use App\Services\LocaisService;
 use App\Services\MaquinasService;
 use App\Services\ExtratoMaquinaService;
 use App\Services\ClientesService;
+use App\Services\GruposAcessoService;
+use App\Services\UsuariosService;
 use App\Services\AuthService;
 
-class MaquinasController extends Controller
+class ClientesController extends Controller
 {
-    public function coletarMaquinaPorId(Request $request){
+    public function coletarClientePorId(Request $request){
 
         if($request->has('id')){
-            $maquinas = MaquinasService::coletarMaquinas($request->id);
-            return view('Maquinas.index', compact('maquinas'));
+            $clientes = ClientesService::coletar($request->id);
+            return view('Usuarios.index', compact('clientes'));
         }else{
-            return back()->with('error', 'Máquina não encontrada');
+            return back()->with('error', 'Cliente não encontrada');
         }
 
     }
 
-    public function criarMaquinas(Request $request){
-        $locais = LocaisService::coletar();
+    public function criarCliente(Request $request){
+        $grupos = GruposAcessoService::coletar();
         $clientes = ClientesService::coletar();
 
-        return view('Maquinas.create', compact('locais', 'clientes'));
+        return view('Usuarios.create', compact('grupos', 'clientes'));
+    }
+    public function registrarCliente(Request $request){
+        return $request;
     }
 
     /*public function coletarTodasAsMaquinasPorCliente(){

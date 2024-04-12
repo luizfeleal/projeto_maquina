@@ -14,8 +14,7 @@
 
                     <div class="row" style="display: flex; flex-direction: row; justify-content: center;width: 100%; margin-bottom: 20px;">
                         <div class="col-md-6">
-                            <label for="nome_local" class="form-label">Selecione o local que deseja incluir um novo usuário:</label>
-                            <label for="nome_local" class="form-label">Local*:</label>
+                            <label for="nome_local" class="form-label">Nome do Local*:</label>
                             <input type="text" name="nome_local" id="nome_local" class="form-control input-text" placeholder="Nome local" aria-label="Nome local" required>
                             <div class="invalid-feedback">
                                 <p class="invalid-p invalid-p-name">Campo obrigatório</p>
@@ -57,7 +56,7 @@
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secundary" data-bs-dismiss="modal" aria-label="Close">Cancelar</button>
-                                    <button type="submit" class="btn btn-primary" onclick="sendFormCriarLocal()">Sim</button>
+                                    <button type="submit" class="btn btn-primary" data-bs-dismiss="modal" aria-label="Close" onclick="sendFormCriarLocal()">Sim</button>
                                 </div>
                             </div>
                         </div>

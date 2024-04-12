@@ -1,0 +1,80 @@
+$primary: #2c8f44;
+$width-offcanvas: 280px;
+$btn-color: #FFF;
+
+$theme-colors: (
+  "primary": $primary
+);
+
+:root {
+    --bs-btn-color: #FFF !important; /* Altere para a cor desejada, por exemplo, vermelho (#ff0000) */
+  }
+
+.btn{
+    color:#FFF !important;
+}
+
+
+
+.div-center-column{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.div-center-row{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.offcanvas-start{
+    width: $width-offcanvas !important;
+}
+
+.navbar{
+    z-index: 2000 !important;
+}
+
+ul .list-unstyled{
+    padding-left: 55px;
+}
+
+.form-center{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center; justify-content: center;
+}
+
+.overlay-backdrop {
+    background-color: rgba(0, 0, 0, 0.5); /* Cor de fundo escura com opacidade */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 3040; /* Ajuste conforme necessário para sobrepor outros elementos */
+}
+
+.modal{
+    z-index: 4000 !important;
+}
+
+.botao-acionado{
+    background-color: #195e2c !important;
+}
+
+@media screen and (max-width: 960px) {
+    // Aqui você pode definir estilos para telas com largura máxima de 768 pixels
+    .procedimentos, .planos, .termoAdesao, .prestadores, .cobrancas, .guias, .termosAdesao, .reports, .usuarios{
+      padding-left: 0px;
+    }
+  }
+
+
+
+// Importe novamente o Bootstrap para aplicar as personalizações
+@import "~bootstrap/scss/bootstrap";
