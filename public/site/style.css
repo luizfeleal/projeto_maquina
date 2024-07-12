@@ -7,6 +7,29 @@
   color: #FFF !important;
 }
 
+.qr, .maquina, .local, .usuarios, .relatorios {
+  padding-left: 280px;
+  padding-bottom: 50px;
+}
+
+.div-imagem-qr-index{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-top: 100px;
+  border-radius: 10px;
+            box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.2), 
+                        -10px -10px 20px rgba(255, 255, 255, 0.8);
+}
+.div-imagem-qr-index .container{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: 20px;
+}
+
 .div-center-column {
   display: flex;
   flex-direction: column;
@@ -56,7 +79,7 @@ ul .list-unstyled {
 }
 
 @media screen and (max-width: 960px) {
-  .procedimentos, .planos, .termoAdesao, .prestadores, .cobrancas, .guias, .termosAdesao, .reports, .usuarios {
+  .procedimentos, .planos, .termoAdesao, .prestadores, .cobrancas, .qr, .maquina, .local, .usuarios {
     padding-left: 0px;
   }
 }

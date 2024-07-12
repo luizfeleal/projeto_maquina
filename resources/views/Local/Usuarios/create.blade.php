@@ -2,7 +2,7 @@
 @section('title', 'Criar local')
 @section('content')
 
-        <div id="planos" class="planos div-center-column w-100"
+        <div id="local-incluir-usuario" class="local div-center-column w-100"
                 style="padding-top: 99px;">
 
                 <h1  style="padding-top: 80px; text-align: center;">Incluir usuários no Local</h1>
@@ -18,12 +18,13 @@
                             <label for="nome_local" class="form-label">Local*:</label>
                             <select class="select-local js-example-basic-multiple js-states form-control" id="select-local" placeholder="Selecione" name="select-local">
 
+                            <option value="" selected>Selecione</option>
                             @foreach($locais as $local)
                                 <option value="{{$local['id_local']}}">{{$local['local_nome']}}</option>
                             @endforeach
                             </select>
                             <div class="invalid-feedback">
-                                <p class="invalid-p invalid-p-name">Campo obrigatório</p>
+                                <p class="invalid-p" id="select_local_mensagem">Campo obrigatório</p>
                             </div>
 
                         </div>
@@ -38,7 +39,7 @@
                             @endforeach
                             </select>
                             <div class="invalid-feedback">
-                                <p class="invalid-p invalid-p-name">Campo obrigatório</p>
+                                <p class="invalid-p" id="select_cliente_mensagem">Campo obrigatório</p>
                             </div>
 
                         </div>
@@ -117,10 +118,24 @@
 <script>
     $(document).ready(function() {
         $('.select-cliente').select2({
-            theme: "classic"
+            theme: 'bootstrap-5'
         });
         $('.select-local').select2({
-            theme: "classic"
+            theme: 'bootstrap-5'
+        });
+
+        $(".select-local").on('select2:close', () => {
+            validarSelectLocalCliente('select-local', 'select_local_mensagem');
+        });
+        $(".select-local").on('change', () => {
+            validarSelectLocalCliente('select-local', 'select_local_mensagem');
+        });
+
+        $("#select-cliente").on('select2:close', () => {
+            validarSelectLocalCliente('select-cliente', 'select_cliente_mensagem');
+        });
+        $("#select-cliente").on('change', () => {
+            validarSelectLocalCliente('select-cliente', 'select_cliente_mensagem');
         });
     });
 </script>

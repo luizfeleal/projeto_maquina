@@ -2,21 +2,14 @@
 @section('title', 'Minhas Máquinas -> Acumulado')
 @section('content')
 
-        <div id="guias" class="guias w-100 div-center-column"
+        <div id="guias" class="maquina w-100 div-center-column"
                 style=" padding-top: 99px; padding-bottom: 100px;">
 
                 <h1 style="padding-top: 80px; text-align: center; padding-bottom: 50px;">Minhas Máquinas -> Acumulado</h1>
 
             <div class="container section container-platform div-center-column"
                 style="margin-top: 15px; height: 100%;">
-                <div class="row" style="display: flex; flex-direction: row; justify-content: center; margin-bottom: 20px; width: 100%;">
-                    <div class="col-md-4">
-                    <a class="btn btn-primary" href="#" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample" role="button"><i class="fa-solid fa-filter"></i> Filtros</a>
-                    </div>
-                    <div class="col-md-4" style="display: flex; flex-direction: row; justify-content: end; align-items: center;">
-
-                    </div>
-                </div>
+                
 
                 <table id="tabela-local" class="table table-striped" style="width:100%">
                     <thead>

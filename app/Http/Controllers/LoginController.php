@@ -6,31 +6,40 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use App\Services\AuthService;
 use App\Services\EmailService;
+use App\Services\UsuariosService;
+use App\Services\GruposAcessoService;
 
 
 class LoginController extends Controller
 {
-    private function autenticar($usuarioLogin, $senhaLogin, $token){
+    
+    public function autenticar(Request $request)
+   {
+      
+      $usuario_request = $request['usuario'];
+      $senha = $request['senha'];
 
-        if(isset($usuarioLogin) && isset($senhaLogin)){
-            $url = env('APP_URL_API') . '/usuarios';
-            $response = Http::withHeaders([
-                'Authorization' => 'Bearer ' . $token
-            ])->get($url);
+      if(!empty($usuario_request) && !empty($senha)){
+          $usuario = UsuariosService::coletarComFiltro(['usuario_login'=>$usuario_request, 'usuario_senha'=>$senha], 'where');
+          
+          if(empty($usuario)){
 
-            $usuarios = $response->json();
-            $usuarioArray = array_filter($usuarios, function ($usuario) use ($usuarioLogin, $senhaLogin) {
-                return $usuario['usuario_login'] == $usuarioLogin && $usuario['usuario_senha'] == $senhaLogin;
-            });
-            if (empty($usuarioArray)) {
+            return back()->with('error', 'Nenhum usuário com os respectivos dados informados foi encontrado.');
+         }else if($usuario[0]['ativo'] == 0){
+            return back()->with('error', 'O usuário com os respectivos dados de acesso se encontra inativo.');
+         }else{
+            $grupo_acesso = GruposAcessoService::coletar($usuario[0]['id_grupo_acesso']);
 
-                return null;
-            } else {
+             session(['id_usuario'=> $usuario[0]['id_usuario'], 'id_grupo_acesso'=>$usuario[0]['id_grupo_acesso'], 'usuario_nome'=>$usuario[0]['usuario_nome'], 'grupo_nome'=>$grupo_acesso['grupo_acesso_nome']]);
+             if($grupo_acesso['grupo_acesso_nome'] == 'admin'){
+                return redirect()->route('local');
+             }
+         }
+      }
+      return back()->with('error', 'Os dados de Usuário e Senha são obrigatórios para o login.');
 
-                return $usuarioArray[0];
-            }
-        }
-    }
+   }
+
     public function logout(){
         session()->flush();
         return redirect()->route('login-view');

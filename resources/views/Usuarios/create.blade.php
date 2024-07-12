@@ -9,44 +9,44 @@
             <div class="container section container-platform div-center-column"
                 style="margin-top: 15px; height: 100%;">
 
-                <form action="{{ route('local-registrar') }}" id="novo-local-form" class="w-100">
+                <form action="{{ route('usuario-registrar') }}" id="novo-local-form" class="w-100 needs-validation" novalidate>
                     @csrf
 
                     <div class="row" style="display: flex; flex-direction: row; justify-content: center;width: 100%; margin-bottom: 20px;">
                         <div class="col-md-4">
-                            <label for="cliente_nome" class="form-label"> Nome:</label>
-                            <input type="text" class="form-control" name="cliente_nome" id="cliente_nome" required>
+                            <label for="cliente_nome" class="form-label"> Nome*:</label>
+                            <input type="text" class="form-control input-text" name="cliente_nome" id="cliente_nome" required>
                             <div class="invalid-feedback">
-                                <p class="invalid-p invalid-p-name">Campo obrigatório</p>
+                                <p class="invalid-p" id="cliente_nome_mensagem">Campo obrigatório</p>
                             </div>
 
                         </div>
                         <div class="col-md-4">
-                            <label for="select-tipo" class="form-label"> Tipo:</label>
-                            <select class="select-tipo js-example-basic-multiple js-states form-control" placeholder="Selecione" name="select-tipo" multiple="multiple">
+                            <label for="select-tipo" class="form-label"> Tipo*:</label>
+                            <select class="select-tipo js-example-basic-multiple js-states form-control" id="select_tipo" placeholder="Selecione" name="select-tipo" multiple="multiple" required>
 
                                 @foreach($grupos as $grupo)
                                     <option value="{{$grupo['id_grupo_acesso']}}">{{$grupo['grupo_acesso_nome']}}</option>
                                 @endforeach
                             </select>
                             <div class="invalid-feedback">
-                                <p class="invalid-p invalid-p-name">Campo obrigatório</p>
+                                <p class="invalid-p" id="select_tipo_mensagem">Campo obrigatório</p>
                             </div>
 
                         </div>
                     </div>
                     <div class="row" style="display: flex; flex-direction: row; justify-content: center;width: 100%; margin-bottom: 20px;">
                         <div class="col-md-4">
-                            <label for="cliente_celular" class="form-label"> Celular:</label>
-                            <input type="text"  class="form-control" name="cliente_celular" id="cliente_celular">
+                            <label for="cliente_celular" class="form-label"> Celular*:</label>
+                            <input type="text"  class="form-control" name="cliente_celular" id="cliente_celular" required>
                             <div class="invalid-feedback">
-                                <p class="invalid-p invalid-p-name">Campo obrigatório</p>
+                                <p class="invalid-p" id="cliente_celular_mensagem">Campo obrigatório</p>
                             </div>
 
                         </div>
                         <div class="col-md-4">
-                            <label for="cliente_email" class="form-label"> Email:</label>
-                            <input type="email" class="form-control" name="cliente_email" id="cliente_email">
+                            <label for="cliente_email" class="form-label"> Email*:</label>
+                            <input type="email" class="form-control" name="cliente_email" id="cliente_email" required>
                             <div class="invalid-feedback">
                                 <p class="invalid-p invalid-p-name">Campo obrigatório</p>
                             </div>
@@ -55,8 +55,8 @@
                     </div>
                     <div class="row" style="display: flex; flex-direction: row; justify-content: center;width: 100%; margin-bottom: 20px;">
                         <div class="col-md-8">
-                            <label for="cliente_cpf_cnpj" class="form-label"> CPF/CNPJ:</label>
-                            <input type="text" class="form-control" name="cliente_cpf_cnpj" id="cliente_cpf_cnpj">
+                            <label for="cliente_cpf_cnpj" class="form-label"> CPF/CNPJ*:</label>
+                            <input type="text" class="form-control" name="cliente_cpf_cnpj" id="cliente_cpf_cnpj" required>
                             <div class="invalid-feedback">
                                 <p class="invalid-p invalid-p-name">Campo obrigatório</p>
                             </div>
@@ -65,16 +65,16 @@
                     </div>
                     <div class="row" style="display: flex; flex-direction: row; justify-content: center;width: 100%; margin-bottom: 20px;">
                         <div class="col-md-4">
-                            <label for="cliente_cep" class="form-label">CEP:</label>
-                            <input type="text" class="form-control" name="cliente_cep" id="cliente_cep">
+                            <label for="cliente_cep" class="form-label">CEP*:</label>
+                            <input type="text" class="form-control" name="cliente_cep" id="cliente_cep" required>
                             <div class="invalid-feedback">
                                 <p class="invalid-p invalid-p-name">Campo obrigatório</p>
                             </div>
 
                         </div>
                         <div class="col-md-4">
-                            <label for="cliente_logradouro" class="form-label">Logradouro:</label>
-                            <input type="text" class="form-control" name="cliente_logradouro" id="cliente_logradouro">
+                            <label for="cliente_logradouro" class="form-label">Logradouro*:</label>
+                            <input type="text" class="form-control" name="cliente_logradouro" id="cliente_logradouro" required>
                             <div class="invalid-feedback">
                                 <p class="invalid-p invalid-p-name">Campo obrigatório</p>
                             </div>
@@ -84,16 +84,16 @@
 
                     <div class="row" style="display: flex; flex-direction: row; justify-content: center;width: 100%; margin-bottom: 20px;">
                         <div class="col-md-4">
-                            <label for="cliente_cidade" class="form-label">Cidade:</label>
-                            <input type="text" class="form-control" name="cliente_cidade" id="cliente_cidade">
+                            <label for="cliente_cidade" class="form-label">Cidade*:</label>
+                            <input type="text" class="form-control" name="cliente_cidade" id="cliente_cidade" required>
                             <div class="invalid-feedback">
                                 <p class="invalid-p invalid-p-name">Campo obrigatório</p>
                             </div>
 
                         </div>
                         <div class="col-md-4">
-                            <label for="cliente_bairro" class="form-label">Bairro:</label>
-                            <input type="text" class="form-control" name="cliente_bairro" id="cliente_bairro">
+                            <label for="cliente_bairro" class="form-label">Bairro*:</label>
+                            <input type="text" class="form-control" name="cliente_bairro" id="cliente_bairro" required>
                             <div class="invalid-feedback">
                                 <p class="invalid-p invalid-p-name">Campo obrigatório</p>
                             </div>
@@ -103,23 +103,23 @@
                     <div class="row" style="display: flex; flex-direction: row; justify-content: center;width: 100%; margin-bottom: 20px;">
                         <div class="col-md-4">
                             <label for="cliente_complemento" class="form-label">Complemento:</label>
-                            <input type="text" class="form-control" name="cliente_complemento" id="cliente_complemento">
+                            <input type="text" class="form-control" name="cliente_complemento" id="cliente_complemento" >
                             <div class="invalid-feedback">
                                 <p class="invalid-p invalid-p-name">Campo obrigatório</p>
                             </div>
 
                         </div>
                         <div class="col-md-2">
-                            <label for="cliente_estado" class="form-label">Estado:</label>
-                            <input type="text" class="form-control" name="cliente_estado" id="cliente_estado">
+                            <label for="cliente_estado" class="form-label">Estado*:</label>
+                            <input type="text" class="form-control" name="cliente_estado" id="cliente_estado" required>
                             <div class="invalid-feedback">
                                 <p class="invalid-p invalid-p-name">Campo obrigatório</p>
                             </div>
 
                         </div>
                         <div class="col-md-2">
-                            <label for="cliente_numero" class="form-label">Número:</label>
-                            <input type="text" class="form-control" name="cliente_numero" id="cliente_numero">
+                            <label for="cliente_numero" class="form-label">Número*:</label>
+                            <input type="text" class="form-control" name="cliente_numero" id="cliente_numero" required>
                             <div class="invalid-feedback">
                                 <p class="invalid-p invalid-p-name">Campo obrigatório</p>
                             </div>
@@ -129,7 +129,7 @@
                     
 
                     <div style="display:flex; justify-content: center; align-items: center; margin-top: 50px;">
-                        <button class="btn btn-primary"  data-bs-toggle="modal" data-bs-target="#ModalCenterCriar" type="button">Criar usuário</button>
+                        <button class="btn btn-primary"  type="submit">Criar usuário</button>
                     </div>
                 </form>
                             @if(session('success'))
@@ -183,6 +183,31 @@
     $(document).ready(function() {
         $('.select-tipo').select2({
             theme: "classic"
+        });
+
+        $("#cliente_nome").on('blur', () => {
+            validarCampoNome('cliente_nome', 'cliente_nome_mensagem');
+        });
+
+        $("#cliente_celular").on('blur', () => {
+            validarCelular('cliente_celular', 'cliente_celular_mensagem');
+        });
+
+        $('#cliente_celular').mask('(00) 00000-0000');
+        $('#cliente_cep').mask('00000-000');
+
+        $('#cliente_cep').on('blur', async () => {
+            var valorCep = $('#cliente_cep').val()
+            var dadoEndereco = await coletaEndereco(valorCep)
+            preencherEnderecoFocoNumero('cliente_cidade', 'cliente_estado', 'cliente_logradouro', 'cliente_bairro', 'cliente_numero', dadoEndereco)
+        });
+
+        $("#cliente_email").on('blur', () => {
+            validarCelular('cliente_celular', 'cliente_celular_mensagem');
+        });
+
+        $("#select_tipo").on('select2:close', () => {
+            validarSelectLocalCliente('select-local', 'select_tipo_mensagem');
         });
     });
 </script>

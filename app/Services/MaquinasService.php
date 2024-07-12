@@ -20,7 +20,7 @@ class MaquinasService
             'Authorization' => 'Bearer ' . $token
         ])->post($url, $dados);
 
-        $maquinas = $response->json();
+        $maquinas = $response;
 
         return $maquinas;
     }

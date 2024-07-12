@@ -29,9 +29,25 @@ class MaquinasController extends Controller
         return view('Maquinas.create', compact('locais', 'clientes'));
     }
 
-    /*public function coletarTodasAsMaquinasPorCliente(){
+    public function registrarMaquinas(Request $request){
 
-    }*/
+
+        try{
+
+            $dados = [];
+            $dados['id_local'] = $request['select-local'];
+            $dados['id_placa'] = $request['id_placa_input'];
+            $dados['maquina_nome'] = $request['maquina_nome'];
+            $dados['maquina_status'] = 0;
+
+            $result = MaquinasService::criar($dados);
+
+    
+            return back()->with('success', $result['message']);
+        }catch(\Throwable $e){
+            return back()->with('error', 'Houve um erro ao tentar cadastrar o local');
+        }
+    }
 
     public function gerarIdPlaca(){
         $id_aleatorio = rand(10000000, 99999999);
@@ -45,7 +61,7 @@ class MaquinasController extends Controller
     }
 
     public function coletarTodasAsMaquinas(Request $request){
-        $maquinas = MaquinasService::coletarMaquinas();
+        $maquinas = MaquinasService::coletar();
         return view('Maquinas.index', compact('maquinas'));
     }
 

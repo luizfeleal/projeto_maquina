@@ -31,7 +31,7 @@ class ClientesController extends Controller
         return view('Usuarios.create', compact('grupos', 'clientes'));
     }
     public function registrarCliente(Request $request){
-        return $request;
+        $dadosCliente = [];
     }
 
     /*public function coletarTodasAsMaquinasPorCliente(){
@@ -49,9 +49,9 @@ class ClientesController extends Controller
         }
     }
 
-    public function coletarTodasAsMaquinas(Request $request){
-        $maquinas = MaquinasService::coletarMaquinas();
-        return view('Maquinas.index', compact('maquinas'));
+    public function coletarCliente(Request $request){
+        $clientes = ClientesService::coletar();
+        return view('Usuarios.index', compact('clientes'));
     }
 
     public function transacaoMaquinas(Request $request){

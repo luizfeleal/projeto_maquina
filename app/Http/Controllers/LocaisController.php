@@ -57,6 +57,9 @@ class LocaisController extends Controller
                     if($maquina['id_local'] == $local['id_local']){
                         $local['maquina_nome'] = $maquina['maquina_nome'];
                         $local['maquina_status'] = $maquina['maquina_status'];
+                    }else{
+                        $local['maquina_nome'] = "";
+                        $local['maquina_status'] = "";
                     }
                 }
             }

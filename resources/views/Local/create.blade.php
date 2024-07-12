@@ -2,14 +2,14 @@
 @section('title', 'Criar local')
 @section('content')
 
-        <div id="planos" class="planos div-center-column w-100"
+        <div id="local-criar" class="local div-center-column w-100"
                 style="padding-top: 99px;">
 
                 <h1  style="padding-top: 80px; text-align: center;">Criar local</h1>
             <div class="container section container-platform div-center-column"
                 style="margin-top: 15px; height: 100%;">
 
-                <form action="{{ route('local-registrar') }}" id="novo-local-form" class="w-100">
+                <form action="{{ route('local-registrar') }}" id="novo-local-form" class="w-100 needs-validation" novalidate>
                     @csrf
 
                     <div class="row" style="display: flex; flex-direction: row; justify-content: center;width: 100%; margin-bottom: 20px;">
@@ -17,7 +17,7 @@
                             <label for="nome_local" class="form-label">Nome do Local*:</label>
                             <input type="text" name="nome_local" id="nome_local" class="form-control input-text" placeholder="Nome local" aria-label="Nome local" required>
                             <div class="invalid-feedback">
-                                <p class="invalid-p invalid-p-name">Campo obrigatório</p>
+                                <p class="invalid-p" id="nome_local_mensagem">Campo obrigatório</p>
                             </div>
 
                         </div>
@@ -25,14 +25,14 @@
                     <div class="row" style="display: flex; flex-direction: row; justify-content: center;  width: 100%; ">
                         <div class="col-md-6">
                             <label for="select-cliente" class="form-label">Selecione o(s) cliente(s) que deseja incluir*:</label>
-                            <select class="select-cliente js-example-basic-multiple js-states form-control" placeholder="Selecione" name="select-cliente[]" multiple="multiple">
+                            <select class="select-cliente js-example-basic-multiple js-states form-control" id="select-cliente" placeholder="Selecione" name="select-cliente[]" multiple="multiple" required>
 
                             @foreach($clientes as $cliente)
                                 <option value="{{$cliente['id_cliente']}}">{{$cliente['cliente_nome']}}</option>
                             @endforeach
                             </select>
                             <div class="invalid-feedback">
-                                <p class="invalid-p invalid-p-name">Campo obrigatório</p>
+                                <p class="invalid-p" id="select_cliente_mensagem">Campo obrigatório</p>
                             </div>
 
                         </div>
@@ -111,7 +111,15 @@
 <script>
     $(document).ready(function() {
         $('.select-cliente').select2({
-            theme: "classic"
+            theme: 'bootstrap-5'
+        });
+
+        $("#nome_local").on('blur', () => {
+            validarCampoNome('nome_local', 'nome_local_mensagem');
+        });
+
+        $("#select-cliente").on('select2:close', () => {
+            validarSelectLocalCliente('select-cliente', 'select_cliente_mensagem');
         });
     });
 </script>

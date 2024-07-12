@@ -2,22 +2,15 @@
 @section('title', 'Minhas Máquinas -> Transações')
 @section('content')
 
-        <div id="guias" class="guias w-100 div-center-column"
+        <div id="guias" class="maquina w-100 div-center-column"
                 style=" padding-top: 99px; padding-bottom: 100px;">
 
                 <h1 style="padding-top: 80px; text-align: center; padding-bottom: 50px;">Minhas Máquinas -> Transações</h1>
 
             <div class="container section container-platform div-center-column"
                 style="margin-top: 15px; height: 100%;">
-                <div class="row" style="display: flex; flex-direction: row; justify-content: center; margin-bottom: 20px; width: 100%;">
-                    <div class="col-md-4">
-                    <a class="btn btn-primary" href="#" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample" role="button"><i class="fa-solid fa-filter"></i> Filtros</a>
-                    </div>
-                    <div class="col-md-4" style="display: flex; flex-direction: row; justify-content: end; align-items: center;">
-
-                    </div>
-                </div>
-                <table id="tabela-local" class="table table-striped" style="width:100%">
+                
+                <table id="tabela_maquinas_transacao" class="table table-striped" style="width:100%">
                     <thead>
                         <tr>
                             <th>Local</th>
@@ -30,18 +23,6 @@
                         </tr>
                     </thead>
                     <tbody>
-
-                    
-                    
-                    <td></td>
-                    
-                    <td></td>
-                    
-                    <td></td>
-                    <td></td>
-                        
-                    <td></td>
-                    <td></td>
 
 
 
@@ -110,7 +91,19 @@
     <script>
 
         $(document).ready(function(){
-            $('#input_filtro_cliente').select2({
+           
+            var tabelaGuias= $('#tabela_maquinas_transacao').DataTable({
+                
+                "columns": [
+                    { "data": null }, // Local
+                    { "data": null }, // Máquina
+                    { "data": null }, // Última transação
+                    { "data": null }, // Fonte
+                    { "data": null }  // Data e Hora
+                ]
+            });
+
+            /*$('#input_filtro_cliente').select2({
             theme: "classic",
             width: "100%"
             });
@@ -121,25 +114,13 @@
             $('#input_filtro_maquina').select2({
                 theme: "classic",
             width: "100%"
-            });
+            });*/
 
-
-            var tabelaGuias= $('#tabela-local').DataTable({
-                "language": {
-                    "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json"
-                },
-                "columns": [
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null
-                ] // Use o array de objetos de coluna dinamicamente criado
-            });
 
             
-            var dadosTabela = tabelaGuias.rows().data().toArray();
+
+            
+            /*var dadosTabela = tabelaGuias.rows().data().toArray();
             var startDate = ''
             var endDate = ''
 
@@ -229,7 +210,7 @@
 
             $('.filtro-checkbox, .filtro-select, .filtro-date').on('change', function () {
                 filterTable();
-            });
+            });*/
         });
     </script>
 

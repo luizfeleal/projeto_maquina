@@ -2,7 +2,7 @@
 @section('title', 'Local')
 @section('content')
 
-        <div id="guias" class="guias w-100 div-center-column"
+        <div id="local-total" class="local w-100 div-center-column"
                 style=" padding-top: 99px; padding-bottom: 100px;">
 
                 <h1 style="padding-top: 80px; text-align: center; padding-bottom: 50px;">Local</h1>
@@ -21,29 +21,29 @@
                     <div class="row div-center-row" style=" margin-bottom: 30px; width: 100%;">
                         <div class="form-check form-check-inline col-md-3">
                             <label for="input_data_inicio_filtro">Local:</label>
-                            <select id="input_filtro_local" class="form-control js-example-basic-multiple js-states" data-column="0">
-                                <option value=""></option>
+                            <select id="input_filtro_local" class="form-control js-example-basic-multiple js-states filtro-select" data-column="0">
+                                <option value="">Selecione...</option>
                                 @foreach($locais as $local)
-                                    <option value="{{$local['id_local']}}">{{$local['local_nome']}}</option>
+                                    <option value="{{$local['local_nome']}}">{{$local['local_nome']}}</option>
                                 @endforeach
                             </select>
                         </div>
                         <div class="form-check form-check-inline col-md-3">
                             <label for="input_data_inicio_filtro">Cliente:</label>
-                            <select id="input_filtro_cliente" class="form-control js-example-basic-multiple js-states" data-column="0">
-                            <option value=""></option>
+                            <select id="input_filtro_cliente" class="form-control js-example-basic-multiple js-states filtro-select" data-column="1">
+                            <option value="">Selecione...</option>
                                 @foreach($clientes as $cliente)
-                                    <option value="{{$cliente['id_cliente']}}">{{$cliente['cliente_nome']}}</option>
+                                    <option value="{{$cliente['cliente_nome']}}">{{$cliente['cliente_nome']}}</option>
                                 @endforeach
                             </select>
                         </div>
                         <div class="form-check form-check-inline col-md-3">
                             <label for="input_data_inicio_filtro ">Máquina:</label>
-                            <select id="input_filtro_maquina" class="form-control js-example-basic-multiple js-states" data-column="0">
-                            <option value=""></option>
+                            <select id="input_filtro_maquina" class="form-control js-example-basic-multiple js-states filtro-select" data-column="2">
+                            <option value="">Selecione...</option>
 
                                 @foreach($maquinas as $maquina)
-                                    <option value="{{$maquina['id_maquina']}}">{{$maquina['maquina_nome']}}</option>
+                                    <option value="{{$maquina['maquina_nome']}}">{{$maquina['maquina_nome']}}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -66,17 +66,24 @@
                     <tbody>
 
                     @foreach($locais as $local)
-                    
-                    <td>{{$local['local_nome']}}</td>
-                    
-                    <td>{{$local['cliente_nome']}}</td>
-                    
-                    <td>{{$local['maquina_nome']}}</td>
-                    <td>{{$local['maquina_status']}}</td>
+                    <tr>
+
+                        <td>{{$local['local_nome']}}</td>
                         
-                    <td></td>
-                    <td></td>
-                    <td></td>
+                        <td>{{$local['cliente_nome']}}</td>
+                        
+                        @if(isset($local['maquina_nome']))
+                        <td>{{$local['maquina_nome']}}</td>
+                        <td>{{$local['maquina_status']}}</td>
+                        @else
+                        <td>{{$local['maquina_nome']}}</td>
+                        <td>{{$local['maquina_status']}}</td>
+                        @endif
+                            
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
                     @endforeach
 
 
@@ -163,9 +170,9 @@
 
 
             var tabelaGuias= $('#tabela-local').DataTable({
-                "language": {
+                /*"language": {
                     "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json"
-                },
+                },*/
                 "columns": [
                     null,
                     null,
@@ -229,7 +236,7 @@
 
                 var filtros = {};
 
-                $('.filtro-checkbox:checked, .filtro-select, .filtro-date').each(function () {
+                $('.filtro-select').each(function () {
                     var coluna = $(this).data('column');
 
                     if($(this).attr('type') == 'date'){
@@ -262,11 +269,24 @@
 
                 // Aplica os filtros
                 $.each(filtros, function(coluna, valores) {
-                    tabelaGuias.column(coluna).search(valores.join('|'), true, false).draw();
+                    tabelaGuias.column(coluna).search(valores,{boundary: true, caseInsensitive: false, exact: true, smart: false}).draw();
                 });
             }
 
+
+            
+
             $('.filtro-checkbox, .filtro-select, .filtro-date').on('change', function () {
+                filterTable();
+            });
+
+            $('#input_filtro_cliente').on('select2:select', ()=>{
+                filterTable();
+            });
+            $('#input_filtro_local').on('select2:select', ()=>{
+                filterTable();
+            });
+            $('#input_filtro_maquina').on('select2:select', ()=>{
                 filterTable();
             });
         });

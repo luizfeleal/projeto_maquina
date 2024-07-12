@@ -2,7 +2,7 @@
 @section('title', 'Criar máquina')
 @section('content')
 
-        <div id="planos" class="planos div-center-column w-100"
+        <div id="maquinas" class="maquina div-center-column w-100"
                 style="padding-top: 99px;">
 
                 <h1  style="padding-top: 80px; text-align: center;">Máquinas -> criar máquinas</h1>
@@ -12,15 +12,17 @@
                 <input type="hidden" id="input_clientes" value="{{json_encode($clientes)}}">
                 <input type="hidden" id="url_web" value="{{env('APP_URL')}}">
 
-                <form action="" id="nova-maquina" class="w-100">
+                <form action="{{route('maquinas-registrar')}}" id="nova-maquina" class="w-100 needs-validation" novalidate>
                     @csrf
+
+                    <input type="hidden" name="id_placa_input" id="id_placa_input" value="">
 
                     <div class="row" style="display: flex; flex-direction: row; justify-content: center;width: 100%; margin-top: 150px;">
                         <div class="col-md-6">
                             <label for="maquina_nome" class="form-label">Nome Máquina*:</label>
                             <input type="text" name="maquina_nome" id="maquina_nome" class="form-control input-text" placeholder="Nome da Máquina" aria-label="Nome da Máquina" required>
-                            <div class="invalid-feedback">
-                                <p class="invalid-p invalid-p-name">Campo obrigatório</p>
+                            <div class="invalid-feedback" >
+                                <p class="invalid-p" id="maquina_nome_mensagem"></p>
                             </div>
 
                         </div>
@@ -38,39 +40,39 @@
                     <div class="row" style="display: flex; flex-direction: row; justify-content: center; margin-top: 10px; width: 100%;">
                         <div class="col-md-6">
                             <label for="select-local1" class="form-label">Local*:</label>
-                            <select class="select-local js-example-basic-multiple js-states form-control" id="select-local" placeholder="Selecione" name="select-local[]" multiple="multiple">
+                            <select class="select-local js-example-basic-multiple js-states form-control" id="select-local" placeholder="Selecione" name="select-local"  required>
 
                             @foreach($locais as $local)
                                 <option value="{{$local['id_local']}}">{{$local['local_nome']}}</option>
                             @endforeach
                             </select>
                             <div class="invalid-feedback">
-                                <p class="invalid-p invalid-p-name">Campo obrigatório</p>
+                                <p class="invalid-p" id="select_local_mensagem">Campo obrigatório</p>
                             </div>
                         </div>
                     </div>
                     <div class="row" style="display: flex; flex-direction: row; justify-content: center; margin-top: 10px; width: 100%;">
                         <div class="col-md-6">
                             <label for="select-cliente1" class="form-label">Cliente*:</label>
-                            <select class="select-cliente js-example-basic-multiple js-states form-control" id="select-cliente" placeholder="Selecione" name="select-cliente[]" multiple="multiple">
+                            <select class="select-cliente js-example-basic-multiple js-states form-control" id="select-cliente" placeholder="Selecione" name="select-cliente"  required>
                             @foreach($clientes as $cliente)
                                 <option value="{{$cliente['id_cliente']}}">{{$cliente['cliente_nome']}}</option>
                             @endforeach
                             </select>
                             <div class="invalid-feedback">
-                                <p class="invalid-p invalid-p-name">Campo obrigatório</p>
+                                <p class="invalid-p" id="select_cliente_mensagem">Campo obrigatório</p>
                             </div>
 
                         </div>
                     </div>
 
                     <div style="display:flex; justify-content: center; align-items: center;  margin-top: 50px;">
-                        <button class="btn btn-primary"  data-bs-toggle="modal" data-bs-target="#ModalCenterCriar" onclick="setMaquinaNome('.modal-body', '#nome_maquina')" type="button">Criar</button>
+                        <button class="btn btn-primary"  data-bs-toggle="modal" data-bs-target="#ModalCenterCriar" onclick="setMaquinaNome('.modal-body', '#maquina_nome')" type="button">Criar</button>
                     </div>
                 </form>
 
                 
-                <div class="modal fade" id="ModalCenterCriar" tabindex="-1" aria-labelledby="ModalCenterCriar" aria-modal="true" role="dialog">
+                    <div class="modal fade" id="ModalCenterCriar" tabindex="-1" aria-labelledby="ModalCenterCriar" aria-modal="true" role="dialog">
                         <div class="modal-dialog modal-dialog-centered">
                             <div class="modal-content">
 
@@ -83,7 +85,7 @@
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secundary" data-bs-dismiss="modal" aria-label="Close">Cancelar</button>
-                                    <button type="submit" class="btn btn-primary" data-bs-dismiss="modal" aria-label="Close" onclick="sendFormCriarLocal()">Sim</button>
+                                    <button type="submit" class="btn btn-primary" data-bs-dismiss="modal" aria-label="Close" onclick="sendFormCriar('nova-maquina')">Sim</button>
                                 </div>
                             </div>
                         </div>
@@ -140,10 +142,10 @@
     $(document).ready(function() {
 
         $('.select-cliente').select2({
-            theme: "classic"
+            theme: 'bootstrap-5'
         });
         $('.select-local').select2({
-            theme: "classic"
+            theme: 'bootstrap-5'
         });
         $(".select-local").on('change', () => {
             setComplementoCliente()
@@ -173,11 +175,33 @@
 
                 const result = await response.json();
                 $("#id_placa").val(result.id_placa)
+                $("#id_placa_input").val(result.id_placa)
+                $("#id_placa").removeClass('is-invalid')
             } catch (error) {
                 console.log('deu erro:', error); // Trate qualquer erro
             } finally {
                 hideLoader();
             }
+        });
+
+        //Eventos de validação
+
+        $("#maquina_nome").on('blur', () => {
+            validarCampoNome('maquina_nome', 'maquina_nome_mensagem');
+        });
+
+        $(".select-local").on('select2:close', () => {
+            validarSelectLocalCliente('select-local', 'select_local_mensagem');
+        });
+        $(".select-local").on('change', () => {
+            validarSelectLocalCliente('select-local', 'select_local_mensagem');
+        });
+
+        $("#select-cliente").on('select2:close', () => {
+            validarSelectLocalCliente('select-cliente', 'select_cliente_mensagem');
+        });
+        $("#select-cliente").on('change', () => {
+            validarSelectLocalCliente('select-cliente', 'select_cliente_mensagem');
         });
 
     });

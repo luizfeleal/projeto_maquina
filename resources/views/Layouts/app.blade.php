@@ -11,6 +11,12 @@
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
+    <!-- Or for RTL support -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.rtl.min.css" />
+
 
 
 </head>
@@ -37,8 +43,8 @@ $currentRoute = Request::route()->getName();
 
                         <a href="/" class="d-flex align-items-center pb-3 mb-3 link-body-emphasis text-decoration-none" style=" padding-left: 12px;">
                         <div class="d-flex" style="flex-direction: column;">
-                            <span class="fs-5 fw-semibold" id="username">{{session()->get('usuario_nome')}}</span>
-                            <span class="fs-10" id="user_function">{{session()->get('grupo_nome')}}</span>
+                            <span class="fs-5 fw-semibold" id="username">Luiz Felipe</span>
+                            <span class="fs-10" id="user_function">Admin</span>
                         </div>
                         </a>
 
@@ -72,7 +78,7 @@ $currentRoute = Request::route()->getName();
                         </li>
                         <li class="mb-1">
                             <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0">
-                                <a href="/" class="text-decoration-none" style="{{ $currentRoute === 'relatorio-criar' || $currentRoute ===  'relatorio-gerar' || $currentRoute === 'relatorio-exibir'  ?  'color:grey' : ' ' }}">
+                                <a href="{{route('relatorio-view')}}" class="text-decoration-none" style="{{ $currentRoute === 'relatorio-view' || $currentRoute ===  'relatorio-gerar' || $currentRoute === 'relatorio-exibir'  ?  'color:grey' : ' ' }}">
                                     <i class="fa-solid fa-chart-pie icon-sidebar" style=" font-size: 22px;padding-right:5px;"></i>Relatórios
                                 </a>
                             </button>
@@ -86,23 +92,29 @@ $currentRoute = Request::route()->getName();
                             </button>
                             <div class="collapse {{ $currentRoute === 'termo-adesao-detalhar' || $currentRoute === 'termo-adesao-criar' || $currentRoute === 'termo-adesao-editar' || $currentRoute === 'extrato-termo-editar' || $currentRoute === 'termo-adesao-exibir' || $currentRoute === 'extrato-termo-criar' || $currentRoute === 'extrato-termo-exibir' || $currentRoute === 'extrato-termo-gerar' ? 'show' : '' }}" id="termo-collapse">
                             <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                                <li><a href="{{route('maquinas-transacoes')}}" class=" d-inline-flex text-decoration-none rounded" style="{{ $currentRoute === 'termo-adesao-exibir' || $currentRoute === 'termo-adesao-criar' || $currentRoute === 'termo-adesao-detalhar' || $currentRoute === 'termo-adesao-editar' ? 'color:grey' : ' ' }}">Transações</a></li>
+                                <li><a href="{{route('maquinas-transacoes')}}" class=" d-inline-flex text-decoration-none rounded" >Transações</a></li>
                                 <li><a href="{{route('maquinas-acumulado')}}" class=" d-inline-flex text-decoration-none rounded">Acumulado</a></li>
                             </ul>
                             </div>
                         </li>
                         <li class="mb-1">
-                            <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed" data-bs-toggle="collapse" data-bs-target="#prestadores-collapse" aria-expanded="false">
+                            <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed" data-bs-toggle="collapse" data-bs-target="#qr-collapse" aria-expanded="false">
                                 <a href="/" class="text-decoration-none">
-                                <i class="fa-solid fa-qrcode icon-sidebar" style=" font-size: 25px;padding-right:5px;"></i>Gerar QR
+                                    <i class="fa-solid fa-qrcode icon-sidebar" style=" font-size: 25px;padding-right:5px;"></i>Gerar QR
                                 </a>
                             </button>
+                            <div class="collapse {{ $currentRoute === 'qr-criar' || $currentRoute === 'qr'  ? 'show' : '' }}" id="qr-collapse">
+                                <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                                    <li><a href="{{route('qr-criar')}}" class=" d-inline-flex text-decoration-none rounded" >Novo Qr</a></li>
+                                    <li><a href="{{route('qr')}}" class=" d-inline-flex text-decoration-none rounded">Qr</a></li>
+                                </ul>
+                            </div>
                         </li>
 
                         <li class="mb-1">
                             <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed" data-bs-toggle="collapse" data-bs-target="#guias-collapse" aria-expanded="false">
-                                <a href="/"  class="text-decoration-none">
-                                <i class="fa-solid fa-user-plus icon-sidebar"  style=" font-size: 25px;padding-right:5px;"></i>Novo usuário
+                                <a href="{{route('usuarios')}}"  class="text-decoration-none">
+                                <i class="fa-solid fa-user-plus icon-sidebar"  style=" font-size: 25px;padding-right:5px;"></i>Usuários
                                 </a>
                             </button>
 
