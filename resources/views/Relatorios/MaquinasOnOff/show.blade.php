@@ -3,7 +3,7 @@
 @section('title', 'Relatórios > Máquinas Online/Offline')
 
 @section('content')
-        <div id="reports_maquinas_online_offline" class="reports div-center-column w-100"
+        <div id="reports_maquinas_online_offline" class="relatorios div-center-column w-100"
                 style="padding-top: 99px;">
 
                 <div class="container section container-platform"
@@ -16,11 +16,11 @@
 
                         @csrf
 
-                        <div class="row">
-                            <div class="col-md-4">
+                        <div class="row" style="display: flex; flex-direction: row; justify-content: center;width: 100%; margin-top: 50px; margin-bottom: 30px;">
+                            <div class="col-md-3">
                                 <p><strong>Total de Máquinas Online: </strong> {{count($maquinasOnline)}}</p>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <p><strong>Total de Máquinas Offline: </strong> {{count($maquinasOffline)}}</p>
                             </div>
                         </div>
@@ -40,7 +40,12 @@
                                 <tr>
                                     <td>{{$online['maquina_nome']}}</td>
                                     <td>{{$locais[$onLine['id_local']]['local_nome']}}</td>
-                                    <td>{{$onLine['maquina_status']}}</td>
+                                    @if($online['maquina_status'] == 0) 
+                                        <td><i class="fa-solid fa-circle text-danger" ></i></td>
+                                    @else
+                                        <td><i class="fa-solid fa-circle text-success" ></i></td>
+                                    @endif
+                                    
                                     <td>{{$onLine['maquina_ultimo_contato']}}</td>
                                 </tr>
                             @endforeach
@@ -48,7 +53,11 @@
                                 <tr>
                                     <td>{{$offline['maquina_nome']}}</td>
                                     <td>{{$locais[$offline['id_local']]['local_nome']}}</td>
-                                    <td>{{$offline['maquina_status']}}</td>
+                                    @if($offline['maquina_status'] == 0) 
+                                        <td><i class="fa-solid fa-circle text-danger" ></i></td>
+                                    @else
+                                        <td><i class="fa-solid fa-circle text-success" ></i></td>
+                                    @endif
                                     <td>{{$offline['maquina_ultimo_contato']}}</td>
                                 </tr>
                             @endforeach

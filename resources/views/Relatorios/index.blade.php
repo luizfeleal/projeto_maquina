@@ -14,7 +14,7 @@
                         <!--<div class="row" style="display: flex; flex-direction: row; justify-content: center; margin-bottom: 20px; width: 100%; margin-top: 50px;">-->
                         <div class="row" style="display: flex; flex-direction: row; justify-content: center; margin-bottom: 20px; width: 100%; margin-top: 100px; ">
                             <div class="col-md-3" style="cursor: pointer;">
-                                <button type="button" class="btn btn-primary  w-100 botao-acionado" data-bs-toggle="collapse" href="#multiCollapseExample1" role="button" aria-expanded="true" aria-controls="multiCollapseExample1">Total Transações</button>
+                                <button type="button" class="btn btn-primary  w-100" data-bs-toggle="collapse" href="#multiCollapseExample1" role="button" aria-expanded="true" aria-controls="multiCollapseExample1">Total Transações</button>
                             </div>
                             <div class="col-md-3" style="cursor: pointer;">
                                 <button type="button" class="btn btn-primary w-100"  data-bs-toggle="collapse" data-bs-target="#multiCollapseExample2" aria-expanded="false" aria-controls="multiCollapseExample2">Taxas de Descontos</button>
@@ -32,7 +32,7 @@
                             </div>
                         </div>
                         <!--RELATÓRIO DE TRANSAÇÕES-->
-                        <div class="collapse multi-collapse collapse show" id="multiCollapseExample1" style="width: 100%;">
+                        <div class="collapse multi-collapse " id="multiCollapseExample1" style="width: 100%;">
                             <form action="{{ route('relatorio-criar') }}" method="post" class="form-center">
                                 @csrf
                                 <input type="hidden" name="tipo" value="recebimento">

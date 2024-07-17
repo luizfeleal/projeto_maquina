@@ -78,7 +78,7 @@ $currentRoute = Request::route()->getName();
                         </li>
                         <li class="mb-1">
                             <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0">
-                                <a href="{{route('relatorio-view')}}" class="text-decoration-none" style="{{ $currentRoute === 'relatorio-view' || $currentRoute ===  'relatorio-gerar' || $currentRoute === 'relatorio-exibir'  ?  'color:grey' : ' ' }}">
+                                <a href="{{route('relatorio-view')}}" class="text-decoration-none" style="{{ $currentRoute === 'relatorio-view' || $currentRoute ===  'relatorio-criar' || $currentRoute === 'relatorio-exibir'  ?  'color:grey' : ' ' }}">
                                     <i class="fa-solid fa-chart-pie icon-sidebar" style=" font-size: 22px;padding-right:5px;"></i>Relatórios
                                 </a>
                             </button>

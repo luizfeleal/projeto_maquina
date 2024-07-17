@@ -74,7 +74,12 @@
                         
                         @if(isset($local['maquina_nome']))
                         <td>{{$local['maquina_nome']}}</td>
-                        <td>{{$local['maquina_status']}}</td>
+                        @if($local['maquina_status'] == 0)
+                            <td><i class="fa-solid fa-circle text-danger" ></i></td>
+                        @else
+                            <td><i class="fa-solid fa-circle text-success"></i></td>
+                        @endif
+
                         @else
                         <td>{{$local['maquina_nome']}}</td>
                         <td>{{$local['maquina_status']}}</td>
