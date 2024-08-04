@@ -32,7 +32,14 @@
                     <tbody>
 
                     
-
+                    @foreach($clientes as $cliente)
+                        <tr>
+                            <td>{{$cliente['cliente_nome']}}</td>
+                            <td>{{$cliente['cliente_cpf_cnpj']}}</td>
+                            <td>{{$cliente['cliente_email']}}</td>
+                            <td>{{$cliente['cliente_celular']}}</td>
+                        </tr>
+                    @endforeach
 
 
                     </tbody>
@@ -115,7 +122,7 @@
 
             var tabelaGuias= $('#tabela-local').DataTable({
                 "language": {
-                    "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json"
+                    "url": "https://cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json"
                 },
                 "columns": [
                     null,

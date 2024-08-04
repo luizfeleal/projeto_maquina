@@ -9,12 +9,12 @@
             <div class="container section container-platform div-center-column"
                 style="margin-top: 15px; height: 100%;">
 
-                <form action="{{ route('usuario-registrar') }}" id="novo-local-form" class="w-100 needs-validation" novalidate>
+                <form action="{{ route('usuario-registrar') }}" id="novo-local-form"  class="w-100 needs-validation form-center"  method="post" enctype="multipart/form-data" novalidate>
                     @csrf
 
                     <div class="row" style="display: flex; flex-direction: row; justify-content: center;width: 100%; margin-bottom: 20px;">
                         <div class="col-md-4">
-                            <label for="cliente_nome" class="form-label"> Nome*:</label>
+                            <label for="cliente_nome" class="form-label"> Nome Completo*:</label>
                             <input type="text" class="form-control input-text" name="cliente_nome" id="cliente_nome" required>
                             <div class="invalid-feedback">
                                 <p class="invalid-p" id="cliente_nome_mensagem">Campo obrigatório</p>
@@ -22,13 +22,8 @@
 
                         </div>
                         <div class="col-md-4">
-                            <label for="select-tipo" class="form-label"> Tipo*:</label>
-                            <select class="select-tipo js-example-basic-multiple js-states form-control" id="select_tipo" placeholder="Selecione" name="select-tipo" multiple="multiple" required>
-
-                                @foreach($grupos as $grupo)
-                                    <option value="{{$grupo['id_grupo_acesso']}}">{{$grupo['grupo_acesso_nome']}}</option>
-                                @endforeach
-                            </select>
+                            <label for="cliente_data_nascimento" class="form-label"> Data Nascimento*:</label>
+                            <input type="text" class="form-control input-text mascara-dinamica" name="cliente_data_nascimento" id="cliente_data_nascimento" data-mask="00/00/0000" required>
                             <div class="invalid-feedback">
                                 <p class="invalid-p" id="select_tipo_mensagem">Campo obrigatório</p>
                             </div>
@@ -53,6 +48,25 @@
 
                         </div>
                     </div>
+                    <div class="row" style="display: flex; flex-direction: row; justify-content: center;width: 100%; margin-bottom: 20px;">
+                        <div class="col-md-4">
+                            <label for="cliente_senha" class="form-label"> Senha*:</label>
+                            <input type="password"  class="form-control" name="cliente_senha" id="cliente_senha" required>
+                            <div class="invalid-feedback">
+                                <p class="invalid-p" id="cliente_celular_mensagem">Campo obrigatório</p>
+                            </div>
+
+                        </div>
+                        <div class="col-md-4">
+                            <label for="cliente_confirmar_senha" class="form-label"> Confirmar Senha*:</label>
+                            <input type="password" class="form-control" name="cliente_confirmar_senha" id="cliente_confirmar_senha" required>
+                            <div class="invalid-feedback">
+                                <p class="invalid-p invalid-p-name">Campo obrigatório</p>
+                            </div>
+
+                        </div>
+                    </div>
+                    
                     <div class="row" style="display: flex; flex-direction: row; justify-content: center;width: 100%; margin-bottom: 20px;">
                         <div class="col-md-8">
                             <label for="cliente_cpf_cnpj" class="form-label"> CPF/CNPJ*:</label>
@@ -110,8 +124,8 @@
 
                         </div>
                         <div class="col-md-2">
-                            <label for="cliente_estado" class="form-label">Estado*:</label>
-                            <input type="text" class="form-control" name="cliente_estado" id="cliente_estado" required>
+                            <label for="cliente_uf" class="form-label">UF*:</label>
+                            <input type="text" class="form-control" name="cliente_uf" id="cliente_uf" required>
                             <div class="invalid-feedback">
                                 <p class="invalid-p invalid-p-name">Campo obrigatório</p>
                             </div>
@@ -126,7 +140,36 @@
 
                         </div>
                     </div>
-                    
+                    <div class="row" style="display: flex; flex-direction: row; justify-content: center;width: 100%; margin-bottom: 20px;">
+                        <div class="col-md-4">
+                            <label for="cliente_id" class="form-label">Client ID*:</label>
+                            <input type="text" class="form-control" name="cliente_id" id="cliente_id" required>
+                            <div class="invalid-feedback">
+                                <p class="invalid-p invalid-p-name">Campo obrigatório</p>
+                            </div>
+
+                        </div>
+                        <div class="col-md-4">
+                            <label for="cliente_secret" class="form-label">Client Secret*:</label>
+                            <input type="text" class="form-control" name="cliente_secret" id="cliente_secret" required>
+                            <div class="invalid-feedback">
+                                <p class="invalid-p invalid-p-name">Campo obrigatório</p>
+                            </div>
+
+                        </div>
+                        
+                    </div>
+                    <div class="row" style="display: flex; flex-direction: row; justify-content: center;width: 100%; margin-bottom: 20px;">
+                        <div class="col-md-8">
+                            <label for="cliente_certificado" class="form-label">Certificado*:</label>
+                            <input type="file" class="form-control" name="cliente_certificado" id="cliente_certificado" required>
+                            <div class="invalid-feedback">
+                                <p class="invalid-p invalid-p-name">Campo obrigatório</p>
+                            </div>
+
+                        </div>
+                        
+                    </div>
 
                     <div style="display:flex; justify-content: center; align-items: center; margin-top: 50px;">
                         <button class="btn btn-primary"  type="submit">Criar usuário</button>
@@ -145,7 +188,7 @@
                                                 <p>{{ session('success') }}</p>
                                             </div>
                                             <div class="modal-footer">
-                                                <button type="button" class="btn btn-primary" onclick="fechaModal('modalSuccess')" data-dismiss="modal" aria-label="Close">Imprimir QR</button>
+                                                <button type="button" class="btn btn-primary" onclick="fechaModal('modalSuccess')" data-dismiss="modal" aria-label="Close">Ok</button>
                                             </div>
 
                                         </div>
@@ -185,6 +228,8 @@
             theme: "classic"
         });
 
+        validaData();
+        validaSenhas();
         $("#cliente_nome").on('blur', () => {
             validarCampoNome('cliente_nome', 'cliente_nome_mensagem');
         });
@@ -195,6 +240,7 @@
 
         $('#cliente_celular').mask('(00) 00000-0000');
         $('#cliente_cep').mask('00000-000');
+        $('#cliente_data_nascimento').mask('00/00/0000');
 
         $('#cliente_cep').on('blur', async () => {
             var valorCep = $('#cliente_cep').val()
@@ -203,7 +249,7 @@
         });
 
         $("#cliente_email").on('blur', () => {
-            validarCelular('cliente_celular', 'cliente_celular_mensagem');
+            validarCelular('cliente_email', 'cliente_email_mensagem');
         });
 
         $("#select_tipo").on('select2:close', () => {

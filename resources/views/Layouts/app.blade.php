@@ -5,17 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title')</title>
 
-   <!--<link rel="icon" href="{{ asset('site/img/favicon_hc.png') }}" sizes="32x32">-->
+   <link rel="icon" href="{{ asset('site/img/favico.ico') }}" sizes="32x32">
 
-    <link rel="stylesheet" href="{{ asset('site/style.css')}}">
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
-    <!-- Or for RTL support -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.rtl.min.css" />
+   <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" />
+   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" />
+   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
+   <!-- Or for RTL support -->
+   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.rtl.min.css" />
+   <link rel="stylesheet" href="{{ asset('site/style.css')}}">
 
 
 
@@ -29,8 +29,8 @@ $currentRoute = Request::route()->getName();
 
     <nav class="navbar navbar-expand-lg bg-body-tertiary fixed-top">
       <div class="container-fluid">
-        <!--<a class="navbar-brand" href="#" style="cursor: default;"><img src="{{ asset('site/img/logo_hc.png') }}" width="250" height="63" alt="Hospital Angelina Caron"></a>-->
-        <h1>LOGO</h1>
+        <a class="navbar-brand" href="#" style="cursor: default;"><img src="{{ asset('site/img/swift_pay_soluções_logo.svg') }}" width="250" height="63" alt="Swift Pay Soluções"></a>
+        <!--<h1>LOGO</h1>-->
         <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasScrolling" aria-controls="offcanvasScrolling">
           <span class="navbar-toggler-icon"></span>
         </button>
@@ -58,7 +58,7 @@ $currentRoute = Request::route()->getName();
                             </button>
                             <div class="collapse {{$currentRoute === 'maquinas-criar'  ? 'show' : '' }}" id="maquinas-collapse">
                             <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                                <li><a href="{{route('maquinas-criar')}}" class="d-inline-flex text-decoration-none rounded" style="{{ $currentRoute === 'maquinas-criar' ? 'color:grey' : ' ' }}">Criar nova máquina</a></li>
+                                <li><a href="{{route('maquinas-criar')}}" class="d-inline-flex text-decoration-none rounded" style="{{ $currentRoute === 'maquinas-criar' ? 'color:grey !important;' : ' ' }}">Criar nova máquina</a></li>
                             </ul>
                             </div>
                         </li>
@@ -70,15 +70,15 @@ $currentRoute = Request::route()->getName();
                             </button>
                             <div class="collapse {{ $currentRoute === 'local-criar' || $currentRoute === 'local-incluir-usuario' || $currentRoute === 'local'  ? 'show' : '' }}" id="local-collapse">
                             <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                                <li><a href="{{route('local')}}" class=" d-inline-flex text-decoration-none rounded" style="{{  $currentRoute === 'local' ? 'color:grey': ' ' }}">Exibir locais</a></li>
-                                <li><a href="{{route('local-incluir-usuario')}}" class=" d-inline-flex text-decoration-none rounded" style="{{  $currentRoute === 'local-incluir-usuario' ? 'color:grey': ' ' }}">Incluir usuários</a></li>
-                                <li><a href="{{route('local-criar')}}" class=" d-inline-flex text-decoration-none rounded" style="{{  $currentRoute === 'local-criar' ? 'color:grey': ' ' }}">Criar local</a></li>
+                                <li><a href="{{route('local')}}" class=" d-inline-flex text-decoration-none rounded" style="{{  $currentRoute === 'local' ? 'color:grey !important;': ' ' }}">Exibir locais</a></li>
+                                <li><a href="{{route('local-incluir-usuario')}}" class=" d-inline-flex text-decoration-none rounded" style="{{  $currentRoute === 'local-incluir-usuario' ? 'color:grey !important;': ' ' }}">Incluir usuários</a></li>
+                                <li><a href="{{route('local-criar')}}" class=" d-inline-flex text-decoration-none rounded" style="{{  $currentRoute === 'local-criar' ? 'color:grey !important;': ' ' }}">Criar local</a></li>
                             </ul>
                             </div>
                         </li>
                         <li class="mb-1">
                             <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0">
-                                <a href="{{route('relatorio-view')}}" class="text-decoration-none" style="{{ $currentRoute === 'relatorio-view' || $currentRoute ===  'relatorio-criar' || $currentRoute === 'relatorio-exibir'  ?  'color:grey' : ' ' }}">
+                                <a href="{{route('relatorio-view')}}" class="text-decoration-none" style="{{ $currentRoute === 'relatorio-view' || $currentRoute ===  'relatorio-criar' || $currentRoute === 'relatorio-exibir'  ?  'color:grey !important;' : ' ' }}">
                                     <i class="fa-solid fa-chart-pie icon-sidebar" style=" font-size: 22px;padding-right:5px;"></i>Relatórios
                                 </a>
                             </button>
@@ -90,10 +90,10 @@ $currentRoute = Request::route()->getName();
                                     <i class="fa-solid fa-gear icon-sidebar" style=" font-size: 25px;padding-right:5px;"></i>Minhas máquinas
                                 </a>
                             </button>
-                            <div class="collapse {{ $currentRoute === 'termo-adesao-detalhar' || $currentRoute === 'termo-adesao-criar' || $currentRoute === 'termo-adesao-editar' || $currentRoute === 'extrato-termo-editar' || $currentRoute === 'termo-adesao-exibir' || $currentRoute === 'extrato-termo-criar' || $currentRoute === 'extrato-termo-exibir' || $currentRoute === 'extrato-termo-gerar' ? 'show' : '' }}" id="termo-collapse">
+                            <div class="collapse {{ $currentRoute === 'maquinas-transacoes' || $currentRoute === 'maquinas-acumulado'  ? 'show' : '' }}" id="termo-collapse">
                             <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                                <li><a href="{{route('maquinas-transacoes')}}" class=" d-inline-flex text-decoration-none rounded" >Transações</a></li>
-                                <li><a href="{{route('maquinas-acumulado')}}" class=" d-inline-flex text-decoration-none rounded">Acumulado</a></li>
+                                <li><a href="{{route('maquinas-transacoes')}}" class=" d-inline-flex text-decoration-none rounded" style="{{ $currentRoute === 'maquinas-transacoes' ?  'color:grey !important;' : ' ' }}" >Transações</a></li>
+                                <li><a href="{{route('maquinas-acumulado')}}" class=" d-inline-flex text-decoration-none rounded" style="{{ $currentRoute === 'maquinas-acumulado' ?  'color:grey !important;' : ' ' }}">Acumulado</a></li>
                             </ul>
                             </div>
                         </li>
@@ -105,15 +105,15 @@ $currentRoute = Request::route()->getName();
                             </button>
                             <div class="collapse {{ $currentRoute === 'qr-criar' || $currentRoute === 'qr'  ? 'show' : '' }}" id="qr-collapse">
                                 <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                                    <li><a href="{{route('qr-criar')}}" class=" d-inline-flex text-decoration-none rounded" >Novo Qr</a></li>
-                                    <li><a href="{{route('qr')}}" class=" d-inline-flex text-decoration-none rounded">Qr</a></li>
+                                    <li><a href="{{route('qr-criar')}}" class=" d-inline-flex text-decoration-none rounded" style="{{ $currentRoute === 'qr-criar' ?  'color:grey !important;' : ' ' }}">Novo Qr</a></li>
+                                    <li><a href="{{route('qr')}}" class=" d-inline-flex text-decoration-none rounded" style="{{ $currentRoute === 'qr' ?  'color:grey !important;' : ' ' }}">Qr</a></li>
                                 </ul>
                             </div>
                         </li>
 
                         <li class="mb-1">
-                            <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed" data-bs-toggle="collapse" data-bs-target="#guias-collapse" aria-expanded="false">
-                                <a href="{{route('usuarios')}}"  class="text-decoration-none">
+                            <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0" >
+                                <a href="{{route('usuarios')}}"  class="text-decoration-none" style="{{ $currentRoute === 'usuarios' || $currentRoute === 'usuario-criar' ?  'color:grey !important;' : ' ' }}">
                                 <i class="fa-solid fa-user-plus icon-sidebar"  style=" font-size: 25px;padding-right:5px;"></i>Usuários
                                 </a>
                             </button>

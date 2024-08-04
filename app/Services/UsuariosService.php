@@ -20,9 +20,19 @@ class UsuariosService
             'Authorization' => 'Bearer ' . $token
         ])->post($url, $dados);
 
-        $usuarios = $response->json();
-
-        return $usuarios;
+        // Verifica se a requisição foi bem-sucedida
+        if ($response->successful()) {
+            return [
+                'success' => true,
+                'data' => $response->json()
+            ];
+        }else {
+            return [
+                'success' => false,
+                'status' => $response->status(),
+                'error' => $response->json()
+            ];
+        }
     }
 
     public static function coletar(string $id = Null)

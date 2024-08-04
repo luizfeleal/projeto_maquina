@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title')</title>
 
-    <!--<.=link rel="icon" href="{{ asset('site/img/cropped-imagem-para-perfil_digital-32x32.png') }}" sizes="32x32">-->
+    <link rel="icon" href="{{ asset('site/img/favico.ico') }}" sizes="32x32">
 
     <link rel="stylesheet" href="{{ asset('site/style.css')}}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
@@ -20,8 +20,7 @@ $currentRoute = Request::route()->getName();
 
     <nav class="navbar navbar-expand-lg bg-body-tertiary fixed-top">
       <div class="container-fluid">
-        <a class="navbar-brand" href="#"><h1>LOGO</h1></a>
-        <!--<a class="navbar-brand" href="#"><img src="{{ asset('site/img/logo_hc.png') }}" width="250" height="63" alt="Hospital Angelina Caron"></a>-->
+        <a class="navbar-brand" href="#" style="cursor: default;"><img src="{{ asset('site/img/swift_pay_soluções_logo.svg') }}" width="250" height="63" alt="Swift Pay Soluções"></a>
         <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasScrolling" aria-controls="offcanvasScrolling">
           <span class="navbar-toggler-icon"></span>
         </button>

@@ -22,6 +22,101 @@ const setMensagemIncluirUsuario = (body, local, clientes) => {
     $(body).append(`<p>Realmente deseja incluir o(s) usuário(s) ${clientesValue} no local ${localValue}? Ao incluir, o usuário verá todas as informações deste local.</p>`);
 }
 
+
+const validaData = () => {
+    $('.mascara-dinamica').each(function() {
+        $(this).on("blur", () => {
+            const $campo = $(this);
+            const dataNascimento = $campo.val();
+
+            // Limpa as mensagens anteriores
+            $campo.removeClass("is-invalid");
+            $campo.next('.invalid-feedback').remove();
+
+            // Verifica se o campo está vazio
+            if (!dataNascimento) {
+                $campo.removeClass("is-valid");
+                $campo.addClass("is-invalid");
+                $campo.after('<div class="invalid-feedback">Campo obrigatório</div>');
+                return;
+            }
+
+            var regexData = /^(\d{2})\/(\d{2})\/(\d{4})$/;
+
+            // Verifica se o formato da data é válido
+            var partesData = regexData.exec(dataNascimento);
+            if (!partesData) {
+                $campo.removeClass("is-valid");
+                $campo.addClass("is-invalid");
+                
+                $campo.after('<div class="invalid-feedback">Insira uma data válida</div>');
+                return;
+            }
+
+            var dia = parseInt(partesData[1], 10);
+            var mes = parseInt(partesData[2], 10);
+            var ano = parseInt(partesData[3], 10);
+
+            // Validação específica para dia, mês e ano
+            if (dia < 1 || dia > 31 || mes < 1 || mes > 12 || isNaN(ano) || ano < 1900 || ano > new Date().getFullYear()) {
+                $campo.addClass("is-invalid");
+                $campo.after('<div class="invalid-feedback">Insira uma data válida</div>');
+                return;
+            }
+
+            // Validação para 18 anos
+            var dataAtual = new Date();
+            var dataNascimentoObj = new Date(ano, mes - 1, dia); // Meses são 0-indexados em JS
+
+            var idade = dataAtual.getFullYear() - dataNascimentoObj.getFullYear();
+            var mesDiferenca = dataAtual.getMonth() - dataNascimentoObj.getMonth();
+
+            if (mesDiferenca < 0 || (mesDiferenca === 0 && dataAtual.getDate() < dataNascimentoObj.getDate())) {
+                idade--;
+            }
+
+            if (idade < 18) {
+                $campo.addClass("is-invalid");
+                $campo.after('<div class="invalid-feedback">O usuário deve ser maior de 18 anos</div>');
+                return;
+            }
+
+            // Remove a mensagem de erro se tudo estiver correto
+            $campo.removeClass("is-invalid");
+        });
+    });
+}
+
+const validaSenhas = () => {
+    const senhaCampo = $('#cliente_senha');
+    const confirmarSenhaCampo = $('#cliente_confirmar_senha');
+
+    senhaCampo.on("blur", () => {
+        // Limpa as mensagens anteriores
+        senhaCampo.removeClass("is-invalid");
+        senhaCampo.next('.invalid-feedback').remove();
+
+        // Verifica se a senha tem pelo menos 6 caracteres
+        if (senhaCampo.val().length < 6) {
+            senhaCampo.removeClass("is-valid");
+            senhaCampo.addClass("is-invalid");
+            senhaCampo.after('<div class="invalid-feedback">A senha deve ter no mínimo 6 caracteres</div>');
+        }
+    });
+
+    confirmarSenhaCampo.on("blur", () => {
+        // Limpa as mensagens anteriores
+        confirmarSenhaCampo.removeClass("is-invalid");
+        confirmarSenhaCampo.next('.invalid-feedback').remove();
+
+        // Verifica se as senhas correspondem
+        if (confirmarSenhaCampo.val() !== senhaCampo.val()) {
+            confirmarSenhaCampo.addClass("is-invalid");
+            confirmarSenhaCampo.after('<div class="invalid-feedback">As senhas não coincidem</div>');
+        }
+    });
+};
+
 const sendFormCriarLocal = () =>{
     showLoader();
     var invalidElements = $('.is-invalid');

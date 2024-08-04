@@ -36,7 +36,7 @@ Route::prefix('local')->middleware('permission')->group(function(){
 Route::prefix('usuarios')->middleware('permission')->group(function(){
     Route::get('/', 'App\Http\Controllers\ClientesController@coletarCliente')->name('usuarios');
     Route::get('/criar', 'App\Http\Controllers\ClientesController@criarCliente')->name('usuario-criar');
-    Route::get('/registrar', 'App\Http\Controllers\ClientesController@registrarCliente')->name('usuario-registrar');
+    Route::post('/registrar', 'App\Http\Controllers\ClientesController@registrarCliente')->name('usuario-registrar');
 });
 Route::prefix('qr')->middleware('permission')->group(function(){
     Route::get('/', 'App\Http\Controllers\QrCodeController@coletarQr')->name('qr');

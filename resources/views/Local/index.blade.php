@@ -161,15 +161,15 @@
 
         $(document).ready(function(){
             $('#input_filtro_cliente').select2({
-            theme: "classic",
+            theme: "bootstrap-5",
             width: "100%"
             });
             $('#input_filtro_local').select2({
-                theme: "classic",
+                theme: "bootstrap-5",
             width: "100%"
             });
             $('#input_filtro_maquina').select2({
-                theme: "classic",
+                theme: "bootstrap-5",
             width: "100%"
             });
 

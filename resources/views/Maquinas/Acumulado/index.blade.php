@@ -27,18 +27,21 @@
                     <tbody>
 
                     
-                    <td></td>
-                    
-                    <td></td>
-                    
-                    <td></td>
-                    <td></td>
-                        
-                    <td></td>
-                    <td></td>
-                    <td></td>
+                    @foreach($maquinas as $maquina)
+                        <tr>
 
+                            <td>{{$maquina['local_nome']}}</td>
+                            
+                            <td>{{$maquina['maquina_nome']}}</td>
+                            
+                            <td>R$ {{number_format($maquina['total_maquina'], 2, ',', '.')}}</td>
+                            <td>R$ {{number_format($maquina['total_pix'], 2, ',', '.')}}</td>
+                                
+                            <td>R$ {{number_format($maquina['total_cartao'], 2, ',', '.')}}</td>
+                            <td>R$ {{number_format($maquina['total_dinheiro'], 2, ',', '.')}}</td>
+                        </tr>
 
+                    @endforeach
 
                     </tbody>
                     <tfoot>
@@ -122,10 +125,9 @@
 
             var tabelaGuias= $('#tabela-local').DataTable({
                 "language": {
-                    "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json"
+                    "url": "https://cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json"
                 },
                 "columns": [
-                    null,
                     null,
                     null,
                     null,

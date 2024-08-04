@@ -24,7 +24,20 @@
                     </thead>
                     <tbody>
 
+                        @foreach($resultado as $extrato)
+                            <tr>
+                                <td>{{$extrato['local']['local_nome']}}</td>
+                                <td>{{$extrato['maquina']['maquina_nome']}}</td>
+                                @if($extrato['extrato_operacao'] == "C")
+                                    <td>+ R$ {{number_format($extrato['extrato_operacao_valor'], 2, ',', '.')}}</td>
+                                @else
+                                    <td>- R$ {{number_format($extrato['extrato_operacao_valor'], 2, ',', '.')}}</td>
+                                @endif
 
+                                <td>{{$extrato['extrato_operacao_tipo']}}</td>
+                                <td>{{date('d/m/Y H:i:s', strtotime($extrato['data_criacao']));}}</td>
+                            </tr>
+                        @endforeach
 
                     </tbody>
                     <tfoot>
@@ -91,16 +104,18 @@
     <script>
 
         $(document).ready(function(){
-           
-            var tabelaGuias= $('#tabela_maquinas_transacao').DataTable({
-                
+
+            $('#tabela_maquinas_transacao').DataTable({
+                "language": {
+                    "url": "https://cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json"
+                },
                 "columns": [
-                    { "data": null }, // Local
-                    { "data": null }, // Máquina
-                    { "data": null }, // Última transação
-                    { "data": null }, // Fonte
-                    { "data": null }  // Data e Hora
-                ]
+                    null,
+                    null,
+                    null,
+                    null,
+                    { "type": "datetime-ddmmyyyy" }
+                ],
             });
 
             /*$('#input_filtro_cliente').select2({

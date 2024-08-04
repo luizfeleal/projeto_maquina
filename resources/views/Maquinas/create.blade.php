@@ -42,6 +42,7 @@
                             <label for="select-local1" class="form-label">Local*:</label>
                             <select class="select-local js-example-basic-multiple js-states form-control" id="select-local" placeholder="Selecione" name="select-local"  required>
 
+                                <option value="">Selecione...</option>
                             @foreach($locais as $local)
                                 <option value="{{$local['id_local']}}">{{$local['local_nome']}}</option>
                             @endforeach
@@ -55,6 +56,7 @@
                         <div class="col-md-6">
                             <label for="select-cliente1" class="form-label">Cliente*:</label>
                             <select class="select-cliente js-example-basic-multiple js-states form-control" id="select-cliente" placeholder="Selecione" name="select-cliente"  required>
+                            <option value="">Selecione...</option>
                             @foreach($clientes as $cliente)
                                 <option value="{{$cliente['id_cliente']}}">{{$cliente['cliente_nome']}}</option>
                             @endforeach

@@ -7,8 +7,9 @@ use App\Services\LocaisService;
 use App\Services\MaquinasService;
 use App\Services\ExtratoMaquinaService;
 use App\Services\ClientesService;
-use App\Services\GruposAcessoService;
 use App\Services\UsuariosService;
+use App\Services\CredApiPixService;
+use App\Services\GruposAcessoService;
 use App\Services\AuthService;
 
 class ClientesController extends Controller
@@ -31,7 +32,44 @@ class ClientesController extends Controller
         return view('Usuarios.create', compact('grupos', 'clientes'));
     }
     public function registrarCliente(Request $request){
-        $dadosCliente = [];
+        
+    
+        $dadosCliente = $request->except(['cliente_senha', 'cliente_confirmar_senha', 'cliente_id', 'cliente_secret', 'cliente_certificado']);
+
+        $cliente = ClientesService::criar($dadosCliente);
+        
+        if($cliente['success']){
+
+            //Cadastrar credenciais
+            $id_cliente = $cliente['data']['response']['id_cliente'];
+    
+            $dadosCredApiPix = [
+                "id_cliente" => $id_cliente,
+                "client_secret" => $request['cliente_secret'],
+                "client_id" => $request['cliente_id'],
+                "caminho_certificado" => $request->file('cliente_certificado')
+            ];
+
+            
+            $credApi = CredApiPixService::criar($dadosCredApiPix);
+    
+            
+            //Criar acesso a plataforma
+            $dadoUsuarioAcesso = [
+                "id_cliente" => $id_cliente,
+                "id_grupo_acesso" => 2,
+                "usuario_nome" => $request['cliente_nome'],
+                "usuario_email" => $request['cliente_email'],
+                "usuario_login" => $request['cliente_email'],
+                "usuario_senha" => $request['cliente_senha'],
+                "ativo" => 1
+            ];
+
+            $usuarioAcesso = UsuariosService::criar($dadoUsuarioAcesso);
+            return back()->with('success', 'Cliente cadastrado com sucesso!');
+        }
+
+        return $cliente;
     }
 
     /*public function coletarTodasAsMaquinasPorCliente(){
@@ -51,6 +89,7 @@ class ClientesController extends Controller
 
     public function coletarCliente(Request $request){
         $clientes = ClientesService::coletar();
+        
         return view('Usuarios.index', compact('clientes'));
     }
 

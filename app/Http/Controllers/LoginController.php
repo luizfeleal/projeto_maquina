@@ -30,7 +30,7 @@ class LoginController extends Controller
          }else{
             $grupo_acesso = GruposAcessoService::coletar($usuario[0]['id_grupo_acesso']);
 
-             session(['id_usuario'=> $usuario[0]['id_usuario'], 'id_grupo_acesso'=>$usuario[0]['id_grupo_acesso'], 'usuario_nome'=>$usuario[0]['usuario_nome'], 'grupo_nome'=>$grupo_acesso['grupo_acesso_nome']]);
+             session(['id_usuario'=> $usuario[0]['id_usuario'], 'id_grupo_acesso'=>$usuario[0]['id_grupo_acesso'], 'usuario_nome'=>$usuario[0]['usuario_nome'], 'grupo_nome'=>$grupo_acesso['grupo_acesso_nome'], 'id_cliente'=>$usuario[0]['id_cliente']]);
              if($grupo_acesso['grupo_acesso_nome'] == 'admin'){
                 return redirect()->route('local');
              }

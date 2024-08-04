@@ -53,11 +53,11 @@ class ExtratoMaquinaService
         if ($response->successful()) {
             // Obtenha os clientes da resposta JSON
             $extrato_maquinas = $response->json();
-
+            
             // Filtrar os clientes com base nos filtros fornecidos
             foreach ($filtros as $chave => $valor) {
                 // Verifique se a chave existe e se o valor não está vazio
-                if (isset($extrato_maquinas[$chave]) && $valor !== null) {
+                if (isset($chave) && $valor !== null) {
                     // Filtrar os clientes com base no valor do filtro
                     $extrato_maquinas = array_filter($extrato_maquinas, function ($extrato_maquina) use ($chave, $valor) {
                         return $extrato_maquina[$chave] === $valor;
