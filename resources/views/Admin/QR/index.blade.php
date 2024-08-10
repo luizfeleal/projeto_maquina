@@ -62,7 +62,16 @@
 
                     <div id="imagem_qr" class="div-imagem-qr-index">
                         <div class="container">
-                            <h5>QR Gerado</h5>
+                            
+                            <div class="row w-100 d-flex">
+                                <div class="col-md-10" style="justify-content: center; align-items: center; text-align: center; padding-left: 80px;">
+                                    <h5>QR Gerado</h5>
+                                </div>
+
+                                <div class="col-md-1">
+                                    <a href="#" style="color: red !important;" data-bs-toggle="modal" data-bs-target="#ModalCenterExcluir" onclick="setIdQrExcluir({{session('dadosQr')['id_qr']}}, '#id_qr_input_excluir')"><i class="fa-solid fa-trash"></i></a>
+                                </div>
+                            </div>
                             <div style="width: 60%;">
                                 <p><i class="fa-solid fa-location-dot"></i> {{session('local')['local_nome']}}</p>
                                 <p><i class="fa-solid fa-desktop"></i> {{session('maquina')['maquina_nome']}}</p>
@@ -75,6 +84,28 @@
                     </div>
                 
                 @endif
+
+                <div class="modal fade" id="ModalCenterExcluir" tabindex="-1" aria-labelledby="ModalCenterExcluir" aria-modal="true" role="dialog">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+
+                                <div class="modal-header">
+                                    <h1 class="modal-title fs-5" id="ModalCenterTitleExcluir">Excluir QR Code</h1>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <p>Deseja excluir esse QR Code?</p>
+                                </div>
+                                <div class="modal-footer">
+                                    <form action="{{route('qr-excluir')}}" method="post" id="excluir-qr" class="w-100 " >
+                                    @csrf
+                                        <input type="hidden" name="id_qr" id="id_qr_input_excluir" value="" >
+                                        <button type="submit" class="btn btn-primary" data-bs-dismiss="modal" aria-label="Close" >Sim</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
                             @if(session('success'))
 

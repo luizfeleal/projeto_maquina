@@ -39,14 +39,14 @@
                             @foreach($maquinasOnline as $online)
                                 <tr>
                                     <td>{{$online['maquina_nome']}}</td>
-                                    <td>{{$locais[$onLine['id_local']]['local_nome']}}</td>
+                                    <td>{{$locais[$online['id_local']]['local_nome']}}</td>
                                     @if($online['maquina_status'] == 0) 
                                         <td><i class="fa-solid fa-circle text-danger" ></i></td>
                                     @else
                                         <td><i class="fa-solid fa-circle text-success" ></i></td>
                                     @endif
                                     
-                                    <td>{{$onLine['maquina_ultimo_contato']}}</td>
+                                    <td>{{date('d/m/Y H:i:s', strtotime($online['maquina_ultimo_contato']))}}</td>
                                 </tr>
                             @endforeach
                             @foreach($maquinasOffline as $offline)
@@ -58,7 +58,7 @@
                                     @else
                                         <td><i class="fa-solid fa-circle text-success" ></i></td>
                                     @endif
-                                    <td>{{$offline['maquina_ultimo_contato']}}</td>
+                                    <td>{{date('d/m/Y H:i:s', strtotime($offline['maquina_ultimo_contato']))}}</td>
                                 </tr>
                             @endforeach
                             </tbody>
@@ -139,7 +139,7 @@
 
             $('#maquinas_online_offline').DataTable({
                 "language": {
-                    "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json"
+                    "url": "https://cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json"
                 },
                 "columns": [
                     null,

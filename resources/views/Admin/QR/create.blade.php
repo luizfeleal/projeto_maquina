@@ -9,7 +9,7 @@
             <div class="container section container-platform div-center-column"
                 style="margin-top: 15px; height: 100%;">
 
-                <form action="{{ route('qr-registrar') }}" id="novo-qr-form" class="w-100">
+                <form action="{{ route('qr-registrar') }}" method="post" id="novo-qr-form" class="w-100">
                     @csrf
 
                     <div class="row" style="display: flex; flex-direction: row; justify-content: center;width: 100%; margin-bottom: 20px;">

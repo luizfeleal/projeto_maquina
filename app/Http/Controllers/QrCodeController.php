@@ -33,7 +33,7 @@ class QrCodeController extends Controller
             $locais = LocaisService::coletar();
             $maquinas = MaquinasService::coletar();
             $clientes = ClientesService::coletar();
-            return view('QR.index', compact('locais', 'maquinas', 'clientes'));
+            return view('Admin.QR.index', compact('locais', 'maquinas', 'clientes'));
         }
 
         
@@ -45,8 +45,28 @@ class QrCodeController extends Controller
         $clientes = ClientesService::coletar();
         $maquinas = MaquinasService::coletar();
 
+        $qrCode = QrCodeService::coletar();
 
-        return view('QR.create', compact('locais', 'clientes', 'maquinas'));
+        // Passo 1: Extrair todos os IDs de máquinas presentes nos QR codes
+        $qrCodeIdsMaquinas = array_column($qrCode, 'id_maquina');
+        $qrCodeIdsLocais = array_column($qrCode, 'id_local');
+
+        // Passo 2: Filtrar as máquinas que não têm o 'id_maquina' presente no array de QR codes
+        $maquinas = array_filter($maquinas, function($maquina) use ($qrCodeIdsMaquinas) {
+            return !in_array($maquina['id_maquina'], $qrCodeIdsMaquinas);
+        });
+
+        // Passo 2: Filtrar as máquinas que não têm o 'id_maquina' presente no array de QR codes
+        $locais = array_filter($locais, function($local) use ($qrCodeIdsLocais) {
+            return !in_array($local['id_local'], $qrCodeIdsLocais);
+        });
+
+
+        $qrCodeFiltrado = array_filter($qrCode, function($qrCode){
+
+        });
+
+        return view('Admin.QR.create', compact('locais', 'clientes', 'maquinas'));
     }
 
     public function registrarQr(Request $request){
@@ -61,6 +81,12 @@ class QrCodeController extends Controller
             if(!empty($qrExistente)){
                 return back()->with('error', 'Não foi possível gerar um QR para os dados passados, pois já existe um QR Code para o local e máquina especificados.');
             }
+
+            $cliente_local = ClienteLocalService::coletarComFiltro(['id_local' => $request['select_local']], 'where')[0];
+            $id_usuario_logado = session()->get('id_usuario');
+            $request['id_usuario'] = $id_usuario_logado;
+            $request['id_cliente'] = $cliente_local['id_cliente'];
+
             $qr = QrCodeService::criar($request);
 
             if($qr['message'] == "Qr Code cadastrado com sucesso!"){
@@ -111,5 +137,16 @@ class QrCodeController extends Controller
 
         // Define o cabeçalho para download do arquivo
         return response()->download($output_file, 'qr_code.png')->deleteFileAfterSend(true);
+    }
+
+    public function excluirQr(Request $request){
+        try{
+
+             $id_qr= $request['id_qr'];
+             $result = QrCodeService::deletar($id_qr);
+             return back()->with('success', $result['message']);
+         }catch(\Throwable $e){
+             return back()->with('error', 'Houve um erro ao tentar remover o QR Code');
+         }
     }
 }

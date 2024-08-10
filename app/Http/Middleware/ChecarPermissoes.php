@@ -27,7 +27,11 @@ class ChecarPermissoes
         if(empty(session()->has('id_usuario'))){
             return redirect()->route('login-view');
         }else{
-            $acesso = AcessosTelaService::coletarComFiltro(['id_grupo_acesso'=>session()->get('id_grupo_acesso'), 'tela_viewname'=> $request->route()->getName(), 'ativo'=> 1], 'where');
+            $acessos = AcessosTelaService::coletar();
+
+            $acesso = array_filter($acessos, function($item) use($request){
+                return $item['id_grupo_acesso'] == session()->get('id_grupo_acesso') && $item['acesso_tela_viewname'] == $request->route()->getName() && $item['ativo'] == 1;
+            });
 
             if(empty($acesso)){
                 return back()->with('error', 'O usuário não possui permissão de acesso.');

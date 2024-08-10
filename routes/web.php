@@ -25,24 +25,34 @@ Route::prefix('maquinas')->middleware('permission')->group(function(){
     Route::get('/gerarIdPlaca', 'App\Http\Controllers\MaquinasController@gerarIdPlaca')->name('maquinas-gerar-id-placa');
     Route::get('/transacoes', 'App\Http\Controllers\MaquinasController@transacaoMaquinas')->name('maquinas-transacoes');
     Route::get('/acumulado', 'App\Http\Controllers\MaquinasController@acumuladoMaquinas')->name('maquinas-acumulado');
+    Route::post('/excluir', 'App\Http\Controllers\MaquinasController@excluirMaquinas')->name('maquinas-excluir');
 });
 
+Route::prefix('clientes-maquinas')->middleware('permission')->group(function(){
+    Route::get('/', 'App\Http\Controllers\Clientes\MaquinasController@coletarTodasAsMaquinas')->name('clientes-maquinas');
+    Route::get('/transacoes', 'App\Http\Controllers\Clientes\MaquinasController@transacaoMaquinas')->name('clientes-maquinas-transacoes');
+    Route::get('/acumulado', 'App\Http\Controllers\Clientes\MaquinasController@acumuladoMaquinas')->name('clientes-maquinas-acumulado');
+});
 Route::prefix('local')->middleware('permission')->group(function(){
     Route::get('/', 'App\Http\Controllers\LocaisController@coletarLocais')->name('local');
     Route::get('/incluirUsuario', 'App\Http\Controllers\LocaisController@incluirUsuarioLocal')->name('local-incluir-usuario');
     Route::get('/criar', 'App\Http\Controllers\LocaisController@criarLocais')->name('local-criar');
     Route::get('/registrar', 'App\Http\Controllers\LocaisController@registrarLocais')->name('local-registrar');
+    Route::post('/excluir', 'App\Http\Controllers\LocaisController@excluirLocais')->name('local-excluir');
 });
 Route::prefix('usuarios')->middleware('permission')->group(function(){
     Route::get('/', 'App\Http\Controllers\ClientesController@coletarCliente')->name('usuarios');
     Route::get('/criar', 'App\Http\Controllers\ClientesController@criarCliente')->name('usuario-criar');
+    Route::get('/detalhar/{id}', 'App\Http\Controllers\ClientesController@coletarClientePorId')->name('usuario-detalhar');
     Route::post('/registrar', 'App\Http\Controllers\ClientesController@registrarCliente')->name('usuario-registrar');
+    Route::post('/excluir', 'App\Http\Controllers\ClientesController@excluirCliente')->name('usuario-excluir');
 });
 Route::prefix('qr')->middleware('permission')->group(function(){
     Route::get('/', 'App\Http\Controllers\QrCodeController@coletarQr')->name('qr');
     Route::get('/criar', 'App\Http\Controllers\QrCodeController@criarQr')->name('qr-criar');
-    Route::get('/registrar', 'App\Http\Controllers\QrCodeController@registrarQr')->name('qr-registrar');
+    Route::post('/registrar', 'App\Http\Controllers\QrCodeController@registrarQr')->name('qr-registrar');
     Route::get('/download', 'App\Http\Controllers\QrCodeController@downloadQr')->name('qr-download');
+    Route::post('/excluir', 'App\Http\Controllers\QrCodeController@excluirQr')->name('qr-excluir');
 });
 
 Route::prefix('relatorios')->middleware('permission')->group(function(){

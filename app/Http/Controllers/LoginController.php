@@ -21,7 +21,7 @@ class LoginController extends Controller
 
       if(!empty($usuario_request) && !empty($senha)){
           $usuario = UsuariosService::coletarComFiltro(['usuario_login'=>$usuario_request, 'usuario_senha'=>$senha], 'where');
-          
+          $usuario = array_values($usuario);
           if(empty($usuario)){
 
             return back()->with('error', 'Nenhum usuário com os respectivos dados informados foi encontrado.');
@@ -30,10 +30,16 @@ class LoginController extends Controller
          }else{
             $grupo_acesso = GruposAcessoService::coletar($usuario[0]['id_grupo_acesso']);
 
+            if(!isset($grupo_acesso['grupo_acesso_nome'])){
+                return back()->with('error', 'Não foi encontrado um grupo de acesso para o usuário informado.');
+            }
+
              session(['id_usuario'=> $usuario[0]['id_usuario'], 'id_grupo_acesso'=>$usuario[0]['id_grupo_acesso'], 'usuario_nome'=>$usuario[0]['usuario_nome'], 'grupo_nome'=>$grupo_acesso['grupo_acesso_nome'], 'id_cliente'=>$usuario[0]['id_cliente']]);
              if($grupo_acesso['grupo_acesso_nome'] == 'admin'){
                 return redirect()->route('local');
-             }
+            }else if($grupo_acesso['grupo_acesso_nome'] == 'Cliente'){
+                return redirect()->route('clientes-maquinas-transacoes');
+            }
          }
       }
       return back()->with('error', 'Os dados de Usuário e Senha são obrigatórios para o login.');
@@ -46,7 +52,7 @@ class LoginController extends Controller
     }
     public function login(){
         if(session('id_cliente') && session('id_grupo_acesso')){
-            return redirect()->route('dashboard');
+            return redirect()->route('relatorio-view');
         }
 
         return view('Login.Login');

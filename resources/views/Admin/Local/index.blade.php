@@ -59,6 +59,7 @@
                             <th>Total acumulado</th>
                             <th>Total PIX</th>
                             <th>Total cartão</th>
+                            <th>Excluir</th>
 
 
                         </tr>
@@ -88,6 +89,8 @@
                         <td></td>
                         <td></td>
                         <td></td>
+                        <td style="text-align: center;"><a href="#" style="color: red !important;" data-bs-toggle="modal" data-bs-target="#ModalCenterExcluir" onclick="setIdLocalExcluir({{$local['id_local']}}, '#id_local_input_excluir')"><i class="fa-solid fa-trash"></i></a></td>
+                        
                     </tr>
                     @endforeach
 
@@ -103,10 +106,34 @@
                             <th>Total acumulado</th>
                             <th>Total PIX</th>
                             <th>Total cartão</th>
+                            <th>Excluir</th>
+                            
                         </tr>
                     </tfoot>
                 </table>
 
+
+                <div class="modal fade" id="ModalCenterExcluir" tabindex="-1" aria-labelledby="ModalCenterExcluir" aria-modal="true" role="dialog">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+
+                                <div class="modal-header">
+                                    <h1 class="modal-title fs-5" id="ModalCenterTitleExcluir">Excluir Local</h1>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <p>Deseja excluir essa local?</p>
+                                </div>
+                                <div class="modal-footer">
+                                    <form action="{{route('local-excluir')}}" method="post" id="excluir-maquina" class="w-100 " >
+                                    @csrf
+                                        <input type="hidden" name="id_local" id="id_local_input_excluir" value="" >
+                                        <button type="submit" class="btn btn-primary" data-bs-dismiss="modal" aria-label="Close" >Sim</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
                             @if(session('success'))
 
@@ -179,6 +206,7 @@
                     "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json"
                 },*/
                 "columns": [
+                    null,
                     null,
                     null,
                     null,

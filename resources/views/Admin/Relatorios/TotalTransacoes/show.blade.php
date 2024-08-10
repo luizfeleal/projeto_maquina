@@ -40,7 +40,7 @@
                                     @else
                                         <td>- R$ {{ number_format($resultado['extrato_operacao_valor'], 2, ',', '.')}}</td>
                                     @endif
-                                    <td>{{$resultado['data_criacao']}}</td>
+                                    <td>{{date('d/m/Y H:i:s', strtotime($resultado['data_criacao']))}}</td>
                                 </tr>
                             @endforeach
                             </tbody>

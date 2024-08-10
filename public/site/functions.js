@@ -16,10 +16,14 @@ const setMaquinaNome = (body, input) => {
     $(body).append(`<p>Deseja criar a máquina ${inputValue}?</p>`);
 }
 const setMensagemIncluirUsuario = (body, local, clientes) => {
-    var localValue = $(local).text();
-    var clientesValue = $(clientes).text();
+    var localSelecionado = $(`${local} option:selected`).text();
+    var clientesSelecionados = [];
+    $(`${clientes} option:selected`).each(function() {
+        clientesSelecionados.push($(this).text());
+    });
+
     $(body).empty();
-    $(body).append(`<p>Realmente deseja incluir o(s) usuário(s) ${clientesValue} no local ${localValue}? Ao incluir, o usuário verá todas as informações deste local.</p>`);
+    $(body).append(`<p>Realmente deseja incluir o(s) usuário(s) ${clientesSelecionados.join(', ')} no local ${localSelecionado}? Ao incluir, o usuário verá todas as informações deste local.</p>`);
 }
 
 
@@ -148,6 +152,21 @@ const sendFormCriarLocal = () =>{
         hideLoader();
     }
 }
+
+const setIdMaquinaExcluir= (id_maquina, id_input) =>{
+    $(id_input).val(id_maquina);
+}
+
+const setIdLocalExcluir= (id_local, id_input) =>{
+    $(id_input).val(id_local);
+}
+
+const setIdClienteExcluir= (id_cliente, id_input) =>{
+    $(id_input).val(id_cliente);
+}
+const setIdQrExcluir= (id_qr, id_input) =>{
+    $(id_input).val(id_qr);
+}
 const sendFormCriar = (form) =>{
     showLoader();
     var invalidElements = $('.is-invalid');
@@ -178,6 +197,121 @@ const sendFormCriar = (form) =>{
     }else{
         hideLoader();
     }
+}
+
+function validarDocumento(documento, input) {
+    // Remover caracteres não numéricos
+    const numeroDocumento = documento.replace(/[^\d]+/g, '');
+
+    // Identificar se é CPF ou CNPJ
+    if (numeroDocumento.length === 11) {
+        // CPF
+        const cpfMascarado = numeroDocumento.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+        if (validarCPF(numeroDocumento)) {
+            document.getElementById(input).value = cpfMascarado;
+            document.getElementById(input).classList.remove("is-invalid");
+            document.getElementById(input).classList.add("is-valid");
+            return true;
+        } else {
+            document.getElementById(input).classList.remove("is-valid");
+            document.getElementById(input).classList.add("is-invalid");
+
+
+            return false;
+        }
+    } else if (numeroDocumento.length === 14) {
+        // CNPJ
+        const cnpjMascarado = numeroDocumento.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5');
+        if (validarCNPJ(numeroDocumento)) {
+            document.getElementById(input).value = cnpjMascarado;
+            document.getElementById(input).classList.remove("is-invalid");
+            document.getElementById(input).classList.add("is-valid");
+            return true;
+        } else {
+            document.getElementById(input).classList.remove("is-valid");
+            document.getElementById(input).classList.add("is-invalid");
+
+
+            return false;
+        }
+    } else {
+        // Tamanho inválido para CPF ou CNPJ
+
+        document.getElementById(input).classList.remove("is-valid");
+        document.getElementById(input).classList.add("is-invalid");
+        return false;
+    }
+}
+
+function validarCPF(cpf) {
+    cpf = cpf.replace(/[^\d]+/g, ''); // Remover caracteres não numéricos
+
+    if (cpf.length !== 11 || /^(\d)\1+$/.test(cpf)) {
+        return false;
+    }
+
+    // Validar o primeiro dígito verificador
+    let soma = 0;
+    for (let i = 0; i < 9; i++) {
+        soma += parseInt(cpf.charAt(i)) * (10 - i);
+    }
+    let resto = 11 - (soma % 11);
+    let digitoVerificador1 = (resto >= 10) ? 0 : resto;
+
+    if (digitoVerificador1 !== parseInt(cpf.charAt(9))) {
+        return false;
+    }
+
+    // Validar o segundo dígito verificador
+    soma = 0;
+    for (let i = 0; i < 10; i++) {
+        soma += parseInt(cpf.charAt(i)) * (11 - i);
+    }
+    resto = 11 - (soma % 11);
+    let digitoVerificador2 = (resto >= 10) ? 0 : resto;
+
+    if (digitoVerificador2 !== parseInt(cpf.charAt(10))) {
+        return false;
+
+    }
+
+    return true;
+}
+
+function validarCNPJ(cnpj) {
+    cnpj = cnpj.replace(/[^\d]+/g, ''); // Remover caracteres não numéricos
+
+    if (cnpj.length !== 14) {
+        return false;
+    }
+
+    // Validar o primeiro dígito verificador
+    let soma = 0;
+    let multiplicador = 5;
+    for (let i = 0; i < 12; i++) {
+        soma += parseInt(cnpj.charAt(i)) * multiplicador;
+        multiplicador = (multiplicador === 2) ? 9 : multiplicador - 1;
+    }
+    let digitoVerificador1 = (11 - (soma % 11)) % 11;
+
+    if (digitoVerificador1 !== parseInt(cnpj.charAt(12))) {
+        return false;
+    }
+
+    // Validar o segundo dígito verificador
+    soma = 0;
+    multiplicador = 6;
+    for (let i = 0; i < 13; i++) {
+        soma += parseInt(cnpj.charAt(i)) * multiplicador;
+        multiplicador = (multiplicador === 2) ? 9 : multiplicador - 1;
+    }
+    let digitoVerificador2 = (11 - (soma % 11)) % 11;
+
+    if (digitoVerificador2 !== parseInt(cnpj.charAt(13))) {
+        return false;
+    }
+
+    return true;
 }
 
 const sendFormCriarQr= (id_form) =>{

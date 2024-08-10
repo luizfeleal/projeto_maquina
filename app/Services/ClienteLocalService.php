@@ -4,70 +4,82 @@ namespace App\Services;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Carbon\Carbon;
+use App\Services\LogsService;
 use Illuminate\Support\Facades\Http;
 
 
 
-class MaquinasService
+class ClienteLocalService
 {
 
 
     public static function criar($dados){
-        $url = env('APP_URL_API') . "/maquinas";
+        $url = env('APP_URL_API') . "/clienteLocal";
 
         $token = AuthService::getToken();
         $response = Http::withHeaders([
             'Authorization' => 'Bearer ' . $token
         ])->post($url, $dados);
 
-        $maquinas = $response;
-
-        return $maquinas;
+        // Verifica se a requisição foi bem-sucedida
+        if ($response->successful()) {
+            return [
+                'success' => true,
+                'data' => $response->json()
+            ];
+        }else {
+            return [
+                'success' => false,
+                'status' => $response->status(),
+                'error' => $response->json()
+            ];
+        }
     }
 
     public static function coletar(string $id = Null)
     {
         if(is_null($id)){
-            $url = env('APP_URL_API') . "/maquinas";
+            $url = env('APP_URL_API') . "/clienteLocal";
         }else{
-            $url = env('APP_URL_API') . "/maquinas/$id";
+            $url = env('APP_URL_API') . "/clienteLocal/$id";
         }
         $token = AuthService::getToken();
         $response = Http::withHeaders([
             'Authorization' => 'Bearer ' . $token
         ])->get($url);
 
-        $maquinas = $response->json();
+        $clientes = $response->json();
 
-        return $maquinas;
+        return $clientes;
     }
 
     public static function coletarComFiltro($filtros, $tipo)
     {
-        $url = env('APP_URL_API') . "/maquinas";
-
+        // Realize a chamada à API para obter os clientes
+        $url = env('APP_URL_API') . "/clienteLocal";
         $token = AuthService::getToken();
         $response = Http::withHeaders([
             'Authorization' => 'Bearer ' . $token
         ])->get($url);
 
+        // Verifique se a chamada à API foi bem-sucedida
         if ($response->successful()) {
             // Obtenha os clientes da resposta JSON
-            $maquinas = $response->json();
+            $clientes = $response->json();
 
             // Filtrar os clientes com base nos filtros fornecidos
             foreach ($filtros as $chave => $valor) {
                 // Verifique se a chave existe e se o valor não está vazio
-                if (isset($chave) && $valor !== null) {
+                if (isset($clientes[$chave]) && $valor !== null) {
                     // Filtrar os clientes com base no valor do filtro
-                    $maquinas = array_filter($maquinas, function ($maquina) use ($chave, $valor) {
-                        return $maquina[$chave] === $valor;
+                    $clientes = array_filter($clientes, function ($cliente) use ($chave, $valor) {
+                        return $cliente[$chave] === $valor;
                     });
                 }
             }
 
             // Retorna os clientes filtrados
-            return $maquinas;
+            return $clientes;
         } else {
             // Em caso de falha na chamada à API, retorne um array vazio ou uma mensagem de erro
             return [];
@@ -75,21 +87,21 @@ class MaquinasService
     }
 
     public function atualizar($dados, $id){
-        $url = env('APP_URL_API') . "/maquinas/$id";
+        $url = env('APP_URL_API') . "/clienteLocal/$id";
 
         $token = AuthService::getToken();
         $response = Http::withHeaders([
             'Authorization' => 'Bearer ' . $token
         ])->post($url, $dados);
 
-        $maquina = $response->json();
+        $clientes = $response->json();
 
-        return $maquina;
+        return $clientes;
     }
 
     public static function deletar($id)
     {
-        $url = env('APP_URL_API') . "/maquinas/$id";
+        $url = env('APP_URL_API') . "/clienteLocal/$id";
         $token = AuthService::getToken();
     
         $ch = curl_init($url);
@@ -118,6 +130,5 @@ class MaquinasService
             ], $status);
         }
     }
-
 
 }

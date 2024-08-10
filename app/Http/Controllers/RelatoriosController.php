@@ -19,7 +19,7 @@ class RelatoriosController extends Controller
         $locais = LocaisService::coletar();
         $clientes = ClientesService::coletar();
         $maquinas = MaquinasService::coletar();
-        return view('Relatorios.index', compact('locais', 'maquinas', 'clientes'));
+        return view('Admin.Relatorios.index', compact('locais', 'maquinas', 'clientes'));
 
     }
 
@@ -59,32 +59,35 @@ class RelatoriosController extends Controller
                 return $maquina['maquina_status'] == 0;
             });
 
-            return view('Relatorios.MaquinasOnOff.show', compact('maquinasOnline', 'maquinasOffline', 'locais'));
+            return view('Admin.Relatorios.MaquinasOnOff.show', compact('maquinasOnline', 'maquinasOffline', 'locais'));
 
             
         }
 
         if($nomeRelatorio == "totalTransacoes"){
 
-            $cliente = intval($request->input('id_cliente'));
+            $cliente = $request->input('id_cliente');
             $maquina = $request->input('id_maquina');
             $local = $request->input('id_local');
             $tipoTransacao = $request->input('tipo_transacao');
             $data_inicio = $request->input('data_inicio');
             $data_fim = $request->input('data_fim');
 
+            $locais = LocaisService::coletar();
+            $maquinas = MaquinasService::coletar();
+
             if($local){
 
-                $locais = LocaisService::coletarComFiltro(['id_local' =>$local], 'in');
-            }else{
-                $locais = LocaisService::coletar();
+                $locais = array_filter($locais, function($item) use ($local) {
+                    return in_array($item['id_local'], $local);
+                });
             }
 
             if($maquina){
-                $maquinas = MaquinasService::coletarComFiltro(['id_maquina' => $maquina], 'in');
-            }else{
-                $maquinas = MaquinasService::coletar();
-
+                
+                $maquinas = array_filter($maquinas, function($item) use ($maquina) {
+                    return in_array($item['id_maquina'], $maquina);
+                });
             }
 
             if($cliente){
@@ -183,7 +186,7 @@ class RelatoriosController extends Controller
 
                 
 
-            return view('Relatorios.TotalTransacoes.show', compact('resultadosFiltrados', 'valor_total', 'valor_total_pix', 'valor_total_cartao', 'valor_total_dinheiro', 'valor_total_estorno'));
+            return view('Admin.Relatorios.TotalTransacoes.show', compact('resultadosFiltrados', 'valor_total', 'valor_total_pix', 'valor_total_cartao', 'valor_total_dinheiro', 'valor_total_estorno'));
 
 
 

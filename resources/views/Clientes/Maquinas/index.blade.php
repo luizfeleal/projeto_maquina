@@ -1,58 +1,78 @@
-@extends('layouts.app')
-@section('title', 'Usuários')
+@extends('Layouts.Clientes.app')
+@section('title', 'Minhas Máquinas')
 @section('content')
 
-        <div id="guias" class="usuarios w-100 div-center-column"
+        <div id="guias" class="maquina w-100 div-center-column"
                 style=" padding-top: 99px; padding-bottom: 100px;">
 
-                <h1 style="padding-top: 80px; text-align: center; padding-bottom: 50px;">Usuários</h1>
+                <h1 style="padding-top: 80px; text-align: center; padding-bottom: 50px;">Minhas Máquinas</h1>
 
             <div class="container section container-platform div-center-column"
                 style="margin-top: 15px; height: 100%;">
-                <div class="row" style="display: flex; flex-direction: row; justify-content: center; margin-bottom: 20px; width: 100%;">
-                    <div class="col-md-4">
-                    
-                    </div>
-                    <div class="col-md-4" style="display: flex; flex-direction: row; justify-content: end; align-items: center;">
-                        <a href="{{route('usuario-criar')}}" class="btn btn-primary">Novo usuário <i class="fa-solid fa-plus"></i></a>
-                    </div>
-                </div>
-
-                <table id="tabela-local" class="table table-striped" style="width:100%">
+                
+                <table id="tabela_maquinas" class="table table-striped" style="width:100%">
                     <thead>
                         <tr>
-                            <th>Nome</th>
-                            <th>CPF/CNPJ</th>
-                            <th>Email</th>
-                            <th>Celular</th>
+                            <th>Local</th>
+                            <th>Máquina</th>
+                            <th>Última transação</th>
+                            <th>Fonte</th>
+                            <th>Data e Hora</th>
 
 
                         </tr>
                     </thead>
                     <tbody>
 
-                    
-                    @foreach($clientes as $cliente)
-                        <tr>
-                            <td>{{$cliente['cliente_nome']}}</td>
-                            <td>{{$cliente['cliente_cpf_cnpj']}}</td>
-                            <td>{{$cliente['cliente_email']}}</td>
-                            <td>{{$cliente['cliente_celular']}}</td>
-                        </tr>
-                    @endforeach
+                        @foreach($resultado as $extrato)
+                            <tr>
+                                <td>{{$extrato['local']['local_nome']}}</td>
+                                <td>{{$extrato['maquina']['maquina_nome']}}</td>
+                                @if($extrato['extrato_operacao'] == "C")
+                                    <td>+ R$ {{number_format($extrato['extrato_operacao_valor'], 2, ',', '.')}}</td>
+                                @else
+                                    <td>- R$ {{number_format($extrato['extrato_operacao_valor'], 2, ',', '.')}}</td>
+                                @endif
 
+                                <td>{{$extrato['extrato_operacao_tipo']}}</td>
+                                <td>{{date('d/m/Y H:i:s', strtotime($extrato['data_criacao']));}}</td>
+                            </tr>
+                        @endforeach
 
                     </tbody>
                     <tfoot>
                         <tr>
-                            <th>Nome</th>
-                            <th>CPF/CNPJ</th>
-                            <th>Email</th>
-                            <th>Celular</th>
+                            <th>Local</th>
+                            <th>Máquina</th>
+                            <th>Última transação</th>
+                            <th>Fonte</th>
+                            <th>Data e Hora</th>
                         </tr>
                     </tfoot>
                 </table>
 
+
+                <div class="modal fade" id="ModalCenterExcluir" tabindex="-1" aria-labelledby="ModalCenterExcluir" aria-modal="true" role="dialog">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+
+                                <div class="modal-header">
+                                    <h1 class="modal-title fs-5" id="ModalCenterTitleExcluir">Excluir Maquina</h1>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <p>Deseja excluir essa máquina?</p>
+                                </div>
+                                <div class="modal-footer">
+                                    <form action="{{route('maquinas-excluir')}}" method="post" id="excluir-maquina" class="w-100 " >
+                                    @csrf
+                                        <input type="hidden" name="id_maquina" id="id_maquina_input_excluir" value="" >
+                                        <button type="submit" class="btn btn-primary" data-bs-dismiss="modal" aria-label="Close" >Sim</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
                             @if(session('success'))
 
@@ -106,7 +126,21 @@
     <script>
 
         $(document).ready(function(){
-            $('#input_filtro_cliente').select2({
+
+            $('#tabela_maquinas').DataTable({
+                "language": {
+                    "url": "https://cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json"
+                },
+                "columns": [
+                    null,
+                    null,
+                    null,
+                    null,
+                    { "type": "datetime-ddmmyyyy" }
+                ],
+            });
+
+            /*$('#input_filtro_cliente').select2({
             theme: "classic",
             width: "100%"
             });
@@ -117,23 +151,13 @@
             $('#input_filtro_maquina').select2({
                 theme: "classic",
             width: "100%"
-            });
+            });*/
 
-
-            var tabelaGuias= $('#tabela-local').DataTable({
-                "language": {
-                    "url": "https://cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json"
-                },
-                "columns": [
-                    null,
-                    null,
-                    null,
-                    null
-                ] // Use o array de objetos de coluna dinamicamente criado
-            });
 
             
-            var dadosTabela = tabelaGuias.rows().data().toArray();
+
+            
+            /*var dadosTabela = tabelaGuias.rows().data().toArray();
             var startDate = ''
             var endDate = ''
 
@@ -223,7 +247,7 @@
 
             $('.filtro-checkbox, .filtro-select, .filtro-date').on('change', function () {
                 filterTable();
-            });
+            });*/
         });
     </script>
 

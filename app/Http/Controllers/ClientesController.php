@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Services\LocaisService;
+use App\Services\ClienteLocalService;
 use App\Services\MaquinasService;
 use App\Services\ExtratoMaquinaService;
 use App\Services\ClientesService;
@@ -14,11 +15,17 @@ use App\Services\AuthService;
 
 class ClientesController extends Controller
 {
-    public function coletarClientePorId(Request $request){
+    public function coletarClientePorId($id){
 
-        if($request->has('id')){
-            $clientes = ClientesService::coletar($request->id);
-            return view('Usuarios.index', compact('clientes'));
+        if($id){
+            $cliente = ClientesService::coletar($id);
+            $clienteLocal = collect(ClienteLocalService::coletarComFiltro(['id_cliente' => $id], 'where'))->pluck('id_local')->unique();
+            $local = LocaisService::coletar();
+            $locais = array_filter($local, function($item) use($clienteLocal){
+                return in_array($item['id_local'], $clienteLocal->toArray());
+            });
+
+            return view('Admin.Usuarios.show', compact('cliente', 'locais'));
         }else{
             return back()->with('error', 'Cliente não encontrada');
         }
@@ -29,7 +36,7 @@ class ClientesController extends Controller
         $grupos = GruposAcessoService::coletar();
         $clientes = ClientesService::coletar();
 
-        return view('Usuarios.create', compact('grupos', 'clientes'));
+        return view('Admin.Usuarios.create', compact('grupos', 'clientes'));
     }
     public function registrarCliente(Request $request){
         
@@ -90,17 +97,40 @@ class ClientesController extends Controller
     public function coletarCliente(Request $request){
         $clientes = ClientesService::coletar();
         
-        return view('Usuarios.index', compact('clientes'));
+        return view('Admin.Usuarios.index', compact('clientes'));
     }
 
     public function transacaoMaquinas(Request $request){
         $maquinas_extrato = ExtratoMaquinaService::coletar();
-        return view('Maquinas.Transacoes.Index', compact('maquinas_extrato'));
+        return view('Admin.Maquinas.Transacoes.Index', compact('maquinas_extrato'));
     }
 
     public function acumuladoMaquinas(Request $request){
         $maquinas_extrato = ExtratoMaquinaService::coletar();
-        return view('Maquinas.Acumulado.Index', compact('maquinas_extrato'));
+        return view('Admin.Maquinas.Acumulado.Index', compact('maquinas_extrato'));
 
+    }
+
+    public function excluirCliente(Request $request){
+       // try{
+
+             $id_cliente = $request['id_cliente'];
+
+             //$clienteLocal = ClienteLocalService::coletarComFiltro(['id_cliente' => $id_cliente], 'where');
+             $clienteLocal = ClienteLocalService::coletar();
+
+             $clienteLocalFiltrado = array_filter($clienteLocal, function($item) use($id_cliente){
+                return $item['id_cliente'] == $id_cliente;
+             });
+
+             if(!empty($clienteLocalFiltrado)){
+                return back()->with('error', 'O cliente não pôde ser excluído pois há local/locais associado(s) à ele.');
+             }
+             $result = ClientesService::deletar($id_cliente);
+
+             return back()->with('success', $result['message']);
+         //}catch(\Throwable $e){
+             //return back()->with('error', 'Houve um erro ao tentar excluir o cliente.');
+         //}
     }
 }

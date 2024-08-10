@@ -7,6 +7,7 @@ use App\Services\LocaisService;
 use App\Services\MaquinasService;
 use App\Services\ExtratoMaquinaService;
 use App\Services\ClientesService;
+use App\Services\ClienteLocalService;
 use App\Services\AuthService;
 
 class LocaisController extends Controller
@@ -15,7 +16,7 @@ class LocaisController extends Controller
     public function criarLocais(Request $request){
         $clientes = ClientesService::coletar();
 
-        return view('Local.create', compact('clientes'));
+        return view('Admin.Local.create', compact('clientes'));
     }
     public function registrarLocais(Request $request){
 
@@ -42,13 +43,15 @@ class LocaisController extends Controller
         }else{
             $locais = LocaisService::coletar();
             $clientes = ClientesService::coletar();
+            $clienteLocal = collect(ClienteLocalService::coletar())->keyBy('id_local');
             $maquinas = MaquinasService::coletar();
             $extrato_maquina = ExtratoMaquinaService::coletar();
+
 
             foreach($locais as &$local){
                 $clientesNomes = '';
                 foreach($clientes as $cliente){
-                    if($local['id_cliente'] == $cliente['id_cliente']){
+                    if($clienteLocal[$local['id_local']]['id_cliente'] == $cliente['id_cliente']){
                         $clientesNomes =  $cliente['cliente_nome'] . ' ';
                         $local['cliente_nome'] = $clientesNomes;
                     }
@@ -65,7 +68,7 @@ class LocaisController extends Controller
             }
 
             
-            return view('Local.index', compact('locais', 'extrato_maquina', 'maquinas', 'clientes'));
+            return view('Admin.Local.index', compact('locais', 'extrato_maquina', 'maquinas', 'clientes'));
         }
 
     }
@@ -74,6 +77,23 @@ class LocaisController extends Controller
         $locais = LocaisService::coletar();
         $clientes = ClientesService::coletar();
 
-        return view('Local.Usuarios.create', compact('locais', 'clientes'));
+        return view('Admin.Local.Usuarios.create', compact('locais', 'clientes'));
+    }
+
+    public function excluirLocais(Request $request){
+        try{
+
+             $id_local = $request['id_local'];
+             $maquinas = MaquinasService::coletarComFiltro(["id_local"=>$id_local],'where');
+
+             if(!empty($maquinas)){
+                return back()->with('error', 'O local não pôde ser removido pois há máquina(s) associada(s) à ele.');
+             }
+ 
+             $result = LocaisService::deletar($id_local);
+             return back()->with('success', $result['message']);
+         }catch(\Throwable $e){
+             return back()->with('error', 'Houve um erro ao tentar remover o local');
+         }
     }
 }

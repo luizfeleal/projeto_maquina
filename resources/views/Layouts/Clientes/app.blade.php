@@ -43,84 +43,29 @@ $currentRoute = Request::route()->getName();
 
                         <a href="/" class="d-flex align-items-center pb-3 mb-3 link-body-emphasis text-decoration-none" style=" padding-left: 12px;">
                         <div class="d-flex" style="flex-direction: column;">
-                        <span class="fs-5 fw-semibold" id="username">{{session()->get('usuario_nome')}}</span>
-                        <span class="fs-10" id="user_function">{{session()->get('grupo_nome')}}</span>
+                            <span class="fs-5 fw-semibold" id="username">{{session()->get('usuario_nome')}}</span>
+                            <span class="fs-10" id="user_function">{{session()->get('grupo_nome')}}</span>
                         </div>
                         </a>
 
 
                     <ul class="list-unstyled ps-0">
-                        <li class="mb-1">
-                            <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed" data-bs-toggle="collapse" data-bs-target="#maquinas-collapse" aria-expanded="false">
-                                <a href="/" class="text-decoration-none">
-                                    <i class="fa-solid fa-desktop"></i> Criar
-                                </a>
-                            </button>
-                            <div class="collapse {{$currentRoute === 'local-criar' || $currentRoute === 'local-incluir-usuario' ||$currentRoute === 'maquinas-criar'  ? 'show' : '' }}" id="maquinas-collapse">
-                            <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                                <li><a href="{{route('maquinas-criar')}}" class="d-inline-flex text-decoration-none rounded" style="{{ $currentRoute === 'maquinas-criar' ? 'color:grey !important;' : ' ' }}">Criar nova máquina</a></li>
-                                <li><a href="{{route('local-incluir-usuario')}}" class=" d-inline-flex text-decoration-none rounded" style="{{  $currentRoute === 'local-incluir-usuario' ? 'color:grey !important;': ' ' }}">Incluir usuários</a></li>
-                                <li><a href="{{route('local-criar')}}" class=" d-inline-flex text-decoration-none rounded" style="{{  $currentRoute === 'local-criar' ? 'color:grey !important;': ' ' }}">Criar local</a></li>
-                            </ul>
-                            </div>
-                        </li>
-                        <li class="mb-1">
-                            <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed" data-bs-toggle="collapse" data-bs-target="#local-collapse" aria-expanded="false">
-                                <a href="/" class="text-decoration-none">
-                                <i class="fa-solid fa-location-dot icon-sidebar" style=" font-size: 25px;padding-right:5px;"></i>Local
-                                </a>
-                            </button>
-                            <div class="collapse {{  $currentRoute === 'local'  ? 'show' : '' }}" id="local-collapse">
-                            <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                                <li><a href="{{route('local')}}" class=" d-inline-flex text-decoration-none rounded" style="{{  $currentRoute === 'local' ? 'color:grey !important;': ' ' }}">Exibir locais</a></li>
-                                
-                            </ul>
-                            </div>
-                        </li>
-                        <li class="mb-1">
-                            <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0">
-                                <a href="{{route('relatorio-view')}}" class="text-decoration-none" style="{{ $currentRoute === 'relatorio-view' || $currentRoute ===  'relatorio-criar' || $currentRoute === 'relatorio-exibir'  ?  'color:grey !important;' : ' ' }}">
-                                    <i class="fa-solid fa-chart-pie icon-sidebar" style=" font-size: 22px;padding-right:5px;"></i>Relatórios
-                                </a>
-                            </button>
-                        </li>
+                        
+                        
 
                         <li class="mb-1">
                             <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed" data-bs-toggle="collapse" data-bs-target="#termo-collapse" aria-expanded="false">
-                                <a href="#" class="text-decoration-none" style="{{ $currentRoute === 'maquinas' ?  'color:grey !important;' : ' ' }}">
+                                <a href="/" class="text-decoration-none">
                                     <i class="fa-solid fa-gear icon-sidebar" style=" font-size: 25px;padding-right:5px;"></i>Minhas máquinas
                                 </a>
                             </button>
-                            <div class="collapse {{ $currentRoute === 'maquinas-transacoes' || $currentRoute === 'maquinas-acumulado' || $currentRoute === 'maquinas'  ? 'show' : '' }}" id="termo-collapse">
+                            <div class="collapse {{ $currentRoute === 'clientes-maquinas-transacoes' || $currentRoute === 'clientes-maquinas-acumulado' || $currentRoute === 'clientes-maquinas' ? 'show' : '' }}" id="termo-collapse">
                             <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                                <li><a href="{{route('maquinas')}}" class=" d-inline-flex text-decoration-none rounded" style="{{ $currentRoute === 'maquinas' ?  'color:grey !important;' : ' ' }}" >Exibir Máquinas</a></li>
-                                <li><a href="{{route('maquinas-transacoes')}}" class=" d-inline-flex text-decoration-none rounded" style="{{ $currentRoute === 'maquinas-transacoes' ?  'color:grey !important;' : ' ' }}" >Transações</a></li>
-                                <li><a href="{{route('maquinas-acumulado')}}" class=" d-inline-flex text-decoration-none rounded" style="{{ $currentRoute === 'maquinas-acumulado' ?  'color:grey !important;' : ' ' }}">Acumulado</a></li>
+                            <li><a href="{{route('clientes-maquinas')}}" class=" d-inline-flex text-decoration-none rounded" style="{{ $currentRoute === 'clientes-maquinas' ?  'color:grey !important;' : ' ' }}" >Exibir Máquinas</a></li>
+                                <li><a href="{{route('clientes-maquinas-transacoes')}}" class=" d-inline-flex text-decoration-none rounded" style="{{ $currentRoute === 'clientes-maquinas-transacoes' ?  'color:grey !important;' : ' ' }}" >Transações</a></li>
+                                <li><a href="{{route('clientes-maquinas-acumulado')}}" class=" d-inline-flex text-decoration-none rounded" style="{{ $currentRoute === 'clientes-maquinas-acumulado' ?  'color:grey !important;' : ' ' }}">Acumulado</a></li>
                             </ul>
                             </div>
-                        </li>
-                        <li class="mb-1">
-                            <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed" data-bs-toggle="collapse" data-bs-target="#qr-collapse" aria-expanded="false">
-                                <a href="/" class="text-decoration-none">
-                                    <i class="fa-solid fa-qrcode icon-sidebar" style=" font-size: 25px;padding-right:5px;"></i>Gerar QR
-                                </a>
-                            </button>
-                            <div class="collapse {{ $currentRoute === 'qr-criar' || $currentRoute === 'qr'  ? 'show' : '' }}" id="qr-collapse">
-                                <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                                    <li><a href="{{route('qr-criar')}}" class=" d-inline-flex text-decoration-none rounded" style="{{ $currentRoute === 'qr-criar' ?  'color:grey !important;' : ' ' }}">Novo Qr</a></li>
-                                    <li><a href="{{route('qr')}}" class=" d-inline-flex text-decoration-none rounded" style="{{ $currentRoute === 'qr' ?  'color:grey !important;' : ' ' }}">Qr</a></li>
-                                </ul>
-                            </div>
-                        </li>
-
-                        <li class="mb-1">
-                            <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0" >
-                                <a href="{{route('usuarios')}}"  class="text-decoration-none" style="{{ $currentRoute === 'usuarios' || $currentRoute === 'usuario-criar' ?  'color:grey !important;' : ' ' }}">
-                                <i class="fa-solid fa-user-plus icon-sidebar"  style=" font-size: 25px;padding-right:5px;"></i>Usuários
-                                </a>
-                            </button>
-
-
                         </li>
 
                         <li class=" my-5"></li>
@@ -130,7 +75,7 @@ $currentRoute = Request::route()->getName();
                         <ul class="list-unstyled ps-0">
                             <li class="mb-1">
                                     <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed" >
-                                        <a href="{{route('logout')}}" class="text-decoration-none">
+                                        <a href="/" class="text-decoration-none">
                                             <i class="fa-solid fa-right-from-bracket icon-sidebar" style=" font-size: 25px;padding-right:5px;"></i>Logout
                                         </a>
                                     </button>
@@ -144,7 +89,7 @@ $currentRoute = Request::route()->getName();
         @yield('content')
 
 
-        <div id="loader" class="loader" style="display: block !important;">
+        <div id="loader" class="loader" style="display: none;">
             <div class="spinner-border spinner-load" style="width: 3rem; height: 3rem;" role="status">
                 <span class="visually-hidden">Loading...</span>
             </div>
@@ -188,11 +133,6 @@ const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstra
             offcanvasElement.classList.add("show");
         }
     }
-
-    window.addEventListener("load", function () {
-        const loader = document.getElementById("loader");
-        loader.style.display = "none"; // Esconde o loader quando a página termina de carregar
-    });
 
     // Adiciona um ouvinte de evento para redimensionamento da janela
     window.addEventListener("resize", toggleOffcanvas);

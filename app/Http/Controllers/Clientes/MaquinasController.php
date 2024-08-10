@@ -1,66 +1,31 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Clientes;
 
 use Illuminate\Http\Request;
 use App\Services\LocaisService;
 use App\Services\MaquinasService;
 use App\Services\ExtratoMaquinaService;
 use App\Services\ClientesService;
+use App\Services\ClienteLocalService;
 use App\Services\AuthService;
+use App\Http\Controllers\Controller;
 
 class MaquinasController extends Controller
 {
-    public function coletarMaquinaPorId(Request $request){
-
-        if($request->has('id')){
-            $maquinas = MaquinasService::coletarMaquinas($request->id);
-            return view('Admin.Maquinas.index', compact('maquinas'));
-        }else{
-            return back()->with('error', 'Máquina não encontrada');
-        }
-
-    }
-
-    public function criarMaquinas(Request $request){
-        $locais = LocaisService::coletar();
-        $clientes = ClientesService::coletar();
-
-        return view('Admin.Maquinas.create', compact('locais', 'clientes'));
-    }
-
-    public function registrarMaquinas(Request $request){
-
-
-        try{
-
-            $dados = [];
-            $dados['id_local'] = $request['select-local'];
-            $dados['id_placa'] = $request['id_placa_input'];
-            $dados['maquina_nome'] = $request['maquina_nome'];
-            $dados['maquina_status'] = 0;
-
-            $result = MaquinasService::criar($dados);
-
-    
-            return back()->with('success', $result['message']);
-        }catch(\Throwable $e){
-            return back()->with('error', 'Houve um erro ao tentar cadastrar o local');
-        }
-    }
-
-    public function gerarIdPlaca(){
-        $id_aleatorio = rand(10000000, 99999999);
-        $maquinas = MaquinasService::coletarComFiltro(['id_placa' => $id_aleatorio], 'where');
-    
-        if(empty($maquinas)){
-            return response()->json(["id_placa"=>$id_aleatorio], 200); // Correção aqui
-        }else{
-            return response()->json($maquinas, 200); // Correção aqui
-        }
-    }
 
     public function coletarTodasAsMaquinas(Request $request){
+        $id_cliente = session()->get('id_cliente');
+
+             //$clienteLocal = ClienteLocalService::coletarComFiltro(['id_cliente' => $id_cliente], 'where');
+             $clienteLocal = ClienteLocalService::coletar();
+
+             $clienteLocalFiltrado = array_filter($clienteLocal, function($item) use($id_cliente){
+                return $item['id_cliente'] == $id_cliente;
+             });
+             $idLocais = array_column($clienteLocal, 'id_local');
+
+             
         $locais = LocaisService::coletar();
         $maquinas = MaquinasService::coletar();
         $maquinas_extrato = ExtratoMaquinaService::coletar();
@@ -71,6 +36,13 @@ class MaquinasController extends Controller
             $locais_indexados[$local['id_local']] = $local;
         }
 
+        $locais_indexados = array_filter($locais_indexados, function($item) use($idLocais){
+            return in_array($item, $idLocais);
+        });
+
+        $maquinas = array_filter($maquinas, function($item) use($idLocais){
+            return in_array($item['id_local'], $idLocais);
+        });
         // Indexando maquinas por id_maquina
         $maquinas_indexadas = [];
         foreach ($maquinas as $maquina) {
@@ -106,11 +78,20 @@ class MaquinasController extends Controller
 
         // Se você quiser um array com índices numéricos simples, pode utilizar array_values
         $resultado = array_values($resultado);
-        return view('Admin.Maquinas.index', compact('resultado'));
+        return view('Clientes.Maquinas.index', compact('resultado'));
     }
 
     public function transacaoMaquinas(Request $request){
         $locais = LocaisService::coletar();
+        
+        $id_cliente = session()->get('id_cliente');
+
+        $clienteLocal = ClienteLocalService::coletar();
+
+             $clienteLocalFiltrado = array_filter($clienteLocal, function($item) use($id_cliente){
+                return $item['id_cliente'] == $id_cliente;
+             });
+             $idLocais = array_column($clienteLocal, 'id_local');
         $maquinas = MaquinasService::coletar();
         $maquinas_extrato = ExtratoMaquinaService::coletar();
 
@@ -119,6 +100,10 @@ class MaquinasController extends Controller
         foreach ($locais as $local) {
             $locais_indexados[$local['id_local']] = $local;
         }
+
+        $locais_indexados = array_filter($locais_indexados, function($item) use($idLocais){
+            return in_array($item, $idLocais);
+        });
 
         // Indexando maquinas por id_maquina
         $maquinas_indexadas = [];
@@ -147,11 +132,19 @@ class MaquinasController extends Controller
                 }
             }
         }
-        return view('Admin.Maquinas.Transacoes.Index', compact('resultado'));
+        return view('Clientes.Maquinas.Transacoes.Index', compact('resultado'));
     }
 
     public function acumuladoMaquinas(Request $request){
         $locais = LocaisService::coletar();
+        $id_cliente = session()->get('id_cliente');
+        $clienteLocal = ClienteLocalService::coletar();
+
+        $clienteLocalFiltrado = array_filter($clienteLocal, function($item) use($id_cliente){
+           return $item['id_cliente'] == $id_cliente;
+        });
+        $idLocais = array_column($clienteLocal, 'id_local');
+
         $maquinas = MaquinasService::coletar();
 
         $maquinas_extrato = ExtratoMaquinaService::coletar();
@@ -159,6 +152,14 @@ class MaquinasController extends Controller
         $locais_indexados = [];
         foreach ($locais as $local) {
             $locais_indexados[$local['id_local']] = $local;
+        }
+
+        $locais_indexados = array_filter($locais_indexados, function($item) use($idLocais){
+            return in_array($item, $idLocais);
+        });
+
+        if(empty($locais_indexados)){
+            $maquinas = [];
         }
 
         foreach($maquinas as &$maquina){
@@ -183,6 +184,7 @@ class MaquinasController extends Controller
                     $total_dinheiro += $em['extrato_operacao_valor'];
                 }
             }
+            return $locais_indexados;
             $maquina['total_pix'] = $total_pix;
             $maquina['total_cartao'] = $total_cartao;
             $maquina['total_dinheiro'] = $total_dinheiro;
@@ -191,20 +193,7 @@ class MaquinasController extends Controller
 
         }
 
-        return view('Admin.Maquinas.Acumulado.Index', compact('maquinas'));
+        return view('Clientes.Maquinas.Acumulado.Index', compact('maquinas'));
 
-    }
-
-    public function excluirMaquinas(Request $request){
-        try{
-
-           $id_maquina = $request['id_maquina'];
-
-            $result = MaquinasService::deletar($id_maquina);
-    
-            return back()->with('success', $result['message']);
-        }catch(\Throwable $e){
-            return back()->with('error', 'Houve um erro ao tentar remover a máquina');
-        }
     }
 }

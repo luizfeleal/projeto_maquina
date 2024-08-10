@@ -21,7 +21,8 @@ class QrCodeService
             'Authorization' => 'Bearer ' . $token,
             'Content-Type' => 'application/json'
         ])->post($url, $dados->all());
-
+        
+        
         return $response;
     }
 
@@ -83,5 +84,36 @@ class QrCodeService
         return $maquina;
     }
 
+    public static function deletar($id)
+    {
+        $url = env('APP_URL_API') . "/QRCode/$id";
+        $token = AuthService::getToken();
+    
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true); // Seguir redirecionamentos
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Authorization: Bearer ' . $token,
+            'Accept: application/json',
+        ]);
+    
+        $response = curl_exec($ch);
+        $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $error = curl_error($ch);
+        curl_close($ch);
+
+    
+        if ($status == 200 && $response !== false) {
+            return json_decode($response, true);
+        } else {
+            return response()->json([
+                'error' => 'Failed to delete the resource.',
+                'status' => $status,
+                'message' => $response,
+                'curl_error' => $error,
+            ], $status);
+        }
+    }
 
 }
