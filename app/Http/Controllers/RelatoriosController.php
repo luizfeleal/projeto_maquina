@@ -194,11 +194,20 @@ class RelatoriosController extends Controller
                     }
 
                     $valor_total += $item['extrato_operacao_valor'];
+                    
+                    $resultArray[] =[
+                        "local" => $maquinasPorId[$item['id_maquina']]['nome_local']['local_nome'],
+                        "maquina" => $maquinasPorId[$item['id_maquina']]['maquina_nome'],
+                        "tipo_transacao" => $item['extrato_operacao_tipo'],
+                        "valor" => $item['extrato_operacao_valor'],
+                        "data_e_hora" => date('d/m/Y H:i:s', strtotime($item['data_criacao']))
+    
+                    ];
                 }
 
                 
 
-            return view('Admin.Relatorios.TotalTransacoes.show', compact('resultadosFiltrados', 'valor_total', 'valor_total_pix', 'valor_total_cartao', 'valor_total_dinheiro', 'valor_total_estorno'));
+            return view('Admin.Relatorios.TotalTransacoes.show', compact('resultadosFiltrados', 'valor_total', 'valor_total_pix', 'valor_total_cartao', 'valor_total_dinheiro', 'valor_total_estorno', 'resultArray'));
 
 
 
@@ -402,7 +411,9 @@ class RelatoriosController extends Controller
         // Decodifica os dados JSON da requisição
         $data = json_decode($request->input('data'));
 
-     
+
+        $isTaxaDesconto = isset($request['tipo_csv']) && $request['tipo_csv'] == 'taxa_desconto';
+        $isTotalTransacoes = isset($request['tipo_csv']) && $request['tipo_csv'] == 'total_transacao';
         // Definindo os tipos de XLSX
 
         // Criação do Spreadsheet e do cabeçalho
@@ -413,27 +424,32 @@ class RelatoriosController extends Controller
         // Escrever o cabeçalho no arquivo
         $sheet->fromArray($cabecalho, NULL, 'A1');
 
-        //$totalValorFinal = 0;
+        $totalValorFinal = 0;
         $rowNum = 2;
 
     
         // Escrever o conteúdo no arquivo
-    foreach ($data as $item) {
-        $itemArray = (array) $item;
+        foreach ($data as $item) {
+            $itemArray = (array) $item;
 
-        
+            if ($isTaxaDesconto) {
+                $totalValorFinal += $itemArray['extrato_operacao_valor'];
+            }
+            if ($isTotalTransacoes) {
+                $totalValorFinal += $itemArray['valor'];
+            }
 
-        // Escrever a linha de dados no arquivo
-        $sheet->fromArray($itemArray, NULL, 'A' . $rowNum);
-        $rowNum++;
-    }
+            // Escrever a linha de dados no arquivo
+            $sheet->fromArray($itemArray, NULL, 'A' . $rowNum);
+            $rowNum++;
+        }
 
 
-        // Adicionar a linha de total se necessário
-        /*if ($isGuias || $isRecebimento || $isPlano || $isPagamentoPrestador) {
+        //Adicionar a linha de total se necessário
+        if ($isTotalTransacoes || $isTaxaDesconto ) {
             $totalRow = ['Total: R$ ' . number_format($totalValorFinal, 2, ',', '.')];
             $sheet->fromArray($totalRow, NULL, 'A' . $rowNum);
-        }*/
+        }
 
         // Definindo o caminho do arquivo
         $fileName = 'export_' . md5(uniqid()) . '.xlsx';
@@ -447,6 +463,7 @@ class RelatoriosController extends Controller
         // Criar o writer e salvar o arquivo
         $writer = new Xlsx($spreadsheet);
         $writer->save($filePath);
+
 
         $headers = [
             'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
