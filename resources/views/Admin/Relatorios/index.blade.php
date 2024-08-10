@@ -126,7 +126,7 @@
                         <div class="collapse multi-collapse" id="multiCollapseExample2" style="width: 100%;">
                             <form action="{{ route('relatorio-criar') }}" method="post" class="form-center">
                                 @csrf
-                                <input type="hidden" name="tipo" value="taxas_desconto">
+                                <input type="hidden" name="tipo" value="taxasDesconto">
                                 <div class="row" style="display: flex; flex-direction: row; justify-content: center; margin-bottom: 20px; width: 100%;">
                                     <div class="col-md-4">
                                         <label for="id_cliente" class="form-label">Cliente:</label>
@@ -213,7 +213,7 @@
                         <div class="collapse multi-collapse" id="multiCollapseExample3" style="width: 100%;">
                             <form action="{{ route('relatorio-criar') }}" method="post" class="form-center">
                                     @csrf
-                                    <input type="hidden" name="tipo" value="planos">
+                                    <input type="hidden" name="tipo" value="relatorioErros">
                                     <div class="row" style="display: flex; flex-direction: row; justify-content: center; margin-bottom: 20px; width: 100%;">
                                         
                                         <div class="col-md-4">

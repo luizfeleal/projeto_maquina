@@ -58,7 +58,7 @@ Route::prefix('qr')->middleware('permission')->group(function(){
 Route::prefix('relatorios')->middleware('permission')->group(function(){
     Route::get('/', 'App\Http\Controllers\RelatoriosController@view')->name('relatorio-view');
     Route::post('/exibir', 'App\Http\Controllers\RelatoriosController@exibirRelatorio')->name('relatorio-criar');
-    Route::get('/download', 'App\Http\Controllers\RelatoriosController@downloadXlsxRelatorio')->name('relatorio-xlsx-download');
+    Route::post('/download', 'App\Http\Controllers\RelatoriosController@downloadXlsxRelatorio')->name('relatorio-xlsx-download');
 });
 
 Route::get('/login', 'App\Http\Controllers\LoginController@login')->name('login-view');

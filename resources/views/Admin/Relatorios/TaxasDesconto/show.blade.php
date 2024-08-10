@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Relatórios > Total Transações')
+@section('title', 'Relatórios > Taxas de Desconto')
 
 @section('content')
         <div id="reports_maquinas_online_offline" class="relatorios div-center-column w-100"
@@ -12,8 +12,8 @@
                 
                 <form action="{{ route('relatorio-xlsx-download') }}" method="post" class="form-center" id="form-csv">
                 <input type="hidden" name="data" value="{{json_encode($resultArray)}}">
-                    <input type="hidden" name="tipo_csv" value="total_transacao">
-                        <h1>Total Transações</h1>
+                    <input type="hidden" name="tipo_csv" value="taxa_desconto">
+                        <h1>Taxas de Desconto</h1>
 
                         @csrf
 
@@ -54,21 +54,6 @@
                                 </tr>
                             </tfoot>
                         </table>
-
-                        <div class="row" style="display: flex; flex-direction: row; justify-content: center;width: 100%; margin-top: 50px;">
-                            <div class="col-md-2">
-                                <p><strong>Pix: </strong> R$ {{ number_format($valor_total_pix, 2, ',', '.')}} </p>
-                            </div>
-                            <div class="col-md-2">
-                                <p><strong>Cartão: </strong>  R$ {{ number_format($valor_total_cartao, 2, ',', '.')}} </p>
-                            </div>
-                            <div class="col-md-2">
-                                <p><strong>Dinheiro: </strong>  R$ {{ number_format($valor_total_dinheiro, 2, ',', '.')}} </p>
-                            </div>
-                            <div class="col-md-2">
-                                <p><strong>Estorno: </strong>  R$ {{ number_format($valor_total_estorno, 2, ',', '.')}} </p>
-                            </div>
-                        </div>
                         <div class="row" style="display: flex; flex-direction: row; justify-content: center;width: 100%; margin-top: 10px; margin-bottom: 30px;">
                             <div class="col-md-8">
                                 <p><strong>Total Transações: </strong>  R$ {{ number_format($valor_total, 2, ',', '.')}}</p>

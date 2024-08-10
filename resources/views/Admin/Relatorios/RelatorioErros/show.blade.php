@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Relatórios > Total Transações')
+@section('title', 'Relatórios > Relatório de Erros')
 
 @section('content')
         <div id="reports_maquinas_online_offline" class="relatorios div-center-column w-100"
@@ -11,9 +11,9 @@
 
                 
                 <form action="{{ route('relatorio-xlsx-download') }}" method="post" class="form-center" id="form-csv">
-                <input type="hidden" name="data" value="{{json_encode($resultArray)}}">
-                    <input type="hidden" name="tipo_csv" value="total_transacao">
-                        <h1>Total Transações</h1>
+                <input type="hidden" name="data" value="json_encode($resultArray)">
+                    <input type="hidden" name="tipo_csv" value="relatorioErros">
+                        <h1>Relatório de Erros</h1>
 
                         @csrf
 
@@ -21,10 +21,10 @@
                         <table id="total_transacoes" class="table table-striped table-responsive" style="width:100%">
                             <thead>
                                 <tr>
-                                    <th>Local</th>
-                                    <th>Maquina</th>
-                                    <th>Tipo Transação</th>
-                                    <th>Valor</th>
+                                    <th>Status</th>
+                                    <th>Descrição</th>
+                                    <th>Ação</th>
+                                    <th>Placa Máquina</th>
                                     <th>Data e Hora</th>
                                 </tr>
                             </thead>
@@ -32,50 +32,26 @@
 
                             @foreach($resultadosFiltrados as $resultado)
                                 <tr>
-                                    <td>{{$resultado['nome_local']['local_nome']}}</td>
-                                    <td>{{$resultado['maquina_nome']}}</td>
-                                    <td>{{$resultado['extrato_operacao_tipo']}}</td>
-                                    @if($resultado['extrato_operacao'] == "C")
-                                        <td>+ R$ {{ number_format($resultado['extrato_operacao_valor'], 2, ',', '.')}}</td>
-                                    @else
-                                        <td>- R$ {{ number_format($resultado['extrato_operacao_valor'], 2, ',', '.')}}</td>
-                                    @endif
+                                    <td>{{$resultado['status']}}</td>
+                                    <td>{{$resultado['descricao']}}</td>
+                                    <td>{{$resultado['acao']}}</td>
+                                    
+                                    <td>{{$resultado['id_placa']}}</td>
+                                    
                                     <td>{{date('d/m/Y H:i:s', strtotime($resultado['data_criacao']))}}</td>
                                 </tr>
                             @endforeach
                             </tbody>
                             <tfoot>
                                 <tr>
-                                    <th>Local</th>
-                                    <th>Maquina</th>
-                                    <th>Tipo Transação</th>
-                                    <th>Valor</th>
+                                    <th>Status</th>
+                                    <th>Descrição</th>
+                                    <th>Ação</th>
+                                    <th>Placa Máquina</th>
                                     <th>Data e Hora</th>
                                 </tr>
                             </tfoot>
                         </table>
-
-                        <div class="row" style="display: flex; flex-direction: row; justify-content: center;width: 100%; margin-top: 50px;">
-                            <div class="col-md-2">
-                                <p><strong>Pix: </strong> R$ {{ number_format($valor_total_pix, 2, ',', '.')}} </p>
-                            </div>
-                            <div class="col-md-2">
-                                <p><strong>Cartão: </strong>  R$ {{ number_format($valor_total_cartao, 2, ',', '.')}} </p>
-                            </div>
-                            <div class="col-md-2">
-                                <p><strong>Dinheiro: </strong>  R$ {{ number_format($valor_total_dinheiro, 2, ',', '.')}} </p>
-                            </div>
-                            <div class="col-md-2">
-                                <p><strong>Estorno: </strong>  R$ {{ number_format($valor_total_estorno, 2, ',', '.')}} </p>
-                            </div>
-                        </div>
-                        <div class="row" style="display: flex; flex-direction: row; justify-content: center;width: 100%; margin-top: 10px; margin-bottom: 30px;">
-                            <div class="col-md-8">
-                                <p><strong>Total Transações: </strong>  R$ {{ number_format($valor_total, 2, ',', '.')}}</p>
-                            </div>
-                            
-                        </div>
-                        
 
                         <div class="div-button" style="padding-top: 70px; padding-bottom: 30px;">
                             <button class="btn btn-primary" id="btn-baixar-csv" type="submit" style="width: 130px;">Gerar Arquivo</button>

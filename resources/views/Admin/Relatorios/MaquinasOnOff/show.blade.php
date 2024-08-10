@@ -10,11 +10,11 @@
                 style="margin-top: 15px; display: flex;flex-direction: column;justify-content: center;align-items: center; height: 100%;">
 
                 <form action="{{ route('relatorio-xlsx-download') }}" method="post" class="form-center" id="form-csv">
-                    <input type="hidden" name="data" value="">
-                    <input type="hidden" name="tipo_csv" value="guias">
-                        <h1>Máquinas Online/Offline</h1>
-
-                        @csrf
+                    <h1>Máquinas Online/Offline</h1>
+                    
+                    @csrf
+                    <input type="hidden" name="data" value="{{json_encode($resultArray)}}">
+                    <input type="hidden" name="tipo_csv" value="maquinaOnlineOffline">
 
                         <div class="row" style="display: flex; flex-direction: row; justify-content: center;width: 100%; margin-top: 50px; margin-bottom: 30px;">
                             <div class="col-md-3">
