@@ -43,32 +43,59 @@ class LocaisController extends Controller
         }else{
             $locais = LocaisService::coletar();
             $clientes = ClientesService::coletar();
-            $clienteLocal = collect(ClienteLocalService::coletar())->keyBy('id_local');
+            $clientesPorId = collect($clientes)->keyBy('id_cliente')->toArray();
+            $clienteLocal = collect(ClienteLocalService::coletar())->keyBy('id_local')->toArray();
             $maquinas = MaquinasService::coletar();
-            $extrato_maquina = ExtratoMaquinaService::coletar();
+            $maquinas_extrato = ExtratoMaquinaService::coletar();
+        
+                
+            $locais_indexados = [];
+        foreach ($locais as &$local) {
+            $local['cliente_nome'] = $clientes[$clienteLocal[$local['id_local']]['id_cliente']]['cliente_nome'];
+            $locais_indexados[$local['id_local']] = $local;
+        }
+
+        
+
+        foreach($maquinas as &$maquina){
+            $total_pix = 0;
+            $total_cartao = 0;
+            $total_dinheiro = 0;
+            $total_maquina = 0;
+
+            $extrato_por_maquina = array_filter($maquinas_extrato, function($item) use($maquina){
+                return $item['id_maquina'] == $maquina['id_maquina'];
+            });
 
 
-            foreach($locais as &$local){
-                $clientesNomes = '';
-                foreach($clientes as $cliente){
-                    if($clienteLocal[$local['id_local']]['id_cliente'] == $cliente['id_cliente']){
-                        $clientesNomes =  $cliente['cliente_nome'] . ' ';
-                        $local['cliente_nome'] = $clientesNomes;
-                    }
-                }
-                foreach($maquinas as $maquina){
-                    if($maquina['id_local'] == $local['id_local']){
-                        $local['maquina_nome'] = $maquina['maquina_nome'];
-                        $local['maquina_status'] = $maquina['maquina_status'];
-                    }else{
-                        $local['maquina_nome'] = "";
-                        $local['maquina_status'] = "";
-                    }
+
+            foreach($extrato_por_maquina as $em){
+                $total_maquina += $em['extrato_operacao_valor'];
+                if($em['extrato_operacao_tipo'] == "PIX"){
+                    $total_pix += $em['extrato_operacao_valor'];
+                } else if($em['extrato_operacao_tipo'] == "Cartão"){
+                    $total_cartao += $em['extrato_operacao_valor'];
+                }else if($em['extrato_operacao_tipo'] == "Dinheiro"){
+                    $total_dinheiro += $em['extrato_operacao_valor'];
                 }
             }
+            $maquina['total_pix'] = $total_pix;
+            $maquina['total_cartao'] = $total_cartao;
+            $maquina['total_dinheiro'] = $total_dinheiro;
+            $maquina['total_maquina'] = $total_maquina;
+            $maquina['local_nome'] = $locais_indexados[$maquina['id_local']]['local_nome'];
+            $maquina['cliente_nome'] = $clientes[$clienteLocal[$maquina['id_local']]['id_cliente']];
+        }
 
+        $maquinas_indexadas = [];
+        foreach ($maquinas as $maquina) {
+            $maquinas_indexadas[$maquina['id_maquina']] = $maquina;
+        }
+
+        $maquinas = $maquinas_indexadas;
             
-            return view('Admin.Local.index', compact('locais', 'extrato_maquina', 'maquinas', 'clientes'));
+            
+        return view('Admin.Local.index', compact( 'maquinas', 'locais','clientes' ));
         }
 
     }

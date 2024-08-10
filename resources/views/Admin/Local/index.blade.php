@@ -73,22 +73,27 @@
                         
                         <td>{{$local['cliente_nome']}}</td>
                         
-                        @if(isset($local['maquina_nome']))
-                        <td>{{$local['maquina_nome']}}</td>
-                        @if($local['maquina_status'] == 0)
-                            <td><i class="fa-solid fa-circle text-danger" ></i></td>
-                        @else
-                            <td><i class="fa-solid fa-circle text-success"></i></td>
-                        @endif
+                        @if(isset($maquinas[$local['id_local']]))
+                            <td>{{$maquinas[$local['id_local']]['maquina_nome']}}</td>
+                            @if($maquinas[$local['id_local']]['maquina_status'] == 0)
+                                <td><i class="fa-solid fa-circle text-danger" ></i></td>
+                            @else
+                                <td><i class="fa-solid fa-circle text-success"></i></td>
+                            @endif
 
+                            
+                            
+                            
+                            <td>R$ {{number_format($maquinas[$local['id_local']]['total_maquina'], 2, ',', '.')}}</td>
+                            <td>R$ {{number_format($maquinas[$local['id_local']]['total_pix'], 2, ',', '.')}}</td>
+                            <td>R$ {{number_format($maquinas[$local['id_local']]['total_cartao'], 2, ',', '.')}}</td>
                         @else
-                        <td>{{$local['maquina_nome']}}</td>
-                        <td>{{$local['maquina_status']}}</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+
                         @endif
                             
-                        <td></td>
-                        <td></td>
-                        <td></td>
                         <td style="text-align: center;"><a href="#" style="color: red !important;" data-bs-toggle="modal" data-bs-target="#ModalCenterExcluir" onclick="setIdLocalExcluir({{$local['id_local']}}, '#id_local_input_excluir')"><i class="fa-solid fa-trash"></i></a></td>
                         
                     </tr>

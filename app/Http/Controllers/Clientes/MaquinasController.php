@@ -184,7 +184,6 @@ class MaquinasController extends Controller
                     $total_dinheiro += $em['extrato_operacao_valor'];
                 }
             }
-            return $locais_indexados;
             $maquina['total_pix'] = $total_pix;
             $maquina['total_cartao'] = $total_cartao;
             $maquina['total_dinheiro'] = $total_dinheiro;
