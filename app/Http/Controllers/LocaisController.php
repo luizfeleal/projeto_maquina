@@ -24,14 +24,17 @@ class LocaisController extends Controller
             $clientes = $request['select-cliente'];
             $dados = [];
             $dados['local_nome'] = $request['nome_local'];
+            $local = LocaisService::criar($dados);
+            $id_local = $local['response']['id_local'];
             foreach($clientes as $cliente){
-                $dados['id_cliente'] = $cliente;
-                LocaisService::criar($dados);
+                $dadosClienteLocal = [];
+                $dadosClienteLocal['id_cliente'] = $cliente;
+                $dadosClienteLocal['id_local'] = $id_local;
+                ClienteLocalService::criar($dadosClienteLocal);
             }
-    
+
             return back()->with('success', 'Local cadastrado com sucesso!');
         }catch(\Throwable $e){
-            return $e;
             return back()->with('error', 'Houve um erro ao tentar cadastrar o local');
         }
     }
