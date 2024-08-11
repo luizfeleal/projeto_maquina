@@ -88,7 +88,7 @@ class LocaisController extends Controller
             $maquina['total_dinheiro'] = $total_dinheiro;
             $maquina['total_maquina'] = $total_maquina;
             $maquina['local_nome'] = $locais_indexados[$maquina['id_local']]['local_nome'];
-            $maquina['cliente_nome'] = $clientes[$clienteLocal[$maquina['id_local']]['id_cliente']];
+            $maquina['cliente_nome'] = $clientesPorId[$clienteLocal[$maquina['id_local']]['id_cliente']];
         }
 
         $maquinas_indexadas = [];
