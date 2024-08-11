@@ -62,6 +62,8 @@ class RelatoriosController extends Controller
                 return $maquina['maquina_status'] == 0;
             });
 
+            $resultArray = [];
+
             foreach($maquinas as $maquina){
                 $resultArray[] =[
                     "maquina"=>$maquina['maquina_nome'],
@@ -156,7 +158,7 @@ class RelatoriosController extends Controller
             $valor_total = 0;
 
             
-            
+            $resultArray= [];
                foreach ($extratos as &$item) {
                     $item['maquina_nome'] = $maquinasPorId[$item['id_maquina']]['maquina_nome'];
                     $item['nome_local'] = $maquinasPorId[$item['id_maquina']]['nome_local'];
