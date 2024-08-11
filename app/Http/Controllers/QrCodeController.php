@@ -7,6 +7,7 @@ use App\Services\LocaisService;
 use App\Services\MaquinasService;
 use App\Services\ExtratoMaquinaService;
 use App\Services\ClientesService;
+use App\Services\ClienteLocalService;
 use App\Services\QrCodeService;
 use App\Services\AuthService;
 use Illuminate\Support\Facades\Response;
