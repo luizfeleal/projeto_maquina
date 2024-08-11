@@ -55,7 +55,7 @@ class LocaisController extends Controller
                 
             $locais_indexados = [];
         foreach ($locais as &$local) {
-            $local['cliente_nome'] = $clientes[$clienteLocal[$local['id_local']]['id_cliente']]['cliente_nome'];
+            $local['cliente_nome'] = $clientesPorId[$clienteLocal[$local['id_local']]['id_cliente']]['cliente_nome'];
             $locais_indexados[$local['id_local']] = $local;
         }
 
