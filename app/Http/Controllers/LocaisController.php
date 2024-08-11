@@ -30,7 +30,7 @@ class LocaisController extends Controller
                 $dadosClienteLocal = [];
                 $dadosClienteLocal['id_cliente'] = $cliente;
                 $dadosClienteLocal['id_local'] = $id_local;
-                ClienteLocalService::criar($dadosClienteLocal);
+                return ClienteLocalService::criar($dadosClienteLocal);
 
             }
 
