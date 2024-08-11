@@ -322,6 +322,13 @@ class RelatoriosController extends Controller
                         }
                     }
 
+                    $resultArray[] = [
+                        "local" => $maquinasPorId[$item['id_maquina']]['nome_local'],
+                        "maquina" => $maquinasPorId[$item['id_maquina']]['maquina_nome'],
+                        "tipo_transacao" => $item['extrato_operacao_tipo'],
+                        "valor" => $item['extrato_operacao_valor'],
+                        "data_e_hora" => date('d/m/Y H:i:s', strtotime($item['data_criacao']))
+                    ];
                     /*if($item['extrato_operacao_tipo'] == "PIX"){
                         $valor_total_pix += $item['extrato_operacao_valor'];
                     }else if($item['extrato_operacao_tipo'] == "Cartão"){
@@ -337,7 +344,7 @@ class RelatoriosController extends Controller
 
                 
 
-            return view('Admin.Relatorios.TaxasDesconto.show', compact('resultadosFiltrados','valor_total'));
+            return view('Admin.Relatorios.TaxasDesconto.show', compact('resultadosFiltrados','valor_total', 'resultArray'));
 
 
 
