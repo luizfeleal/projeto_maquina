@@ -294,7 +294,7 @@ class RelatoriosController extends Controller
             //$valor_total_estorno = 0;
             $valor_total = 0;
 
-            
+            $resultArray = [];
             
                foreach ($extratos as &$item) {
                     $item['maquina_nome'] = $maquinasPorId[$item['id_maquina']]['maquina_nome'];
@@ -342,9 +342,8 @@ class RelatoriosController extends Controller
                     $valor_total += $item['extrato_operacao_valor'];
                 }
 
-                
 
-            return view('Admin.Relatorios.TaxasDesconto.show', compact('resultadosFiltrados','valor_total', 'resultArray'));
+                return view('Admin.Relatorios.TaxasDesconto.show', compact('resultadosFiltrados','valor_total', 'resultArray'));
 
 
 
