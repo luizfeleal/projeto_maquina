@@ -109,8 +109,7 @@ class ClientesService
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true); // Seguir redirecionamentos
         curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            'Authorization: Bearer ' . $token,
-            'Accept: application/json',
+            'Authorization: Bearer ' . $token
         ]);
     
         $response = curl_exec($ch);
