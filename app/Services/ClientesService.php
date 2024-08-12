@@ -102,7 +102,7 @@ class ClientesService
     public static function deletar($id)
     {
         $url = env('APP_URL_API') . "/clientes/$id";
-        return $url;
+
         $token = AuthService::getToken();
     
         $ch = curl_init($url);
@@ -119,7 +119,6 @@ class ClientesService
         curl_close($ch);
 
     
-        return $response;
         if ($status == 200 && $response !== false) {
             return json_decode($response, true);
         } else {

@@ -116,6 +116,7 @@ class ClientesController extends Controller
 
              $id_cliente = $request['id_cliente'];
 
+             dd($id_cliente);
              //$clienteLocal = ClienteLocalService::coletarComFiltro(['id_cliente' => $id_cliente], 'where');
              $clienteLocal = ClienteLocalService::coletar();
 
