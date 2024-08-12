@@ -111,6 +111,24 @@ class LocaisController extends Controller
         return view('Admin.Local.Usuarios.create', compact('locais', 'clientes'));
     }
 
+    public function registrarUsuarioLocal(Request $request){
+        $clientes = $request['select_cliente'];
+
+        $local = $request['select_local'];
+
+
+
+        foreach($clientes as $cliente){
+            $localCliente = ClienteLocalService::coletarComFiltro(['id_cliente' =>$cliente, 'id_local'=>$local], 'where');
+
+            if(empty($localCliente)){
+                ClienteLocalService::criar(["id_cliente" => $cliente, "id_local"=>$local]);
+            }
+        }
+
+        return back()->with("success", "Cliente(s) incluso com sucesso!");
+    }
+
     public function excluirLocais(Request $request){
         try{
 

@@ -36,6 +36,7 @@ Route::prefix('clientes-maquinas')->middleware('permission')->group(function(){
 Route::prefix('local')->middleware('permission')->group(function(){
     Route::get('/', 'App\Http\Controllers\LocaisController@coletarLocais')->name('local');
     Route::get('/incluirUsuario', 'App\Http\Controllers\LocaisController@incluirUsuarioLocal')->name('local-incluir-usuario');
+    Route::get('/registrarUsuarioLocal', 'App\Http\Controllers\LocaisController@registrarUsuarioLocal')->name('local-registrar-usuario');
     Route::get('/criar', 'App\Http\Controllers\LocaisController@criarLocais')->name('local-criar');
     Route::get('/registrar', 'App\Http\Controllers\LocaisController@registrarLocais')->name('local-registrar');
     Route::post('/excluir', 'App\Http\Controllers\LocaisController@excluirLocais')->name('local-excluir');
