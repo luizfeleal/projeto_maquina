@@ -22,6 +22,8 @@ const setMensagemIncluirUsuario = (body, local, clientes) => {
         clientesSelecionados.push($(this).text());
     });
 
+    $("input_clientes").val($clientesSelecionados);
+
     $(body).empty();
     $(body).append(`<p>Realmente deseja incluir o(s) usuário(s) ${clientesSelecionados.join(', ')} no local ${localSelecionado}? Ao incluir, o usuário verá todas as informações deste local.</p>`);
 }
@@ -147,6 +149,37 @@ const sendFormCriarLocal = () =>{
         });
         if (!emptyFields) {
             $("#novo-local-form").submit();
+        }
+    }else{
+        hideLoader();
+    }
+}
+const sendFormIncluirUsuarioLocal = () =>{
+    showLoader();
+    var invalidElements = $('.is-invalid');
+
+    if(invalidElements.length == 0){
+        var requiredFields = $('[required]');
+    
+        // Inicializa uma variável para verificar se há campos vazios
+        var emptyFields = false;
+    
+        // Itera sobre os campos obrigatórios
+        requiredFields.each(function() {
+            // Verifica se o campo está vazio
+            if ($(this).val() == "" || $(this).val() == " ") {
+                // Adiciona uma classe de erro ou aplica uma estilização para destacar o campo vazio
+                $(this).addClass('is-invalid'); // Exemplo de classe de erro
+    
+                // Marca que há pelo menos um campo vazio
+                emptyFields = true;
+            } else {
+                // Remove a classe de erro se o campo não estiver vazio
+                $(this).removeClass('is-invalid');
+            }
+        });
+        if (!emptyFields) {
+            $("#incluir_usuario_local_form").submit();
         }
     }else{
         hideLoader();

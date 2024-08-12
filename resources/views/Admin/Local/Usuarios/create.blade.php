@@ -9,7 +9,7 @@
             <div class="container section container-platform div-center-column"
                 style="margin-top: 15px; height: 100%;">
 
-                <form action="{{ route('local-registrar') }}" id="novo-local-form" class="w-100">
+                <form action="{{ route('local-incluir-usuario') }}" id="incluir_usuario_local_form" class="w-100">
                     @csrf
 
                     <div class="row" style="display: flex; flex-direction: row; justify-content: center;width: 100%; margin-bottom: 20px;">
@@ -63,7 +63,7 @@
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secundary" data-bs-dismiss="modal" aria-label="Close">Cancelar</button>
-                                    <button type="submit" class="btn btn-primary" data-bs-dismiss="modal" aria-label="Close" onclick="sendFormCriarLocal()">Sim</button>
+                                    <button type="submit" class="btn btn-primary" data-bs-dismiss="modal" aria-label="Close" onclick="sendFormIncluirUsuarioLocal()">Sim</button>
                                 </div>
                             </div>
                         </div>
