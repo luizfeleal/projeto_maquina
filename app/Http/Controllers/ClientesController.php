@@ -116,7 +116,6 @@ class ClientesController extends Controller
 
              $id_cliente = $request['id_cliente'];
 
-             dd($id_cliente);
              //$clienteLocal = ClienteLocalService::coletarComFiltro(['id_cliente' => $id_cliente], 'where');
              $clienteLocal = ClienteLocalService::coletar();
 
@@ -129,7 +128,6 @@ class ClientesController extends Controller
              }
              $result = ClientesService::deletar($id_cliente);
 
-             return $result;
              return back()->with('success', $result['message']);
          //}catch(\Throwable $e){
              //return back()->with('error', 'Houve um erro ao tentar excluir o cliente.');
