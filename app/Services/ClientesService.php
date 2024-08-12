@@ -119,6 +119,7 @@ class ClientesService
         curl_close($ch);
 
     
+        return $response;
         if ($status == 200 && $response !== false) {
             return json_decode($response, true);
         } else {
