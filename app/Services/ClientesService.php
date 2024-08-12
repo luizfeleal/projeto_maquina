@@ -102,6 +102,7 @@ class ClientesService
     public static function deletar($id)
     {
         $url = env('APP_URL_API') . "/clientes/$id";
+        return $url;
         $token = AuthService::getToken();
     
         $ch = curl_init($url);
