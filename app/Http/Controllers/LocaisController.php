@@ -146,6 +146,13 @@ class LocaisController extends Controller
              }
  
              $result = LocaisService::deletar($id_local);
+             $clienteLocalService = ClienteLocalService::coletar();
+             $clienteLocalService = array_filter($clienteLocalService, function($item) use($id_local){
+                return $item['id_local'] == $id_local;
+             });
+             foreach($clienteLocalService as $associacao){
+                 ClienteLocalService::deletar($associacao['id_cliente_local']);
+             }
              return back()->with('success', $result['message']);
          }catch(\Throwable $e){
              return back()->with('error', 'Houve um erro ao tentar remover o local');
