@@ -118,10 +118,14 @@ class LocaisController extends Controller
 
 
         foreach($clientes as $cliente){
-            $localCliente = ClienteLocalService::coletarComFiltro(['id_cliente' =>$cliente, 'id_local'=>$local], 'where');
+            $localCliente = ClienteLocalService::coletar();
+
+            $localEncontrado = array_filter($localCliente, function($item) use($cliente, $local){
+                return $item['id_cliente'] == $cliente && $item['id_local'] == $local;
+            });
 
             if(empty($localCliente)){
-                ClienteLocalService::criar(["id_cliente" => $cliente, "id_local"=>$local]);
+                return ClienteLocalService::criar(["id_cliente" => $cliente, "id_local"=>$local]);
             }
         }
 
