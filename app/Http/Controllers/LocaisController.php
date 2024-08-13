@@ -112,10 +112,9 @@ class LocaisController extends Controller
     }
 
     public function registrarUsuarioLocal(Request $request){
-        $clientes = $request['select_cliente'];
+        $clientes = $request['select-cliente'];
 
-        $local = $request['select_local'];
-
+        $local = $request['select-local'];
 
 
         foreach($clientes as $cliente){

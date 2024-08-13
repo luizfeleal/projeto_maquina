@@ -22,7 +22,7 @@ const setMensagemIncluirUsuario = (body, local, clientes) => {
         clientesSelecionados.push($(this).text());
     });
 
-    $("input_clientes").val($clientesSelecionados);
+    $("input_clientes").val(clientesSelecionados);
 
     $(body).empty();
     $(body).append(`<p>Realmente deseja incluir o(s) usuário(s) ${clientesSelecionados.join(', ')} no local ${localSelecionado}? Ao incluir, o usuário verá todas as informações deste local.</p>`);
