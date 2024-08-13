@@ -124,9 +124,12 @@ class LocaisController extends Controller
                 return $item['id_cliente'] == $cliente && $item['id_local'] == $local;
             });
 
-            if(empty($localCliente)){
-                return ClienteLocalService::criar(["id_cliente" => $cliente, "id_local"=>$local]);
+            
+            if(empty($localEncontrado)){
+
+                ClienteLocalService::criar(["id_cliente" => $cliente, "id_local"=>$local]);
             }
+            //}
         }
 
         return back()->with("success", "Cliente(s) incluso com sucesso!");
