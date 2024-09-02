@@ -15,7 +15,7 @@ use App\Services\AcessosTelaService;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('login-view');
 });
 
 Route::prefix('maquinas')->middleware('permission')->group(function(){
@@ -26,6 +26,8 @@ Route::prefix('maquinas')->middleware('permission')->group(function(){
     Route::get('/transacoes', 'App\Http\Controllers\MaquinasController@transacaoMaquinas')->name('maquinas-transacoes');
     Route::get('/acumulado', 'App\Http\Controllers\MaquinasController@acumuladoMaquinas')->name('maquinas-acumulado');
     Route::post('/excluir', 'App\Http\Controllers\MaquinasController@excluirMaquinas')->name('maquinas-excluir');
+    Route::post('/liberarJogadaRegistrar', 'App\Http\Controllers\MaquinasController@liberarJogada')->name('maquinas-liberar-jogada');
+    Route::get('/liberarJogada', 'App\Http\Controllers\MaquinasController@viewLiberarJogada')->name('view-liberar-jogadas');
 });
 
 Route::prefix('clientes-maquinas')->middleware('permission')->group(function(){

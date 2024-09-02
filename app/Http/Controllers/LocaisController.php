@@ -52,7 +52,7 @@ class LocaisController extends Controller
             $maquinas = MaquinasService::coletar();
             $maquinas_extrato = ExtratoMaquinaService::coletar();
         
-                
+	                
             $locais_indexados = [];
         foreach ($locais as &$local) {
             $local['cliente_nome'] = $clientesPorId[$clienteLocal[$local['id_local']]['id_cliente']]['cliente_nome'];
@@ -93,7 +93,7 @@ class LocaisController extends Controller
 
         $maquinas_indexadas = [];
         foreach ($maquinas as $maquina) {
-            $maquinas_indexadas[$maquina['id_maquina']] = $maquina;
+            $maquinas_indexadas[$maquina['id_local']] = $maquina;
         }
 
         $maquinas = $maquinas_indexadas;

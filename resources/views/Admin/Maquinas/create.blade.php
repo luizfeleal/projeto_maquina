@@ -29,8 +29,13 @@
                     </div>
                     <div class="row" style="display: flex; flex-direction: row; justify-content: center; margin-top: 10px;  width: 100%; ">
                         <div class="col-md-6">
-                            <label for="id_placa" class="form-label">Gerar ID da placa* <a id="botao-gerar-id-placa"><i class="fa-solid fa-repeat"></i></a></label>
-                            <input type="text" name="id_placa" id="id_placa" class="form-control required input-text" placeholder="Id da placa" aria-label="ID da placa" required disabled>
+                            <label for="id_placa" class="form-label">Gerar ID da placa*</label>
+                            <select class="select-id_placa js-example-basic-multiple js-states form-control" id="id_placa" placeholder="Selecione" name="id_placa"  required>
+                            <option value="">Selecione...</option>
+                            @foreach($maquinas['response']['resposta']['pendingDevices'] as $maquina)
+                                <option value="{{$maquina}}">{{$maquina}}</option>
+                            @endforeach
+                            </select>
                             <div class="invalid-feedback">
                                 <p class="invalid-p invalid-p-name">Campo obrigatório</p>
                             </div>
@@ -149,6 +154,10 @@
         $('.select-local').select2({
             theme: 'bootstrap-5'
         });
+
+	$('#id_placa').select2({
+		theme: 'bootstrap-5'
+	})
         $(".select-local").on('change', () => {
             setComplementoCliente()
         })

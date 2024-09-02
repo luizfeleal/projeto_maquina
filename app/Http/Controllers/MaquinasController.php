@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Services\LocaisService;
 use App\Services\MaquinasService;
+use App\Services\Hardware\MaquinasService as HardwareMaquinas;
 use App\Services\ExtratoMaquinaService;
+use App\Services\LiberarJogadaService;
 use App\Services\ClientesService;
 use App\Services\AuthService;
 
@@ -25,8 +27,9 @@ class MaquinasController extends Controller
     public function criarMaquinas(Request $request){
         $locais = LocaisService::coletar();
         $clientes = ClientesService::coletar();
-
-        return view('Admin.Maquinas.create', compact('locais', 'clientes'));
+$maquinas = MaquinasService::coletarPlacasDisponiveis();
+//return $maquinas;
+        return view('Admin.Maquinas.create', compact('locais', 'clientes', 'maquinas'));
     }
 
     public function registrarMaquinas(Request $request){
@@ -36,25 +39,25 @@ class MaquinasController extends Controller
 
             $dados = [];
             $dados['id_local'] = $request['select-local'];
-            $dados['id_placa'] = $request['id_placa_input'];
+            $dados['id_placa'] = $request['id_placa'];
             $dados['maquina_nome'] = $request['maquina_nome'];
             $dados['maquina_status'] = 0;
 
             $result = MaquinasService::criar($dados);
 
     
+return $result;
             return back()->with('success', $result['message']);
         }catch(\Throwable $e){
-            return back()->with('error', 'Houve um erro ao tentar cadastrar o local');
+            return back()->with('error', 'Houve um erro ao tentar cadastrar a máquina');
         }
     }
 
     public function gerarIdPlaca(){
-        $id_aleatorio = rand(10000000, 99999999);
-        $maquinas = MaquinasService::coletarComFiltro(['id_placa' => $id_aleatorio], 'where');
-    
+        $maquinas = HardwareMaquinas::coletarPlacasDisponivel();
+    	
         if(empty($maquinas)){
-            return response()->json(["id_placa"=>$id_aleatorio], 200); // Correção aqui
+            return response()->json(["placas"=>$maquinas], 200); // Correção aqui
         }else{
             return response()->json($maquinas, 200); // Correção aqui
         }
@@ -228,5 +231,25 @@ class MaquinasController extends Controller
         }catch(\Throwable $e){
             return back()->with('error', 'Houve um erro ao tentar remover a máquina');
         }
+    }
+
+    public function liberarJogada(Request $request){
+        $dados = [
+            "id_placa" => $request['select-id-placa'],
+            "valor" =>$request['valor_credito'],
+            "id_transacao" => "CD" . rand(10000000, 99999999)
+        ];
+	 $jogada = LiberarJogadaService::criar($dados);
+	
+        if($jogada['http_code'] == 200){
+            return back()->with('success', "Jogada liberada com sucesso!");
+        }else{
+            return back()->with('error', 'Houve um erro ao tentar liberar a jogada.');
+        }
+    }
+public function viewLiberarJogada(Request $request){
+        $maquinas = MaquinasService::coletar();
+
+        return view('Admin.Jogadas.create', compact("maquinas"));
     }
 }

@@ -118,6 +118,20 @@ class MaquinasService
             ], $status);
         }
     }
-
+public static function coletarPlacasDisponiveis()
+    {
+        
+            $url = env('APP_URL_API') . "/hardware/maquinasDisponiveis";
+    
+            $token = AuthService::getToken();
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer ' . $token
+            ])->post($url);
+    
+            $maquinas = $response;
+    
+            return $maquinas;
+        
+    }
 
 }
