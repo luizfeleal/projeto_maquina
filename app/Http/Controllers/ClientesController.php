@@ -19,7 +19,14 @@ class ClientesController extends Controller
 
         if($id){
             $cliente = ClientesService::coletar($id);
-            $clienteLocal = collect(ClienteLocalService::coletarComFiltro(['id_cliente' => $id], 'where'))->pluck('id_local')->unique();
+            //$clienteLocal = collect(ClienteLocalService::coletarComFiltro(['id_cliente' => $id], 'where'))->pluck('id_local');
+            $clienteLocal = ClienteLocalService::coletar();
+            $clienteLocal = array_filter($clienteLocal, function($item) use($cliente){
+                return $item['id_cliente'] == $cliente['id_cliente'];
+            });
+
+            $clienteLocal = collect($clienteLocal)->pluck('id_local');
+            
             $local = LocaisService::coletar();
             $locais = array_filter($local, function($item) use($clienteLocal){
                 return in_array($item['id_local'], $clienteLocal->toArray());
