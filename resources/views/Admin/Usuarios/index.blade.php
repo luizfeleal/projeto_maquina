@@ -14,7 +14,7 @@
                     
                     </div>
                     <div class="col-md-4" style="display: flex; flex-direction: row; justify-content: end; align-items: center;">
-                        <a href="{{route('usuario-criar')}}" class="btn btn-primary">Novo usuário <i class="fa-solid fa-plus"></i></a>
+                        <a  href="{{route('usuario-criar')}}"><button class="btn btn-primary">Novo usuário <i class="fa-solid fa-plus"></i></button></a>
                     </div>
                 </div>
 
