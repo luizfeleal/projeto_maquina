@@ -11,7 +11,7 @@
                 style="margin-top: 15px; height: 100%;">
                 <div class="row" style="display: flex; flex-direction: row; justify-content: center; margin-bottom: 20px; width: 100%;">
                     <div class="col-md-4">
-                    <a class="btn btn-primary" href="#" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample" role="button"><i class="fa-solid fa-filter"></i> Filtros</a>
+                    <button class="btn btn-primary" href="#" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample" role="button"><i class="fa-solid fa-filter"></i> Filtros</button>
                     </div>
                     <div class="col-md-4" style="display: flex; flex-direction: row; justify-content: end; align-items: center;">
 
