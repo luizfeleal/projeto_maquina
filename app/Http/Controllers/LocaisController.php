@@ -55,7 +55,10 @@ class LocaisController extends Controller
 	                
             $locais_indexados = [];
         foreach ($locais as &$local) {
-            $local['cliente_nome'] = $clientesPorId[$clienteLocal[$local['id_local']]['id_cliente']]['cliente_nome'];
+            
+            $clienteId = $clienteLocal[$local['id_local']]['id_cliente'] ?? null;
+            $nome_local = isset($clientesPorId[$clienteId]['cliente_nome']) ? $clientesPorId[$clienteId]['cliente_nome'] : '';
+            $local['cliente_nome'] = $nome_local;
             $locais_indexados[$local['id_local']] = $local;
         }
 
@@ -83,12 +86,14 @@ class LocaisController extends Controller
                     $total_dinheiro += $em['extrato_operacao_valor'];
                 }
             }
+            $clienteId = $clienteLocal[$maquina['id_local']]['id_cliente'] ?? null;
+            $nome_local = isset($clientesPorId[$clienteId]['cliente_nome']) ? $clientesPorId[$clienteId]['cliente_nome'] : '';
             $maquina['total_pix'] = $total_pix;
             $maquina['total_cartao'] = $total_cartao;
             $maquina['total_dinheiro'] = $total_dinheiro;
             $maquina['total_maquina'] = $total_maquina;
             $maquina['local_nome'] = $locais_indexados[$maquina['id_local']]['local_nome'];
-            $maquina['cliente_nome'] = $clientesPorId[$clienteLocal[$maquina['id_local']]['id_cliente']];
+            $maquina['cliente_nome'] = $nome_local;
         }
 
         $maquinas_indexadas = [];

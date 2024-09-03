@@ -27,8 +27,7 @@ class MaquinasController extends Controller
     public function criarMaquinas(Request $request){
         $locais = LocaisService::coletar();
         $clientes = ClientesService::coletar();
-$maquinas = MaquinasService::coletarPlacasDisponiveis();
-//return $maquinas;
+        $maquinas = MaquinasService::coletarPlacasDisponiveis();
         return view('Admin.Maquinas.create', compact('locais', 'clientes', 'maquinas'));
     }
 
@@ -45,8 +44,6 @@ $maquinas = MaquinasService::coletarPlacasDisponiveis();
 
             $result = MaquinasService::criar($dados);
 
-    
-return $result;
             return back()->with('success', $result['message']);
         }catch(\Throwable $e){
             return back()->with('error', 'Houve um erro ao tentar cadastrar a máquina');

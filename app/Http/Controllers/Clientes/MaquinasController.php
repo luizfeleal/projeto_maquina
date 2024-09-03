@@ -20,12 +20,13 @@ class MaquinasController extends Controller
              //$clienteLocal = ClienteLocalService::coletarComFiltro(['id_cliente' => $id_cliente], 'where');
              $clienteLocal = ClienteLocalService::coletar();
 
-             $clienteLocalFiltrado = array_filter($clienteLocal, function($item) use($id_cliente){
+             $clienteLocal = array_filter($clienteLocal, function($item) use($id_cliente){
                 return $item['id_cliente'] == $id_cliente;
              });
+
              $idLocais = array_column($clienteLocal, 'id_local');
 
-             
+
         $locais = LocaisService::coletar();
         $maquinas = MaquinasService::coletar();
         $maquinas_extrato = ExtratoMaquinaService::coletar();
