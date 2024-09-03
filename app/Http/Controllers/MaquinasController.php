@@ -236,8 +236,7 @@ class MaquinasController extends Controller
             "valor" =>$request['valor_credito'],
             "id_transacao" => "CD" . rand(10000000, 99999999)
         ];
-	 $jogada = LiberarJogadaService::criar($dados);
-     return $jogada;
+	    $jogada = LiberarJogadaService::criar($dados);
 	
         if($jogada['http_code'] == 200){
             return back()->with('success', "Jogada liberada com sucesso!");
