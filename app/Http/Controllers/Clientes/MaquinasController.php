@@ -38,14 +38,15 @@ class MaquinasController extends Controller
             $locais_indexados[$local['id_local']] = $local;
         }
 
+        
         $locais_indexados = array_filter($locais_indexados, function($item) use($idLocais){
-            return in_array($item, $idLocais);
+            return in_array($item['id_local'], $idLocais);
         });
-
+        
         $maquinas = array_filter($maquinas, function($item) use($idLocais){
             return in_array($item['id_local'], $idLocais);
         });
-
+        
         // Indexando maquinas por id_maquina
         $maquinas_indexadas = [];
         foreach ($maquinas as $maquina) {
@@ -54,33 +55,55 @@ class MaquinasController extends Controller
         
         // Array para armazenar o resultado final
         $resultado = [];
-                
+        
         // Percorrendo o extrato para armazenar apenas a última transação de cada máquina
-        foreach ($maquinas_extrato as $extrato) {
-            $id_maquina = $extrato['id_maquina'];
-
-            // Verifica se a máquina existe
-            if (isset($maquinas_indexadas[$id_maquina])) {
-                $maquina = $maquinas_indexadas[$id_maquina];
+        
+            foreach ($maquinas_extrato as $extrato) {
+                $id_maquina = $extrato['id_maquina'];
+                
+                // Verifica se a máquina existe
+                if (isset($maquinas_indexadas[$id_maquina])) {
+                    $maquina = $maquinas_indexadas[$id_maquina];
+                    $id_local = $maquina['id_local'];
+                    
+                    // Verifica se o local existe
+                    if (isset($locais_indexados[$id_local])) {
+                        $local = $locais_indexados[$id_local];
+                        
+                        // Combina as informações
+                        $extrato_completo = $extrato;
+                        $extrato_completo['maquina'] = $maquina;
+                        $extrato_completo['local'] = $local;
+                        
+                        // Armazena ou substitui a última transação da máquina no array de resultados
+                        $resultado[$id_maquina] = $extrato_completo;
+                    }
+                }
+            }
+        
+        // Verifica máquinas sem extrato e adiciona com transação zero
+        foreach ($maquinas_indexadas as $id_maquina => $maquina) {
+            if (!isset($resultado[$id_maquina])) {
                 $id_local = $maquina['id_local'];
-
-                // Verifica se o local existe
+    
                 if (isset($locais_indexados[$id_local])) {
                     $local = $locais_indexados[$id_local];
-
-                    // Combina as informações
-                    $extrato_completo = $extrato;
-                    $extrato_completo['maquina'] = $maquina;
-                    $extrato_completo['local'] = $local;
-
-                    // Armazena ou substitui a última transação da máquina no array de resultados
-                    $resultado[$id_maquina] = $extrato_completo;
+    
+                    $resultado[$id_maquina] = [
+                        'id_maquina' => $id_maquina,
+                        'extrato_operacao_valor' => 0, // Define a última transação como 0
+                        'extrato_operacao' => "C",
+                        'extrato_operacao_tipo' => "N/A",
+                        'data_criacao' => $maquina['data_criacao'],
+                        'maquina' => $maquina,
+                        'local' => $local
+                    ];
                 }
             }
         }
 
-        // Se você quiser um array com índices numéricos simples, pode utilizar array_values
         $resultado = array_values($resultado);
+
         return view('Clientes.Maquinas.index', compact('resultado'));
     }
 
