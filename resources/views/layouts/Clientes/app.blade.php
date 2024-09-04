@@ -75,7 +75,7 @@ $currentRoute = Request::route()->getName();
                         <ul class="list-unstyled ps-0">
                             <li class="mb-1">
                                     <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed" >
-                                        <a href="/" class="text-decoration-none">
+                                        <a href="{{route('logout')}}" class="text-decoration-none">
                                             <i class="fa-solid fa-right-from-bracket icon-sidebar" style=" font-size: 25px;padding-right:5px;"></i>Logout
                                         </a>
                                     </button>
