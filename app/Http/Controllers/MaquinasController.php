@@ -16,8 +16,9 @@ class MaquinasController extends Controller
     public function coletarMaquinaPorId(Request $request){
 
         if($request->has('id')){
-            $maquinas = MaquinasService::coletarMaquinas($request->id);
-            return view('Admin.Maquinas.index', compact('maquinas'));
+            $maquinas = MaquinasService::coletar($request->id);
+            return $maquinas;
+            return view('Admin.Maquinas.show', compact('maquinas'));
         }else{
             return back()->with('error', 'Máquina não encontrada');
         }

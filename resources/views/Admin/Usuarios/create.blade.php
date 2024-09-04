@@ -140,36 +140,6 @@
 
                         </div>
                     </div>
-                    <div class="row" style="display: flex; flex-direction: row; justify-content: center;width: 100%; margin-bottom: 20px;">
-                        <div class="col-md-4">
-                            <label for="cliente_id" class="form-label">Client ID:</label>
-                            <input type="text" class="form-control" name="cliente_id" id="cliente_id">
-                            <div class="invalid-feedback">
-                                <p class="invalid-p invalid-p-name">Campo obrigatório</p>
-                            </div>
-
-                        </div>
-                        <div class="col-md-4">
-                            <label for="cliente_secret" class="form-label">Client Secret:</label>
-                            <input type="text" class="form-control" name="cliente_secret" id="cliente_secret">
-                            <div class="invalid-feedback">
-                                <p class="invalid-p invalid-p-name">Campo obrigatório</p>
-                            </div>
-
-                        </div>
-                        
-                    </div>
-                    <div class="row" style="display: flex; flex-direction: row; justify-content: center;width: 100%; margin-bottom: 20px;">
-                        <div class="col-md-8">
-                            <label for="cliente_certificado" class="form-label">Certificado:</label>
-                            <input type="file" class="form-control" name="cliente_certificado" id="cliente_certificado">
-                            <div class="invalid-feedback">
-                                <p class="invalid-p invalid-p-name">Campo obrigatório</p>
-                            </div>
-
-                        </div>
-                        
-                    </div>
 
                     <div style="display:flex; justify-content: center; align-items: center; margin-top: 50px;">
                         <button class="btn btn-primary"  type="submit">Criar usuário</button>

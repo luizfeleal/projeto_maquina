@@ -32,9 +32,11 @@
                             <label for="id_placa" class="form-label">Gerar ID da placa*</label>
                             <select class="select-id_placa js-example-basic-multiple js-states form-control" id="id_placa" placeholder="Selecione" name="id_placa"  required>
                             <option value="">Selecione...</option>
+                            @if(isset($maquinas['response']['resposta']))
                             @foreach($maquinas['response']['resposta']['pendingDevices'] as $maquina)
                                 <option value="{{$maquina}}">{{$maquina}}</option>
                             @endforeach
+                            @endif
                             </select>
                             <div class="invalid-feedback">
                                 <p class="invalid-p invalid-p-name">Campo obrigatório</p>
@@ -160,10 +162,10 @@
 	})
         $(".select-local").on('change', () => {
             setComplementoCliente()
-        })
+        });
         $(".select-cliente").on('change', () => {
             setComplementoLocal()
-        })
+        });
 
         $("#botao-gerar-id-placa").on('click', async function() {
 

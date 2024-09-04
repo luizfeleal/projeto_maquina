@@ -56,17 +56,6 @@ class ClientesController extends Controller
 
             //Cadastrar credenciais
             $id_cliente = $cliente['data']['response']['id_cliente'];
-	   if($request['cliente_id'] && $request['cliente_secret'] && $request['cliente_certificado']){     
-            $dadosCredApiPix = [
-                "id_cliente" => $id_cliente,
-                "client_secret" => $request['cliente_secret'],
-                "client_id" => $request['cliente_id'],
-                "caminho_certificado" => $request->file('cliente_certificado')
-            ];
-
-            
-            $credApi = CredApiPixService::criar($dadosCredApiPix);
-    }
             
             //Criar acesso a plataforma
             $dadoUsuarioAcesso = [

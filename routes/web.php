@@ -21,6 +21,7 @@ Route::get('/', function () {
 Route::prefix('maquinas')->middleware('permission')->group(function(){
     Route::get('/', 'App\Http\Controllers\MaquinasController@coletarTodasAsMaquinas')->name('maquinas');
     Route::get('/criar', 'App\Http\Controllers\MaquinasController@criarMaquinas')->name('maquinas-criar');
+    Route::get('/visualizar', 'App\Http\Controllers\MaquinasController@coletarMaquinaPorId')->name('maquinas-visualizar');
     Route::get('/registrar', 'App\Http\Controllers\MaquinasController@registrarMaquinas')->name('maquinas-registrar');
     Route::get('/gerarIdPlaca', 'App\Http\Controllers\MaquinasController@gerarIdPlaca')->name('maquinas-gerar-id-placa');
     Route::get('/transacoes', 'App\Http\Controllers\MaquinasController@transacaoMaquinas')->name('maquinas-transacoes');
@@ -62,6 +63,11 @@ Route::prefix('relatorios')->middleware('permission')->group(function(){
     Route::get('/', 'App\Http\Controllers\RelatoriosController@view')->name('relatorio-view');
     Route::post('/exibir', 'App\Http\Controllers\RelatoriosController@exibirRelatorio')->name('relatorio-criar');
     Route::post('/download', 'App\Http\Controllers\RelatoriosController@downloadXlsxRelatorio')->name('relatorio-xlsx-download');
+});
+
+Route::prefix('credenciais')->middleware('permission')->group(function(){
+    Route::get('/criar', 'App\Http\Controllers\CredenciaisController@criarCredencial')->name('credencial-criar');
+    Route::post('/exibir', 'App\Http\Controllers\CredenciaisController@registrarCredencial')->name('credencial-registrar');
 });
 
 Route::get('/login', 'App\Http\Controllers\LoginController@login')->name('login-view');

@@ -18,6 +18,7 @@
                             <th>Última transação</th>
                             <th>Fonte</th>
                             <th>Data e Hora</th>
+                            <th>Visualizar</th>
                             <th>Excluir</th>
 
 
@@ -37,6 +38,7 @@
 
                                 <td>{{$extrato['extrato_operacao_tipo']}}</td>
                                 <td>{{date('d/m/Y H:i:s', strtotime($extrato['data_criacao']));}}</td>
+                                <td style="text-align: center;"><a href="/maquinas/visualizar?id={{$extrato['maquina']['id_maquina']}}"><i class="fa-solid fa-eye"></i></a></td>
                                 <td style="text-align: center;"><a href="#" style="color: red !important;" data-bs-toggle="modal" data-bs-target="#ModalCenterExcluir" onclick="setIdMaquinaExcluir({{$extrato['maquina']['id_maquina']}}, '#id_maquina_input_excluir')"><i class="fa-solid fa-trash"></i></a></td>
                             </tr>
                         @endforeach
@@ -49,6 +51,7 @@
                             <th>Última transação</th>
                             <th>Fonte</th>
                             <th>Data e Hora</th>
+                            <th>Visualizar</th>
                             <th>Excluir</th>
                         </tr>
                     </tfoot>
@@ -140,6 +143,7 @@
                     null,
                     null,
                     { "type": "datetime-ddmmyyyy" },
+                    null,
                     null
                 ],
             });

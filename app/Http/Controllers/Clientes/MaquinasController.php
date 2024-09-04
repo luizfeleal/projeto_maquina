@@ -24,6 +24,7 @@ class MaquinasController extends Controller
                 return $item['id_cliente'] == $id_cliente;
              });
 
+             
              $idLocais = array_column($clienteLocal, 'id_local');
 
 
@@ -44,15 +45,16 @@ class MaquinasController extends Controller
         $maquinas = array_filter($maquinas, function($item) use($idLocais){
             return in_array($item['id_local'], $idLocais);
         });
+
         // Indexando maquinas por id_maquina
         $maquinas_indexadas = [];
         foreach ($maquinas as $maquina) {
             $maquinas_indexadas[$maquina['id_maquina']] = $maquina;
         }
-
+        
         // Array para armazenar o resultado final
         $resultado = [];
-
+                
         // Percorrendo o extrato para armazenar apenas a última transação de cada máquina
         foreach ($maquinas_extrato as $extrato) {
             $id_maquina = $extrato['id_maquina'];
@@ -89,10 +91,11 @@ class MaquinasController extends Controller
 
         $clienteLocal = ClienteLocalService::coletar();
 
-             $clienteLocalFiltrado = array_filter($clienteLocal, function($item) use($id_cliente){
+             $clienteLocal = array_filter($clienteLocal, function($item) use($id_cliente){
                 return $item['id_cliente'] == $id_cliente;
              });
              $idLocais = array_column($clienteLocal, 'id_local');
+
         $maquinas = MaquinasService::coletar();
         $maquinas_extrato = ExtratoMaquinaService::coletar();
 
@@ -141,7 +144,7 @@ class MaquinasController extends Controller
         $id_cliente = session()->get('id_cliente');
         $clienteLocal = ClienteLocalService::coletar();
 
-        $clienteLocalFiltrado = array_filter($clienteLocal, function($item) use($id_cliente){
+        $clienteLocal = array_filter($clienteLocal, function($item) use($id_cliente){
            return $item['id_cliente'] == $id_cliente;
         });
         $idLocais = array_column($clienteLocal, 'id_local');
