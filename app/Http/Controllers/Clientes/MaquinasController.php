@@ -136,7 +136,7 @@ class MaquinasController extends Controller
                 }
             }
         }
-        return view('Clientes.Maquinas.Transacoes.Index', compact('resultado'));
+        return view('Clientes.Maquinas.Transacoes.index', compact('resultado'));
     }
 
     public function acumuladoMaquinas(Request $request){
@@ -196,7 +196,7 @@ class MaquinasController extends Controller
 
         }
 
-        return view('Clientes.Maquinas.Acumulado.Index', compact('maquinas'));
+        return view('Clientes.Maquinas.Acumulado.index', compact('maquinas'));
 
     }
 }
