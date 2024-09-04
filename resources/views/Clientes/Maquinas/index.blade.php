@@ -1,4 +1,4 @@
-@extends('Layouts.Clientes.app')
+@extends('layouts.Clientes.app')
 @section('title', 'Minhas Máquinas')
 @section('content')
 
