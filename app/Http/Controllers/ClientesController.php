@@ -75,9 +75,20 @@ class ClientesController extends Controller
         return $cliente;
     }
 
-    /*public function coletarTodasAsMaquinasPorCliente(){
+    public function editarCliente($id){
+        $id_cliente = $id;
+        $cliente = ClientesService::coletar($id);
 
-    }*/
+        return view('Admin.Usuarios.edit', compact('cliente'));
+    }
+
+    public function atualizarCliente(Request $request){
+        $id_cliente = $request['id_cliente'];
+        $dados = $request->except('_token', 'id_cliente');
+
+        $cliente = ClientesService::atualizar($dados, $id_cliente);
+        return back()->with('success', "Usuário atualizado com sucesso!");
+    }
 
     public function gerarIdPlaca(){
         $id_aleatorio = rand(10000000, 99999999);

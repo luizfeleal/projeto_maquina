@@ -9,6 +9,7 @@ use App\Services\Hardware\MaquinasService as HardwareMaquinas;
 use App\Services\ExtratoMaquinaService;
 use App\Services\LiberarJogadaService;
 use App\Services\ClientesService;
+use App\Services\ClienteLocalService;
 use App\Services\AuthService;
 
 class MaquinasController extends Controller
@@ -17,8 +18,24 @@ class MaquinasController extends Controller
 
         if($request->has('id')){
             $maquinas = MaquinasService::coletar($request->id);
-            return $maquinas;
-            return view('Admin.Maquinas.show', compact('maquinas'));
+            $id_local = $maquinas['id_local'];
+            $locais = LocaisService::coletar($id_local);
+            $clienteLocal = ClienteLocalService::coletar();
+            $clientes = ClientesService::coletar();
+
+            $clienteLocalFiltrado = array_filter($clienteLocal, function($item) use($id_local){
+                return $item['id_local'] == $id_local;
+            });
+    
+            // Extraindo apenas os valores de "id_cliente"
+            $idClientes = array_map(function($item) {
+                return $item['id_cliente'];
+            }, $clienteLocalFiltrado);
+    
+            $clientes = array_filter($clientes, function($item) use($idClientes){
+                return in_array($item['id_cliente'],  $idClientes);
+            });
+            return view('Admin.Maquinas.show', compact('maquinas', 'locais', 'clientes'));
         }else{
             return back()->with('error', 'Máquina não encontrada');
         }
@@ -29,7 +46,8 @@ class MaquinasController extends Controller
         $locais = LocaisService::coletar();
         $clientes = ClientesService::coletar();
         $maquinas = MaquinasService::coletarPlacasDisponiveis();
-        return view('Admin.Maquinas.create', compact('locais', 'clientes', 'maquinas'));
+        $localCliente = ClienteLocalService::coletar();
+        return view('Admin.Maquinas.create', compact('locais', 'clientes', 'maquinas', 'localCliente'));
     }
 
     public function registrarMaquinas(Request $request){

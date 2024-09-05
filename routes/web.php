@@ -41,6 +41,7 @@ Route::prefix('local')->middleware('permission')->group(function(){
     Route::get('/incluirUsuario', 'App\Http\Controllers\LocaisController@incluirUsuarioLocal')->name('local-incluir-usuario');
     Route::get('/registrarUsuarioLocal', 'App\Http\Controllers\LocaisController@registrarUsuarioLocal')->name('local-registrar-usuario');
     Route::get('/criar', 'App\Http\Controllers\LocaisController@criarLocais')->name('local-criar');
+    Route::get('/detalhar/{id}', 'App\Http\Controllers\LocaisController@coletarLocaisPorId')->name('local-detalhar');
     Route::get('/registrar', 'App\Http\Controllers\LocaisController@registrarLocais')->name('local-registrar');
     Route::post('/excluir', 'App\Http\Controllers\LocaisController@excluirLocais')->name('local-excluir');
 });
@@ -48,6 +49,8 @@ Route::prefix('usuarios')->middleware('permission')->group(function(){
     Route::get('/', 'App\Http\Controllers\ClientesController@coletarCliente')->name('usuarios');
     Route::get('/criar', 'App\Http\Controllers\ClientesController@criarCliente')->name('usuario-criar');
     Route::get('/detalhar/{id}', 'App\Http\Controllers\ClientesController@coletarClientePorId')->name('usuario-detalhar');
+    Route::get('/editar/{id}', 'App\Http\Controllers\ClientesController@editarCliente')->name('usuario-editar');
+    Route::post('/atualizar', 'App\Http\Controllers\ClientesController@atualizarCliente')->name('usuario-atualizar');
     Route::post('/registrar', 'App\Http\Controllers\ClientesController@registrarCliente')->name('usuario-registrar');
     Route::post('/excluir', 'App\Http\Controllers\ClientesController@excluirCliente')->name('usuario-excluir');
 });

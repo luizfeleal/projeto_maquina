@@ -25,6 +25,7 @@
                             <th>CPF/CNPJ</th>
                             <th>Email</th>
                             <th>Celular</th>
+                            <th>Editar</th>
                             <th>Detalhar</th>
                             <th>Excluir</th>
 
@@ -40,6 +41,7 @@
                             <td>{{$cliente['cliente_cpf_cnpj']}}</td>
                             <td>{{$cliente['cliente_email']}}</td>
                             <td>{{$cliente['cliente_celular']}}</td>
+                            <td style="text-align: center;"><a href="{{route('usuario-editar', $cliente['id_cliente'])}}"><i class="fa-solid fa-pen"></i></a></td>
                             <td style="text-align: center;"><a href="{{route('usuario-detalhar', $cliente['id_cliente'])}}"><i class="fa-solid fa-eye"></i></a></td>
                             <td style="text-align: center;"><a href="#" style="color: red !important;" data-bs-toggle="modal" data-bs-target="#ModalCenterExcluir" onclick="setIdClienteExcluir({{$cliente['id_cliente']}}, '#id_cliente_input_excluir')"><i class="fa-solid fa-trash"></i></a></td>
 
@@ -54,6 +56,7 @@
                             <th>CPF/CNPJ</th>
                             <th>Email</th>
                             <th>Celular</th>
+                            <th>Editar</th>
                             <th>Detalhar</th>
                             <th>Excluir</th>
                         </tr>
@@ -153,6 +156,7 @@
                     "url": "https://cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json"
                 },
                 "columns": [
+                    null,
                     null,
                     null,
                     null,

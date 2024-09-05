@@ -360,23 +360,28 @@ const sendFormCriarQr= (id_form) =>{
 
 const setComplementoCliente = () => {
     var valLocais = JSON.parse($("#input_locais").val());
-    var valClientes = JSON.parse($("#input_clientes").val());
-    
+    var valLocalCliente = JSON.parse($("#input_local_cliente").val());
     
     var selectLocais = $("#select-local").val();
     var selectClientes = $("#select-cliente").val();
-    
+    var foiSetado = false;
     if(selectLocais.length != 0 && selectClientes.length == 0){
         for(let i = 0; i < valLocais.length; i++){
-            if(valLocais[i].id_local == selectLocais[0]){
-                for(let i = 0; i < valClientes.length; i++){
-                    if(valLocais[i].id_cliente == valClientes[i].id_cliente){
-                        $("#select-cliente").val(valClientes[i].id_cliente);
+            if(valLocais[i].id_local == selectLocais){
+                for(let i = 0; i < valLocalCliente.length; i++){
+                    if(valLocais[i].id_local == valLocalCliente[i].id_local){
+                        $("#select-cliente").val(valLocalCliente[i].id_cliente);
                         $("#select-cliente").trigger('change');
+
+                        foiSetado = true;
                     }
                 }
             }
-        }
+        } 
+    }
+
+    if(foiSetado == false){
+        $("#select-local").val(null).trigger('change');
     }
 }
 
@@ -384,22 +389,28 @@ const setComplementoCliente = () => {
 
 const setComplementoLocal = () => {
     var valLocais = JSON.parse($("#input_locais").val());
-    var valClientes = JSON.parse($("#input_clientes").val());
-    
+    var valLocalCliente = JSON.parse($("#input_local_cliente").val());
+    var foiSetado = false;
     
     var selectLocais = $("#select-local").val();
     var selectClientes = $("#select-cliente").val();
     
     if(selectLocais.length == 0 && selectClientes.length != 0){
-        for(let i = 0; i < valLocais.length; i++){
-            if(valLocais[i].id_cliente == selectClientes[0]){
-                for(let i = 0; i < valClientes.length; i++){
-                    $("#select-local").val(valLocais[i].id_local);
+        for(let i = 0; i < valLocalCliente.length; i++){
+
+            if(valLocalCliente[i].id_cliente == selectClientes){
+                //for(let i = 0; i < valLocais.length; i++){
+                foiSetado = true;
+                    $("#select-local").val(valLocalCliente[i].id_local);
                     $("#select-local").trigger('change');
-                }
+                //}
             }
         }
     } 
+
+    if(foiSetado == false){
+        $("#select-local").val(null).trigger('change');
+    }
 }
 
 const showLoader = () => {

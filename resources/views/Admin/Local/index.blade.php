@@ -54,11 +54,8 @@
                         <tr>
                             <th>Local</th>
                             <th>Cliente</th>
-                            <th>Máquina</th>
-                            <th>Status</th>
-                            <th>Total acumulado</th>
-                            <th>Total PIX</th>
-                            <th>Total cartão</th>
+                            <th>Máquina(s)</th>
+                            <th>Detalhar</th>
                             <th>Excluir</th>
 
 
@@ -73,29 +70,9 @@
                         
                         <td>{{$local['cliente_nome']}}</td>
                         
-                        @if(isset($maquinas[$local['id_local']]))
-                            <td>{{$maquinas[$local['id_local']]['maquina_nome']}}</td>
-                            @if($maquinas[$local['id_local']]['maquina_status'] == 0)
-                                <td><i class="fa-solid fa-circle text-danger" ></i></td>
-                            @else
-                                <td><i class="fa-solid fa-circle text-success"></i></td>
-                            @endif
-
+                       <td style="text-align: center;">{{$local['qtde_maquinas']}}</td>
                             
-                            
-                            
-                            <td>R$ {{number_format($maquinas[$local['id_local']]['total_maquina'], 2, ',', '.')}}</td>
-                            <td>R$ {{number_format($maquinas[$local['id_local']]['total_pix'], 2, ',', '.')}}</td>
-                            <td>R$ {{number_format($maquinas[$local['id_local']]['total_cartao'], 2, ',', '.')}}</td>
-                        @else
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-
-                        @endif
-                            
+                        <td style="text-align: center;"><a href="{{route('local-detalhar', $local['id_local'])}}"><i class="fa-solid fa-eye"></i></a></td>
                         <td style="text-align: center;"><a href="#" style="color: red !important;" data-bs-toggle="modal" data-bs-target="#ModalCenterExcluir" onclick="setIdLocalExcluir({{$local['id_local']}}, '#id_local_input_excluir')"><i class="fa-solid fa-trash"></i></a></td>
                         
                     </tr>
@@ -108,11 +85,8 @@
                         <tr>
                             <th>Local</th>
                             <th>Cliente</th>
-                            <th>Máquina</th>
-                            <th>Status</th>
-                            <th>Total acumulado</th>
-                            <th>Total PIX</th>
-                            <th>Total cartão</th>
+                            <th>Máquina(s)</th>
+                            <th>Detalhar</th>
                             <th>Excluir</th>
                             
                         </tr>
@@ -213,9 +187,6 @@
                     "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json"
                 },*/
                 "columns": [
-                    null,
-                    null,
-                    null,
                     null,
                     null,
                     null,

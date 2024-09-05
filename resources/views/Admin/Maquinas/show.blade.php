@@ -1,72 +1,60 @@
 @extends('layouts.app')
-@section('title', 'Criar máquina')
+@section('title', 'Detalhar Máquina')
 @section('content')
 
         <div id="maquinas" class="maquina div-center-column w-100"
                 style="padding-top: 99px;">
 
-                <h1  style="padding-top: 80px; text-align: center;">Máquinas -> criar máquinas</h1>
+                <h1  style="padding-top: 80px; text-align: center;">Detalhar Máquina</h1>
             <div class="container section container-platform div-center-column"
                 style="margin-top: 15px; height: 100%;">
-                <input type="hidden" id="input_locais" value="{{json_encode($locais)}}">
-                <input type="hidden" id="input_clientes" value="{{json_encode($clientes)}}">
-                <input type="hidden" id="input_local_cliente" value="{{json_encode($localCliente)}}">
-                <input type="hidden" id="url_web" value="{{env('APP_URL')}}">
 
-                <form action="{{route('maquinas-registrar')}}" id="nova-maquina" class="w-100 needs-validation" novalidate>
-                    @csrf
 
-                    <input type="hidden" name="id_placa_input" id="id_placa_input" value="">
+                <div style="display: flex; flex-direction: row; justify-content: center;width: 100%; margin-top: 50px;">
 
-                    <div class="row" style="display: flex; flex-direction: row; justify-content: center;width: 100%; margin-top: 150px;">
-                        <div class="col-md-6">
-                            <label for="maquina_nome" class="form-label">Nome Máquina*:</label>
-                            <input type="text" name="maquina_nome" id="maquina_nome" class="form-control input-text" placeholder="Nome da Máquina" aria-label="Nome da Máquina" required>
+                    @if($maquinas['maquina_status'] == 0) 
+                    <p><strong>Status: </strong> <i class="fa-solid fa-circle text-danger" ></i></p>
+                    @else
+                    <p><strong>Status: </strong> <i class="fa-solid fa-circle text-success" ></i></p>
+                    @endif
+                </div>
+
+
+                    <div class="row" style="display: flex; flex-direction: row; justify-content: center;width: 100%; margin-top: 100px;">
+                        <div class="col-md-4">
+                            <label for="maquina_nome" class="form-label">Nome Máquina:</label>
+                            <input type="text" name="maquina_nome" id="maquina_nome" value="{{$maquinas['maquina_nome']}}" class="form-control input-text" placeholder="Nome da Máquina" aria-label="Nome da Máquina" disabled>
                             <div class="invalid-feedback" >
                                 <p class="invalid-p" id="maquina_nome_mensagem"></p>
                             </div>
 
                         </div>
-                    </div>
-                    <div class="row" style="display: flex; flex-direction: row; justify-content: center; margin-top: 10px;  width: 100%; ">
-                        <div class="col-md-6">
-                            <label for="id_placa" class="form-label">Gerar ID da placa*</label>
-                            <select class="select-id_placa js-example-basic-multiple js-states form-control" id="id_placa" placeholder="Selecione" name="id_placa"  required>
-                            <option value="">Selecione...</option>
-                            @if(isset($maquinas['response']['resposta']))
-                            @foreach($maquinas['response']['resposta']['pendingDevices'] as $maquina)
-                                <option value="{{$maquina}}">{{$maquina}}</option>
-                            @endforeach
-                            @endif
-                            </select>
+                        <div class="col-md-4">
+                            <label for="id_placa" class="form-label">ID da placa:</label>
+                            <input type="text" name="id_placa" id="id_placa" value="{{$maquinas['id_placa']}}" class="form-control input-text" placeholder="Nome da Máquina" aria-label="Nome da Máquina" disabled>
                             <div class="invalid-feedback">
                                 <p class="invalid-p invalid-p-name">Campo obrigatório</p>
                             </div>
 
                         </div>
                     </div>
+                    
                     <div class="row" style="display: flex; flex-direction: row; justify-content: center; margin-top: 10px; width: 100%;">
-                        <div class="col-md-6">
-                            <label for="select-local1" class="form-label">Local*:</label>
-                            <select class="select-local js-example-basic-multiple js-states form-control" id="select-local" placeholder="Selecione" name="select-local"  required>
-
-                                <option value="">Selecione...</option>
-                            @foreach($locais as $local)
-                                <option value="{{$local['id_local']}}">{{$local['local_nome']}}</option>
-                            @endforeach
-                            </select>
+                        <div class="col-md-8">
+                            <label for="local_nome" class="form-label">Local:</label>
+                            <input type="text" name="local_nome" id="local_nome" value="{{$locais['local_nome']}}" class="form-control input-text" placeholder="Local" aria-label="Local" disabled>
+                            
                             <div class="invalid-feedback">
                                 <p class="invalid-p" id="select_local_mensagem">Campo obrigatório</p>
                             </div>
                         </div>
                     </div>
                     <div class="row" style="display: flex; flex-direction: row; justify-content: center; margin-top: 10px; width: 100%;">
-                        <div class="col-md-6">
-                            <label for="select-cliente1" class="form-label">Cliente*:</label>
-                            <select class="select-cliente js-example-basic-multiple js-states form-control" id="select-cliente" placeholder="Selecione" name="select-cliente"  required>
-                            <option value="">Selecione...</option>
+                        <div class="col-md-8">
+                            <label for="select-cliente" class="form-label">Cliente(s):</label>
+                            <select class="select-cliente js-example-basic-multiple js-states form-control" id="select-cliente" placeholder="Selecione" name="select-cliente[]" multiple="multiple"  disabled>
                             @foreach($clientes as $cliente)
-                                <option value="{{$cliente['id_cliente']}}">{{$cliente['cliente_nome']}}</option>
+                                <option value="{{$cliente['id_cliente']}}" selected>{{$cliente['cliente_nome']}}</option>
                             @endforeach
                             </select>
                             <div class="invalid-feedback">
@@ -76,10 +64,25 @@
                         </div>
                     </div>
 
-                    <div style="display:flex; justify-content: center; align-items: center;  margin-top: 50px;">
-                        <button class="btn btn-primary"  data-bs-toggle="modal" data-bs-target="#ModalCenterCriar" onclick="setMaquinaNome('.modal-body', '#maquina_nome')" type="button">Criar</button>
+                    <div class="row" style="display: flex; flex-direction: row; justify-content: center; margin-top: 10px;  width: 100%; ">
+                        <div class="col-md-4">
+                            <label for="ultimo_acesso" class="form-label">Último contato:</label>
+                            <input type="text" name="ultimo_acesso" id="ultimo_acesso" value="{{$maquinas['maquina_ultimo_contato']}}" class="form-control input-text" placeholder="Nome da Máquina" aria-label="Nome da Máquina" disabled>
+                            <div class="invalid-feedback">
+                                <p class="invalid-p invalid-p-name">Campo obrigatório</p>
+                            </div>
+
+                        </div>
+                        <div class="col-md-4">
+                            <label for="data_criacao" class="form-label">Data de Criação:</label>
+                            <input type="text" name="data_criacao" id="data_criacao" value="{{$maquinas['data_criacao']}}" class="form-control input-text" placeholder="Nome da Máquina" aria-label="Nome da Máquina" disabled>
+                            <div class="invalid-feedback">
+                                <p class="invalid-p invalid-p-name">Campo obrigatório</p>
+                            </div>
+
+                        </div>
                     </div>
-                </form>
+
 
                 
                     <div class="modal fade" id="ModalCenterCriar" tabindex="-1" aria-labelledby="ModalCenterCriar" aria-modal="true" role="dialog">
@@ -157,23 +160,12 @@
         $('.select-local').select2({
             theme: 'bootstrap-5'
         });
-
-	$('#id_placa').select2({
-		theme: 'bootstrap-5'
-	})
-
-
-        $('.select-local').on('select2:close', function(e) {
-
+        $(".select-local").on('change', () => {
             setComplementoCliente()
-            
         });
-        $('.select-cliente').on('select2:close', function(e) {
-
+        $(".select-cliente").on('change', () => {
             setComplementoLocal()
-            
         });
-
 
         $("#botao-gerar-id-placa").on('click', async function() {
 

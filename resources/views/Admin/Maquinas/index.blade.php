@@ -15,10 +15,11 @@
                         <tr>
                             <th>Local</th>
                             <th>Máquina</th>
+                            <th>Status</th>
                             <th>Última transação</th>
                             <th>Fonte</th>
                             <th>Data e Hora</th>
-                            <th>Visualizar</th>
+                            <th>Detalhar</th>
                             <th>Excluir</th>
 
 
@@ -30,6 +31,11 @@
                             <tr>
                                 <td>{{$extrato['local']['local_nome']}}</td>
                                 <td>{{$extrato['maquina']['maquina_nome']}}</td>
+                                @if($extrato['maquina']['maquina_status'] == 0) 
+                                        <td><i class="fa-solid fa-circle text-danger" ></i></td>
+                                    @else
+                                        <td><i class="fa-solid fa-circle text-success" ></i></td>
+                                    @endif
                                 @if($extrato['extrato_operacao'] == "C")
                                     <td>+ R$ {{number_format($extrato['extrato_operacao_valor'], 2, ',', '.')}}</td>
                                 @else
@@ -48,10 +54,11 @@
                         <tr>
                             <th>Local</th>
                             <th>Máquina</th>
+                            <th>Status</th>
                             <th>Última transação</th>
                             <th>Fonte</th>
                             <th>Data e Hora</th>
-                            <th>Visualizar</th>
+                            <th>Detalhar</th>
                             <th>Excluir</th>
                         </tr>
                     </tfoot>
@@ -138,6 +145,7 @@
                     "url": "https://cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json"
                 },
                 "columns": [
+                    null,
                     null,
                     null,
                     null,

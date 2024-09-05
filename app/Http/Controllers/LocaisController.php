@@ -40,31 +40,40 @@ class LocaisController extends Controller
         }
     }
 
-    public function coletarLocais(Request $request){
+    public function coletarLocaisPorId($id){
+        $local = LocaisService::coletar($id);
 
-        if($request->has('id')){
-            $locais = LocaisService::coletar($request->id);
-        }else{
-            $locais = LocaisService::coletar();
-            $clientes = ClientesService::coletar();
-            $clientesPorId = collect($clientes)->keyBy('id_cliente')->toArray();
-            $clienteLocal = collect(ClienteLocalService::coletar())->keyBy('id_local')->toArray();
-            $maquinas = MaquinasService::coletar();
-            $maquinas_extrato = ExtratoMaquinaService::coletar();
-        
-	                
-            $locais_indexados = [];
-        foreach ($locais as &$local) {
-            
-            $clienteId = $clienteLocal[$local['id_local']]['id_cliente'] ?? null;
-            $nome_local = isset($clientesPorId[$clienteId]['cliente_nome']) ? $clientesPorId[$clienteId]['cliente_nome'] : '';
-            $local['cliente_nome'] = $nome_local;
-            $locais_indexados[$local['id_local']] = $local;
+        if(empty($local)){
+            return back()->with('error', 'Local não encontrado!');
         }
-
+        $clienteLocal = ClienteLocalService::coletar();
+        $clientes= ClientesService::coletar();
+        $maquinas = MaquinasService::coletar();
         
+        $maquinasFiltradas = array_filter($maquinas, function($item) use($id){
+            return $item['id_local'] == $id;
+        });
 
-        foreach($maquinas as &$maquina){
+        $clienteLocalFiltrado = array_filter($clienteLocal, function($item) use($id){
+            return $item['id_local'] == $id;
+        });
+
+
+
+
+        // Extraindo apenas os valores de "id_cliente"
+        $idClientes = array_map(function($item) {
+            return $item['id_cliente'];
+        }, $clienteLocalFiltrado);
+
+        $clienteFiltrado = array_filter($clientes, function($item) use($idClientes){
+            return in_array($item['id_cliente'],  $idClientes);
+        });
+
+
+        $maquinas_extrato = ExtratoMaquinaService::coletar();
+
+        foreach($maquinasFiltradas as &$maquina){
             $total_pix = 0;
             $total_cartao = 0;
             $total_dinheiro = 0;
@@ -86,25 +95,47 @@ class LocaisController extends Controller
                     $total_dinheiro += $em['extrato_operacao_valor'];
                 }
             }
-            $clienteId = $clienteLocal[$maquina['id_local']]['id_cliente'] ?? null;
-            $nome_local = isset($clientesPorId[$clienteId]['cliente_nome']) ? $clientesPorId[$clienteId]['cliente_nome'] : '';
             $maquina['total_pix'] = $total_pix;
             $maquina['total_cartao'] = $total_cartao;
             $maquina['total_dinheiro'] = $total_dinheiro;
             $maquina['total_maquina'] = $total_maquina;
-            $maquina['local_nome'] = $locais_indexados[$maquina['id_local']]['local_nome'];
-            $maquina['cliente_nome'] = $nome_local;
+            $maquina['local_nome'] = $local['local_nome'];
+
         }
 
-        $maquinas_indexadas = [];
-        foreach ($maquinas as $maquina) {
-            $maquinas_indexadas[$maquina['id_local']] = $maquina;
+
+        return view('Admin.Local.show', compact('clienteFiltrado', 'maquinasFiltradas', 'local'));
+    }
+
+    public function coletarLocais(Request $request){
+        if($request->has('id')){
+            $locais = LocaisService::coletar($request->id);
+        }else{
+            $locais = LocaisService::coletar();
+            $clientes = ClientesService::coletar();
+            $clientesPorId = collect($clientes)->keyBy('id_cliente')->toArray();
+            $clienteLocal = collect(ClienteLocalService::coletar())->keyBy('id_local')->toArray();
+            $maquinas = MaquinasService::coletar();
+            $maquinas_extrato = ExtratoMaquinaService::coletar();
+        
+	                
+            $locais_indexados = [];
+        foreach ($locais as &$local) {
+            
+            $id_local = $local['id_local'];
+            $clienteId = $clienteLocal[$local['id_local']]['id_cliente'] ?? null;
+            $nome_local = isset($clientesPorId[$clienteId]['cliente_nome']) ? $clientesPorId[$clienteId]['cliente_nome'] : '';
+            $local['cliente_nome'] = $nome_local;
+            $maquinasDoLocal = array_filter($maquinas, function($item) use($id_local){
+                return $item['id_local'] == $id_local;
+            });
+            $local['qtde_maquinas'] = count($maquinasDoLocal);
+            $locais_indexados[$local['id_local']] = $local;
         }
 
-        $maquinas = $maquinas_indexadas;
             
             
-        return view('Admin.Local.index', compact( 'maquinas', 'locais','clientes' ));
+        return view('Admin.Local.index', compact( 'locais', 'clientes', 'maquinas'));
         }
 
     }

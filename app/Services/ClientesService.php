@@ -86,13 +86,13 @@ class ClientesService
         }
     }
 
-    public function atualizar($dados, $id){
+    public static function atualizar($dados, $id){
         $url = env('APP_URL_API') . "/clientes/$id";
 
         $token = AuthService::getToken();
         $response = Http::withHeaders([
             'Authorization' => 'Bearer ' . $token
-        ])->post($url, $dados);
+        ])->put($url, $dados);
 
         $clientes = $response->json();
 
