@@ -11,7 +11,7 @@
 
                 <input type="hidden" value="{{json_encode($locais)}}" id="locais">
                 <input type="hidden" value="{{json_encode($clientes)}}" id="clientes">
-                <input type="hidden" value="{{json_encode($cliente_local)}}" id="clientes_locais">
+                <input type="hidden" value="{{json_encode($cliente_local)}}" id="cliente_local">
 
                 <form action="{{ route('local-registrar-usuario') }}" id="incluir_usuario_local_form" class="w-100">
                     @csrf
