@@ -10,8 +10,8 @@
                 style="margin-top: 15px; height: 100%;">
 
                 <input type="hidden" value="{{json_encode($locais)}}" id="locais">
-                <input type="hidden" value="{{json_encode($clientes)}}" name="clientes">
-                <input type="hidden" value="{{json_encode($cliente_local)}}" name="clientes_locais">
+                <input type="hidden" value="{{json_encode($clientes)}}" id="clientes">
+                <input type="hidden" value="{{json_encode($cliente_local)}}" id="clientes_locais">
 
                 <form action="{{ route('local-registrar-usuario') }}" id="incluir_usuario_local_form" class="w-100">
                     @csrf
