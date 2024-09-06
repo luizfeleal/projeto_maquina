@@ -121,10 +121,10 @@
 
 <script>
     $(document).ready(function() {
-        $('.select-cliente').select2({
+        $('#select-cliente').select2({
             theme: 'bootstrap-5'
         });
-        $('.select-local').select2({
+        $('#select-local').select2({
             theme: 'bootstrap-5'
         });
 
@@ -133,15 +133,16 @@
     const clientes = JSON.parse(document.getElementById('clientes').value);
     const clienteLocal = JSON.parse(document.getElementById('cliente_local').value);
 
-    document.getElementById('select-local').on('select2:close', function () {
+        // Utilize o seletor jQuery para adicionar o evento
+    $('#select-local').on('change', function () {
         const selectedLocal = this.value;
-        const selectCliente = document.getElementById('select-cliente');
+        const selectCliente = $('#select-cliente'); // Utilize jQuery aqui também
 
         // Limpa as opções atuais dos clientes
-        $(selectCliente).empty();
+        selectCliente.empty();
 
         // Adiciona a opção "Selecione" para garantir que haja uma opção vazia
-        $(selectCliente).append('<option value="" selected>Selecione</option>');
+        selectCliente.append('<option value="" selected>Selecione</option>');
 
         // Filtra os clientes que não estão vinculados ao local selecionado
         const filteredClientes = clientes.filter(cliente => {
@@ -151,11 +152,12 @@
         // Adiciona as opções de clientes filtrados ao select
         filteredClientes.forEach(cliente => {
             const option = new Option(cliente.cliente_nome, cliente.id_cliente, false, false);
-            $(selectCliente).append(option);
+            selectCliente.append(option);
         });
 
         // Atualiza o Select2 para refletir as novas opções
-        $(selectCliente).trigger('change'); // Necessário para atualizar as opções no Select2
+        selectCliente.trigger('change'); // Necessário para atualizar as opções no Select2
+    });
     });
 
         $(".select-local").on('select2:close', () => {
