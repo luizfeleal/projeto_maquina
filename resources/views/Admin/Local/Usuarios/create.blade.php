@@ -142,7 +142,7 @@
         selectCliente.empty();
 
         // Adiciona a opção "Selecione" para garantir que haja uma opção vazia
-        selectCliente.append('<option value="" selected>Selecione</option>');
+        selectCliente.append('<option value="" >Selecione</option>');
 
         // Filtra os clientes que não estão vinculados ao local selecionado
         const filteredClientes = clientes.filter(cliente => {
