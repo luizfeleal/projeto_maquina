@@ -9,6 +9,10 @@
             <div class="container section container-platform div-center-column"
                 style="margin-top: 15px; height: 100%;">
 
+                <input type="hidden" value="{{json_encode($locais)}}" id="locais">
+                <input type="hidden" value="{{json_encode($clientes)}}" name="clientes">
+                <input type="hidden" value="{{json_encode($cliente_local)}}" name="clientes_locais">
+
                 <form action="{{ route('local-registrar-usuario') }}" id="incluir_usuario_local_form" class="w-100">
                     @csrf
 
@@ -123,6 +127,36 @@
         $('.select-local').select2({
             theme: 'bootstrap-5'
         });
+
+
+        const locais = JSON.parse(document.getElementById('locais').value);
+    const clientes = JSON.parse(document.getElementById('clientes').value);
+    const clienteLocal = JSON.parse(document.getElementById('cliente_local').value);
+
+    document.getElementById('select-local').on('select2:close', function () {
+        const selectedLocal = this.value;
+        const selectCliente = document.getElementById('select-cliente');
+
+        // Limpa as opções atuais dos clientes
+        $(selectCliente).empty();
+
+        // Adiciona a opção "Selecione" para garantir que haja uma opção vazia
+        $(selectCliente).append('<option value="" selected>Selecione</option>');
+
+        // Filtra os clientes que não estão vinculados ao local selecionado
+        const filteredClientes = clientes.filter(cliente => {
+            return !clienteLocal.some(clLocal => clLocal.id_local == selectedLocal && clLocal.id_cliente == cliente.id_cliente);
+        });
+
+        // Adiciona as opções de clientes filtrados ao select
+        filteredClientes.forEach(cliente => {
+            const option = new Option(cliente.cliente_nome, cliente.id_cliente, false, false);
+            $(selectCliente).append(option);
+        });
+
+        // Atualiza o Select2 para refletir as novas opções
+        $(selectCliente).trigger('change'); // Necessário para atualizar as opções no Select2
+    });
 
         $(".select-local").on('select2:close', () => {
             validarSelectLocalCliente('select-local', 'select_local_mensagem');

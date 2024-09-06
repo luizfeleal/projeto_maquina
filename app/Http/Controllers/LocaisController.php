@@ -143,8 +143,9 @@ class LocaisController extends Controller
     public function incluirUsuarioLocal(){
         $locais = LocaisService::coletar();
         $clientes = ClientesService::coletar();
+        $cliente_local = ClienteLocalService::coletar();
 
-        return view('Admin.Local.Usuarios.create', compact('locais', 'clientes'));
+        return view('Admin.Local.Usuarios.create', compact('locais', 'clientes', 'cliente_local'));
     }
 
     public function registrarUsuarioLocal(Request $request){
