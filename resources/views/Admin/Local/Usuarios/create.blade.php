@@ -158,7 +158,6 @@
         // Atualiza o Select2 para refletir as novas opções
         selectCliente.trigger('change'); // Necessário para atualizar as opções no Select2
     });
-    });
 
         $(".select-local").on('select2:close', () => {
             validarSelectLocalCliente('select-local', 'select_local_mensagem');
