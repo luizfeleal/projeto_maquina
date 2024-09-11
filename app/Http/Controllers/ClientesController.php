@@ -72,7 +72,13 @@ class ClientesController extends Controller
             return back()->with('success', 'Cliente cadastrado com sucesso!');
         }
 
-        return $cliente;
+        if($cliente['error']['errors']['cliente_cpf_cnpj']){
+
+            return back()->with('error', $cliente['error']['errors']['cliente_cpf_cnpj'][0]);
+        }
+
+
+        return back()->with('error', 'Houve um erro ao tentar cadastrar o cliente com os dados fornecidos!');
     }
 
     public function editarCliente($id){
