@@ -134,4 +134,19 @@ public static function coletarPlacasDisponiveis()
         
     }
 
+    public static function coletarTodasAsMaquinasComUltimaTransacao(){
+        
+    
+            $url = env('APP_URL_API') . "/totalMaquinas";
+    
+        $token = AuthService::getToken();
+        $response = Http::withHeaders([
+            'Authorization' => 'Bearer ' . $token
+        ])->get($url);
+    
+        $maquinas = $response->json();
+    
+        return $maquinas;
+    }
 }
+

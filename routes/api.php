@@ -19,3 +19,4 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::get('/gerarIdPlaca', 'App\Http\Controllers\MaquinasController@gerarIdPlaca');
+Route::get('/getToken', 'App\Http\Controllers\AuthController@coletarToken');

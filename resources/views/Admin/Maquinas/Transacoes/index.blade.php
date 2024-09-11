@@ -24,20 +24,7 @@
                     </thead>
                     <tbody>
 
-                        @foreach($resultado as $extrato)
-                            <tr>
-                                <td>{{$extrato['local']['local_nome']}}</td>
-                                <td>{{$extrato['maquina']['maquina_nome']}}</td>
-                                @if($extrato['extrato_operacao'] == "C")
-                                    <td>+ R$ {{number_format($extrato['extrato_operacao_valor'], 2, ',', '.')}}</td>
-                                @else
-                                    <td>- R$ {{number_format($extrato['extrato_operacao_valor'], 2, ',', '.')}}</td>
-                                @endif
-
-                                <td>{{$extrato['extrato_operacao_tipo']}}</td>
-                                <td>{{date('d/m/Y H:i:s', strtotime($extrato['data_criacao']));}}</td>
-                            </tr>
-                        @endforeach
+                        
 
                     </tbody>
                     <tfoot>
@@ -105,18 +92,76 @@
 
         $(document).ready(function(){
 
-            $('#tabela_maquinas_transacao').DataTable({
-                "language": {
-                    "url": "https://cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json"
-                },
-                "columns": [
-                    null,
-                    null,
-                    null,
-                    null,
-                    { "type": "datetime-ddmmyyyy" }
-                ],
-            });
+            async function fetchToken() {
+                try {
+                    let response = await fetch('http://127.0.0.1:8000/api/getToken');
+                    let data = await response.json();
+                    return data.token;
+                } catch (error) {
+                    console.error('Erro ao obter o token:', error);
+                    return null;
+                }
+            }
+
+            fetchToken().then(token => {
+                if (token) {
+                    $('#tabela_maquinas_transacao').DataTable({
+        processing: true,
+        serverSide: true,
+        ajax: {
+            url: 'http://127.0.0.1:5001/api/extratoMaquina', // URL da sua API
+            type: 'GET', // Tipo de requisição
+            dataSrc: 'data', // Propriedade da resposta que contém os dados
+            headers: {
+                'Authorization': 'Bearer ' + token, // Adicione seu token de autenticação
+            },
+            data: function (d) {
+                console.log(d.length);
+                d.page = (d.start / d.length) + 1; // DataTables usa índice baseado em 0
+                d.per_page = d.length; // Define o número de registros por página
+            }
+        },
+        language: {
+            url: "https://cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json" // Idioma
+        },
+        columns: [
+            {
+                data: 'local_nome',
+                title: 'Local'
+            },
+            {
+                data: 'maquina_nome',
+                title: 'Máquina'
+            },
+            {
+                data: 'extrato_operacao',
+                title: 'Última Transação',
+                render: function(data, type, row) {
+                    var extrato_valor = row.extrato_operacao_valor ? row.extrato_operacao_valor : 0;
+                    var valor = parseFloat(extrato_valor).toFixed(2).replace('.', ',');
+                    return data === 'C' ? '+ R$ ' + valor : '- R$ ' + valor;
+                }
+            },
+            {
+                data: 'extrato_operacao_tipo',
+                title: 'Fonte'
+            },
+            {
+                data: 'data_criacao',
+                title: 'Data e Hora',
+                render: function(data) {
+                    var date = new Date(data);
+                    return date.toLocaleDateString('pt-BR') + ' ' + date.toLocaleTimeString('pt-BR');
+                }
+            }
+        ],
+        pageLength: 10,
+        paging: true,
+        lengthMenu: [10, 25, 50, 100]
+    });
+                }
+        })
+            
 
             /*$('#input_filtro_cliente').select2({
             theme: "classic",

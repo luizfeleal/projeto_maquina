@@ -29,14 +29,14 @@
 
                         @foreach($resultado as $extrato)
                             <tr>
-                                <td>{{$extrato['local']['local_nome']}}</td>
-                                <td>{{$extrato['maquina']['maquina_nome']}}</td>
-                                @if($extrato['maquina']['maquina_status'] == 0) 
+                                <td>{{$extrato['local_nome']}}</td>
+                                <td>{{$extrato['maquina_nome']}}</td>
+                                @if($extrato['maquina_status'] == 0) 
                                         <td><i class="fa-solid fa-circle text-danger" ></i></td>
                                     @else
                                         <td><i class="fa-solid fa-circle text-success" ></i></td>
                                     @endif
-                                @if($extrato['extrato_operacao'] == "C")
+                                @if($extrato['extrato_operacao'] == "C" || $extrato['extrato_operacao'] == "N/A")
                                     <td>+ R$ {{number_format($extrato['extrato_operacao_valor'], 2, ',', '.')}}</td>
                                 @else
                                     <td>- R$ {{number_format($extrato['extrato_operacao_valor'], 2, ',', '.')}}</td>
@@ -44,8 +44,8 @@
 
                                 <td>{{$extrato['extrato_operacao_tipo']}}</td>
                                 <td>{{date('d/m/Y H:i:s', strtotime($extrato['data_criacao']));}}</td>
-                                <td style="text-align: center;"><a href="/maquinas/visualizar?id={{$extrato['maquina']['id_maquina']}}"><i class="fa-solid fa-eye"></i></a></td>
-                                <td style="text-align: center;"><a href="#" style="color: red !important;" data-bs-toggle="modal" data-bs-target="#ModalCenterExcluir" onclick="setIdMaquinaExcluir({{$extrato['maquina']['id_maquina']}}, '#id_maquina_input_excluir')"><i class="fa-solid fa-trash"></i></a></td>
+                                <td style="text-align: center;"><a href="/maquinas/visualizar?id={{$extrato['id_maquina']}}"><i class="fa-solid fa-eye"></i></a></td>
+                                <td style="text-align: center;"><a href="#" style="color: red !important;" data-bs-toggle="modal" data-bs-target="#ModalCenterExcluir" onclick="setIdMaquinaExcluir({{$extrato['id_maquina']}}, '#id_maquina_input_excluir')"><i class="fa-solid fa-trash"></i></a></td>
                             </tr>
                         @endforeach
 

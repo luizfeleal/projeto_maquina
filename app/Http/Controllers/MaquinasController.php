@@ -82,7 +82,7 @@ class MaquinasController extends Controller
     public function coletarTodasAsMaquinas(Request $request) {
         $locais = LocaisService::coletar();
         $maquinas = MaquinasService::coletar();
-        $maquinas_extrato = ExtratoMaquinaService::coletar();
+        $maquinas_extrato = MaquinasService::coletarTodasAsMaquinasComUltimaTransacao();
     
         // Indexando locais por id_local
         $locais_indexados = [];
@@ -91,7 +91,7 @@ class MaquinasController extends Controller
         }
     
         // Indexando maquinas por id_maquina
-        $maquinas_indexadas = [];
+        /*$maquinas_indexadas = [];
         foreach ($maquinas as $maquina) {
             $maquinas_indexadas[$maquina['id_maquina']] = $maquina;
         }
@@ -99,6 +99,7 @@ class MaquinasController extends Controller
         // Array para armazenar o resultado final
         $resultado = [];
     
+        return $maquinas_extrato;
         // Percorrendo o extrato para armazenar apenas a última transação de cada máquina
         foreach ($maquinas_extrato as $extrato) {
             $id_maquina = $extrato['id_maquina'];
@@ -142,57 +143,23 @@ class MaquinasController extends Controller
                     ];
                 }
             }
-        }
-    
+        }*/
+
         // Se você quiser um array com índices numéricos simples, pode utilizar array_values
-        $resultado = array_values($resultado);
+        $resultado = array_values($maquinas_extrato);
+
+        
     
         return view('Admin.Maquinas.index', compact('resultado'));
+        //return view('Admin.Maquinas.index');
     }
 
     public function transacaoMaquinas(Request $request){
-        $locais = LocaisService::coletar();
-        $maquinas = MaquinasService::coletar();
-        $maquinas_extrato = ExtratoMaquinaService::coletar();
-
-        // Indexando locais por id_local
-        $locais_indexados = [];
-        foreach ($locais as $local) {
-            $locais_indexados[$local['id_local']] = $local;
-        }
-
-        // Indexando maquinas por id_maquina
-        $maquinas_indexadas = [];
-        foreach ($maquinas as $maquina) {
-            $maquinas_indexadas[$maquina['id_maquina']] = $maquina;
-        }
-
-        $resultado = [];
-        foreach ($maquinas_extrato as $extrato) {
-            $id_maquina = $extrato['id_maquina'];
-            
-            // Verifica se a máquina existe
-            if (isset($maquinas_indexadas[$id_maquina])) {
-                $maquina = $maquinas_indexadas[$id_maquina];
-                $id_local = $maquina['id_local'];
-
-                // Verifica se o local existe
-                if (isset($locais_indexados[$id_local])) {
-                    $local = $locais_indexados[$id_local];
-                    
-                    // Combina as informações
-                    $extrato_completo = $extrato;
-                    $extrato_completo['maquina'] = $maquina;
-                    $extrato_completo['local'] = $local;
-                    $resultado[] = $extrato_completo;
-                }
-            }
-        }
-        return view('Admin.Maquinas.Transacoes.index', compact('resultado'));
+        return view('Admin.Maquinas.Transacoes.index');
     }
 
     public function acumuladoMaquinas(Request $request){
-        $locais = LocaisService::coletar();
+        /*$locais = LocaisService::coletar();
         $maquinas = MaquinasService::coletar();
 
         $maquinas_extrato = ExtratoMaquinaService::coletar();
@@ -230,9 +197,9 @@ class MaquinasController extends Controller
             $maquina['total_maquina'] = $total_maquina;
             $maquina['local_nome'] = $locais_indexados[$maquina['id_local']]['local_nome'];
 
-        }
+        }*/
 
-        return view('Admin.Maquinas.Acumulado.index', compact('maquinas'));
+        return view('Admin.Maquinas.Acumulado.index');
 
     }
 
