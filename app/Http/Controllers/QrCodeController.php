@@ -104,7 +104,6 @@ class QrCodeController extends Controller
             $credencial = array_filter($credenciais, function($item) use($id_cliente){
                 return $item['id_cliente'] == $id_cliente && $item['tipo_cred'] == "efi";
             });
-            return $credencial;
 
             if(empty($credencial)){
                 return back()->with('error', 'Não foi possível gerar um QR para os dados passados, pois não foi encontrado uma credencial para o cliente informado');
