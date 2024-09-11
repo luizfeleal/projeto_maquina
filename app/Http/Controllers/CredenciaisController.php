@@ -38,6 +38,17 @@ class CredenciaisController extends Controller
                 $dados['caminho_certificado'] = $request['cliente_certificado'];
             }
 
+            $credencial = CredApiPixService::coletar();
+
+            $credencial_existente = array_filter($credencial, function($item) use($request){
+                return $item['id_cliente'] == $request['id_cliente'] && $item['tipo_cred'] == $request['tipo_cred'];
+            });
+
+            if(!empty($credencial_existente)){
+                return back()->with('error', 'O usuário já possui uma credencial cadastrada');
+            }
+
+
             $result = CredApiPixService::criar($dados);
 
             if($result['success'] != true){
