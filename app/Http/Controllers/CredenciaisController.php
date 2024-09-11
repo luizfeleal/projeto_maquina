@@ -39,13 +39,12 @@ class CredenciaisController extends Controller
             }
 
             $tipo_cred = $request['tipo_cred'];
-            $id_cliente = $request['id_cliente'];
+            $id_cliente = $request['select-cliente'];
             $credencial = CredApiPixService::coletar();
 
             $credencial_existente = array_filter($credencial, function($item) use($id_cliente, $tipo_cred){
                 return $item['id_cliente'] == $id_cliente && $item['tipo_cred'] == $tipo_cred;
             });
-            return $credencial_existente;
 
 
             
