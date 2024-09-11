@@ -90,6 +90,8 @@ class QrCodeController extends Controller
                 return $item['id_local'] == $id_local;
             });
 
+            return $cliente_local;
+
             $id_usuario_logado = session()->get('id_usuario');
             $request['id_usuario'] = $id_usuario_logado;
             $request['id_cliente'] = $cliente_local[0]['id_cliente'];
