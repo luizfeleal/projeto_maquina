@@ -12,7 +12,7 @@
                 <form action="{{ route('credencial-registrar') }}" id="novo-local-form"  class="w-100 needs-validation form-center"  method="post" enctype="multipart/form-data" novalidate>
                     @csrf
 
-                    <input type="hidden" name="tipo_cred" value="efi">
+                    <input type="hidden" name="tipo_cred" value="pagbank">
                     <div class="row" style="display: flex; flex-direction: row; justify-content: center;  width: 100%;  margin-bottom: 20px;">
                         <div class="col-md-8">
                             <label for="select-cliente" class="form-label">Selecione o cliente responsável*:</label>
