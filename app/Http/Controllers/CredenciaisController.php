@@ -40,6 +40,7 @@ class CredenciaisController extends Controller
 
             $credencial = CredApiPixService::coletar();
 
+            return $credencial;
             $credencial_existente = array_filter($credencial, function($item) use($request){
                 return $item['id_cliente'] == 20 && $item['tipo_cred'] == "efi";
             });
