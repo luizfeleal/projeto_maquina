@@ -94,7 +94,7 @@ class QrCodeController extends Controller
                 return back()->with('error', 'Não foi possível gerar um QR para os dados passados, pois não foi encontrado um cliente para o local especificado.');
 
             }
-            array_values($cliente_local);
+            $cliente_local = array_values($cliente_local);
 
             $id_usuario_logado = session()->get('id_usuario');
             $request['id_usuario'] = $id_usuario_logado;
