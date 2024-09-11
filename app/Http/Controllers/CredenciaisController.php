@@ -58,6 +58,7 @@ class CredenciaisController extends Controller
                 return back()->with('success', $result['data']['message']);
             }
         }catch(\Throwable $e){
+            return $e;
             return back()->with('error', 'Houve um erro ao tentar cadastrar a credencial');
         }
     }
