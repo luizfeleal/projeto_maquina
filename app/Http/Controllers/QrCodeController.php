@@ -84,6 +84,8 @@ class QrCodeController extends Controller
             }
 
             $cliente_local = ClienteLocalService::coletarComFiltro(['id_local' => $request['select_local']], 'where')[0];
+
+            return $cliente_local;
             $id_usuario_logado = session()->get('id_usuario');
             $request['id_usuario'] = $id_usuario_logado;
             $request['id_cliente'] = $cliente_local['id_cliente'];
