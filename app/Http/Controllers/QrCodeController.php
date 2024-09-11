@@ -84,7 +84,7 @@ class QrCodeController extends Controller
             }
 
             $id_local = $request['select_local'];
-            $cliente_local = ClienteLocalService::coletar(['id_local' => $request['select_local']], 'where')[0];
+            $cliente_local = ClienteLocalService::coletar();
 
             $cliente_local = array_filter($cliente_local, function($item) use($id_local){
                 return $item['id_local'] == $id_local;
@@ -92,7 +92,7 @@ class QrCodeController extends Controller
 
             $id_usuario_logado = session()->get('id_usuario');
             $request['id_usuario'] = $id_usuario_logado;
-            $request['id_cliente'] = $cliente_local['id_cliente'];
+            $request['id_cliente'] = $cliente_local[0]['id_cliente'];
 
             $qr = QrCodeService::criar($request);
 
