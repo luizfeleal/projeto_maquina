@@ -34,6 +34,7 @@ class CredApiPixService
             'id_cliente' => $dados['id_cliente'],
             'client_secret' => $dados['client_secret'],
             'client_id' => $dados['client_id'],
+            'tipo_cred' => $dados['tipo_cred']
             // outros campos que deseja enviar
         ]);
     
