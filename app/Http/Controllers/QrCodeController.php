@@ -87,6 +87,7 @@ class QrCodeController extends Controller
             $id_local = $request['select_local'];
             $cliente_local = ClienteLocalService::coletar();
 
+            return $cliente_local;
             $cliente_local = array_filter($cliente_local, function($item) use($id_local){
                 return $item['id_local'] == $id_local && $item['cliente_local_principal'] == 1;
             });
