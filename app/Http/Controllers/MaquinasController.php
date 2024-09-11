@@ -257,7 +257,7 @@ class MaquinasController extends Controller
         ];
 	    $jogada = LiberarJogadaService::criar($dados);
 	
-        if($jogada['http_code'] == 200){
+        if($jogada['http_code'] && $jogada['http_code'] == 200){
             return back()->with('success', "Jogada liberada com sucesso!");
         }else{
             return back()->with('error', 'Houve um erro ao tentar liberar a jogada.');
