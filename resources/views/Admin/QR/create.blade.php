@@ -98,7 +98,7 @@
                                                 <p>{{ session('success') }}</p>
                                             </div>
                                             <div class="modal-footer">
-                                                <a href="{{route('qr-download', ['qr_base64_image'=> session('qr_base64_imagem')])}}" class="btn btn-primary"  data-dismiss="modal" aria-label="Close">Imprimir QR</a>
+                                                <a href="{{route('qr-download', ['qr_base64_image'=> session('qr_base64_imagem')])}}"   data-dismiss="modal" aria-label="Close"><button class="btn btn-primary" type="button">Imprimir QR</button></a>
                                             </div>
 
                                         </div>

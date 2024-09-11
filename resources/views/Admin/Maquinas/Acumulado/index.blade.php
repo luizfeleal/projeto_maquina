@@ -125,7 +125,7 @@
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    url: 'http://127.0.0.1:5001/api/extrato/acumulado', // URL da sua API
+                    url: 'https://services.swiftpaysolucoes.com/api/extrato/acumulado', // URL da sua API
                     type: 'GET', // Tipo de requisição
                     dataSrc: 'data', // Propriedade da resposta que contém os dados
                     headers: {
