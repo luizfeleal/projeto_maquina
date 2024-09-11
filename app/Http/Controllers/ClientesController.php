@@ -78,7 +78,7 @@ class ClientesController extends Controller
         }
 
 
-        return back()->with('error', 'Houve um erro ao tentar cadastrar o cliente com os dados fornecidos!');
+        return back()->with('error', 'Houve um erro ao tentar cadastrar o cliente com os dados prechidos!');
     }
 
     public function editarCliente($id){
