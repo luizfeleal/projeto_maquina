@@ -1,4 +1,4 @@
-@extends('layouts.login')
+@extends('layouts.Login')
 
 @section('title', 'Redefinir Senha')
 
@@ -19,7 +19,7 @@
                     <div class="row" style="display: flex; flex-direction: row; justify-content: center; margin-bottom: 20px; width: 100%; margin-top:">
                         <div class="col-md-4">
                             <label for="usuario_senha" class="form-label">Senha*:</label>
-                            <input type="password" name="usuario_senha" id="usuario_senha" class="form-control" placeholder="Email" aria-label="Email" maxlength="200" required>
+                            <input type="password" name="usuario_senha" id="usuario_senha" class="form-control" placeholder="Senha" aria-label="Senha" maxlength="200" required>
                             <div class="invalid-feedback">
                                 Campo obrigatório. Insira uma senha válida.
                             </div>

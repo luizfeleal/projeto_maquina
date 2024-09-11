@@ -93,6 +93,7 @@ class LoginController extends Controller
             ])->get($url);
 
             $usuarios = $response->json();
+
             $usuarioArray = array_filter($usuarios, function ($usuario) use ($email) {
                 return $usuario['usuario_email'] == $email;
             });
@@ -100,12 +101,14 @@ class LoginController extends Controller
             if(empty($usuarioArray)){
                 return back()->with('error', 'Não foi encontrado nenhum usuário com o email informado.');
             }
+            $usuarioArray = array_values($usuarioArray);
             $id_usuario = $usuarioArray[0]['id_usuario'];
 
             EmailService::enviarEmailGenerico($email, 'Redefinição de senha', 'Mail.redefineSenha', ['link'=>env('APP_URL') . "/login/senha/alterar?id=" . urldecode($id_usuario). "&token=" . urldecode(hash('sha256', $email))]);
 
             return back()->with('success', 'Email de redefinição de senha enviado com sucesso. Acesse seu email e clique no link para poder redefinir sua senha.');
          }catch(\Throwable $e){
+            return $e;
             return back()->with('error', 'Houve um erro inesperado ao tentar enviar o email de redefinição de senha.');
          }
     }

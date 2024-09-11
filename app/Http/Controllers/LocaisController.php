@@ -26,10 +26,11 @@ class LocaisController extends Controller
             $dados['local_nome'] = $request['nome_local'];
             $local = LocaisService::criar($dados);
             $id_local = $local['response']['id_local'];
-            foreach($clientes as $cliente){
+            foreach($clientes as $index => $cliente){
                 $dadosClienteLocal = [];
                 $dadosClienteLocal['id_cliente'] = $cliente;
                 $dadosClienteLocal['id_local'] = $id_local;
+                $dadosClienteLocal['cliente_local_principal'] = $index == 0 ? 1 : 0;
                 ClienteLocalService::criar($dadosClienteLocal);
 
             }

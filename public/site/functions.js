@@ -369,8 +369,9 @@ const setComplementoCliente = () => {
     const selectLocais = $("#select-local").val();
     const selectClientes = $("#select-cliente").val();
     let foiSetado = false;
+    let foiSetadoFuncao = false;
 
-    if (selectLocais.length != 0 && selectClientes.length == 0) {
+    if (selectLocais.length != 0 && selectClientes.length == 0 || selectLocais.length != 0 && selectClientes.length != 0 ) {
         for (let i = 0; i < valLocais.length; i++) {
             if (valLocais[i].id_local == selectLocais) {
                 for (let j = 0; j < valLocalCliente.length; j++) {
@@ -379,6 +380,7 @@ const setComplementoCliente = () => {
                         $("#select-cliente").val(valLocalCliente[j].id_cliente);
                         $("#select-cliente").trigger('change');
                         foiSetado = true;
+                        foiSetadoFuncao = true;
                         break;
                     }
                 }
@@ -386,9 +388,16 @@ const setComplementoCliente = () => {
         }
     }
 
-    if (!foiSetado) {
+    if (foiSetado == false) {
         isAutomaticChange = true; // Marca que uma mudança automática está ocorrendo
-        $("#select-local").val(null).trigger('change');
+        $("#select-local").val("").trigger('change');
+        $(".invalid-feedback-local").remove();
+        $(".invalid-p-cliente").append("Não foi encontrado um cliente para esse local");
+    }
+    if(foiSetadoFuncao == false){
+        $("#select-cliente").val("").trigger('change');
+        $(".invalid-p-cliente").empty();
+        $(".invalid-p-cliente").append("Não foi encontrado um local para esse cliente");
     }
 
     // Reseta a flag após um pequeno atraso para permitir mudanças manuais
@@ -406,6 +415,7 @@ const setComplementoLocal = () => {
     const selectClientes = $("#select-cliente").val();
     const selectLocais = $("#select-local");
     let foiSetado = false;
+    foiSetadoFuncao = false;
 
     if (selectClientes.length !== 0) {
         for (let i = 0; i < valLocalCliente.length; i++) {
@@ -417,10 +427,25 @@ const setComplementoLocal = () => {
                     selectLocais.val(localCorrespondente.id_local);
                     selectLocais.trigger('change');
                     foiSetado = true;
+                    foiSetadoFuncao = true;
                     break;
                 }
             }
         }
+    }
+
+
+    if (foiSetado == false) {
+        isAutomaticChange = true; // Marca que uma mudança automática está ocorrendo
+        $("#select-local").val("").trigger('change');
+        //$(".invalid-feedback-local").remove();
+        $(".invalid-p-local").empty();
+        $(".invalid-p-local").append("Não foi encontrado um local para esse cliente");
+    }
+    if(foiSetadoFuncao == false){
+        $("#select-cliente").val("").trigger('change');
+        $(".invalid-p-cliente").empty();
+        $(".invalid-p-cliente").append("Não foi encontrado um local para esse cliente");
     }
 
     // Reseta a flag após um pequeno atraso para permitir mudanças manuais

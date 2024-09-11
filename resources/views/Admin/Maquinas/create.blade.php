@@ -55,8 +55,8 @@
                                 <option value="{{$local['id_local']}}">{{$local['local_nome']}}</option>
                             @endforeach
                             </select>
-                            <div class="invalid-feedback">
-                                <p class="invalid-p" id="select_local_mensagem">Campo obrigatório</p>
+                            <div class="invalid-feedback invalid-feedback-local">
+                                <p class="invalid-p-local" id="select_local_mensagem">Campo obrigatório</p>
                             </div>
                         </div>
                     </div>
@@ -70,7 +70,7 @@
                             @endforeach
                             </select>
                             <div class="invalid-feedback">
-                                <p class="invalid-p" id="select_cliente_mensagem">Campo obrigatório</p>
+                                <p class="invalid-p-cliente" id="select_cliente_mensagem">Campo obrigatório</p>
                             </div>
 
                         </div>
