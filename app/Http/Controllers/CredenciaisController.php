@@ -15,9 +15,13 @@ use App\Services\AuthService;
 class CredenciaisController extends Controller
 {
 
-    public function criarCredencial(Request $request){
+    public function criarCredencialEfi(Request $request){
         $clientes = ClientesService::coletar();
-        return view('Admin.Credenciais.create', compact('clientes'));
+        return view('Admin.Credenciais.EFI.create', compact('clientes'));
+    }
+    public function criarCredencialPagbank(Request $request){
+        $clientes = ClientesService::coletar();
+        return view('Admin.Credenciais.PagBank.create', compact('clientes'));
     }
 
     public function registrarCredencial(Request $request){
@@ -29,7 +33,10 @@ class CredenciaisController extends Controller
             $dados['id_cliente'] = $request['select-cliente'];
             $dados['client_id'] = $request['cliente_id'];
             $dados['client_secret'] = $request['cliente_secret'];
-            $dados['caminho_certificado'] = $request['cliente_certificado'];
+            $dados['tipo_cred'] = $request['tipo_cred'];
+            if($request['tipo_cred'] == "efi"){
+                $dados['caminho_certificado'] = $request['cliente_certificado'];
+            }
 
             $result = CredApiPixService::criar($dados);
 

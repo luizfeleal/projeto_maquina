@@ -61,7 +61,8 @@ $currentRoute = Request::route()->getName();
                                 <li><a href="{{route('maquinas-criar')}}" class="d-inline-flex text-decoration-none rounded" style="{{ $currentRoute === 'maquinas-criar' ? 'color:grey !important;' : ' ' }}">Criar nova máquina</a></li>
                                 <li><a href="{{route('local-incluir-usuario')}}" class=" d-inline-flex text-decoration-none rounded" style="{{  $currentRoute === 'local-incluir-usuario' ? 'color:grey !important;': ' ' }}">Incluir usuários</a></li>
                                 <li><a href="{{route('local-criar')}}" class=" d-inline-flex text-decoration-none rounded" style="{{  $currentRoute === 'local-criar' ? 'color:grey !important;': ' ' }}">Criar local</a></li>
-                                <li><a href="{{route('credencial-criar')}}" class=" d-inline-flex text-decoration-none rounded" style="{{  $currentRoute === 'credencial-criar' ? 'color:grey !important;': ' ' }}">Criar credencial</a></li>
+                                <li><a href="{{route('credencial-criar-efi')}}" class=" d-inline-flex text-decoration-none rounded" style="{{  $currentRoute === 'credencial-criar' ? 'color:grey !important;': ' ' }}">Criar credencial EFI</a></li>
+                                <li><a href="{{route('credencial-criar-pagbank')}}" class=" d-inline-flex text-decoration-none rounded" style="{{  $currentRoute === 'credencial-criar' ? 'color:grey !important;': ' ' }}">Criar credencial Pagbank</a></li>
                             </ul>
                             </div>
                         </li>

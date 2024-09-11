@@ -96,6 +96,16 @@ class QrCodeController extends Controller
             }
             $cliente_local = array_values($cliente_local);
 
+            $credenciais = CredApiPixService::coletar();
+
+            $credencial = array_filter($credenciais, function($item) use($cliente_local){
+                return $item['id_cliente'] == $cliente_local[0]['id_cliente'] && $item['tipo_cred'] == "efi";
+            });
+
+            if(empty($credencial)){
+                return back()->with('error', 'Não foi possível gerar um QR para os dados passados, pois não foi encontrado uma credencial para o cliente informado');
+
+            }
             $id_usuario_logado = session()->get('id_usuario');
             $request['id_usuario'] = $id_usuario_logado;
             $request['id_cliente'] = $cliente_local[0]['id_cliente'];

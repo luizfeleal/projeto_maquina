@@ -1,20 +1,21 @@
 @extends('layouts.app')
-@section('title', 'Criar Credencial')
+@section('title', 'Criar Credencial EFÍ')
 @section('content')
 
         <div  class="usuarios div-center-column w-100"
                 style="padding-top: 99px;">
 
-                <h1  style="padding-top: 80px; text-align: center;">Criar Credencial</h1>
+                <h1  style="padding-top: 80px; text-align: center;">Criar Credencial EFÍ</h1>
             <div class="container section container-platform div-center-column"
                 style="margin-top: 15px; height: 100%;">
 
                 <form action="{{ route('credencial-registrar') }}" id="novo-local-form"  class="w-100 needs-validation form-center"  method="post" enctype="multipart/form-data" novalidate>
                     @csrf
 
+                    <input type="hidden" name="tipo_cred" value="efi">
                     <div class="row" style="display: flex; flex-direction: row; justify-content: center;  width: 100%;  margin-bottom: 20px;">
                         <div class="col-md-8">
-                            <label for="select-cliente" class="form-label">Selecione o cliente*:</label>
+                            <label for="select-cliente" class="form-label">Selecione o cliente responsável*:</label>
                             <select class="select-cliente js-example-basic-multiple js-states form-control" id="select-cliente" placeholder="Selecione" name="select-cliente" required>
 
                             <option value="">Selecione</option>
@@ -30,7 +31,7 @@
                     </div>
                     <div class="row" style="display: flex; flex-direction: row; justify-content: center;width: 100%; margin-bottom: 20px;">
                         <div class="col-md-4">
-                            <label for="cliente_id" class="form-label">Client ID:</label>
+                            <label for="cliente_id" class="form-label">Usuário:</label>
                             <input type="text" class="form-control" name="cliente_id" id="cliente_id" required>
                             <div class="invalid-feedback">
                                 <p class="invalid-p invalid-p-name">Campo obrigatório</p>
@@ -38,19 +39,8 @@
 
                         </div>
                         <div class="col-md-4">
-                            <label for="cliente_secret" class="form-label">Client Secret:</label>
+                            <label for="cliente_secret" class="form-label">Token:</label>
                             <input type="text" class="form-control" name="cliente_secret" id="cliente_secret" required>
-                            <div class="invalid-feedback">
-                                <p class="invalid-p invalid-p-name">Campo obrigatório</p>
-                            </div>
-
-                        </div>
-                        
-                    </div>
-                    <div class="row" style="display: flex; flex-direction: row; justify-content: center;width: 100%; margin-bottom: 20px;">
-                        <div class="col-md-8">
-                            <label for="cliente_certificado" class="form-label">Certificado:</label>
-                            <input type="file" class="form-control" name="cliente_certificado" id="cliente_certificado" required>
                             <div class="invalid-feedback">
                                 <p class="invalid-p invalid-p-name">Campo obrigatório</p>
                             </div>

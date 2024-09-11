@@ -69,7 +69,8 @@ Route::prefix('relatorios')->middleware('permission')->group(function(){
 });
 
 Route::prefix('credenciais')->middleware('permission')->group(function(){
-    Route::get('/criar', 'App\Http\Controllers\CredenciaisController@criarCredencial')->name('credencial-criar');
+    Route::get('/criar/efi', 'App\Http\Controllers\CredenciaisController@criarCredencialEfi')->name('credencial-criar-efi');
+    Route::get('/criar/pagbank', 'App\Http\Controllers\CredenciaisController@criarCredencialPagbank')->name('credencial-criar-pagbank');
     Route::post('/exibir', 'App\Http\Controllers\CredenciaisController@registrarCredencial')->name('credencial-registrar');
 });
 
