@@ -108,7 +108,7 @@
 
             async function fetchToken() {
                 try {
-                    let response = await fetch('https://services.swiftpaysolucoes.com/api/getToken');
+                    let response = await fetch('https://www.swiftpaysolucoes.com/api/getToken');
                     let data = await response.json();
                     return data.token;
                 } catch (error) {
