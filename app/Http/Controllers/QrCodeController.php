@@ -115,6 +115,8 @@ class QrCodeController extends Controller
 
             $qr = QrCodeService::criar($request);
 
+            return $qr;
+
             if($qr['message'] == "Qr Code cadastrado com sucesso!"){
                 return back()-> with(['success' => $qr['message'], 'qr_base64_imagem' => $qr['response']['qr_image']]);
             }else{
