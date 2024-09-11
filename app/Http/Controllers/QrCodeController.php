@@ -105,7 +105,7 @@ class QrCodeController extends Controller
             if($qr['message'] == "Qr Code cadastrado com sucesso!"){
                 return back()-> with(['success' => $qr['message'], 'qr_base64_imagem' => $qr['response']['qr_image']]);
             }else{
-                return back()-> with('error', $qr->message);
+                return back()-> with('error', $qr['message']);
             }
         }catch(Throwable $e){
             return back()->with('error', 'Houve um erro inesperado ao tentar registrar o QR Code.');
