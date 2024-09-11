@@ -45,6 +45,7 @@
                         <thead>
                             <tr>
                                 <th>Local</th>
+                                <th>ID Placa</th>
                                 <th>Máquina</th>
                                 <th>Status</th>
                                 <th>Total máquina</th>
@@ -63,6 +64,7 @@
     
                                 <td>{{$maquina['local_nome']}}</td>
                                 
+                                <td>{{$maquina['id_placa']}}</td>
                                 <td>{{$maquina['maquina_nome']}}</td>
                                     @if($maquina['maquina_status'] == 0) 
                                         <td><i class="fa-solid fa-circle text-danger" ></i></td>
@@ -83,6 +85,7 @@
                         <tfoot>
                             <tr>
                                 <th>Local</th>
+                                <th>ID Placa</th>
                                 <th>Máquina</th>
                                 <th>Status</th>
                                 <th>Total máquina</th>
