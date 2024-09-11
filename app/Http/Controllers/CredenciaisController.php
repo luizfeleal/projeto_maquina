@@ -27,7 +27,7 @@ class CredenciaisController extends Controller
     public function registrarCredencial(Request $request){
 
 
-        try{
+        //try{
 
             $dados = [];
             $dados['id_cliente'] = $request['select-cliente'];
@@ -51,16 +51,17 @@ class CredenciaisController extends Controller
 
             $result = CredApiPixService::criar($dados);
 
+            return $result;
             if($result['success'] != true){
                 return back()->with('error', 'Houve um erro ao tentar cadastrar a credencial');
             }else{
 
                 return back()->with('success', $result['data']['message']);
             }
-        }catch(\Throwable $e){
-            return $e;
-            return back()->with('error', 'Houve um erro ao tentar cadastrar a credencial');
-        }
+        //}catch(\Throwable $e){
+            //return $e;
+            //return back()->with('error', 'Houve um erro ao tentar cadastrar a credencial');
+        //}
     }
 
   
