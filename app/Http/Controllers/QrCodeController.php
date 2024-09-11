@@ -91,7 +91,6 @@ class QrCodeController extends Controller
                 return $item['id_local'] == $id_local && $item['cliente_local_principal'] == 1;
             });
 
-            return $cliente_local;
             if(empty($cliente_local)){
                 return back()->with('error', 'Não foi possível gerar um QR para os dados passados, pois não foi encontrado um cliente para o local especificado.');
 
@@ -100,6 +99,7 @@ class QrCodeController extends Controller
 
             $credenciais = CredApiPixService::coletar();
 
+            return $credenciais;
             $credencial = array_filter($credenciais, function($item) use($cliente_local){
                 return $item['id_cliente'] == $cliente_local[0]['id_cliente'] && $item['tipo_cred'] == "efi";
             });
