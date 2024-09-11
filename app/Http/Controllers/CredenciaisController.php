@@ -44,6 +44,8 @@ class CredenciaisController extends Controller
                 return $item['id_cliente'] == $request['id_cliente'] && $item['tipo_cred'] == $request['tipo_cred'];
             });
 
+            return $credencial_existente;
+
             if(!empty($credencial_existente)){
                 return back()->with('error', 'O usuário já possui uma credencial cadastrada');
             }
