@@ -72,7 +72,7 @@ class LocaisController extends Controller
         });
 
 
-        $maquinas_extrato = ExtratoMaquinaService::coletar();
+        /*$maquinas_extrato = ExtratoMaquinaService::coletar();
 
         foreach($maquinasFiltradas as &$maquina){
             $total_pix = 0;
@@ -102,10 +102,10 @@ class LocaisController extends Controller
             $maquina['total_maquina'] = $total_maquina;
             $maquina['local_nome'] = $local['local_nome'];
 
-        }
+        }*/
 
 
-        return view('Admin.Local.show', compact('clienteFiltrado', 'maquinasFiltradas', 'local'));
+        return view('Admin.Local.show', compact('clienteFiltrado', 'local'));
     }
 
     public function coletarLocais(Request $request){
