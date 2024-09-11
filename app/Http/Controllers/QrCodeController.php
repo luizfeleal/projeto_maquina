@@ -83,9 +83,13 @@ class QrCodeController extends Controller
                 return back()->with('error', 'Não foi possível gerar um QR para os dados passados, pois já existe um QR Code para o local e máquina especificados.');
             }
 
-            $cliente_local = ClienteLocalService::coletarComFiltro(['id_local' => $request['select_local']], 'where')[0];
+            $id_local = $request['select_local'];
+            $cliente_local = ClienteLocalService::coletar(['id_local' => $request['select_local']], 'where')[0];
 
-            return $cliente_local;
+            $cliente_local = array_filter($cliente_local, function($item) use($id_local){
+                return $item['id_local'] == $id_local;
+            });
+
             $id_usuario_logado = session()->get('id_usuario');
             $request['id_usuario'] = $id_usuario_logado;
             $request['id_cliente'] = $cliente_local['id_cliente'];
