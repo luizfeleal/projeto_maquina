@@ -87,10 +87,10 @@ class QrCodeController extends Controller
             $id_local = $request['select_local'];
             $cliente_local = ClienteLocalService::coletar();
 
-            return $id_local;
             $cliente_local = array_filter($cliente_local, function($item) use($id_local){
                 return $item['id_local'] == $id_local && $item['cliente_local_principal'] == 1;
             });
+            return $cliente_local;
 
             if(empty($cliente_local)){
                 return back()->with('error', 'Não foi possível gerar um QR para os dados passados, pois não foi encontrado um cliente para o local especificado.');
