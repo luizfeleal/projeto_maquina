@@ -56,9 +56,9 @@ class CredApiPixService
     public static function coletar(string $id = Null)
     {
         if(is_null($id)){
-            $url = env('APP_URL_API') . "/usuarios";
+            $url = env('APP_URL_API') . "/credApiPix";
         }else{
-            $url = env('APP_URL_API') . "/usuarios/$id";
+            $url = env('APP_URL_API') . "/credApiPix/$id";
         }
         $token = AuthService::getToken();
         $response = Http::withHeaders([
