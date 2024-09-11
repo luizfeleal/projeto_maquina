@@ -51,6 +51,7 @@ class CredenciaisController extends Controller
 
             $result = CredApiPixService::criar($dados);
 
+            return $result;
             if($result['success'] != true){
                 return back()->with('error', 'Houve um erro ao tentar cadastrar a credencial');
             }else{
