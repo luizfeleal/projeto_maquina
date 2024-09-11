@@ -38,10 +38,12 @@ class CredenciaisController extends Controller
                 $dados['caminho_certificado'] = $request['cliente_certificado'];
             }
 
+            $tipo_cred = $request['tipo_cred'];
+            $id_cliente = $request['id_cliente'];
             $credencial = CredApiPixService::coletar();
 
             $credencial_existente = array_filter($credencial, function($item) use($request){
-                return $item['id_cliente'] == $request['id_cliente'] && $item['tipo_cred'] == $request['tipo_cred'];
+                return $item['id_cliente'] == $id_cliente && $item['tipo_cred'] == $tipo_cred;
             });
             return $credencial_existente;
 
