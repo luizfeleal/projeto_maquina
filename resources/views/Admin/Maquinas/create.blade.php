@@ -165,11 +165,13 @@
 
         $('.select-local').on('select2:close', function(e) {
 
+            console.log('fui chamado')
             setComplementoCliente()
             
         });
         $('.select-cliente').on('select2:close', function(e) {
-
+            
+            console.log('fui chamado também')
             setComplementoLocal()
             
         });

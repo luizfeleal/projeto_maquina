@@ -358,60 +358,79 @@ const sendFormCriarQr= (id_form) =>{
     }
 }
 
-const setComplementoCliente = () => {
-    var valLocais = JSON.parse($("#input_locais").val());
-    var valLocalCliente = JSON.parse($("#input_local_cliente").val());
-    
-    var selectLocais = $("#select-local").val();
-    var selectClientes = $("#select-cliente").val();
-    var foiSetado = false;
-    if(selectLocais.length != 0 && selectClientes.length == 0){
-        for(let i = 0; i < valLocais.length; i++){
-            if(valLocais[i].id_local == selectLocais){
-                for(let i = 0; i < valLocalCliente.length; i++){
-                    if(valLocais[i].id_local == valLocalCliente[i].id_local){
-                        $("#select-cliente").val(valLocalCliente[i].id_cliente);
-                        $("#select-cliente").trigger('change');
+let isAutomaticChange = false; // Flag para controlar mudanças automáticas
 
+const setComplementoCliente = () => {
+    if (isAutomaticChange) return; // Evita execução se a mudança for automática
+
+    const valLocais = JSON.parse($("#input_locais").val());
+    const valLocalCliente = JSON.parse($("#input_local_cliente").val());
+    
+    const selectLocais = $("#select-local").val();
+    const selectClientes = $("#select-cliente").val();
+    let foiSetado = false;
+
+    if (selectLocais.length != 0 && selectClientes.length == 0) {
+        for (let i = 0; i < valLocais.length; i++) {
+            if (valLocais[i].id_local == selectLocais) {
+                for (let j = 0; j < valLocalCliente.length; j++) {
+                    if (valLocais[i].id_local == valLocalCliente[j].id_local) {
+                        isAutomaticChange = true; // Marca que uma mudança automática está ocorrendo
+                        $("#select-cliente").val(valLocalCliente[j].id_cliente);
+                        $("#select-cliente").trigger('change');
                         foiSetado = true;
+                        break;
                     }
                 }
             }
-        } 
+        }
     }
 
-    if(foiSetado == false){
+    if (!foiSetado) {
+        isAutomaticChange = true; // Marca que uma mudança automática está ocorrendo
         $("#select-local").val(null).trigger('change');
     }
-}
 
-
+    // Reseta a flag após um pequeno atraso para permitir mudanças manuais
+    setTimeout(() => {
+        isAutomaticChange = false;
+    }, 100);
+};
 
 const setComplementoLocal = () => {
-    var valLocais = JSON.parse($("#input_locais").val());
-    var valLocalCliente = JSON.parse($("#input_local_cliente").val());
-    var foiSetado = false;
-    
-    var selectLocais = $("#select-local").val();
-    var selectClientes = $("#select-cliente").val();
-    
-    if(selectLocais.length == 0 && selectClientes.length != 0){
-        for(let i = 0; i < valLocalCliente.length; i++){
+    if (isAutomaticChange) return; // Evita execução se a mudança for automática
 
-            if(valLocalCliente[i].id_cliente == selectClientes){
-                //for(let i = 0; i < valLocais.length; i++){
-                foiSetado = true;
-                    $("#select-local").val(valLocalCliente[i].id_local);
-                    $("#select-local").trigger('change');
-                //}
+    const valLocais = JSON.parse($("#input_locais").val());
+    const valLocalCliente = JSON.parse($("#input_local_cliente").val());
+
+    const selectClientes = $("#select-cliente").val();
+    const selectLocais = $("#select-local");
+    let foiSetado = false;
+
+    if (selectClientes.length !== 0) {
+        for (let i = 0; i < valLocalCliente.length; i++) {
+            if (valLocalCliente[i].id_cliente == selectClientes) {
+                const localCorrespondente = valLocais.find(local => local.id_local == valLocalCliente[i].id_local);
+
+                if (localCorrespondente) {
+                    isAutomaticChange = true; // Marca que uma mudança automática está ocorrendo
+                    selectLocais.val(localCorrespondente.id_local);
+                    selectLocais.trigger('change');
+                    foiSetado = true;
+                    break;
+                }
             }
         }
-    } 
-
-    if(foiSetado == false){
-        $("#select-local").val(null).trigger('change');
     }
-}
+
+    // Reseta a flag após um pequeno atraso para permitir mudanças manuais
+    setTimeout(() => {
+        isAutomaticChange = false;
+    }, 100);
+};
+
+
+
 
 const showLoader = () => {
     $("#loader").css("display", "flex");
