@@ -9,6 +9,7 @@ use App\Services\ExtratoMaquinaService;
 use App\Services\ClientesService;
 use App\Services\ClienteLocalService;
 use App\Services\QrCodeService;
+use App\Services\CredApiPixService;
 use App\Services\AuthService;
 use Illuminate\Support\Facades\Response;
 
