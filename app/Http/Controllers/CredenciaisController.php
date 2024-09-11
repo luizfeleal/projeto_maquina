@@ -38,8 +38,6 @@ class CredenciaisController extends Controller
                 $dados['caminho_certificado'] = $request['cliente_certificado'];
             }
 
-            return $dados;
-
             $credencial = CredApiPixService::coletar();
 
             $credencial_existente = array_filter($credencial, function($item) use($request){
