@@ -100,11 +100,13 @@ class RelatoriosController extends Controller
                     }
 
                     $totalTransacoes = $totalTransacoes - $estorno;
+
+                    $bodyReq = $request->all();
             if ($request->ajax()) {
 
                 return response()->json($resultado);
             }
-            return view('Admin.Relatorios.TotalTransacoes.show', compact('resultado', 'total', 'totalTransacoes'));
+            return view('Admin.Relatorios.TotalTransacoes.show', compact('resultado', 'total', 'totalTransacoes', 'bodyReq'));
 
 
 
@@ -202,9 +204,14 @@ class RelatoriosController extends Controller
         
         // Decodifica os dados JSON da requisição
         $data = json_decode($request->input('data'));
-
+        $data = (array) $data;
         $isTaxaDesconto = isset($request['tipo_csv']) && $request['tipo_csv'] == 'taxa_desconto';
         $isTotalTransacoes = isset($request['tipo_csv']) && $request['tipo_csv'] == 'total_transacao';
+    if($isTotalTransacoes){
+        $data = ExtratoMaquinaService::coletarRelatorioTotalTransacoes($data)['data'];
+    }
+
+        
         // Definindo os tipos de XLSX
 
         // Criação do Spreadsheet e do cabeçalho
