@@ -12,6 +12,7 @@
             <form action="{{ route('relatorio-xlsx-download') }}" method="post" class="form-center" id="form-csv">
                 @csrf
                 <input type="hidden" name="tipo_csv" value="total_transacao">
+                <input type="hidden" name="data" value="{{json_encode($resultado['data'])}}">
                 <h1>Total Transações</h1>
 
                 <table id="total_transacoes" class="table table-striped table-responsive" style="width:100%">

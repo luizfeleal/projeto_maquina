@@ -203,7 +203,6 @@ class RelatoriosController extends Controller
         // Decodifica os dados JSON da requisição
         $data = json_decode($request->input('data'));
 
-
         $isTaxaDesconto = isset($request['tipo_csv']) && $request['tipo_csv'] == 'taxa_desconto';
         $isTotalTransacoes = isset($request['tipo_csv']) && $request['tipo_csv'] == 'total_transacao';
         // Definindo os tipos de XLSX
@@ -228,7 +227,7 @@ class RelatoriosController extends Controller
                 $totalValorFinal += $itemArray['extrato_operacao_valor'];
             }
             if ($isTotalTransacoes) {
-                $totalValorFinal += $itemArray['valor'];
+                $totalValorFinal += $itemArray['extrato_operacao_valor'];
             }
 
             // Escrever a linha de dados no arquivo
