@@ -83,6 +83,31 @@ public static function coletarRelatorioTotalTransacoes($dados){
 
         return $extrato_maquinas;
 }
+public static function coletarRelatorioTotalTransacoesTotal($dados){
+    $url = env('APP_URL_API') . "/relatorioTotalTransacoesTotal";
+
+        $token = AuthService::getToken();
+        $response = Http::withHeaders([
+            'Authorization' => 'Bearer ' . $token
+        ])->post($url, $dados);
+
+        $extrato_maquinas = $response->json();
+
+        return $extrato_maquinas;
+}
+
+public static function coletarRelatorioTotalTransacoesTaxa($dados){
+    $url = env('APP_URL_API') . "/relatorioTotalTransacoesTaxa";
+
+        $token = AuthService::getToken();
+        $response = Http::withHeaders([
+            'Authorization' => 'Bearer ' . $token
+        ])->post($url, $dados);
+
+        $extrato_maquinas = $response->json();
+
+        return $extrato_maquinas;
+}
 
 
     public static function coletarComFiltro($filtros, $tipo)

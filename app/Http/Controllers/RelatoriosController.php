@@ -81,16 +81,30 @@ class RelatoriosController extends Controller
         if($nomeRelatorio == "totalTransacoes"){
 
             $resultado = ExtratoMaquinaService::coletarRelatorioTotalTransacoes($request->all());
+            
+            $total = ExtratoMaquinaService::coletarRelatorioTotalTransacoesTotal($request->all());
 
                     // Calcular totais
     
 
 
+                    $totalTransacoes = 0;
+                    $estorno = 0;
+
+                    foreach($total as $item){
+                        if($item['tipo'] != "Estorno"){
+                            $totalTransacoes += $item['total'];
+                        }else{
+                            $estorno += $item['total'];
+                        }
+                    }
+
+                    $totalTransacoes = $totalTransacoes - $estorno;
             if ($request->ajax()) {
 
-            return response()->json($resultado);
+                return response()->json($resultado);
             }
-            return view('Admin.Relatorios.TotalTransacoes.show', compact('resultado'));
+            return view('Admin.Relatorios.TotalTransacoes.show', compact('resultado', 'total', 'totalTransacoes'));
 
 
 
@@ -98,137 +112,22 @@ class RelatoriosController extends Controller
 
         if($nomeRelatorio == "taxasDesconto"){
 
-            $cliente = $request->input('id_cliente');
-            $maquina = $request->input('id_maquina');
-            $local = $request->input('id_local');
-            $tipoTransacao = "Taxa";
-            $data_inicio = $request->input('data_inicio');
-            $data_fim = $request->input('data_fim');
+            $resultadosFiltrados = ExtratoMaquinaService::coletarRelatorioTotalTransacoesTaxa($request->all())['data'];
+            $resultArray = $resultadosFiltrados;
 
-            $locais = LocaisService::coletar();
-            $maquinas = MaquinasService::coletar();
-
-            if($local){
-
-                $locais = array_filter($locais, function($item) use ($local) {
-                    return in_array($item['id_local'], $local);
-                });
-            }
-
-            if($maquina){
-                
-                $maquinas = array_filter($maquinas, function($item) use ($maquina) {
-                    return in_array($item['id_maquina'], $maquina);
-                });
-            }
-
-            if($cliente){
-                $locais = array_filter($locais, function($item) use ($cliente) {
-                    return in_array($item['id_cliente'], $cliente);
-                });
-            }
-
-            // Extrair todos os id_local dos locais filtrados
-            $idLocais = array_column($locais, 'id_local');
-
-            $maquinas = array_filter($maquinas, function($item) use ($idLocais) {
-                return in_array($item['id_local'], $idLocais);
-            });
-
-            $maquinasPorId = [];
-            foreach ($maquinas as &$maquina) {
-                $local = array_filter($locais, function($item) use($maquina){
-                    return $item['id_local'] == $maquina['id_local'];
-                });
-
-
-                if(!empty($local) && isset($local[0])){
-                    $local_nome = $local[0];
-                }else{
-                    $local_nome = '';
-                }
-
-                //dd($local[0]['local_nome']);
-                $maquina['nome_local'] = $local_nome;
-                $maquinasPorId[$maquina['id_maquina']] = $maquina;
-            }
-
-            $idMaquinas = array_column($maquinas, 'id_maquina');
-
-
-            $extratos = ExtratoMaquinaService::coletar();
-            $extratos = array_filter($extratos, function($item) use ($idMaquinas) {
-                return in_array($item['id_maquina'], $idMaquinas);
-            });
-
-            if ($tipoTransacao) {
-                $extratos = array_filter($extratos, function($item) use ($tipoTransacao) {
-                    return $item['extrato_operacao_tipo'] == $tipoTransacao;
-                    
-                });
-            }
-
-            $resultadosFiltrados = [];
-            //$valor_total_pix = 0;
-            //$valor_total_cartao = 0;
-            //$valor_total_dinheiro = 0;
-            //$valor_total_estorno = 0;
             $valor_total = 0;
 
-            $resultArray = [];
-            
-               foreach ($extratos as &$item) {
-                    $item['maquina_nome'] = $maquinasPorId[$item['id_maquina']]['maquina_nome'];
-                    $item['nome_local'] = $maquinasPorId[$item['id_maquina']]['nome_local'];
-                    $dataItem = strtotime($item["data_criacao"]);
-
-                    // Verificar se dataFim está vazio
-                    if (empty($dataFim)) {
-                        $dataFimTimestamp = time(); // Usar a data atual se dataFim estiver vazio
-                    } else {
-                        $dataFimTimestamp = strtotime($dataFim . " 23:59:59");
-                    }
-
-                    // Verificar se dataInicio está vazio
-                    if (empty($dataInicio)) {
-                        // Considerar todos os inícios até dataFim se dataInicio estiver vazio
-                        $resultadosFiltrados[] = $item;
-                    } else {
-                        $dataInicioTimestamp = strtotime($dataInicio . " 00:00:00");
-
-                        // Verificar se a data está dentro do intervalo
-                        if ($dataItem >= $dataInicioTimestamp && $dataItem <= $dataFimTimestamp) {
-                            // Adicionar o item à lista resultante
-                            $resultadosFiltrados[] = $item;
-                        }
-                    }
-
-                    $resultArray[] = [
-                        "local" => $maquinasPorId[$item['id_maquina']]['nome_local'],
-                        "maquina" => $maquinasPorId[$item['id_maquina']]['maquina_nome'],
-                        "tipo_transacao" => $item['extrato_operacao_tipo'],
-                        "valor" => $item['extrato_operacao_valor'],
-                        "data_e_hora" => date('d/m/Y H:i:s', strtotime($item['data_criacao']))
-                    ];
-                    /*if($item['extrato_operacao_tipo'] == "PIX"){
-                        $valor_total_pix += $item['extrato_operacao_valor'];
-                    }else if($item['extrato_operacao_tipo'] == "Cartão"){
-                        $valor_total_cartao += $item['extrato_operacao_valor'];
-                    }else if($item['extrato_operacao_tipo'] == "Dinheiro"){
-                        $valor_total_dinheiro += $item['extrato_operacao_valor'];
-                    }else if($item['extrato_operacao_tipo'] == "Estorno"){
-                        $valor_total_estorno += $item['extrato_operacao_valor'];
-                    }*/
-
-                    $valor_total += $item['extrato_operacao_valor'];
-                }
-
-
-                return view('Admin.Relatorios.TaxasDesconto.show', compact('resultadosFiltrados','valor_total', 'resultArray'));
-
-
-
+            foreach($resultadosFiltrados as $resultado){
+                $valor_total += $resultado['extrato_operacao_valor'];
+            }
+            return view('Admin.Relatorios.TaxasDesconto.show', compact('resultadosFiltrados', 'resultArray', 'valor_total'));
         }
+
+
+
+
+
+        
 
         if($nomeRelatorio == "relatorioErros"){
             $maquina = $request->input('id_maquina');

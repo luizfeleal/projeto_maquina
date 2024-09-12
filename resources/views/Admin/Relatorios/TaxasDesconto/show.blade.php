@@ -32,7 +32,7 @@
 
                             @foreach($resultadosFiltrados as $resultado)
                                 <tr>
-                                    <td>{{$resultado['nome_local']['local_nome']}}</td>
+                                    <td>{{$resultado['local_nome']}}</td>
                                     <td>{{$resultado['maquina_nome']}}</td>
                                     <td>{{$resultado['extrato_operacao_tipo']}}</td>
                                     @if($resultado['extrato_operacao'] == "C")

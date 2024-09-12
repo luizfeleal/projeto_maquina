@@ -40,21 +40,44 @@
 
                 <div class="row" style="display: flex; flex-direction: row; justify-content: center; width: 100%; margin-top: 50px;">
                     <div class="col-md-2">
-                        <p><strong>Pix: </strong> R$ <span id="valor_total_pix">0,00</span> </p>
+                        <p><strong>Pix: </strong> R$ 
+
+                        @foreach($total as $item)
+                            @if($item['tipo'] == "Pix")
+                            <span id="valor_total_pix">{{number_format($item['total'], 2, ',', '.')}}</span>
+                            @endif
+                        @endforeach
+                         </p>
                     </div>
                     <div class="col-md-2">
-                        <p><strong>Cartão: </strong> R$ <span id="valor_total_cartao">0,00</span> </p>
+                        <p><strong>Cartão: </strong> R$ 
+                        @foreach($total as $item)
+                            @if($item['tipo'] == "Cartão")
+                            <span id="valor_total_pix">{{number_format($item['total'], 2, ',', '.')}}</span>
+                            @endif
+                        @endforeach </p>
                     </div>
                     <div class="col-md-2">
-                        <p><strong>Dinheiro: </strong> R$ <span id="valor_total_dinheiro">0,00</span> </p>
+                        <p><strong>Dinheiro: </strong> R$
+                        @foreach($total as $item)
+                            @if($item['tipo'] == "Dinheiro")
+                            <span id="valor_total_pix">{{number_format($item['total'], 2, ',', '.')}}</span>
+                            @endif
+                        @endforeach </p>
                     </div>
                     <div class="col-md-2">
-                        <p><strong>Estorno: </strong> R$ <span id="valor_total_estorno">0,00</span> </p>
+                        <p><strong>Estorno: </strong> R$ 
+                        @foreach($total as $item)
+                            @if($item['tipo'] == "Estorno")
+                            <span id="valor_total_pix">{{number_format($item['total'], 2, ',', '.')}}</span>
+                            @endif
+                        @endforeach </p>
                     </div>
                 </div>
                 <div class="row" style="display: flex; flex-direction: row; justify-content: center; width: 100%; margin-top: 10px; margin-bottom: 30px;">
                     <div class="col-md-8">
-                        <p><strong>Total Transações: </strong> R$ <span id="valor_total">0,00</span></p>
+                        <p><strong>Total Transações: </strong> R$
+                            <span id="valor_total_pix">{{number_format($totalTransacoes, 2, ',', '.')}}</span></p>
                     </div>
                 </div>
 
@@ -138,7 +161,7 @@
                     if (isNaN(valor)) {
                         return ''; // Retorna uma string vazia se o valor não for um número
                     }
-                    if (row.extrato_operacao_tipo === "C") {
+                    if (row.extrato_operacao == "C") {
                         return '+ R$ ' + valor.toFixed(2).replace('.', ',');
                     } else {
                         return '- R$ ' + valor.toFixed(2).replace('.', ',');
@@ -156,25 +179,7 @@
         "drawCallback": function(settings) {
             var api = this.api();
 
-            // Calcular totais
-            var valorTotalPix = api.column(3, {page: 'current'}).data().reduce(function (a, b) {
-                // Verificar se b é uma string formatada como moeda
-                var valor = parseFloat(b.replace(/[^0-9.,-]/g, '').replace(',', '.'));
-                return !isNaN(valor) ? a + valor : a;
-            }, 0);
-
-            var valorTotalCartao = 0; // Ajuste conforme necessário
-            var valorTotalDinheiro = 0; // Ajuste conforme necessário
-            var valorTotalEstorno = 0; // Ajuste conforme necessário
-
-            var valorTotal = valorTotalPix + valorTotalCartao + valorTotalDinheiro + valorTotalEstorno;
-
             // Atualizar valores no DOM
-            $('#valor_total_pix').text('R$ ' + valorTotalPix.toFixed(2).replace('.', ','));
-            $('#valor_total_cartao').text('R$ ' + valorTotalCartao.toFixed(2).replace('.', ','));
-            $('#valor_total_dinheiro').text('R$ ' + valorTotalDinheiro.toFixed(2).replace('.', ','));
-            $('#valor_total_estorno').text('R$ ' + valorTotalEstorno.toFixed(2).replace('.', ','));
-            $('#valor_total').text('R$ ' + valorTotal.toFixed(2).replace('.', ','));
 
             // Habilitar ou desabilitar botão CSV com base na tabela
             $('#btn-baixar-csv').prop('disabled', api.data().length === 0);
