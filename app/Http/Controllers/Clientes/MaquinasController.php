@@ -18,7 +18,7 @@ class MaquinasController extends Controller
         $id_cliente = session()->get('id_cliente');
 
              //$clienteLocal = ClienteLocalService::coletarComFiltro(['id_cliente' => $id_cliente], 'where');
-             $clienteLocal = ClienteLocalService::coletar();
+             /*$clienteLocal = ClienteLocalService::coletar();
 
              $clienteLocal = array_filter($clienteLocal, function($item) use($id_cliente){
                 return $item['id_cliente'] == $id_cliente;
@@ -28,12 +28,13 @@ class MaquinasController extends Controller
              $idLocais = array_column($clienteLocal, 'id_local');
 
 
-        $locais = LocaisService::coletar();
-        $maquinas = MaquinasService::coletar();
-        $maquinas_extrato = ExtratoMaquinaService::coletar();
+        $locais = LocaisService::coletar();*/
+        //$maquinas = MaquinasService::coletarTodasAsMaquinasComUltimaTransacao();
+        $maquinas = ExtratoMaquinaService::coletarExtratoDasMaquinasDeUmCliente(["id_cliente" => $id_cliente]);
+        //$maquinas_extrato = ExtratoMaquinaService::coletar();
 
         // Indexando locais por id_local
-        $locais_indexados = [];
+        /*$locais_indexados = [];
         foreach ($locais as $local) {
             $locais_indexados[$local['id_local']] = $local;
         }
@@ -51,14 +52,14 @@ class MaquinasController extends Controller
         $maquinas_indexadas = [];
         foreach ($maquinas as $maquina) {
             $maquinas_indexadas[$maquina['id_maquina']] = $maquina;
-        }
+        }*/
         
         // Array para armazenar o resultado final
-        $resultado = [];
+        //$resultado = [];
         
         // Percorrendo o extrato para armazenar apenas a última transação de cada máquina
         
-            foreach ($maquinas_extrato as $extrato) {
+            /*foreach ($maquinas_extrato as $extrato) {
                 $id_maquina = $extrato['id_maquina'];
                 
                 // Verifica se a máquina existe
@@ -79,10 +80,10 @@ class MaquinasController extends Controller
                         $resultado[$id_maquina] = $extrato_completo;
                     }
                 }
-            }
+            }*/
         
         // Verifica máquinas sem extrato e adiciona com transação zero
-        foreach ($maquinas_indexadas as $id_maquina => $maquina) {
+        /*foreach ($maquinas_indexadas as $id_maquina => $maquina) {
             if (!isset($resultado[$id_maquina])) {
                 $id_local = $maquina['id_local'];
     
@@ -100,14 +101,20 @@ class MaquinasController extends Controller
                     ];
                 }
             }
-        }
+        }*/
 
-        $resultado = array_values($resultado);
+        $resultado = array_values($maquinas);
+
+        return $resultado;
 
         return view('Clientes.Maquinas.index', compact('resultado'));
     }
 
     public function transacaoMaquinas(Request $request){
+
+        $id_cliente = session()->get('id_cliente');
+/*
+        $maquinas = ExtratoMaquinaService::coletarTotalTransacaoDasMaquinasDeUmCliente(["id_cliente" => $id_cliente]);
         $locais = LocaisService::coletar();
         
         $id_cliente = session()->get('id_cliente');
@@ -158,8 +165,8 @@ class MaquinasController extends Controller
                     $resultado[] = $extrato_completo;
                 }
             }
-        }
-        return view('Clientes.Maquinas.Transacoes.index', compact('resultado'));
+        }*/
+        return view('Clientes.Maquinas.Transacoes.index', compact('id_cliente'));
     }
 
     public function acumuladoMaquinas(Request $request){

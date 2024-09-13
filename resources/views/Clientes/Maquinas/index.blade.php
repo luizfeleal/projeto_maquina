@@ -26,8 +26,8 @@
 
                         @foreach($resultado as $extrato)
                             <tr>
-                                <td>{{$extrato['local']['local_nome']}}</td>
-                                <td>{{$extrato['maquina']['maquina_nome']}}</td>
+                                <td>{{$extrato['local_nome']}}</td>
+                                <td>{{$extrato['maquina_nome']}}</td>
                                 @if($extrato['extrato_operacao'] == "C")
                                     <td>+ R$ {{number_format($extrato['extrato_operacao_valor'], 2, ',', '.')}}</td>
                                 @else
@@ -139,115 +139,6 @@
                     { "type": "datetime-ddmmyyyy" }
                 ],
             });
-
-            /*$('#input_filtro_cliente').select2({
-            theme: "classic",
-            width: "100%"
-            });
-            $('#input_filtro_local').select2({
-                theme: "classic",
-            width: "100%"
-            });
-            $('#input_filtro_maquina').select2({
-                theme: "classic",
-            width: "100%"
-            });*/
-
-
-            
-
-            
-            /*var dadosTabela = tabelaGuias.rows().data().toArray();
-            var startDate = ''
-            var endDate = ''
-
-            $("#input_data_inicio_filtro").on('change', () => {
-                startDate = $("#input_data_inicio_filtro").val();
-            });
-
-            $("#input_data_fim_filtro").on('change', () => {
-                endDate = $("#input_data_fim_filtro").val();
-            });
-
-            function getDatesBetween(startDate, endDate) {
-                const dates = [];
-                let currentDate;
-
-                // Verificar se a data de início é fornecida
-                if (startDate) {
-                    currentDate = new Date(startDate);
-                } else {
-                    // Se não for fornecida, use a primeira data da tabela (assumindo que dadosTabela está definido)
-                    currentDate = new Date(dadosTabela[0][0]);
-                }
-
-                // Verificar se a data de término é fornecida
-                let endDateValue;
-                if (endDate) {
-                    endDateValue = new Date(endDate);
-                } else {
-                    // Se não for fornecida, use a data atual
-                    endDateValue = new Date();
-                }
-
-                // Loop para adicionar datas ao array
-                while (currentDate <= endDateValue) {
-                    const dia = currentDate.getDate().toString().padStart(2, '0');
-                    const mes = (currentDate.getMonth() + 1).toString().padStart(2, '0');
-                    const ano = currentDate.getFullYear();
-                    const dataFormatada = `${dia}/${mes}/${ano}`;
-
-                    dates.push(dataFormatada);
-                    currentDate.setDate(currentDate.getDate() + 1);
-                }
-
-                return dates;
-            }
-
-            function filterTable() {
-
-                var filtros = {};
-
-                $('.filtro-checkbox:checked, .filtro-select, .filtro-date').each(function () {
-                    var coluna = $(this).data('column');
-
-                    if($(this).attr('type') == 'date'){
-
-                        var datas = getDatesBetween(startDate, endDate);
-                        for(var valor of datas){
-                            if (!filtros[coluna]) {
-                                filtros[coluna] = [];
-                            }
-
-                            filtros[coluna].push(valor);
-                        }
-
-                    }else{
-
-                        var valor = $(this).val();
-
-                        if (!filtros[coluna]) {
-                        filtros[coluna] = [];
-                        }
-
-                        filtros[coluna].push(valor);
-                    }
-
-
-                });
-
-                // Atualize o filtro na tabela
-                tabelaGuias.columns().search('').draw();
-
-                // Aplica os filtros
-                $.each(filtros, function(coluna, valores) {
-                    tabelaGuias.column(coluna).search(valores.join('|'), true, false).draw();
-                });
-            }
-
-            $('.filtro-checkbox, .filtro-select, .filtro-date').on('change', function () {
-                filterTable();
-            });*/
         });
     </script>
 
