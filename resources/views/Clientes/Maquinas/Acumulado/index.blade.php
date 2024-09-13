@@ -27,21 +27,7 @@
                     <tbody>
 
                     
-                    @foreach($maquinas as $maquina)
-                        <tr>
-
-                            <td>{{$maquina['local_nome']}}</td>
-                            
-                            <td>{{$maquina['maquina_nome']}}</td>
-                            
-                            <td>R$ {{number_format($maquina['total_maquina'], 2, ',', '.')}}</td>
-                            <td>R$ {{number_format($maquina['total_pix'], 2, ',', '.')}}</td>
-                                
-                            <td>R$ {{number_format($maquina['total_cartao'], 2, ',', '.')}}</td>
-                            <td>R$ {{number_format($maquina['total_dinheiro'], 2, ',', '.')}}</td>
-                        </tr>
-
-                    @endforeach
+                    
 
                     </tbody>
                     <tfoot>
@@ -123,112 +109,91 @@
             });
 
 
-            var tabelaGuias= $('#tabela-local').DataTable({
-                "language": {
-                    "url": "https://cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json"
-                },
-                "columns": [
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null
-                ] // Use o array de objetos de coluna dinamicamente criado
+            async function fetchToken() {
+                try {
+                    let response = await fetch('https://www.swiftpaysolucoes.com/api/getToken');
+                    let data = await response.json();
+                    return data.token;
+                } catch (error) {
+                    console.error('Erro ao obter o token:', error);
+                    return null;
+                }
+            }
+
+            fetchToken().then(token => {
+                if (token) {
+                    var tabelaGuias = $('#tabela-local').DataTable({
+                        processing: true,
+                        serverSide: true,
+                        ajax: {
+                            url: 'https://www.swiftpaysolucoes.com/api/totalTransacaoMaquinaAcumuladoCliente', // URL da sua API
+                            type: 'POST', // Tipo de requisição
+                            dataSrc: 'data', // Propriedade da resposta que contém os dados
+                            headers: {
+                                'Authorization': 'Bearer ' + token, // Adicione seu token de autenticação
+                            },
+                            data: function (d) {
+                                d.id_cliente = {!!json_decode($id_cliente)!!}
+                                d.page = (d.start / d.length) + 1; // DataTables usa índice baseado em 0
+                                d.per_page = d.length; // Define o número de registros por página
+                            }
+                        },
+                        language: {
+                            url: "https://cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json" // Idioma
+                        },
+                        columns: [
+                            { data: 'local_nome', title: 'Local' },
+        { data: 'maquina_nome', title: 'Máquina' },
+        { 
+            data: 'total_maquina', 
+            title: 'Total máquina', 
+            render: function(data) { 
+                if (data === null || data === undefined) {
+                    return 'R$ 0,00';
+                }
+                return 'R$ ' + new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(data);
+            } 
+        },
+        { 
+            data: 'total_pix', 
+            title: 'Total PIX', 
+            render: function(data) { 
+                if (data === null || data === undefined) {
+                    return 'R$ 0,00';
+                }
+                return 'R$ ' + new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(data);
+            } 
+        },
+        { 
+            data: 'total_cartao', 
+            title: 'Total cartão', 
+            render: function(data) { 
+                if (data === null || data === undefined) {
+                    return 'R$ 0,00';
+                }
+                return 'R$ ' + new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(data);
+            } 
+        },
+        { 
+            data: 'total_dinheiro', 
+            title: 'Total físico', 
+            render: function(data) { 
+                if (data === null || data === undefined) {
+                    return 'R$ 0,00';
+                }
+                return 'R$ ' + new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(data);
+            } 
+        }
+                        ],
+                        pageLength: 10,
+                        paging: true,
+                        lengthMenu: [10, 25, 50, 100]
+                    });
+                }
             });
 
             
-            var dadosTabela = tabelaGuias.rows().data().toArray();
-            var startDate = ''
-            var endDate = ''
-
-            $("#input_data_inicio_filtro").on('change', () => {
-                startDate = $("#input_data_inicio_filtro").val();
-            });
-
-            $("#input_data_fim_filtro").on('change', () => {
-                endDate = $("#input_data_fim_filtro").val();
-            });
-
-            function getDatesBetween(startDate, endDate) {
-                const dates = [];
-                let currentDate;
-
-                // Verificar se a data de início é fornecida
-                if (startDate) {
-                    currentDate = new Date(startDate);
-                } else {
-                    // Se não for fornecida, use a primeira data da tabela (assumindo que dadosTabela está definido)
-                    currentDate = new Date(dadosTabela[0][0]);
-                }
-
-                // Verificar se a data de término é fornecida
-                let endDateValue;
-                if (endDate) {
-                    endDateValue = new Date(endDate);
-                } else {
-                    // Se não for fornecida, use a data atual
-                    endDateValue = new Date();
-                }
-
-                // Loop para adicionar datas ao array
-                while (currentDate <= endDateValue) {
-                    const dia = currentDate.getDate().toString().padStart(2, '0');
-                    const mes = (currentDate.getMonth() + 1).toString().padStart(2, '0');
-                    const ano = currentDate.getFullYear();
-                    const dataFormatada = `${dia}/${mes}/${ano}`;
-
-                    dates.push(dataFormatada);
-                    currentDate.setDate(currentDate.getDate() + 1);
-                }
-
-                return dates;
-            }
-
-            function filterTable() {
-
-                var filtros = {};
-
-                $('.filtro-checkbox:checked, .filtro-select, .filtro-date').each(function () {
-                    var coluna = $(this).data('column');
-
-                    if($(this).attr('type') == 'date'){
-
-                        var datas = getDatesBetween(startDate, endDate);
-                        for(var valor of datas){
-                            if (!filtros[coluna]) {
-                                filtros[coluna] = [];
-                            }
-
-                            filtros[coluna].push(valor);
-                        }
-
-                    }else{
-
-                        var valor = $(this).val();
-
-                        if (!filtros[coluna]) {
-                        filtros[coluna] = [];
-                        }
-
-                        filtros[coluna].push(valor);
-                    }
-
-
-                });
-
-                // Atualize o filtro na tabela
-                tabelaGuias.columns().search('').draw();
-
-                // Aplica os filtros
-                $.each(filtros, function(coluna, valores) {
-                    tabelaGuias.column(coluna).search(valores.join('|'), true, false).draw();
-                });
-            }
-
-            $('.filtro-checkbox, .filtro-select, .filtro-date').on('change', function () {
-                filterTable();
-            });
+            
         });
     </script>
 

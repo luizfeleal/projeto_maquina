@@ -108,7 +108,7 @@
                         processing: true,
                         serverSide: true,
                         ajax: {
-                            url: 'http://127.0.0.1:5001/api/totalTransacaoMaquinaCliente', // URL da sua API
+                            url: 'https://www.swiftpaysolucoes.com/api/totalTransacaoMaquinaCliente', // URL da sua API
                             type: 'POST', // Tipo de requisição
                             dataSrc: 'data', // Propriedade da resposta que contém os dados
                             headers: {

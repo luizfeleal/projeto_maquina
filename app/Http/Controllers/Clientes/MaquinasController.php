@@ -170,63 +170,9 @@ class MaquinasController extends Controller
     }
 
     public function acumuladoMaquinas(Request $request){
-        $locais = LocaisService::coletar();
+
         $id_cliente = session()->get('id_cliente');
-        $clienteLocal = ClienteLocalService::coletar();
-
-        $clienteLocal = array_filter($clienteLocal, function($item) use($id_cliente){
-           return $item['id_cliente'] == $id_cliente;
-        });
-        $idLocais = array_column($clienteLocal, 'id_local');
-
-        $maquinas = MaquinasService::coletar();
-
-        $maquinas_extrato = ExtratoMaquinaService::coletar();
-
-        $locais_indexados = [];
-        foreach ($locais as $local) {
-            $locais_indexados[$local['id_local']] = $local;
-        }
-
-        $locais_indexados = array_filter($locais_indexados, function($item) use($idLocais){
-            return in_array($item, $idLocais);
-        });
-
-        if(empty($locais_indexados)){
-            $maquinas = [];
-        }
-
-        foreach($maquinas as &$maquina){
-            $total_pix = 0;
-            $total_cartao = 0;
-            $total_dinheiro = 0;
-            $total_maquina = 0;
-
-            $extrato_por_maquina = array_filter($maquinas_extrato, function($item) use($maquina){
-                return $item['id_maquina'] == $maquina['id_maquina'];
-            });
-
-
-
-            foreach($extrato_por_maquina as $em){
-                $total_maquina += $em['extrato_operacao_valor'];
-                if($em['extrato_operacao_tipo'] == "PIX"){
-                    $total_pix += $em['extrato_operacao_valor'];
-                } else if($em['extrato_operacao_tipo'] == "Cartão"){
-                    $total_cartao += $em['extrato_operacao_valor'];
-                }else if($em['extrato_operacao_tipo'] == "Dinheiro"){
-                    $total_dinheiro += $em['extrato_operacao_valor'];
-                }
-            }
-            $maquina['total_pix'] = $total_pix;
-            $maquina['total_cartao'] = $total_cartao;
-            $maquina['total_dinheiro'] = $total_dinheiro;
-            $maquina['total_maquina'] = $total_maquina;
-            $maquina['local_nome'] = $locais_indexados[$maquina['id_local']]['local_nome'];
-
-        }
-
-        return view('Clientes.Maquinas.Acumulado.index', compact('maquinas'));
+        return view('Clientes.Maquinas.Acumulado.index', compact('id_cliente'));
 
     }
 }
