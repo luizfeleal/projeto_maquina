@@ -122,18 +122,21 @@
             fetchToken().then(token => {
                 if (token) {
                     var tabelaGuias = $('#tabela-local').DataTable({
-                processing: true,
-                serverSide: true,
-                ajax: {
-                    url: 'https://services.swiftpaysolucoes.com/api/extrato/acumulado', // URL da sua API
-                    type: 'GET', // Tipo de requisição
-                    dataSrc: 'data', // Propriedade da resposta que contém os dados
-                    headers: {
-                        'Authorization': 'Bearer ' + token, // Adicione seu token de autenticação se necessário
-                    },
+    processing: true,
+    serverSide: true,
+    ajax: {
+        url: 'https://services.swiftpaysolucoes.com/api/extrato/acumulado', // URL da sua API
+        type: 'GET', // Tipo de requisição
         data: function (d) {
             d.page = (d.start / d.length) + 1; // DataTables usa índice baseado em 0
             d.per_page = d.length; // Define o número de registros por página
+            d.search_value = d.search.value; // Parâmetro de pesquisa
+        },
+        headers: {
+            'Authorization': 'Bearer ' + token, // Adicione seu token de autenticação se necessário
+        },
+        dataSrc: function(response) {
+            return response.data; // Certifique-se que a API retorna 'data'
         }
     },
     language: {
@@ -149,7 +152,7 @@
                 if (data === null || data === undefined) {
                     return 'R$ 0,00';
                 }
-                return 'R$ ' + new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(data);
+                return  new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(data);
             } 
         },
         { 
@@ -159,7 +162,7 @@
                 if (data === null || data === undefined) {
                     return 'R$ 0,00';
                 }
-                return 'R$ ' + new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(data);
+                return  new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(data);
             } 
         },
         { 
@@ -169,7 +172,7 @@
                 if (data === null || data === undefined) {
                     return 'R$ 0,00';
                 }
-                return 'R$ ' + new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(data);
+                return  new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(data);
             } 
         },
         { 
@@ -179,7 +182,7 @@
                 if (data === null || data === undefined) {
                     return 'R$ 0,00';
                 }
-                return 'R$ ' + new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(data);
+                return  new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(data);
             } 
         }
     ],
@@ -187,6 +190,7 @@
     paging: true,
     lengthMenu: [10, 25, 50, 100]
 });
+
 var dadosTabela = tabelaGuias.rows().data().toArray();
             var startDate = ''
             var endDate = ''

@@ -111,7 +111,7 @@
 
             async function fetchToken() {
                 try {
-                    let response = await fetch('https://www.swiftpaysolucoes.com/api/getToken');
+                    let response = await fetch('https://services.swiftpaysolucoes.com/api/getToken');
                     let data = await response.json();
                     return data.token;
                 } catch (error) {
@@ -126,7 +126,7 @@
                         processing: true,
                         serverSide: true,
                         ajax: {
-                            url: 'https://www.swiftpaysolucoes.com/api/totalTransacaoMaquinaAcumuladoCliente', // URL da sua API
+                            url: 'https://services.swiftpaysolucoes.com/api/totalTransacaoMaquinaAcumuladoCliente', // URL da sua API
                             type: 'POST', // Tipo de requisição
                             dataSrc: 'data', // Propriedade da resposta que contém os dados
                             headers: {
