@@ -105,8 +105,6 @@ class MaquinasController extends Controller
 
         $resultado = array_values($maquinas);
 
-        return $resultado;
-
         return view('Clientes.Maquinas.index', compact('resultado'));
     }
 
