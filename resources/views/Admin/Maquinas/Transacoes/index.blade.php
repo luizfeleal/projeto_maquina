@@ -111,13 +111,14 @@
                         ajax: {
                             url: 'https://services.swiftpaysolucoes.com/api/extratoMaquina', // URL da sua API
                             type: 'GET', // Tipo de requisição
-                            dataSrc: 'data', // Propriedade da resposta que contém os dados
+                           
                             headers: {
                                 'Authorization': 'Bearer ' + token, // Adicione seu token de autenticação
                             },
                             data: function (d) {
                                 d.page = (d.start / d.length) + 1; // DataTables usa índice baseado em 0
                                 d.per_page = d.length; // Define o número de registros por página
+                                d.search = d.search.value;
                             }
                         },
                         language: {

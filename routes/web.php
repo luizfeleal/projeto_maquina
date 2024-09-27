@@ -35,6 +35,14 @@ Route::prefix('clientes-maquinas')->middleware('permission')->group(function(){
     Route::get('/', 'App\Http\Controllers\Clientes\MaquinasController@coletarTodasAsMaquinas')->name('clientes-maquinas');
     Route::get('/transacoes', 'App\Http\Controllers\Clientes\MaquinasController@transacaoMaquinas')->name('clientes-maquinas-transacoes');
     Route::get('/acumulado', 'App\Http\Controllers\Clientes\MaquinasController@acumuladoMaquinas')->name('clientes-maquinas-acumulado');
+    Route::get('/viewLiberarJogada', 'App\Http\Controllers\Clientes\MaquinasController@viewLiberarJogada')->name('view-clientes-maquinas-liberar-jogadas');
+    Route::post('/liberarJogada', 'App\Http\Controllers\Clientes\MaquinasController@liberarJogada')->name('clientes-maquinas-liberar-jogadas');
+});
+
+Route::prefix('clientes-relatorio')->middleware('permission')->group(function(){
+    Route::get('/', 'App\Http\Controllers\Clientes\RelatoriosController@view')->name('cliente-relatorio-view');
+    Route::post('/exibir', 'App\Http\Controllers\Clientes\RelatoriosController@exibirRelatorio')->name('cliente-relatorio-criar');
+    Route::post('/download', 'App\Http\Controllers\Clientes\RelatoriosController@downloadXlsxRelatorio')->name('cliente-relatorio-xlsx-download');
 });
 Route::prefix('local')->middleware('permission')->group(function(){
     Route::get('/', 'App\Http\Controllers\LocaisController@coletarLocais')->name('local');
@@ -58,7 +66,7 @@ Route::prefix('qr')->middleware('permission')->group(function(){
     Route::get('/', 'App\Http\Controllers\QrCodeController@coletarQr')->name('qr');
     Route::get('/criar', 'App\Http\Controllers\QrCodeController@criarQr')->name('qr-criar');
     Route::post('/registrar', 'App\Http\Controllers\QrCodeController@registrarQr')->name('qr-registrar');
-    Route::get('/download', 'App\Http\Controllers\QrCodeController@downloadQr')->name('qr-download');
+    Route::post('/download', 'App\Http\Controllers\QrCodeController@downloadQr')->name('qr-download');
     Route::post('/excluir', 'App\Http\Controllers\QrCodeController@excluirQr')->name('qr-excluir');
 });
 

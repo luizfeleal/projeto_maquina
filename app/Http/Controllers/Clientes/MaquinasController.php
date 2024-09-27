@@ -8,8 +8,10 @@ use App\Services\MaquinasService;
 use App\Services\ExtratoMaquinaService;
 use App\Services\ClientesService;
 use App\Services\ClienteLocalService;
+use App\Services\LiberarJogadaService;
 use App\Services\AuthService;
 use App\Http\Controllers\Controller;
+use Exception;
 
 class MaquinasController extends Controller
 {
@@ -172,5 +174,44 @@ class MaquinasController extends Controller
         $id_cliente = session()->get('id_cliente');
         return view('Clientes.Maquinas.Acumulado.index', compact('id_cliente'));
 
+    }
+
+    public function viewLiberarJogada(){
+        $id_cliente = session()->get('id_cliente');
+
+        $maquinas = MaquinasService::coletar();
+        $localCliente = ClienteLocalService::coletar();
+
+        $locaisPermitidos = array_filter($localCliente, function ($local) use ($id_cliente) {
+            return $local['id_cliente'] == $id_cliente;
+        });
+        
+        $idsLocaisPermitidos = array_column($locaisPermitidos, 'id_local');
+        
+        $maquinas = array_filter($maquinas, function ($maquina) use ($idsLocaisPermitidos) {
+            return in_array($maquina['id_local'], $idsLocaisPermitidos);
+        });
+
+        return view('Clientes.Jogadas.create', compact('maquinas'));
+    }
+
+    public function liberarJogada(Request $request){
+        try{
+
+            $dados = [
+                "id_placa" => $request['select-id-placa'],
+                "valor" =>$request['valor_credito'],
+                "id_transacao" => "CD" . rand(10000000, 99999999)
+            ];
+            $jogada = LiberarJogadaService::criar($dados);
+        
+            if($jogada['message'] == "Jogada liberada com sucesso"){
+                return back()->with('success', "Jogada liberada com sucesso!");
+            }else{
+                return back()->with('error', 'Houve um erro ao tentar liberar a jogada.');
+            }
+        }catch(Exception $e){
+            return back()->with('error', 'Houve um erro ao tentar se comunicar com a máquina e liberar a jogada.');
+        }
     }
 }

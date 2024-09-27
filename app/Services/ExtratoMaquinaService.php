@@ -71,9 +71,12 @@ class ExtratoMaquinaService
     }
 }
 
-public static function coletarRelatorioTotalTransacoes($dados){
+public static function coletarRelatorioTotalTransacoes($dados, $id_cliente = null){
     $url = env('APP_URL_API') . "/relatorioTotalTransacoes";
 
+    if(isset($id_cliente)){
+        $dados['id_cliente'] = [$id_cliente];
+    }
         $token = AuthService::getToken();
         $response = Http::withHeaders([
             'Authorization' => 'Bearer ' . $token
@@ -83,9 +86,13 @@ public static function coletarRelatorioTotalTransacoes($dados){
 
         return $extrato_maquinas;
 }
-public static function coletarRelatorioTotalTransacoesTotal($dados){
+public static function coletarRelatorioTotalTransacoesTotal($dados, $id_cliente = null){
     $url = env('APP_URL_API') . "/relatorioTotalTransacoesTotal";
 
+    if(isset($id_cliente)){
+        $dados['id_cliente'] = [$id_cliente];
+    }
+
         $token = AuthService::getToken();
         $response = Http::withHeaders([
             'Authorization' => 'Bearer ' . $token
@@ -96,9 +103,13 @@ public static function coletarRelatorioTotalTransacoesTotal($dados){
         return $extrato_maquinas;
 }
 
-public static function coletarRelatorioTotalTransacoesTaxa($dados){
+public static function coletarRelatorioTotalTransacoesTaxa($dados, $id_cliente = null){
     $url = env('APP_URL_API') . "/relatorioTotalTransacoesTaxa";
 
+
+    if(isset($id_cliente)){
+        $dados['id_cliente'] = [$id_cliente];
+    }
         $token = AuthService::getToken();
         $response = Http::withHeaders([
             'Authorization' => 'Bearer ' . $token
