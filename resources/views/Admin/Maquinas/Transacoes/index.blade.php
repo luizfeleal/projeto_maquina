@@ -10,7 +10,7 @@
             <div class="container section container-platform div-center-column"
                 style="margin-top: 15px; height: 100%;">
                 
-                <table id="tabela_maquinas_transacao" class="table table-striped" style="width:100%">
+                <table id="tabela_maquinas_transacao" class="display responsive table-striped" style="width:100%">
                     <thead>
                         <tr>
                             <th>Local</th>
@@ -108,6 +108,8 @@
                     $('#tabela_maquinas_transacao').DataTable({
                         processing: true,
                         serverSide: true,
+                        responsive: true,
+                        scrollX: true,
                         ajax: {
                             url: 'https://services.swiftpaysolucoes.com/api/extratoMaquina', // URL da sua API
                             type: 'GET', // Tipo de requisição

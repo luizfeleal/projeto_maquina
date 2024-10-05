@@ -11,33 +11,36 @@
                 style="margin-top: 15px; height: 100%;">
                 
 
-                <table id="tabela-local" class="table table-striped" style="width:100%">
-                    <thead>
-                        <tr>
-                            <th>Local</th>
-                            <th>Máquina</th>
-                            <th>Total máquina</th>
-                            <th>Total PIX</th>
-                            <th>Total cartão</th>
-                            <th>Total físico</th>
+                <div class="tabela_responsiva">
 
-
-                        </tr>
-                    </thead>
-                    <tbody>
-
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <th>Local</th>
-                            <th>Máquina</th>
-                            <th>Total máquina</th>
-                            <th>Total PIX</th>
-                            <th>Total cartão</th>
-                            <th>Total físico</th>
-                        </tr>
-                    </tfoot>
-                </table>
+                    <table id="tabela-local" class="table table-striped" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th>Local</th>
+                                <th>Máquina</th>
+                                <th>Total máquina</th>
+                                <th>Total PIX</th>
+                                <th>Total cartão</th>
+                                <th>Total físico</th>
+    
+    
+                            </tr>
+                        </thead>
+                        <tbody>
+    
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th>Local</th>
+                                <th>Máquina</th>
+                                <th>Total máquina</th>
+                                <th>Total PIX</th>
+                                <th>Total cartão</th>
+                                <th>Total físico</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
 
 
                             @if(session('success'))
@@ -124,6 +127,7 @@
                     var tabelaGuias = $('#tabela-local').DataTable({
     processing: true,
     serverSide: true,
+    scrollX: true,
     ajax: {
         url: 'https://services.swiftpaysolucoes.com/api/extrato/acumulado', // URL da sua API
         type: 'GET', // Tipo de requisição

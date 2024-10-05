@@ -49,49 +49,51 @@
                         </div>
                     </div>
                 </div>
-                <table id="tabela-local" class="table table-striped" style="width:100%">
-                    <thead>
+                <div class="tabela_responsiva">
+                    <table id="tabela-local" class="display table-striped" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th>Local</th>
+                                <th>Cliente</th>
+                                <th>Máquina(s)</th>
+                                <th>Detalhar</th>
+                                <th>Excluir</th>
+    
+    
+                            </tr>
+                        </thead>
+                        <tbody>
+    
+                        @foreach($locais as $local)
                         <tr>
-                            <th>Local</th>
-                            <th>Cliente</th>
-                            <th>Máquina(s)</th>
-                            <th>Detalhar</th>
-                            <th>Excluir</th>
-
-
-                        </tr>
-                    </thead>
-                    <tbody>
-
-                    @foreach($locais as $local)
-                    <tr>
-
-                        <td>{{$local['local_nome']}}</td>
-                        
-                        <td>{{$local['cliente_nome']}}</td>
-                        
-                       <td style="text-align: center;">{{$local['qtde_maquinas']}}</td>
+    
+                            <td>{{$local['local_nome']}}</td>
                             
-                        <td style="text-align: center;"><a href="{{route('local-detalhar', $local['id_local'])}}"><i class="fa-solid fa-eye"></i></a></td>
-                        <td style="text-align: center;"><a href="#" style="color: red !important;" data-bs-toggle="modal" data-bs-target="#ModalCenterExcluir" onclick="setIdLocalExcluir({{$local['id_local']}}, '#id_local_input_excluir')"><i class="fa-solid fa-trash"></i></a></td>
-                        
-                    </tr>
-                    @endforeach
-
-
-
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <th>Local</th>
-                            <th>Cliente</th>
-                            <th>Máquina(s)</th>
-                            <th>Detalhar</th>
-                            <th>Excluir</th>
+                            <td>{{$local['cliente_nome']}}</td>
+                            
+                           <td style="text-align: center;">{{$local['qtde_maquinas']}}</td>
+                                
+                            <td style="text-align: center;"><a href="{{route('local-detalhar', $local['id_local'])}}"><i class="fa-solid fa-eye"></i></a></td>
+                            <td style="text-align: center;"><a href="#" style="color: red !important;" data-bs-toggle="modal" data-bs-target="#ModalCenterExcluir" onclick="setIdLocalExcluir({{$local['id_local']}}, '#id_local_input_excluir')"><i class="fa-solid fa-trash"></i></a></td>
                             
                         </tr>
-                    </tfoot>
-                </table>
+                        @endforeach
+    
+    
+    
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th>Local</th>
+                                <th>Cliente</th>
+                                <th>Máquina(s)</th>
+                                <th>Detalhar</th>
+                                <th>Excluir</th>
+                                
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
 
 
                 <div class="modal fade" id="ModalCenterExcluir" tabindex="-1" aria-labelledby="ModalCenterExcluir" aria-modal="true" role="dialog">
@@ -186,6 +188,7 @@
                 "language": {
                     "url": "https://cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json"
                 },
+                "scrollX": true,
                 "columns": [
                     null,
                     null,

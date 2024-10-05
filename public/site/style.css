@@ -13,6 +13,7 @@ a .btn:hover {
   text-decoration: none;
 }
 
+
 .div-imagem-qr-index {
   display: flex;
   flex-direction: column;
@@ -144,10 +145,16 @@ ul .list-unstyled {
   .cobrancas,
   .guias,
   .termosAdesao,
-  .reports,
+  .relatorios,
   .usuarios {
     padding-left: 0px;
   }
+}
+
+@media screen and (max-width: 768px){
+  .tabela_responsiva{
+    width: 345px;
+  }  
 }
 /*!
  * Bootstrap  v5.3.3 (https://getbootstrap.com/)

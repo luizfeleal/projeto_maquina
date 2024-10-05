@@ -10,59 +10,61 @@
             <div class="container section container-platform div-center-column"
                 style="margin-top: 15px; height: 100%;">
                 
-                <table id="tabela_maquinas" class="table table-striped" style="width:100%">
-                    <thead>
-                        <tr>
-                            <th>Local</th>
-                            <th>Máquina</th>
-                            <th>Status</th>
-                            <th>Última transação</th>
-                            <th>Fonte</th>
-                            <th>Data e Hora</th>
-                            <th>Detalhar</th>
-                            <th>Excluir</th>
-
-
-                        </tr>
-                    </thead>
-                    <tbody>
-
-                        @foreach($resultado as $extrato)
+                <div class="tabela_responsiva">
+                    <table id="tabela_maquinas" class="display nowrap table-striped" style="width:100%">
+                        <thead>
                             <tr>
-                                <td>{{$extrato['local_nome']}}</td>
-                                <td>{{$extrato['maquina_nome']}}</td>
-                                @if($extrato['maquina_status'] == 0) 
-                                        <td><i class="fa-solid fa-circle text-danger" ></i></td>
-                                    @else
-                                        <td><i class="fa-solid fa-circle text-success" ></i></td>
-                                    @endif
-                                @if($extrato['extrato_operacao'] == "C" || $extrato['extrato_operacao'] == "N/A")
-                                    <td>+ R$ {{number_format($extrato['extrato_operacao_valor'], 2, ',', '.')}}</td>
-                                @else
-                                    <td>- R$ {{number_format($extrato['extrato_operacao_valor'], 2, ',', '.')}}</td>
-                                @endif
-
-                                <td>{{$extrato['extrato_operacao_tipo']}}</td>
-                                <td>{{date('d/m/Y H:i:s', strtotime($extrato['data_criacao']));}}</td>
-                                <td style="text-align: center;"><a href="/maquinas/visualizar?id={{$extrato['id_maquina']}}"><i class="fa-solid fa-eye"></i></a></td>
-                                <td style="text-align: center;"><a href="#" style="color: red !important;" data-bs-toggle="modal" data-bs-target="#ModalCenterExcluir" onclick="setIdMaquinaExcluir({{$extrato['id_maquina']}}, '#id_maquina_input_excluir')"><i class="fa-solid fa-trash"></i></a></td>
+                                <th>Local</th>
+                                <th>Máquina</th>
+                                <th>Status</th>
+                                <th>Última transação</th>
+                                <th>Fonte</th>
+                                <th>Data e Hora</th>
+                                <th>Detalhar</th>
+                                <th>Excluir</th>
+    
+    
                             </tr>
-                        @endforeach
-
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <th>Local</th>
-                            <th>Máquina</th>
-                            <th>Status</th>
-                            <th>Última transação</th>
-                            <th>Fonte</th>
-                            <th>Data e Hora</th>
-                            <th>Detalhar</th>
-                            <th>Excluir</th>
-                        </tr>
-                    </tfoot>
-                </table>
+                        </thead>
+                        <tbody>
+    
+                            @foreach($resultado as $extrato)
+                                <tr>
+                                    <td>{{$extrato['local_nome']}}</td>
+                                    <td>{{$extrato['maquina_nome']}}</td>
+                                    @if($extrato['maquina_status'] == 0) 
+                                            <td><i class="fa-solid fa-circle text-danger" ></i></td>
+                                        @else
+                                            <td><i class="fa-solid fa-circle text-success" ></i></td>
+                                        @endif
+                                    @if($extrato['extrato_operacao'] == "C" || $extrato['extrato_operacao'] == "N/A")
+                                        <td>+ R$ {{number_format($extrato['extrato_operacao_valor'], 2, ',', '.')}}</td>
+                                    @else
+                                        <td>- R$ {{number_format($extrato['extrato_operacao_valor'], 2, ',', '.')}}</td>
+                                    @endif
+    
+                                    <td>{{$extrato['extrato_operacao_tipo']}}</td>
+                                    <td>{{date('d/m/Y H:i:s', strtotime($extrato['data_criacao']));}}</td>
+                                    <td style="text-align: center;"><a href="/maquinas/visualizar?id={{$extrato['id_maquina']}}"><i class="fa-solid fa-eye"></i></a></td>
+                                    <td style="text-align: center;"><a href="#" style="color: red !important;" data-bs-toggle="modal" data-bs-target="#ModalCenterExcluir" onclick="setIdMaquinaExcluir({{$extrato['id_maquina']}}, '#id_maquina_input_excluir')"><i class="fa-solid fa-trash"></i></a></td>
+                                </tr>
+                            @endforeach
+    
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th>Local</th>
+                                <th>Máquina</th>
+                                <th>Status</th>
+                                <th>Última transação</th>
+                                <th>Fonte</th>
+                                <th>Data e Hora</th>
+                                <th>Detalhar</th>
+                                <th>Excluir</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
 
 
                 <div class="modal fade" id="ModalCenterExcluir" tabindex="-1" aria-labelledby="ModalCenterExcluir" aria-modal="true" role="dialog">
@@ -144,6 +146,7 @@
                 "language": {
                     "url": "https://cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json"
                 },
+                "scrollX": true,
                 "columns": [
                     null,
                     null,

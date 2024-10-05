@@ -25,52 +25,55 @@
                             </div>
                         </div>
 
-                        <table id="maquinas_online_offline" class="table table-striped table-responsive" style="width:100%">
-                            <thead>
-                                <tr>
-                                    <th>Máquina</th>
-                                    <th>Local</th>
-                                    <th>Status</th>
-                                    <th>Último Contato</th>
-                                </tr>
-                            </thead>
-                            <tbody>
+                        <div class="tabela_responsiva">
 
-                            @foreach($maquinasOnline as $online)
-                                <tr>
-                                    <td>{{$online['maquina_nome']}}</td>
-                                    <td>{{$locais[$online['id_local']]['local_nome']}}</td>
-                                    @if($online['maquina_status'] == 0) 
-                                        <td><i class="fa-solid fa-circle text-danger" ></i></td>
-                                    @else
-                                        <td><i class="fa-solid fa-circle text-success" ></i></td>
-                                    @endif
-                                    
-                                    <td>{{date('d/m/Y H:i:s', strtotime($online['maquina_ultimo_contato']))}}</td>
-                                </tr>
-                            @endforeach
-                            @foreach($maquinasOffline as $offline)
-                                <tr>
-                                    <td>{{$offline['maquina_nome']}}</td>
-                                    <td>{{$locais[$offline['id_local']]['local_nome']}}</td>
-                                    @if($offline['maquina_status'] == 0) 
-                                        <td><i class="fa-solid fa-circle text-danger" ></i></td>
-                                    @else
-                                        <td><i class="fa-solid fa-circle text-success" ></i></td>
-                                    @endif
-                                    <td>{{date('d/m/Y H:i:s', strtotime($offline['maquina_ultimo_contato']))}}</td>
-                                </tr>
-                            @endforeach
-                            </tbody>
-                            <tfoot>
-                                <tr>
-                                    <th>Máquina</th>
-                                    <th>Local</th>
-                                    <th>Status</th>
-                                    <th>Último Contato</th>
-                                </tr>
-                            </tfoot>
-                        </table>
+                            <table id="maquinas_online_offline" class="table table-striped table-responsive" style="width:100%">
+                                <thead>
+                                    <tr>
+                                        <th>Máquina</th>
+                                        <th>Local</th>
+                                        <th>Status</th>
+                                        <th>Último Contato</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+    
+                                @foreach($maquinasOnline as $online)
+                                    <tr>
+                                        <td>{{$online['maquina_nome']}}</td>
+                                        <td>{{$locais[$online['id_local']]['local_nome']}}</td>
+                                        @if($online['maquina_status'] == 0) 
+                                            <td><i class="fa-solid fa-circle text-danger" ></i></td>
+                                        @else
+                                            <td><i class="fa-solid fa-circle text-success" ></i></td>
+                                        @endif
+                                        
+                                        <td>{{date('d/m/Y H:i:s', strtotime($online['maquina_ultimo_contato']))}}</td>
+                                    </tr>
+                                @endforeach
+                                @foreach($maquinasOffline as $offline)
+                                    <tr>
+                                        <td>{{$offline['maquina_nome']}}</td>
+                                        <td>{{$locais[$offline['id_local']]['local_nome']}}</td>
+                                        @if($offline['maquina_status'] == 0) 
+                                            <td><i class="fa-solid fa-circle text-danger" ></i></td>
+                                        @else
+                                            <td><i class="fa-solid fa-circle text-success" ></i></td>
+                                        @endif
+                                        <td>{{date('d/m/Y H:i:s', strtotime($offline['maquina_ultimo_contato']))}}</td>
+                                    </tr>
+                                @endforeach
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th>Máquina</th>
+                                        <th>Local</th>
+                                        <th>Status</th>
+                                        <th>Último Contato</th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
 
                         <div class="div-button" style="padding-top: 70px; padding-bottom: 30px;">
                                     <button class="btn btn-primary" id="btn-baixar-csv" type="submit" style="width: 130px;">Gerar Arquivo</button>

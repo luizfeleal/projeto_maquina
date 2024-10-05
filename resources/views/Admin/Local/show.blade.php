@@ -41,40 +41,43 @@
                     <div style="padding-top: 50px; text-align: center;">
                         <h4 style="padding-bottom: 40px;"><i class="fa-solid fa-desktop"></i> Máquinas Associadas  </h4>
 
-                        <table id="tabela-maquinas" class="table table-striped" style="width:100%;">
-                        <thead>
-                            <tr>
-                                <th>Local</th>
-                                <th>ID Placa</th>
-                                <th>Máquina</th>
-                                <th>Status</th>
-                                <th>Total máquina</th>
-                                <th>Total PIX</th>
-                                <th>Total cartão</th>
-                                <th>Total físico</th>
-    
-    
-                            </tr>
-                        </thead>
-                        <tbody>
-    
-                        
-                        
-    
-                        </tbody>
-                        <tfoot>
-                            <tr>
-                                <th>Local</th>
-                                <th>ID Placa</th>
-                                <th>Máquina</th>
-                                <th>Status</th>
-                                <th>Total máquina</th>
-                                <th>Total PIX</th>
-                                <th>Total cartão</th>
-                                <th>Total físico</th>
-                            </tr>
-                        </tfoot>
-                    </table>
+                        <div class="tabela_responsiva">
+
+                            <table id="tabela-maquinas" class="table table-striped" style="width:100%;">
+                            <thead>
+                                <tr>
+                                    <th>Local</th>
+                                    <th>ID Placa</th>
+                                    <th>Máquina</th>
+                                    <th>Status</th>
+                                    <th>Total máquina</th>
+                                    <th>Total PIX</th>
+                                    <th>Total cartão</th>
+                                    <th>Total físico</th>
+        
+        
+                                </tr>
+                            </thead>
+                            <tbody>
+        
+                            
+                            
+        
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th>Local</th>
+                                    <th>ID Placa</th>
+                                    <th>Máquina</th>
+                                    <th>Status</th>
+                                    <th>Total máquina</th>
+                                    <th>Total PIX</th>
+                                    <th>Total cartão</th>
+                                    <th>Total físico</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                        </div>
                     </div>
 
 
@@ -179,6 +182,7 @@
                     var tabelaMaquinas= $('#tabela-maquinas').DataTable({
                     processing: true,
                     serverSide: true,
+                    scrollX: true,
                     ajax: {
                         url: "https://services.swiftpaysolucoes.com/api/extrato/acumuladoLocal?id_local=" + idLocal.id_local, // URL da sua API
                         type: 'GET', // Tipo de requisição

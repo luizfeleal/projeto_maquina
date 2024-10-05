@@ -17,41 +17,43 @@
 
                         @csrf
 
-                        
-                        <table id="total_transacoes" class="table table-striped table-responsive" style="width:100%">
-                            <thead>
-                                <tr>
-                                    <th>Status</th>
-                                    <th>Descrição</th>
-                                    <th>Ação</th>
-                                    <th>Placa Máquina</th>
-                                    <th>Data e Hora</th>
-                                </tr>
-                            </thead>
-                            <tbody>
+                        <div class="tabela_responsiva">
 
-                            @foreach($resultadosFiltrados as $resultado)
-                                <tr>
-                                    <td>{{$resultado['status']}}</td>
-                                    <td>{{$resultado['descricao']}}</td>
-                                    <td>{{$resultado['acao']}}</td>
-                                    
-                                    <td>{{$resultado['id_placa']}}</td>
-                                    
-                                    <td>{{date('d/m/Y H:i:s', strtotime($resultado['data_criacao']))}}</td>
-                                </tr>
-                            @endforeach
-                            </tbody>
-                            <tfoot>
-                                <tr>
-                                    <th>Status</th>
-                                    <th>Descrição</th>
-                                    <th>Ação</th>
-                                    <th>Placa Máquina</th>
-                                    <th>Data e Hora</th>
-                                </tr>
-                            </tfoot>
-                        </table>
+                            <table id="total_transacoes" class="table table-striped table-responsive" style="width:100%">
+                                <thead>
+                                    <tr>
+                                        <th>Status</th>
+                                        <th>Descrição</th>
+                                        <th>Ação</th>
+                                        <th>Placa Máquina</th>
+                                        <th>Data e Hora</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+    
+                                @foreach($resultadosFiltrados as $resultado)
+                                    <tr>
+                                        <td>{{$resultado['status']}}</td>
+                                        <td>{{$resultado['descricao']}}</td>
+                                        <td>{{$resultado['acao']}}</td>
+                                        
+                                        <td>{{$resultado['id_placa']}}</td>
+                                        
+                                        <td>{{date('d/m/Y H:i:s', strtotime($resultado['data_criacao']))}}</td>
+                                    </tr>
+                                @endforeach
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th>Status</th>
+                                        <th>Descrição</th>
+                                        <th>Ação</th>
+                                        <th>Placa Máquina</th>
+                                        <th>Data e Hora</th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
 
                         <div class="div-button" style="padding-top: 70px; padding-bottom: 30px;">
                             <button class="btn btn-primary" id="btn-baixar-csv" type="submit" style="width: 130px;">Gerar Arquivo</button>
@@ -122,6 +124,7 @@
                 "language": {
                     "url": "https://cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json"
                 },
+                "scrollX": true,
                 "columns": [
                     null,
                     null,

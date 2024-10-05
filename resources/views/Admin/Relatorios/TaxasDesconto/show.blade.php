@@ -17,43 +17,45 @@
 
                         @csrf
 
-                        
-                        <table id="total_transacoes" class="table table-striped table-responsive" style="width:100%">
-                            <thead>
-                                <tr>
-                                    <th>Local</th>
-                                    <th>Maquina</th>
-                                    <th>Tipo Transação</th>
-                                    <th>Valor</th>
-                                    <th>Data e Hora</th>
-                                </tr>
-                            </thead>
-                            <tbody>
+                        <div class="tabela_responsiva">
 
-                            @foreach($resultadosFiltrados as $resultado)
-                                <tr>
-                                    <td>{{$resultado['local_nome']}}</td>
-                                    <td>{{$resultado['maquina_nome']}}</td>
-                                    <td>{{$resultado['extrato_operacao_tipo']}}</td>
-                                    @if($resultado['extrato_operacao'] == "C")
-                                        <td>+ R$ {{ number_format($resultado['extrato_operacao_valor'], 2, ',', '.')}}</td>
-                                    @else
-                                        <td>- R$ {{ number_format($resultado['extrato_operacao_valor'], 2, ',', '.')}}</td>
-                                    @endif
-                                    <td>{{date('d/m/Y H:i:s', strtotime($resultado['data_criacao']))}}</td>
-                                </tr>
-                            @endforeach
-                            </tbody>
-                            <tfoot>
-                                <tr>
-                                    <th>Local</th>
-                                    <th>Maquina</th>
-                                    <th>Tipo Transação</th>
-                                    <th>Valor</th>
-                                    <th>Data e Hora</th>
-                                </tr>
-                            </tfoot>
-                        </table>
+                            <table id="total_transacoes" class="table table-striped table-responsive" style="width:100%">
+                                <thead>
+                                    <tr>
+                                        <th>Local</th>
+                                        <th>Maquina</th>
+                                        <th>Tipo Transação</th>
+                                        <th>Valor</th>
+                                        <th>Data e Hora</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+    
+                                @foreach($resultadosFiltrados as $resultado)
+                                    <tr>
+                                        <td>{{$resultado['local_nome']}}</td>
+                                        <td>{{$resultado['maquina_nome']}}</td>
+                                        <td>{{$resultado['extrato_operacao_tipo']}}</td>
+                                        @if($resultado['extrato_operacao'] == "C")
+                                            <td>+ R$ {{ number_format($resultado['extrato_operacao_valor'], 2, ',', '.')}}</td>
+                                        @else
+                                            <td>- R$ {{ number_format($resultado['extrato_operacao_valor'], 2, ',', '.')}}</td>
+                                        @endif
+                                        <td>{{date('d/m/Y H:i:s', strtotime($resultado['data_criacao']))}}</td>
+                                    </tr>
+                                @endforeach
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th>Local</th>
+                                        <th>Maquina</th>
+                                        <th>Tipo Transação</th>
+                                        <th>Valor</th>
+                                        <th>Data e Hora</th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
                         <div class="row" style="display: flex; flex-direction: row; justify-content: center;width: 100%; margin-top: 10px; margin-bottom: 30px;">
                             <div class="col-md-8">
                                 <p><strong>Total Transações: </strong>  R$ {{ number_format($valor_total, 2, ',', '.')}}</p>
@@ -131,6 +133,7 @@
                 "language": {
                     "url": "https://cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json"
                 },
+                "scrollX": true,
                 "columns": [
                     null,
                     null,

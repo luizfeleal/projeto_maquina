@@ -15,29 +15,32 @@
                 <input type="hidden" name="data" value="{{json_encode($bodyReq)}}">
                 <h1>Total Transações</h1>
 
-                <table id="total_transacoes" class="table table-striped table-responsive" style="width:100%">
-                    <thead>
-                        <tr>
-                            <th>Local</th>
-                            <th>Maquina</th>
-                            <th>Tipo Transação</th>
-                            <th>Valor</th>
-                            <th>Data e Hora</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Dados serão carregados via AJAX -->
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <th>Local</th>
-                            <th>Maquina</th>
-                            <th>Tipo Transação</th>
-                            <th>Valor</th>
-                            <th>Data e Hora</th>
-                        </tr>
-                    </tfoot>
-                </table>
+                <div class="tabela_responsiva">
+
+                    <table id="total_transacoes" class="table table-striped table-responsive" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th>Local</th>
+                                <th>Maquina</th>
+                                <th>Tipo Transação</th>
+                                <th>Valor</th>
+                                <th>Data e Hora</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Dados serão carregados via AJAX -->
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th>Local</th>
+                                <th>Maquina</th>
+                                <th>Tipo Transação</th>
+                                <th>Valor</th>
+                                <th>Data e Hora</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
 
                 <div class="row" style="display: flex; flex-direction: row; justify-content: center; width: 100%; margin-top: 50px;">
                     <div class="col-md-2">
@@ -138,6 +141,7 @@
         },
         "processing": true,
         "serverSide": true,
+        "scrollX": true,
         "ajax": {
             "url": "{{ route('relatorio-criar') }}",
             "type": "POST",
