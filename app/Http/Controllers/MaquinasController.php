@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use App\Services\LocaisService;
 use App\Services\MaquinasService;
 use App\Services\Hardware\MaquinasService as HardwareMaquinas;
-use App\Services\ExtratoMaquinaService;
+use App\Services\MaquinasCartaoService;
 use App\Services\LiberarJogadaService;
 use App\Services\ClientesService;
 use App\Services\ClienteLocalService;
@@ -230,9 +230,74 @@ class MaquinasController extends Controller
             return back()->with('error', 'Houve um erro ao tentar liberar a jogada.');
         }
     }
-public function viewLiberarJogada(Request $request){
+    public function viewLiberarJogada(Request $request){
         $maquinas = MaquinasService::coletar();
 
         return view('Admin.Jogadas.create', compact("maquinas"));
+    }
+
+    public function viewMaquinasCartao(){
+        $maquinas = MaquinasService::coletar();
+        $maquinasCartao = MaquinasCartaoService::coletar();
+
+        foreach($maquinasCartao as &$maquinaCartao){
+            foreach($maquinas as $maquina){
+                if($maquina['id_maquina'] == $maquinaCartao['id_maquina']){
+                    $maquinaCartao['maquina_nome'] = $maquina['maquina_nome'];
+                }
+            }
+        }
+
+        return view('Admin.Maquinas.MaquinaCartao.index', compact('maquinasCartao'));
+    }
+    public function viewMaquinasCartaoCriar(){
+        $maquinas = MaquinasService::coletar();
+        $maquinasCartao = MaquinasCartaoService::coletar();
+
+        $id_maquinas_com_cartao = [];
+
+        foreach($maquinasCartao as $item){
+            array_push($id_maquinas_com_cartao, $item['id_maquina']);
+        }
+
+        $maquinas_exibir = [];
+
+        foreach($maquinas as $maquina){
+            if(!in_array($maquina['id_maquina'], $id_maquinas_com_cartao)){
+                array_push($maquinas_exibir, $maquina);
+            }
+        }
+
+        return view('Admin.Maquinas.MaquinaCartao.create', compact('maquinas_exibir'));
+    }
+
+    public function registrarMaquinasCartao(Request $request) {
+        try{
+
+            $dados = [];
+            $dados['id_maquina'] = $request['select-maquina'];
+            $dados['device'] = $request['device'];
+            $dados['status'] = 1;
+
+            $result = MaquinasCartaoService::criar($dados);
+
+            return back()->with('success', $result['message']);
+        }catch(\Throwable $e){
+            return back()->with('error', 'Houve um erro ao tentar cadastrar a máquina');
+        }
+    }
+
+    public function inativarMaquinasCartao(Request $request) {
+        try{
+
+            $dados = [];
+            $dados['id'] = $request['id_device'];
+            $dados['status'] = $request['status'];
+
+            $result = MaquinasCartaoService::atualizar($dados);
+            return back()->with('success', $result->message);
+        }catch(\Throwable $e){
+            return back()->with('error', 'Houve um erro ao tentar cadastrar a máquina');
+        }
     }
 }

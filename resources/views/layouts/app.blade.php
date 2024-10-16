@@ -59,13 +59,14 @@
                                 <i class="fa-solid fa-desktop"></i> Criar
                             </a>
                         </button>
-                        <div class="collapse {{$currentRoute === 'local-criar' || $currentRoute === 'local-incluir-usuario' ||$currentRoute === 'maquinas-criar' || $currentRoute === 'credencial-criar-pagbank' || $currentRoute === 'credencial-criar-efi' ? 'show' : '' }}" id="maquinas-collapse">
+                        <div class="collapse {{$currentRoute === 'local-criar' || $currentRoute === 'local-incluir-usuario' ||$currentRoute === 'maquinas-criar' || $currentRoute === 'credencial-criar-pagbank' || $currentRoute === 'credencial-criar-efi' || $currentRoute === 'maquinas-cartao' ? 'show' : '' }}" id="maquinas-collapse">
                             <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
                                 <li><a href="{{route('maquinas-criar')}}" class="d-inline-flex text-decoration-none rounded" style="{{ $currentRoute === 'maquinas-criar' ? 'color:grey !important;' : ' ' }}">Criar nova máquina</a></li>
                                 <li><a href="{{route('local-incluir-usuario')}}" class=" d-inline-flex text-decoration-none rounded" style="{{  $currentRoute === 'local-incluir-usuario' ? 'color:grey !important;': ' ' }}">Incluir usuários</a></li>
                                 <li><a href="{{route('local-criar')}}" class=" d-inline-flex text-decoration-none rounded" style="{{  $currentRoute === 'local-criar' ? 'color:grey !important;': ' ' }}">Criar local</a></li>
                                 <li><a href="{{route('credencial-criar-efi')}}" class=" d-inline-flex text-decoration-none rounded" style="{{  $currentRoute === 'credencial-criar-efi' ? 'color:grey !important;': ' ' }}">Criar credencial EFI</a></li>
                                 <li><a href="{{route('credencial-criar-pagbank')}}" class=" d-inline-flex text-decoration-none rounded" style="{{  $currentRoute === 'credencial-criar-pagbank' ? 'color:grey !important;': ' ' }}">Criar credencial Pagbank</a></li>
+                                <li><a href="{{route('maquinas-cartao')}}" class=" d-inline-flex text-decoration-none rounded" style="{{  $currentRoute === 'maquinas-cartao' ? 'color:grey !important;': ' ' }}">Incluir Máquina Cartão</a></li>
                             </ul>
                         </div>
                     </li>

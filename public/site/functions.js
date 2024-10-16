@@ -190,6 +190,10 @@ const setIdMaquinaExcluir= (id_maquina, id_input) =>{
     $(id_input).val(id_maquina);
 }
 
+const setIdMaquinaCartaoExcluir= (id_maquina, id_input) =>{
+    $(id_input).val(id_maquina);
+}
+
 const setIdLocalExcluir= (id_local, id_input) =>{
     $(id_input).val(id_local);
 }

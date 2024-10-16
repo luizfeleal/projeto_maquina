@@ -10,33 +10,35 @@
             <div class="container section container-platform div-center-column"
                 style="margin-top: 15px; height: 100%;">
                 
-                <table id="tabela_maquinas_transacao" class="display responsive table-striped" style="width:100%">
-                    <thead>
-                        <tr>
-                            <th>Local</th>
-                            <th>Máquina</th>
-                            <th>Última transação</th>
-                            <th>Fonte</th>
-                            <th>Data e Hora</th>
-
-
-                        </tr>
-                    </thead>
-                    <tbody>
-
-                        
-
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <th>Local</th>
-                            <th>Máquina</th>
-                            <th>Última transação</th>
-                            <th>Fonte</th>
-                            <th>Data e Hora</th>
-                        </tr>
-                    </tfoot>
-                </table>
+                <div class="tabela_responsiva">
+                    <table id="tabela_maquinas_transacao" class="display responsive table-striped" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th>Local</th>
+                                <th>Máquina</th>
+                                <th>Última transação</th>
+                                <th>Fonte</th>
+                                <th>Data e Hora</th>
+    
+    
+                            </tr>
+                        </thead>
+                        <tbody>
+    
+                            
+    
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th>Local</th>
+                                <th>Máquina</th>
+                                <th>Última transação</th>
+                                <th>Fonte</th>
+                                <th>Data e Hora</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
 
 
                             @if(session('success'))
