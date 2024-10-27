@@ -153,7 +153,7 @@ class RelatoriosController extends Controller
                 return isset($item['id_maquina']);
             });
 
-            $maquinas = collect(MaquinasService::coletar())->keyBy('id_maquina')->toArray();
+            $maquinas = collect(MaquinasService::coletarComLixo())->keyBy('id_maquina')->toArray();
 
             
             $resultadosFiltrados = [];

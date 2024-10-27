@@ -41,6 +41,20 @@ class MaquinasService
 
         return $maquinas;
     }
+    public static function coletarComLixo()
+    {
+        
+        
+        $url = env('APP_URL_API') . "/maquinas?withTrash=true";
+        $token = AuthService::getToken();
+        $response = Http::withHeaders([
+            'Authorization' => 'Bearer ' . $token
+        ])->get($url);
+
+        $maquinas = $response->json();
+
+        return $maquinas;
+    }
 
     public static function coletarComFiltro($filtros, $tipo)
     {
@@ -137,7 +151,7 @@ public static function coletarPlacasDisponiveis()
     public static function coletarTodasAsMaquinasComUltimaTransacao(){
         
     
-            $url = env('APP_URL_API') . "/totalMaquinas";
+        $url = env('APP_URL_API') . "/totalMaquinas";
     
         $token = AuthService::getToken();
         $response = Http::withHeaders([
