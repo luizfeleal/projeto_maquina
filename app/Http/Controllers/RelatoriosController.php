@@ -124,13 +124,7 @@ class RelatoriosController extends Controller
             }
             return view('Admin.Relatorios.TaxasDesconto.show', compact('resultadosFiltrados', 'resultArray', 'valor_total'));
         }
-
-
-
-
-
-        
-
+    
         if($nomeRelatorio == "relatorioErros"){
             $maquina = $request->input('id_maquina');
             $local = $request->input('id_local');
