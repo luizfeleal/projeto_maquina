@@ -13,7 +13,7 @@
                     @csrf
 
                     <div class="row" style="display: flex; flex-direction: row; justify-content: center;width: 100%; margin-bottom: 20px;">
-                        <div class="col-md-4">
+                        <div class="col-md-8">
                             <label for="cliente_nome" class="form-label"> Nome Completo*:</label>
                             <input type="text" value="{{$cliente['cliente_nome']}}" class="form-control input-text" name="cliente_nome" id="cliente_nome" disabled>
                             <div class="invalid-feedback">
@@ -21,14 +21,7 @@
                             </div>
 
                         </div>
-                        <div class="col-md-4">
-                            <label for="cliente_data_nascimento" class="form-label"> Data Nascimento*:</label>
-                            <input type="text" value="{{$cliente['cliente_data_nascimento']}}" class="form-control input-text mascara-dinamica" name="cliente_data_nascimento" id="cliente_data_nascimento" data-mask="00/00/0000" disabled>
-                            <div class="invalid-feedback">
-                                <p class="invalid-p" id="select_tipo_mensagem">Campo obrigatório</p>
-                            </div>
-
-                        </div>
+                       
                     </div>
                     <div class="row" style="display: flex; flex-direction: row; justify-content: center;width: 100%; margin-bottom: 20px;">
                         <div class="col-md-4">
@@ -61,69 +54,6 @@
                     </div>
                     <div class="row" style="display: flex; flex-direction: row; justify-content: center;width: 100%; margin-bottom: 20px;">
                         <div class="col-md-4">
-                            <label for="cliente_cep" class="form-label">CEP*:</label>
-                            <input type="text" class="form-control" value="{{$cliente['cliente_cep']}}" name="cliente_cep" id="cliente_cep" disabled>
-                            <div class="invalid-feedback">
-                                <p class="invalid-p invalid-p-name">Campo obrigatório</p>
-                            </div>
-
-                        </div>
-                        <div class="col-md-4">
-                            <label for="cliente_logradouro" class="form-label">Logradouro*:</label>
-                            <input type="text" class="form-control" value="{{$cliente['cliente_logradouro']}}" name="cliente_logradouro" id="cliente_logradouro" disabled>
-                            <div class="invalid-feedback">
-                                <p class="invalid-p invalid-p-name">Campo obrigatório</p>
-                            </div>
-
-                        </div>
-                    </div>
-
-                    <div class="row" style="display: flex; flex-direction: row; justify-content: center;width: 100%; margin-bottom: 20px;">
-                        <div class="col-md-4">
-                            <label for="cliente_cidade" class="form-label">Cidade*:</label>
-                            <input type="text" class="form-control" value="{{$cliente['cliente_cidade']}}" name="cliente_cidade" id="cliente_cidade" disabled>
-                            <div class="invalid-feedback">
-                                <p class="invalid-p invalid-p-name">Campo obrigatório</p>
-                            </div>
-
-                        </div>
-                        <div class="col-md-4">
-                            <label for="cliente_bairro" class="form-label">Bairro*:</label>
-                            <input type="text" class="form-control" value="{{$cliente['cliente_bairro']}}" name="cliente_bairro" id="cliente_bairro" disabled>
-                            <div class="invalid-feedback">
-                                <p class="invalid-p invalid-p-name">Campo obrigatório</p>
-                            </div>
-
-                        </div>
-                    </div>
-                    <div class="row" style="display: flex; flex-direction: row; justify-content: center;width: 100%; margin-bottom: 20px;">
-                        <div class="col-md-4">
-                            <label for="cliente_complemento" class="form-label">Complemento:</label>
-                            <input type="text" class="form-control" value="{{$cliente['cliente_complemento']}}" name="cliente_complemento" id="cliente_complemento" disabled>
-                            <div class="invalid-feedback">
-                                <p class="invalid-p invalid-p-name">Campo obrigatório</p>
-                            </div>
-
-                        </div>
-                        <div class="col-md-2">
-                            <label for="cliente_uf" class="form-label">UF*:</label>
-                            <input type="text" class="form-control" value="{{$cliente['cliente_uf']}}" name="cliente_uf" id="cliente_uf" disabled>
-                            <div class="invalid-feedback">
-                                <p class="invalid-p invalid-p-name">Campo obrigatório</p>
-                            </div>
-
-                        </div>
-                        <div class="col-md-2">
-                            <label for="cliente_numero" class="form-label">Número*:</label>
-                            <input type="text" class="form-control" value="{{$cliente['cliente_numero']}}" name="cliente_numero" id="cliente_numero" disabled>
-                            <div class="invalid-feedback">
-                                <p class="invalid-p invalid-p-name">Campo obrigatório</p>
-                            </div>
-
-                        </div>
-                    </div>
-                    <div class="row" style="display: flex; flex-direction: row; justify-content: center;width: 100%; margin-bottom: 20px;">
-                        <div class="col-md-4">
                             <label for="cliente_id" class="form-label">Client ID*:</label>
                             <input type="text" class="form-control" value="************..." name="cliente_id" id="cliente_id" disabled>
                             <div class="invalid-feedback">
@@ -145,12 +75,23 @@
 
                     <h2 style="margin-top: 50px;">Locais</h2>
 
+                    @if(empty($locais))
+                            <p style="margin-top: 25px; margin-bottom: 25px;">Nenhum local encontrado</p>
+                    @else
+
+                    @foreach($locais as $local)
+                        
+                            <h5 style="margin-top: 25px;"><i class="fa-solid fa-location-dot icon-sidebar" style=" font-size: 25px;padding-right:5px;"></i> <strong>Nome:</strong> {{$local['local_nome']}}</h5>
+                       
+                    @endforeach
+                    @endif
                     
-                        @foreach($locais as $local)
-                            
-                                <h5 style="margin-top: 25px;"><i class="fa-solid fa-location-dot icon-sidebar" style=" font-size: 25px;padding-right:5px;"></i> <strong>Nome:</strong> {{$local['local_nome']}}</h5>
-                           
-                        @endforeach
+                    <h2 style="margin-top: 50px;">Credenciais configuradas</h2>
+
+                    <div style="text-align: left;">
+                        <h5>EFÍ: <span>{{!empty($credencial_efi) ? 'Configurado' : 'Não Configurado'}}</span></h5>
+                        <h5>Pagbank: {{!empty($credencial_pagbank) ? 'Configurado' : 'Não Configurado'}}</h5>
+                    </div>
                     
                     
                 </form>

@@ -11,6 +11,7 @@ use App\Services\LiberarJogadaService;
 use App\Services\ClientesService;
 use App\Services\ClienteLocalService;
 use App\Services\AuthService;
+use App\Services\QrCodeService;
 
 class MaquinasController extends Controller
 {
@@ -18,11 +19,36 @@ class MaquinasController extends Controller
     {
 
         if ($request->has('id')) {
-            $maquinas = MaquinasService::coletar($request->id);
+            $id_maquina = $request->id;
+            $maquinas = MaquinasService::coletar($id_maquina);
             $id_local = $maquinas['id_local'];
             $locais = LocaisService::coletar($id_local);
             $clienteLocal = ClienteLocalService::coletar();
             $clientes = ClientesService::coletar();
+
+            $maquinaCartao = MaquinasCartaoService::coletar();
+
+            $maquinaCartaoAssociada = array_filter($maquinaCartao, function($item) use($id_maquina){
+                return $id_maquina == $item['id_maquina'] && $item['status'] == 1;
+            });
+
+            if(empty($maquinaCartaoAssociada)){
+                $possuiMaquinaCartaoAssociada = false;
+            }else{
+                $possuiMaquinaCartaoAssociada = true;
+            }
+
+            $qr = QrCodeService::coletar();
+
+            $qrMaquina = array_filter($qr, function($item) use($id_maquina) {
+                return $item['ativo'] == 1 && $item['id_maquina'] == $id_maquina;
+            });
+
+            if(empty($qrMaquina)){
+                $possuiQrCode = false;
+            }else{
+                $possuiQrCode = true;
+            }
 
             $clienteLocalFiltrado = array_filter($clienteLocal, function ($item) use ($id_local) {
                 return $item['id_local'] == $id_local;
@@ -36,7 +62,7 @@ class MaquinasController extends Controller
             $clientes = array_filter($clientes, function ($item) use ($idClientes) {
                 return in_array($item['id_cliente'],  $idClientes);
             });
-            return view('Admin.Maquinas.show', compact('maquinas', 'locais', 'clientes'));
+            return view('Admin.Maquinas.show', compact('maquinas', 'locais', 'clientes', 'possuiMaquinaCartaoAssociada', 'possuiQrCode'));
         } else {
             return back()->with('error', 'Máquina não encontrada');
         }
@@ -245,6 +271,37 @@ class MaquinasController extends Controller
             return back()->with('success', $result['message']);
         } catch (\Throwable $e) {
             return back()->with('error', 'Houve um erro ao tentar cadastrar a máquina');
+        }
+    }
+
+    public function atualizarMaquina(Request $request)
+    {
+        try {
+            $dados = $request->all();
+            $dados_maquina =  $request->except('_token', 'id_maquina');
+            $id_maquina = $request['id_maquina'];
+
+            if (array_key_exists('bloqueio_jogada_efi', $dados)) {
+                if($dados['bloqueio_jogada_efi'] == "on"){
+                    $dados_maquina['bloqueio_jogada_efi'] = 1;
+                }else{
+                    $dados_maquina['bloqueio_jogada_efi'] = 0;
+                }
+            }
+            
+            if (array_key_exists('bloqueio_jogada_pagbank', $dados)) {
+                if($dados['bloqueio_jogada_pagbank'] == "on"){
+                    $dados_maquina['bloqueio_jogada_pagbank'] = 1;
+                }else{
+                    $dados_maquina['bloqueio_jogada_pagbank'] = 0;
+                }
+            }
+
+            $result = MaquinasService::atualizar($dados, $id_maquina);
+
+            return back()->with('success', $result['message']);
+        } catch (\Throwable $e) {
+            return back()->with('error', 'Houve um erro ao tentar atualizar a máquina');
         }
     }
 

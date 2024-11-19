@@ -18,6 +18,10 @@ Route::get('/', function () {
     return redirect()->route('login-view');
 });
 
+Route::prefix('home')->middleware('permission')->group(function(){
+    Route::get('/', 'App\Http\Controllers\HomeController@coletar')->name('home');
+});
+
 Route::prefix('maquinas')->middleware('permission')->group(function(){
     Route::get('/', 'App\Http\Controllers\MaquinasController@coletarTodasAsMaquinas')->name('maquinas');
     Route::get('/criar', 'App\Http\Controllers\MaquinasController@criarMaquinas')->name('maquinas-criar');
@@ -31,6 +35,7 @@ Route::prefix('maquinas')->middleware('permission')->group(function(){
     Route::post('/maquinasCartao/registrar', 'App\Http\Controllers\MaquinasController@registrarMaquinasCartao')->name('maquinas-cartao-registrar');
     Route::post('/maquinasCartao/inativar', 'App\Http\Controllers\MaquinasController@inativarMaquinasCartao')->name('maquinas-cartao-inativar');
     Route::post('/excluir', 'App\Http\Controllers\MaquinasController@excluirMaquinas')->name('maquinas-excluir');
+    Route::post('/atualizar', 'App\Http\Controllers\MaquinasController@atualizarMaquina')->name('maquinas-atualizar');
     Route::post('/liberarJogadaRegistrar', 'App\Http\Controllers\MaquinasController@liberarJogada')->name('maquinas-liberar-jogada');
     Route::get('/liberarJogada', 'App\Http\Controllers\MaquinasController@viewLiberarJogada')->name('view-liberar-jogadas');
 });

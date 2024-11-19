@@ -13,19 +13,11 @@
                     @csrf
 
                     <div class="row" style="display: flex; flex-direction: row; justify-content: center;width: 100%; margin-bottom: 20px;">
-                        <div class="col-md-4">
+                        <div class="col-md-8">
                             <label for="cliente_nome" class="form-label"> Nome Completo*:</label>
                             <input type="text" class="form-control input-text" name="cliente_nome" id="cliente_nome" required>
                             <div class="invalid-feedback">
                                 <p class="invalid-p" id="cliente_nome_mensagem">Campo obrigatório</p>
-                            </div>
-
-                        </div>
-                        <div class="col-md-4">
-                            <label for="cliente_data_nascimento" class="form-label"> Data Nascimento*:</label>
-                            <input type="text" class="form-control input-text mascara-dinamica" name="cliente_data_nascimento" id="cliente_data_nascimento" data-mask="00/00/0000" required>
-                            <div class="invalid-feedback">
-                                <p class="invalid-p" id="select_tipo_mensagem">Campo obrigatório</p>
                             </div>
 
                         </div>
@@ -77,67 +69,22 @@
 
                         </div>
                     </div>
+
+                    <h5>Permissões:</h5>
                     <div class="row" style="display: flex; flex-direction: row; justify-content: center;width: 100%; margin-bottom: 20px;">
-                        <div class="col-md-4">
-                            <label for="cliente_cep" class="form-label">CEP*:</label>
-                            <input type="text" class="form-control" name="cliente_cep" id="cliente_cep" required>
-                            <div class="invalid-feedback">
-                                <p class="invalid-p invalid-p-name">Campo obrigatório</p>
+                        <div class="col-md-8">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" name="checkbox_efi" type="checkbox" role="switch" id="checkboxEfi">
+                                <label class="form-check-label" for="flexSwitchCheckDefault">Pix</label>
                             </div>
-
-                        </div>
-                        <div class="col-md-4">
-                            <label for="cliente_logradouro" class="form-label">Logradouro*:</label>
-                            <input type="text" class="form-control" name="cliente_logradouro" id="cliente_logradouro" required>
-                            <div class="invalid-feedback">
-                                <p class="invalid-p invalid-p-name">Campo obrigatório</p>
-                            </div>
-
-                        </div>
-                    </div>
-
-                    <div class="row" style="display: flex; flex-direction: row; justify-content: center;width: 100%; margin-bottom: 20px;">
-                        <div class="col-md-4">
-                            <label for="cliente_cidade" class="form-label">Cidade*:</label>
-                            <input type="text" class="form-control" name="cliente_cidade" id="cliente_cidade" required>
-                            <div class="invalid-feedback">
-                                <p class="invalid-p invalid-p-name">Campo obrigatório</p>
-                            </div>
-
-                        </div>
-                        <div class="col-md-4">
-                            <label for="cliente_bairro" class="form-label">Bairro*:</label>
-                            <input type="text" class="form-control" name="cliente_bairro" id="cliente_bairro" required>
-                            <div class="invalid-feedback">
-                                <p class="invalid-p invalid-p-name">Campo obrigatório</p>
-                            </div>
-
                         </div>
                     </div>
                     <div class="row" style="display: flex; flex-direction: row; justify-content: center;width: 100%; margin-bottom: 20px;">
-                        <div class="col-md-4">
-                            <label for="cliente_complemento" class="form-label">Complemento:</label>
-                            <input type="text" class="form-control" name="cliente_complemento" id="cliente_complemento" >
-                            <div class="invalid-feedback">
-                                <p class="invalid-p invalid-p-name">Campo obrigatório</p>
+                        <div class="col-md-8">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" name="checkbox_pagbank" type="checkbox" role="switch" id="checkboxPagbank">
+                                <label class="form-check-label" for="flexSwitchCheckDefault">Máquininha de cartão (Pagbank)</label>
                             </div>
-
-                        </div>
-                        <div class="col-md-2">
-                            <label for="cliente_uf" class="form-label">UF*:</label>
-                            <input type="text" class="form-control" name="cliente_uf" id="cliente_uf" required>
-                            <div class="invalid-feedback">
-                                <p class="invalid-p invalid-p-name">Campo obrigatório</p>
-                            </div>
-
-                        </div>
-                        <div class="col-md-2">
-                            <label for="cliente_numero" class="form-label">Número*:</label>
-                            <input type="text" class="form-control" name="cliente_numero" id="cliente_numero" required>
-                            <div class="invalid-feedback">
-                                <p class="invalid-p invalid-p-name">Campo obrigatório</p>
-                            </div>
-
                         </div>
                     </div>
 
@@ -198,7 +145,6 @@
             theme: "classic"
         });
 
-        validaData();
         validaSenhas();
         $("#cliente_nome").on('blur', () => {
             validarCampoNome('cliente_nome', 'cliente_nome_mensagem');
@@ -209,14 +155,7 @@
         });
 
         $('#cliente_celular').mask('(00) 00000-0000');
-        $('#cliente_cep').mask('00000-000');
-        $('#cliente_data_nascimento').mask('00/00/0000');
 
-        $('#cliente_cep').on('blur', async () => {
-            var valorCep = $('#cliente_cep').val()
-            var dadoEndereco = await coletaEndereco(valorCep)
-            preencherEnderecoFocoNumero('cliente_cidade', 'cliente_uf', 'cliente_logradouro', 'cliente_bairro', 'cliente_numero', dadoEndereco)
-        });
 
         $("#cliente_cpf_cnpj").on("blur", () => {
         if (validarDocumento($("#cliente_cpf_cnpj").val(), "cliente_cpf_cnpj")) {

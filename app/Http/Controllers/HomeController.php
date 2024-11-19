@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ExtratoMaquina;
 use Illuminate\Http\Request;
 use App\Services\LocaisService;
 use App\Services\MaquinasService;
@@ -10,13 +11,23 @@ use App\Services\ClientesService;
 use App\Services\ClienteLocalService;
 use App\Services\AuthService;
 
-class LocaisController extends Controller
+class HomeController extends Controller
 {
     
-    public function criarLocais(Request $request){
-        $clientes = ClientesService::coletar();
+    public function coletar(Request $request){
+        $saldo = ExtratoMaquinaService::coletarSaldoTotal();
+        $devolucoes = ExtratoMaquinaService::coletarDevolucoes();
+        $maquinas = MaquinasService::coletar();
 
-        return view('Admin.Local.create', compact('clientes'));
+        $maquinas_online = array_filter($maquinas, function($item){
+            return $item['maquina_status'] == 1;
+        });
+        $maquinas_offline = array_filter($maquinas, function($item){
+            return $item['maquina_status'] == 0;
+        });
+
+
+        return view('Admin.home', compact('maquinas', 'maquinas_online', 'maquinas_offline', 'saldo', 'devolucoes'));
     }
     public function registrarLocais(Request $request){
 

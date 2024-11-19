@@ -88,7 +88,8 @@ class MaquinasService
         }
     }
 
-    public function atualizar($dados, $id){
+    public static function atualizar($dados, $id)
+    {
         $url = env('APP_URL_API') . "/maquinas/$id";
 
         $token = AuthService::getToken();

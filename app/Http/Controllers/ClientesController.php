@@ -32,7 +32,15 @@ class ClientesController extends Controller
                 return in_array($item['id_local'], $clienteLocal->toArray());
             });
 
-            return view('Admin.Usuarios.show', compact('cliente', 'locais'));
+            $credenciais = CredApiPixService::coletar();
+            $credencial_efi = array_filter($credenciais, function($item) use ($id){
+                return $item['id_cliente'] == $id && $item['tipo_cred'] == 'efi';
+            });
+            $credencial_pagbank = array_filter($credenciais, function($item) use ($id){
+                return $item['id_cliente'] == $id && $item['tipo_cred'] == 'pagbank';
+            });
+
+            return view('Admin.Usuarios.show', compact('cliente', 'locais', 'credencial_efi', 'credencial_pagbank'));
         }else{
             return back()->with('error', 'Cliente não encontrada');
         }
@@ -47,8 +55,29 @@ class ClientesController extends Controller
     }
     public function registrarCliente(Request $request){
         
+        $dados = $request->all();
+
+        $permissaoPagbank = false;
+        $permissaoEfi = false;
     
-        $dadosCliente = $request->except(['cliente_senha', 'cliente_confirmar_senha', 'cliente_id', 'cliente_secret', 'cliente_certificado']);
+        $dadosCliente = $request->except(['cliente_senha', 'cliente_confirmar_senha', 'cliente_id', 'cliente_secret', 'cliente_certificado', 'checkbox_pagbank', 'checkbox_efi']);
+        if (array_key_exists('checkbox_pagbank', $dados)) {
+            $permissaoPagbank = true;
+            $dadosCliente['checkbox_pagbank'] = 1;
+        }
+        
+        if (array_key_exists('checkbox_efi', $dados)) {
+            $permissaoEfi = true;
+            $dadosCliente['checkbox_efi'] = 1;
+        }
+
+        if($permissaoEfi && $permissaoPagbank){
+            $id_grupo_acesso = 2;
+        }else if($permissaoEfi){
+            $id_grupo_acesso = 3;
+        }else if($permissaoPagbank){
+            $id_grupo_acesso = 4;
+        }
 
         $cliente = ClientesService::criar($dadosCliente);
         
@@ -60,7 +89,7 @@ class ClientesController extends Controller
             //Criar acesso a plataforma
             $dadoUsuarioAcesso = [
                 "id_cliente" => $id_cliente,
-                "id_grupo_acesso" => 2,
+                "id_grupo_acesso" => $id_grupo_acesso,
                 "usuario_nome" => $request['cliente_nome'],
                 "usuario_email" => $request['cliente_email'],
                 "usuario_login" => $request['cliente_email'],
@@ -68,7 +97,7 @@ class ClientesController extends Controller
                 "ativo" => 1
             ];
 
-            $usuarioAcesso = UsuariosService::criar($dadoUsuarioAcesso);
+            UsuariosService::criar($dadoUsuarioAcesso);
             return back()->with('success', 'Cliente cadastrado com sucesso!');
         }
 
@@ -90,9 +119,19 @@ class ClientesController extends Controller
 
     public function atualizarCliente(Request $request){
         $id_cliente = $request['id_cliente'];
-        $dados = $request->except('_token', 'id_cliente');
+        $dados_cliente = $request->except('_token', 'id_cliente', 'checkbox_pagbank', 'checkbox_efi');
 
-        $cliente = ClientesService::atualizar($dados, $id_cliente);
+        $dados = $request->all();
+
+        if (array_key_exists('checkbox_pagbank', $dados)) {
+            $dados_cliente['checkbox_pagbank'] = 1;
+        }
+        
+        if (array_key_exists('checkbox_efi', $dados)) {
+            $dados_cliente['checkbox_efi'] = 1;
+        }
+       
+        ClientesService::atualizar($dados_cliente, $id_cliente);
         return back()->with('success', "Usuário atualizado com sucesso!");
     }
 

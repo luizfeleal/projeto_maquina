@@ -184,7 +184,7 @@
                     serverSide: true,
                     scrollX: true,
                     ajax: {
-                        url: "https://services.swiftpaysolucoes.com/api/extrato/acumuladoLocal?id_local=" + idLocal.id_local, // URL da sua API
+                        url: "http://127.0.0.1:5001/api/extrato/acumuladoLocal?id_local=" + idLocal.id_local, // URL da sua API
                         type: 'GET', // Tipo de requisição
                         dataSrc: 'data', // Propriedade da resposta que contém os dados
                         headers: {

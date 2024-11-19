@@ -52,7 +52,7 @@ class LoginController extends Controller
     }
     public function login(){
         if(session('id_cliente') && session('id_grupo_acesso')){
-            return redirect()->route('relatorio-view');
+            return redirect()->route('home');
         }
 
         return view('Login.Login');

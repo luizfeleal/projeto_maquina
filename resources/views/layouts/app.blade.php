@@ -32,7 +32,7 @@
 
     <nav class="navbar navbar-expand-lg bg-body-tertiary fixed-top">
         <div class="container-fluid">
-            <a class="navbar-brand" href="#" style="cursor: default;"><img src="{{ asset('site/img/swift_pay_soluções_logo.svg') }}" width="250" height="63" alt="Swift Pay Soluções"></a>
+            <a class="navbar-brand" href="{{route('home')}}" style="cursor: default;"><img src="{{ asset('site/img/swift_pay_soluções_logo.svg') }}" width="250" height="63" alt="Swift Pay Soluções"></a>
             <!--<h1>LOGO</h1>-->
             <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasScrolling" aria-controls="offcanvasScrolling">
                 <span class="navbar-toggler-icon"></span>
@@ -52,7 +52,19 @@
                 </p>
 
 
+
                 <ul class="list-unstyled ps-0">
+
+                <li class="mb-1">
+                        <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0">
+                            <a href="{{route('home')}}" class="text-decoration-none" style="{{ $currentRoute === 'usuarios' || $currentRoute === 'usuario-criar' ?  'color:grey !important;' : ' ' }}">
+                                <i class="fa-solid fa-house" style=" font-size: 25px;padding-right:5px;"></i>Home
+                            </a>
+                        </button>
+
+
+                    </li>
+
                     <li class="mb-1">
                         <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed" data-bs-toggle="collapse" data-bs-target="#maquinas-collapse" aria-expanded="false">
                             <a href="/" class="text-decoration-none">
@@ -83,13 +95,6 @@
                             </ul>
                         </div>
                     </li>
-                    <li class="mb-1">
-                        <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0">
-                            <a href="{{route('relatorio-view')}}" class="text-decoration-none" style="{{ $currentRoute === 'relatorio-view' || $currentRoute ===  'relatorio-criar' || $currentRoute === 'relatorio-exibir'  ?  'color:grey !important;' : ' ' }}">
-                                <i class="fa-solid fa-chart-pie icon-sidebar" style=" font-size: 22px;padding-right:5px;"></i>Relatórios
-                            </a>
-                        </button>
-                    </li>
 
                     <li class="mb-1">
                         <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed" data-bs-toggle="collapse" data-bs-target="#termo-collapse" aria-expanded="false">
@@ -97,11 +102,12 @@
                                 <i class="fa-solid fa-gear icon-sidebar" style=" font-size: 25px;padding-right:5px;"></i>Minhas máquinas
                             </a>
                         </button>
-                        <div class="collapse {{ $currentRoute === 'maquinas-transacoes' || $currentRoute === 'maquinas-acumulado' || $currentRoute === 'maquinas'  ? 'show' : '' }}" id="termo-collapse">
+                        <div class="collapse {{ $currentRoute === 'maquinas-transacoes' || $currentRoute === 'maquinas-acumulado' || $currentRoute === 'maquinas' || $currentRoute === 'relatorio-view' || $currentRoute ===  'relatorio-criar' || $currentRoute === 'relatorio-exibir'  ? 'show' : '' }}" id="termo-collapse">
                             <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
                                 <li><a href="{{route('maquinas')}}" class=" d-inline-flex text-decoration-none rounded" style="{{ $currentRoute === 'maquinas' ?  'color:grey !important;' : ' ' }}">Exibir Máquinas</a></li>
                                 <li><a href="{{route('maquinas-transacoes')}}" class=" d-inline-flex text-decoration-none rounded" style="{{ $currentRoute === 'maquinas-transacoes' ?  'color:grey !important;' : ' ' }}">Transações</a></li>
                                 <li><a href="{{route('maquinas-acumulado')}}" class=" d-inline-flex text-decoration-none rounded" style="{{ $currentRoute === 'maquinas-acumulado' ?  'color:grey !important;' : ' ' }}">Acumulado</a></li>
+                                <li><a href="{{route('relatorio-view')}}" class=" d-inline-flex text-decoration-none rounded" style="{{ $currentRoute === 'relatorio-view' || $currentRoute ===  'relatorio-criar' || $currentRoute === 'relatorio-exibir' ?  'color:grey !important;' : ' ' }}">Relatórios</a></li>
                             </ul>
                         </div>
                     </li>
@@ -148,7 +154,7 @@
                     <li class="mb-1">
                         <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed">
                             <a href="{{route('logout')}}" class="text-decoration-none">
-                                <i class="fa-solid fa-right-from-bracket icon-sidebar" style=" font-size: 25px;padding-right:5px;"></i>Logout
+                                <i class="fa-solid fa-right-from-bracket icon-sidebar" style=" font-size: 25px;padding-right:5px;"></i>Sair
                             </a>
                         </button>
                     </li>

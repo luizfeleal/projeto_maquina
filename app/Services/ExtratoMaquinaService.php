@@ -86,6 +86,7 @@ public static function coletarRelatorioTotalTransacoes($dados, $id_cliente = nul
 
         return $extrato_maquinas;
 }
+
 public static function coletarRelatorioTotalTransacoesTotal($dados, $id_cliente = null){
     $url = env('APP_URL_API') . "/relatorioTotalTransacoesTotal";
 
@@ -191,5 +192,37 @@ public static function coletarTotalTransacaoDasMaquinasDeUmCliente($dados){
 
         return $extrato_maquina;
     }
+
+public static function coletarSaldoTotal($id = null) {
+    if(!is_null($id)){
+        $url = env('APP_URL_API') . "/extrato/total/$id";
+    }else{
+        $url = env('APP_URL_API') . "/extrato/total/";
+    }
+    $token = AuthService::getToken();
+    $response = Http::withHeaders([
+        'Authorization' => 'Bearer ' . $token
+    ])->get($url);
+
+    $extrato_maquinas = $response->json();
+
+    return $extrato_maquinas; 
+}
+public static function coletarDevolucoes($id = null) {
+    if(!is_null($id)){
+        $url = env('APP_URL_API') . "/extrato/devolucao/$id";
+    }else{
+        $url = env('APP_URL_API') . "/extrato/devolucao/";
+    }
+    $token = AuthService::getToken();
+    $response = Http::withHeaders([
+        'Authorization' => 'Bearer ' . $token
+    ])->get($url);
+
+
+    $extrato_maquinas = $response->json();
+
+    return $extrato_maquinas; 
+}
 
 }
