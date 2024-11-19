@@ -141,7 +141,7 @@ public static function coletarPlacasDisponiveis()
             $token = AuthService::getToken();
             $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . $token
-            ])->timeout(10)->post($url);
+            ])->timeout(1)->post($url);
     
             $maquinas = $response;
     
