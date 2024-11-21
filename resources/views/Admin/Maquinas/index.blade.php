@@ -150,7 +150,6 @@
                     null,
                     null,
                     null,
-                    null,
                     { "type": "datetime-ddmmyyyy" },
                     null,
                     null

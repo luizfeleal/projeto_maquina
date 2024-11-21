@@ -133,7 +133,6 @@
                     null,
                     null,
                     null,
-                    null,
                     { "type": "datetime-ddmmyyyy" }
                 ],
             });
