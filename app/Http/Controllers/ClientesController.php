@@ -102,6 +102,7 @@ class ClientesController extends Controller
         }
 
 
+        return $cliente;
         return back()->with('error', 'Houve um erro ao tentar cadastrar o cliente com os dados prechidos!');
     }
 
