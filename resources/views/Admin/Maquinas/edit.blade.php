@@ -29,7 +29,7 @@
             </div>
             <div class="col-md-4">
                 <label for="id_placa" class="form-label">ID da placa:</label>
-                <input type="text" name="id_placa" id="id_placa" value="{{$maquinas['id_placa']}}" class="form-control input-text" placeholder="Nome da Máquina" aria-label="Nome da Máquina" disabled>
+                <input type="text" name="id_placa" id="id_placa" value="{{$maquinas['id_placa']}}" class="form-control input-text" placeholder="Id Placa" aria-label="Id Placa" disabled>
                 <div class="invalid-feedback">
                     <p class="invalid-p invalid-p-name">Campo obrigatório</p>
                 </div>
@@ -63,7 +63,7 @@
         </div>
 
                     <div style="display:flex; justify-content: center; align-items: center;  margin-top: 50px;">
-                        <button class="btn btn-primary"  data-bs-toggle="modal" data-bs-target="#ModalCenterCriar" onclick="setMaquinaNome('.modal-body', '#maquina_nome')" type="button">Criar</button>
+                        <button class="btn btn-primary"  data-bs-toggle="modal" data-bs-target="#ModalCenterCriar" onclick="setMaquinaNome('.modal-body', '#maquina_nome')" type="button">Atualizar</button>
                     </div>
                 </form>
 
@@ -73,11 +73,11 @@
                             <div class="modal-content">
 
                                 <div class="modal-header">
-                                    <h1 class="modal-title fs-5" id="ModalCenterTitleCriar">Criar</h1>
+                                    <h1 class="modal-title fs-5" id="ModalCenterTitleCriar">Atualizar</h1>
                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body">
-                                    <p>Deseja criar a Máquina ?</p>
+                                    <p>Deseja atualizar a Máquina ?</p>
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secundary" data-bs-dismiss="modal" aria-label="Close">Cancelar</button>
@@ -163,35 +163,6 @@
         });
 
 
-        $("#botao-gerar-id-placa").on('click', async function() {
-
-            showLoader();
-            var url = $("#url_web").val() + '/api/gerarIdPlaca';
-
-            // Configurações da requisição
-            const options = {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json' 
-                }
-            };
-
-            try {
-                const response = await fetch(url, options);
-                if (!response.ok) {
-                    throw new Error('Erro ao enviar a requisição: ' + response.statusText);
-                }
-
-                const result = await response.json();
-                $("#id_placa").val(result.id_placa)
-                $("#id_placa_input").val(result.id_placa)
-                $("#id_placa").removeClass('is-invalid')
-            } catch (error) {
-                console.log('deu erro:', error); // Trate qualquer erro
-            } finally {
-                hideLoader();
-            }
-        });
 
         //Eventos de validação
 
