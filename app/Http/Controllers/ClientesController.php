@@ -103,6 +103,8 @@ class ClientesController extends Controller
                 UsuariosService::criar($dadoUsuarioAcesso);
                 return back()->with('success', 'Cliente cadastrado com sucesso!');
             }
+            return $cliente;
+            return back()->with('error', 'Houve um erro ao tentar cadastrar o cliente com os dados prechidos!');
         } catch(Exception $e){
             Log::error($e);
             return back()->with('error', 'Houve um erro ao tentar cadastrar o cliente com os dados prechidos!');
