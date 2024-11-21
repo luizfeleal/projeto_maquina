@@ -115,6 +115,8 @@ class MaquinasController extends Controller
             $clientes = array_filter($clientes, function ($item) use ($idClientes) {
                 return in_array($item['id_cliente'],  $idClientes);
             });
+
+            $maquinas = $maquinas[0];
             return view('Admin.Maquinas.edit', compact('maquinas', 'locais', 'clientes', 'possuiMaquinaCartaoAssociada', 'possuiQrCode', 'localCliente'));
         } else {
             return back()->with('error', 'Máquina não encontrada');
