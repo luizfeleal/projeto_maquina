@@ -13,7 +13,7 @@
                 <input type="hidden" id="input_local_cliente" value="{{json_encode($localCliente)}}">
                 <input type="hidden" id="url_web" value="{{env('APP_URL')}}">
 
-                <form action="{{route('maquinas-atualizar')}}" method="POST" id="nova-maquina" class="w-100 needs-validation" novalidate>
+                <form action="{{route('maquinas-atualizar')}}" method="POST" id="atualizar-maquina" class="w-100 needs-validation" novalidate>
                     @csrf
 
                     <input type="hidden" name="id_placa" id="placa_hidden" value="{{$maquinas['id_placa']}}">
@@ -82,7 +82,7 @@
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secundary" data-bs-dismiss="modal" aria-label="Close">Cancelar</button>
-                                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" aria-label="Close" onclick="sendFormCriar('nova-maquina')">Sim</button>
+                                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" aria-label="Close" onclick="sendFormCriar('atualizar-maquina')">Sim</button>
                                 </div>
                             </div>
                         </div>
