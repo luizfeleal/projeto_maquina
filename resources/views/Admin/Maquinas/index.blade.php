@@ -14,7 +14,6 @@
                     <table id="tabela_maquinas" class="display nowrap table-striped" style="width:100%">
                         <thead>
                             <tr>
-                                <th>Local</th>
                                 <th>Máquina</th>
                                 <th>Status</th>
                                 <th>Última transação</th>
@@ -30,7 +29,7 @@
     
                             @foreach($resultado as $extrato)
                                 <tr>
-                                    <td>{{$extrato['local_nome']}}</td>
+                                    <!--<td>{{$extrato['local_nome']}}</td>-->
                                     <td>{{$extrato['maquina_nome']}}</td>
                                     @if($extrato['maquina_status'] == 0) 
                                             <td><i class="fa-solid fa-circle text-danger" ></i></td>
@@ -53,7 +52,6 @@
                         </tbody>
                         <tfoot>
                             <tr>
-                                <th>Local</th>
                                 <th>Máquina</th>
                                 <th>Status</th>
                                 <th>Última transação</th>

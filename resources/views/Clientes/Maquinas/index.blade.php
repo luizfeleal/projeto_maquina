@@ -13,7 +13,6 @@
                 <table id="tabela_maquinas" class="table table-striped" style="width:100%">
                     <thead>
                         <tr>
-                            <th>Local</th>
                             <th>Máquina</th>
                             <th>Última transação</th>
                             <th>Fonte</th>
@@ -26,7 +25,7 @@
 
                         @foreach($resultado as $extrato)
                             <tr>
-                                <td>{{$extrato['local_nome']}}</td>
+                                <!--<td>{{$extrato['local_nome']}}</td>-->
                                 <td>{{$extrato['maquina_nome']}}</td>
                                 @if($extrato['extrato_operacao'] == "C")
                                     <td>+ R$ {{number_format($extrato['extrato_operacao_valor'], 2, ',', '.')}}</td>
@@ -42,7 +41,6 @@
                     </tbody>
                     <tfoot>
                         <tr>
-                            <th>Local</th>
                             <th>Máquina</th>
                             <th>Última transação</th>
                             <th>Fonte</th>
