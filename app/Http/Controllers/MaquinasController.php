@@ -360,6 +360,7 @@ class MaquinasController extends Controller
 
             $result = MaquinasService::atualizar($dados, $id_maquina);
 
+            return $result;
             return back()->with('success', $result['message']);
         //} catch (\Throwable $e) {
             return back()->with('error', 'Houve um erro ao tentar atualizar a máquina');
