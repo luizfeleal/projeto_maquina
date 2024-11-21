@@ -95,7 +95,7 @@
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secundary" data-bs-dismiss="modal" aria-label="Close">Cancelar</button>
-                                    <button type="submit" class="btn btn-primary" data-bs-dismiss="modal" aria-label="Close" onclick="sendFormCriar('nova-maquina')">Sim</button>
+                                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" aria-label="Close" onclick="sendFormCriar('nova-maquina')">Sim</button>
                                 </div>
                             </div>
                         </div>
