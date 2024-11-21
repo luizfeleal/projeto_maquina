@@ -71,7 +71,7 @@ class MaquinasController extends Controller
     public function editarMaquinas(Request $request)
     {
 
-        if ($request->has('id')) {
+        if ($request->has('id_maquina')) {
             $id_maquina = $request->id;
             $maquinas = MaquinasService::coletar($id_maquina);
             $id_local = $maquinas['id_local'];
