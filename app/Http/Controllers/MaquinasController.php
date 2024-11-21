@@ -103,19 +103,19 @@ class MaquinasController extends Controller
                 $possuiQrCode = true;
             }
 
-            $clienteLocalFiltrado = array_filter($clienteLocal, function ($item) use ($id_local) {
+            $localCliente = array_filter($clienteLocal, function ($item) use ($id_local) {
                 return $item['id_local'] == $id_local;
             });
 
             // Extraindo apenas os valores de "id_cliente"
             $idClientes = array_map(function ($item) {
                 return $item['id_cliente'];
-            }, $clienteLocalFiltrado);
+            }, $localCliente);
 
             $clientes = array_filter($clientes, function ($item) use ($idClientes) {
                 return in_array($item['id_cliente'],  $idClientes);
             });
-            return view('Admin.Maquinas.edit', compact('maquinas', 'locais', 'clientes', 'possuiMaquinaCartaoAssociada', 'possuiQrCode', 'clienteLocal'));
+            return view('Admin.Maquinas.edit', compact('maquinas', 'locais', 'clientes', 'possuiMaquinaCartaoAssociada', 'possuiQrCode', 'localCliente'));
         } else {
             return back()->with('error', 'Máquina não encontrada');
         }
