@@ -25,6 +25,7 @@ Route::prefix('home')->middleware('permission')->group(function(){
 Route::prefix('maquinas')->middleware('permission')->group(function(){
     Route::get('/', 'App\Http\Controllers\MaquinasController@coletarTodasAsMaquinas')->name('maquinas');
     Route::get('/criar', 'App\Http\Controllers\MaquinasController@criarMaquinas')->name('maquinas-criar');
+    Route::get('/editar', 'App\Http\Controllers\MaquinasController@editarMaquinas')->name('maquinas-editar');
     Route::get('/visualizar', 'App\Http\Controllers\MaquinasController@coletarMaquinaPorId')->name('maquinas-visualizar');
     Route::get('/registrar', 'App\Http\Controllers\MaquinasController@registrarMaquinas')->name('maquinas-registrar');
     Route::get('/gerarIdPlaca', 'App\Http\Controllers\MaquinasController@gerarIdPlaca')->name('maquinas-gerar-id-placa');

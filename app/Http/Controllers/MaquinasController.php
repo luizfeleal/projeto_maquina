@@ -68,7 +68,7 @@ class MaquinasController extends Controller
         }
     }
 
-    public function editarMaquina(Request $request)
+    public function editarMaquinas(Request $request)
     {
 
         if ($request->has('id')) {
