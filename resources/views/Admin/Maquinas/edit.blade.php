@@ -16,7 +16,8 @@
                 <form action="{{route('maquinas-atualizar')}}" method="POST" id="nova-maquina" class="w-100 needs-validation" novalidate>
                     @csrf
 
-                    <input type="hidden" name="id_placa_input" id="id_placa_input" value="">
+                    <input type="hidden" name="id_placa_input" id="id_placa" value="{{$maquinas['id_placa']}}">
+                    <input type="hidden" name="ativo" id="ativo" value="{{$maquinas['status']}}">
 
                     <div class="row" style="display: flex; flex-direction: row; justify-content: center;width: 100%; margin-top: 100px;">
             <div class="col-md-4">
