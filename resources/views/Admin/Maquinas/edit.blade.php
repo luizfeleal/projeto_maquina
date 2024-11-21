@@ -28,8 +28,8 @@
 
             </div>
             <div class="col-md-4">
-                <label for="id_placa" class="form-label">ID da placa:</label>
-                <input type="text" name="id_placa" id="id_placa" value="{{$maquinas['id_placa']}}" class="form-control input-text" placeholder="Id Placa" aria-label="Id Placa" disabled>
+                <label for="placa" class="form-label">ID da placa:</label>
+                <input type="email" name="placa" id="placa" value="{{$maquinas['id_placa']}}" class="form-control input-text" placeholder="Placa" aria-label="Placa" disabled>
                 <div class="invalid-feedback">
                     <p class="invalid-p invalid-p-name">Campo obrigatório</p>
                 </div>
