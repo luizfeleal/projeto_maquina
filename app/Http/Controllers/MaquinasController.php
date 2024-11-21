@@ -74,7 +74,7 @@ class MaquinasController extends Controller
         if ($request->has('id_maquina')) {
             $id_maquina = $request->id;
             $maquinas = MaquinasService::coletar($id_maquina);
-            $id_local = $maquinas['id_local'];
+            $id_local = $maquinas[0]['id_local'];
             $locais = LocaisService::coletar($id_local);
             $clienteLocal = ClienteLocalService::coletar();
             $clientes = ClientesService::coletar();
