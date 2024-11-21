@@ -68,6 +68,59 @@ class MaquinasController extends Controller
         }
     }
 
+    public function editarMaquina(Request $request)
+    {
+
+        if ($request->has('id')) {
+            $id_maquina = $request->id;
+            $maquinas = MaquinasService::coletar($id_maquina);
+            $id_local = $maquinas['id_local'];
+            $locais = LocaisService::coletar($id_local);
+            $clienteLocal = ClienteLocalService::coletar();
+            $clientes = ClientesService::coletar();
+
+            $maquinaCartao = MaquinasCartaoService::coletar();
+
+            $maquinaCartaoAssociada = array_filter($maquinaCartao, function($item) use($id_maquina){
+                return $id_maquina == $item['id_maquina'] && $item['status'] == 1;
+            });
+
+            if(empty($maquinaCartaoAssociada)){
+                $possuiMaquinaCartaoAssociada = false;
+            }else{
+                $possuiMaquinaCartaoAssociada = true;
+            }
+
+            $qr = QrCodeService::coletar();
+
+            $qrMaquina = array_filter($qr, function($item) use($id_maquina) {
+                return $item['ativo'] == 1 && $item['id_maquina'] == $id_maquina;
+            });
+
+            if(empty($qrMaquina)){
+                $possuiQrCode = false;
+            }else{
+                $possuiQrCode = true;
+            }
+
+            $clienteLocalFiltrado = array_filter($clienteLocal, function ($item) use ($id_local) {
+                return $item['id_local'] == $id_local;
+            });
+
+            // Extraindo apenas os valores de "id_cliente"
+            $idClientes = array_map(function ($item) {
+                return $item['id_cliente'];
+            }, $clienteLocalFiltrado);
+
+            $clientes = array_filter($clientes, function ($item) use ($idClientes) {
+                return in_array($item['id_cliente'],  $idClientes);
+            });
+            return view('Admin.Maquinas.edit', compact('maquinas', 'locais', 'clientes', 'possuiMaquinaCartaoAssociada', 'possuiQrCode'));
+        } else {
+            return back()->with('error', 'Máquina não encontrada');
+        }
+    }
+
     public function criarMaquinas(Request $request)
     {
         $locais = LocaisService::coletar();
@@ -210,9 +263,15 @@ class MaquinasController extends Controller
     }
     public function viewLiberarJogada(Request $request)
     {
+
+        if($request->has('id_maquina')){
+            $id_maquina = $request->id_maquina;
+        }else{
+            $id_maquina = null;
+        }
         $maquinas = MaquinasService::coletar();
 
-        return view('Admin.Jogadas.create', compact("maquinas"));
+        return view('Admin.Jogadas.create', compact("maquinas", "id_maquina"));
     }
 
     public function viewMaquinasCartao()

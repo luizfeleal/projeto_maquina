@@ -64,6 +64,7 @@
                         <th>Máquina</th>
                         <th>QR Code</th>
                         <th>Liberar Jogada</th>
+                        <th>Editar</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -72,8 +73,9 @@
                     <tr>
                         <td>{{$maquina['id_placa']}}</td>
                         <td>{{$maquina['maquina_nome']}}</td>
-                        <td style="text-align: center;"><a href="/qr"><i class="fa-solid fa-qrcode icon-sidebar"></i></a></td>
-                        <td style="text-align: center;"><a href="/maquinas/liberarJogada" ><i class="fa-solid fa-play icon-sidebar"></i></a></td>
+                        <td style="text-align: center;"><a href="/qr?id_local={{$maquina['id_local']}}&id_maquina={{$maquina['id_maquina']}}"><i class="fa-solid fa-qrcode icon-sidebar"></i></a></td>
+                        <td style="text-align: center;"><a href="/maquinas/liberarJogada?id_maquina={{$id_maquina}}" ><i class="fa-solid fa-play icon-sidebar"></i></a></td>
+                        <td style="text-align: center;"><a href="/maquinas/editar?id_maquina={{$maquina['id_maquina']}}"><i class="fa-solid fa-pen"></i></a></td>
                     </tr>
                     @endforeach
 
@@ -84,6 +86,7 @@
                         <th>Máquina</th>
                         <th>QR Code</th>
                         <th>Liberar Jogada</th>
+                        <th>Editar</th>
                     </tr>
                 </tfoot>
             </table>
@@ -148,6 +151,7 @@
                 "url": "https://cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json"
             },
             "columns": [
+                null,
                 null,
                 null,
                 null,
