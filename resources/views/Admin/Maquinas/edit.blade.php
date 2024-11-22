@@ -18,6 +18,7 @@
 
                     <input type="hidden" name="id_placa" id="placa_hidden" value="{{$maquinas['id_placa']}}">
                     <input type="hidden" name="maquina_status" id="maquina_status" value="{{$maquinas['maquina_status']}}">
+                    <input type="hidden" name="id_maquina" id="id_maquina" value="{{$maquinas['id_maquina']}}">
 
                     <div class="row" style="display: flex; flex-direction: row; justify-content: center;width: 100%; margin-top: 100px;">
             <div class="col-md-4">
