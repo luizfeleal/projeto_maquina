@@ -91,8 +91,10 @@ class MaquinasService
     public static function atualizar($dados, $id)
     {
 
-        $url = env('APP_URL_API') . "/maquinas/atualizar/$id";
+        $url = env('APP_URL_API') . "/maquinas/atualizar";
         $token = AuthService::getToken();
+
+        $dados['id_maquina'] = $id;
     
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
