@@ -95,7 +95,7 @@ class MaquinasService
         $token = AuthService::getToken();
         $response = Http::withHeaders([
             'Authorization' => 'Bearer ' . $token
-        ])->post($url, $dados);
+        ])->put($url, $dados);
 
         $maquina = $response->json();
 
