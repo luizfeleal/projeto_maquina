@@ -64,12 +64,12 @@
         </div>
 
                     <div style="display:flex; justify-content: center; align-items: center;  margin-top: 50px;">
-                        <button class="btn btn-primary"  data-bs-toggle="modal" data-bs-target="#ModalCenterCriar" onclick="setMaquinaNome('.modal-body', '#maquina_nome')" type="button">Atualizar</button>
+                        <button class="btn btn-primary" type="submit">Atualizar</button>
                     </div>
                 </form>
 
                 
-                    <div class="modal fade" id="ModalCenterCriar" tabindex="-1" aria-labelledby="ModalCenterCriar" aria-modal="true" role="dialog">
+                    <!--<div class="modal fade" id="ModalCenterCriar" tabindex="-1" aria-labelledby="ModalCenterCriar" aria-modal="true" role="dialog">
                         <div class="modal-dialog modal-dialog-centered">
                             <div class="modal-content">
 
@@ -86,7 +86,7 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div>-->
                             @if(session('success'))
 
                                 <div class="modal fade show" id="modalSuccess" tabindex="-1" aria-labelledby="exampleModalCenterTitle" aria-modal="true" role="dialog" style="display: block;">
