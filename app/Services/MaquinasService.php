@@ -90,12 +90,12 @@ class MaquinasService
 
     public static function atualizar($dados, $id)
     {
-        $url = env('APP_URL_API') . "/maquinas/$id";
+        $url = env('APP_URL_API') . "/maquinas/atualizar/$id";
 
         $token = AuthService::getToken();
         $response = Http::withHeaders([
             'Authorization' => 'Bearer ' . $token
-        ])->put($url, $dados);
+        ])->post($url, $dados);
 
         $maquina = $response->json();
 
