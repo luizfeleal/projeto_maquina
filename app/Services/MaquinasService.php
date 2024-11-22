@@ -90,7 +90,7 @@ class MaquinasService
 
     public static function atualizar($dados, $id)
     {
-        $url = env('APP_URL_API') . "/maquinas/27"; // Usando o ID dinâmico
+        $url = env('APP_URL_API') . "/maquinas/$id"; // Usando o ID dinâmico
         $token = AuthService::getToken();
         
         $ch = curl_init($url);
