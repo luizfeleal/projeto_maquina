@@ -94,9 +94,7 @@ class MaquinasService
         $url = env('APP_URL_API') . "/maquinas/27";
         $token = AuthService::getToken();
 
-        $dados['id_maquina'] = $id;
-
-        $dados = json_encode($dados);
+        
     
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
