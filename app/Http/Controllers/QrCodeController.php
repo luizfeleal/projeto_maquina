@@ -59,9 +59,6 @@ class QrCodeController extends Controller
         });
 
         // Passo 2: Filtrar as máquinas que não têm o 'id_maquina' presente no array de QR codes
-        $locais = array_filter($locais, function($local) use ($qrCodeIdsLocais) {
-            return !in_array($local['id_local'], $qrCodeIdsLocais);
-        });
 
 
         $qrCodeFiltrado = array_filter($qrCode, function($qrCode){
