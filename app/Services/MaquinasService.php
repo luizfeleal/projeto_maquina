@@ -90,7 +90,7 @@ class MaquinasService
 
     public static function atualizar($dados, $id)
     {
-        $url = env('APP_URL_API') . "/maquinas/atualizar/$id";
+        $url = env('APP_URL_API') . "/maquinas/atualizar?id=$id";
 
         $token = AuthService::getToken();
         $response = Http::withHeaders([
