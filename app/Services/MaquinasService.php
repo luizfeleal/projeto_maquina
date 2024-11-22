@@ -90,7 +90,6 @@ class MaquinasService
 
     public static function atualizar($dados, $id)
     {
-        return $id;
         $url = env('APP_URL_API') . "/maquinas/$id"; // Usando o ID dinâmico
         $token = AuthService::getToken();
         
