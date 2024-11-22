@@ -91,11 +91,11 @@ class MaquinasService
     public static function atualizar($dados, $id)
     {
 
-        $url = env('APP_URL_API') . "/maquinas/$id";
+        $url = env('APP_URL_API') . "/maquinas/atualizar/$id";
         $token = AuthService::getToken();
     
         $ch = curl_init($url);
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true); // Seguir redirecionamentos
         curl_setopt($ch, CURLOPT_POSTFIELDS, $dados);
