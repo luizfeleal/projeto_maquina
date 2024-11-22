@@ -90,27 +90,24 @@ class MaquinasService
 
     public static function atualizar($dados, $id)
     {
-
-        $url = env('APP_URL_API') . "/maquinas/27";
+        $url = env('APP_URL_API') . "/maquinas/$id"; // Usando o ID dinâmico
         $token = AuthService::getToken();
-
-        $dados = json_encode($dados);
-    
+        
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true); // Seguir redirecionamentos
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $dados);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($dados)); // Codificar os dados aqui
         curl_setopt($ch, CURLOPT_HTTPHEADER, [
             'Authorization: Bearer ' . $token,
             'Accept: application/json',
+            'Content-Type: application/json',
         ]);
     
         $response = curl_exec($ch);
         $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         $error = curl_error($ch);
         curl_close($ch);
-
     
         if ($status == 200 && $response !== false) {
             return json_decode($response, true);
@@ -123,6 +120,7 @@ class MaquinasService
             ], $status);
         }
     }
+    
 
     public static function deletar($id)
     {
