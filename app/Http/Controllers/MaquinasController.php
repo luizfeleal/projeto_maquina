@@ -337,6 +337,7 @@ class MaquinasController extends Controller
 
     public function atualizarMaquina(Request $request)
     {
+        return 'cheguei';
         //try {
             $dados = $request->all();
             $dados_maquina =  $request->except('_token', 'id_maquina');
