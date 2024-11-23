@@ -348,6 +348,8 @@ class MaquinasController extends Controller
                 }else{
                     $dados_maquina['bloqueio_jogada_efi'] = 0;
                 }
+            }else{
+                $dados_maquina['bloqueio_jogada_efi'] = 0;
             }
             
             if (array_key_exists('bloqueio_jogada_pagbank', $dados)) {
@@ -356,6 +358,8 @@ class MaquinasController extends Controller
                 }else{
                     $dados_maquina['bloqueio_jogada_pagbank'] = 0;
                 }
+            }else{
+                $dados_maquina['bloqueio_jogada_pagbank'] = 0;
             }
 
             $result = MaquinasService::atualizar($dados_maquina, $id_maquina);
