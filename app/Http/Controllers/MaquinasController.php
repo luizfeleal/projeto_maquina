@@ -360,6 +360,7 @@ class MaquinasController extends Controller
 
             $result = MaquinasService::atualizar($dados_maquina, $id_maquina);
 
+            return $result;
             
             return back()->with('success', $result['message']);
         } catch (\Throwable $e) {
