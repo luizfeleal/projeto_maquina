@@ -96,7 +96,7 @@
         </div>
 
         <h5>Permissões:</h5>
-        <form action="{{route('maquinas-atualizar')}}" id="atualizar-permissao" style="width: 100%;">
+        <form action="{{route('maquinas-atualizar')}}" method="POST" id="atualizar-permissao" style="width: 100%;">
             <div class="row" style="display: flex; flex-direction: row; justify-content: center;width: 100%; margin-bottom: 20px;">
                 <div class="col-md-8">
                     <div class="form-check form-switch">
