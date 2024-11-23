@@ -337,7 +337,7 @@ class MaquinasController extends Controller
 
     public function atualizarMaquina(Request $request)
     {
-        try {
+        //try {
             $dados = $request->all();
             $dados_maquina =  $request->except('_token', 'id_maquina');
             $id_maquina = $request['id_maquina'];
@@ -363,9 +363,9 @@ class MaquinasController extends Controller
             return $result;
             
             return back()->with('success', $result['message']);
-        } catch (\Throwable $e) {
-            return back()->with('error', 'Houve um erro ao tentar atualizar a máquina');
-        }
+        //} catch (\Throwable $e) {
+          //  return back()->with('error', 'Houve um erro ao tentar atualizar a máquina');
+        //}
     }
 
     public function inativarMaquinasCartao(Request $request)
