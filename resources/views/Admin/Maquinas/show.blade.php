@@ -121,7 +121,7 @@
                         @else
                         <input class="form-check-input" name="bloqueio_jogada_pagbank" type="checkbox" role="switch" id="checkboxPagbank">
                         @endif
-                        <label class="form-check-label" for="flexSwitchCheckDefault">Bloquear jogada Máquininiha</label>
+                        <label class="form-check-label" for="flexSwitchCheckDefault">Bloquear jogada Máquininha</label>
                     </div>
                 </div>
             </div>
