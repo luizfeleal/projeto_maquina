@@ -97,6 +97,7 @@
 
         <h5>Permissões:</h5>
         <form action="{{route('maquinas-atualizar')}}" method="POST" id="atualizar-permissao" style="width: 100%;">
+            <input type="hidden" name="id_maquina" id="id_maquina" value="$maquinas['id_maquina']">
             <div class="row" style="display: flex; flex-direction: row; justify-content: center;width: 100%; margin-bottom: 20px;">
                 <div class="col-md-8">
                     <div class="form-check form-switch">
