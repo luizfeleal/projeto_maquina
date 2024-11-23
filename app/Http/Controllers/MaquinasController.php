@@ -358,6 +358,8 @@ class MaquinasController extends Controller
                 }
             }
 
+            return $dados_maquina;
+
             $result = MaquinasService::atualizar($dados_maquina, $id_maquina);
 
             
