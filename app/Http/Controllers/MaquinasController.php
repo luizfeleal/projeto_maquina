@@ -357,7 +357,6 @@ class MaquinasController extends Controller
                     $dados_maquina['bloqueio_jogada_pagbank'] = 0;
                 }
             }
-            return $id_maquina;
 
             $result = MaquinasService::atualizar($dados_maquina, $id_maquina);
             
