@@ -126,7 +126,7 @@
             </div>
 
             <div style="display:flex; justify-content: center; align-items: center;  margin-top: 50px;">
-                <button class="btn btn-primary" type="button">Salvar permissões</button>
+                <button class="btn btn-primary" type="submit">Salvar permissões</button>
             </div>
 
         </form>
