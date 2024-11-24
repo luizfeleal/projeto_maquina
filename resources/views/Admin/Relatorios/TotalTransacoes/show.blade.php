@@ -150,7 +150,6 @@
         "serverSide": true,
         "scrollX": true,
         "sort": true,
-        "order": [[4, 'desc']],
         "ajax": {
             "url": "{{ route('relatorio-criar') }}",
             "type": "POST",
