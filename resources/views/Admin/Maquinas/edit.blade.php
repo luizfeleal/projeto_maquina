@@ -5,7 +5,7 @@
         <div id="maquinas" class="maquina div-center-column w-100"
                 style="padding-top: 99px;">
 
-                <h1  style="padding-top: 80px; text-align: center;">Máquinas -> criar máquinas</h1>
+                <h1  style="padding-top: 80px; text-align: center;">Máquinas -> Editar máquina</h1>
             <div class="container section container-platform div-center-column"
                 style="margin-top: 15px; height: 100%;">
                 <input type="hidden" id="input_locais" value="{{json_encode($locais)}}">
