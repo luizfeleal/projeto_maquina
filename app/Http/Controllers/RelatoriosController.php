@@ -79,7 +79,6 @@ class RelatoriosController extends Controller
         }
 
         if($nomeRelatorio == "totalTransacoes"){
-            $ids_cliente = $request['id_cliente'];
 
             $resultado = ExtratoMaquinaService::coletarRelatorioTotalTransacoes($request->all());
             
@@ -103,24 +102,6 @@ class RelatoriosController extends Controller
                     $totalTransacoes = $totalTransacoes - $estorno;
 
                     $bodyReq = $request->all();
-
-                    return $resultado;
-                    $dado = $resultado['data'];
-
-                    if($ids_cliente){
-                        $clientes = ClientesService::coletar();
-
-                        $clientes = array_filter($clientes, function($item) use($ids_cliente){
-                            return in_array($item['id_cliente'], $ids_cliente);
-                        });
-                        if(!empty($clientes)){
-                            return $dado;
-                            $dado = array_filter($dado, function($item) use($clientes){
-                                return $item['cliente_nome'] == $clientes[0]['cliente_nome'];
-                            });
-                        }
-                        return $dado;
-                    }
             if ($request->ajax()) {
 
                 return response()->json($resultado);
