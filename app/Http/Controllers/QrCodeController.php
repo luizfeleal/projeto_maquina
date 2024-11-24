@@ -34,7 +34,15 @@ class QrCodeController extends Controller
                 $maquinas = MaquinasService::coletar();
                 $clientes = ClientesService::coletar();
                 
-                return view('Admin.QR.index', compact('locais', 'clientes', 'maquinas'))->with(['imageQr'=>$qrCode[0]['qr_image'], 'dadosQr' => $qrCode[0], 'maquina' => $maquina, 'local' => $local]);
+                return view('Admin.QR.index', [
+                    'locais' => $locais,
+                    'clientes' => $clientes,
+                    'maquinas' => $maquinas,
+                    'imageQr' => $qrCode[0]['qr_image'] ?? null,
+                    'dadosQr' => $qrCode[0] ?? null,
+                    'maquina' => $maquina,
+                    'local' => $local
+                ]);
             }else{
                 return back()->with(['imageQr'=>$qrCode[0]['qr_image'], 'dadosQr' => $qrCode[0], 'maquina' => $maquina, 'local' => $local]);
             }
