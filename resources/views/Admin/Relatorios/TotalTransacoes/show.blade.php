@@ -175,12 +175,14 @@
             },
             {
                 "data": "data_criacao",
+                "type": "date", // Define o tipo como data
                 "render": function(data) {
                     var date = new Date(data);
                     return !isNaN(date) ? date.toLocaleString('pt-BR') : '';
                 }
             }
         ],
+        "order": [[4, 'desc']], // Ordena a coluna 4 (data_criacao) do mais recente para o mais antigo
         "drawCallback": function(settings) {
             var api = this.api();
 
