@@ -202,7 +202,9 @@ class RelatoriosController extends Controller
         // Criação do Spreadsheet e do cabeçalho
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
-        $cabecalho = array_keys((array) $data[0]);
+
+        // Transformar os nomes das colunas em maiúsculas
+        $cabecalho = array_map('strtoupper', array_keys((array) $data[0]));
 
         // Escrever o cabeçalho no arquivo
         $sheet->fromArray($cabecalho, NULL, 'A1');
