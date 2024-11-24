@@ -20,7 +20,7 @@
                     <table id="total_transacoes" class="table table-striped table-responsive" style="width:100%">
                         <thead>
                             <tr>
-                                <th>Local</th>
+                                <!--<th>Local</th>-->
                                 <th>Maquina</th>
                                 <th>Tipo Transação</th>
                                 <th>Valor</th>
@@ -32,7 +32,7 @@
                         </tbody>
                         <tfoot>
                             <tr>
-                                <th>Local</th>
+                                <!--<th>Local</th>-->
                                 <th>Maquina</th>
                                 <th>Tipo Transação</th>
                                 <th>Valor</th>
@@ -161,7 +161,7 @@
             }
         },
         "columns": [
-            { "data": "local_nome" },
+            //{ "data": "local_nome" },
             { "data": "maquina_nome" },
             { "data": "extrato_operacao_tipo" },
             {
