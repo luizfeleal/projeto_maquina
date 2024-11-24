@@ -135,6 +135,13 @@
 <script>
    
    $(document).ready(function() {
+    $.fn.dataTable.ext.type.order['datetime-ddmmyyyy-pre'] = function(d) {
+                    if (d === 'Data não disponível') {
+                        return 0;
+                    }
+                    var parts = d.split('/');
+                    return new Date(parts[2], parts[1] - 1, parts[0]).getTime();
+                };
     var table = $('#total_transacoes').DataTable({
         "language": {
             "url": "https://cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json"
@@ -176,10 +183,7 @@
             },
             {
                 "data": "data_criacao",
-                "render": function(data) {
-                    var date = new Date(data);
-                    return !isNaN(date) ? date.toLocaleString('pt-BR') : '';
-                }
+                "type": "datetime-ddmmyyyy",
             }
         ],
         "drawCallback": function(settings) {
