@@ -167,6 +167,7 @@
             { "data": "extrato_operacao_tipo" },
             {
                 "data": "extrato_operacao_valor",
+                "orderable": true,
                 "render": function(data, type, row) {
                     if (data === null) {
                         return ''; // Retorna uma string vazia se o dado for nulo
