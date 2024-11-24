@@ -20,6 +20,7 @@ class QrCodeController extends Controller
 
         if($request->has('id_local') && $request->has('id_maquina')){
 
+            return 'cheguei aqui';
             $qrCode = QrCodeService::coletarComFiltro(['id_local' => $request['id_local'], 'id_maquina' => $request['id_maquina']], 'where');
             $maquina = MaquinasService::coletar($request['id_maquina']);
             $local = LocaisService::coletar($request['id_local']);
