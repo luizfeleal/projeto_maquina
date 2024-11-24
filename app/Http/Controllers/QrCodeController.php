@@ -18,10 +18,9 @@ class QrCodeController extends Controller
 {
     public function coletarQr(Request $request){
 
-        if($request->has('id_local') && $request->has('id_maquina')){
+        if($request->has('id_local') && $request->has('id_maquina') ){
 
             $qrCode = QrCodeService::coletarComFiltro(['id_local' => $request['id_local'], 'id_maquina' => $request['id_maquina']], 'where');
-            return $qrCode;
             $maquina = MaquinasService::coletar($request['id_maquina']);
             $local = LocaisService::coletar($request['id_local']);
 
@@ -30,7 +29,11 @@ class QrCodeController extends Controller
             }
 
             
-            return back()->with(['imageQr'=>$qrCode[0]['qr_image'], 'dadosQr' => $qrCode[0], 'maquina' => $maquina, 'local' => $local]);
+            if($request->has('abrir')){
+                return view('Admin.QR.index')->with(['imageQr'=>$qrCode[0]['qr_image'], 'dadosQr' => $qrCode[0], 'maquina' => $maquina, 'local' => $local]);
+            }else{
+                return back()->with(['imageQr'=>$qrCode[0]['qr_image'], 'dadosQr' => $qrCode[0], 'maquina' => $maquina, 'local' => $local]);
+            }
         }else{
             //return back()->with('error', 'Máquina não encontrada');
             $locais = LocaisService::coletar();
