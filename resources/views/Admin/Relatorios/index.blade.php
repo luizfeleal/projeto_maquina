@@ -68,7 +68,7 @@
 
                                 </div>
                                 <div class="row" style="display: flex; flex-direction: row; justify-content: center; margin-bottom: 20px; width: 100%;">
-                                    <div class="col-md-4">
+                                    <!--<div class="col-md-4">
                                         <label for="id_local" class="form-label">Local:</label>
                                         <select class="select-local-transacoes js-example-basic-multiple js-states form-control" id="id_local" placeholder="Selecione" name="id_local[]" multiple="multiple" >
 
@@ -80,8 +80,8 @@
                                             <p class="invalid-p invalid-p-name">Campo obrigatório</p>
                                         </div>
 
-                                    </div>
-                                    <div class="col-md-4">
+                                    </div>-->
+                                    <div class="col-md-8">
                                         <label for="tipo_transacao" class="form-label">Tipo:</label>
                                         <select class="form-select" name="tipo_transacao" id="tipo_transacao" aria-label="Default select example">
                                             <option value="" selected>Escolher...</option>
