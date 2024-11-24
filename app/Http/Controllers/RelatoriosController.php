@@ -113,6 +113,7 @@ class RelatoriosController extends Controller
                             return in_array($item['id_cliente'], $ids_cliente);
                         });
                         if(!empty($clientes)){
+                            return $dado;
                             $dado = array_filter($dado, function($item) use($clientes){
                                 return $item['cliente_nome'] == $clientes[0]['cliente_nome'];
                             });
