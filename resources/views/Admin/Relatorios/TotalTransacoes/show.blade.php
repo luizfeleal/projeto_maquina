@@ -175,16 +175,18 @@
             },
             {
                 "data": "data_criacao",
-                
-                "type": "date",
-                "orderDataType": "dom-text",  // Garante que a data será ordenada corretamente
+                "render": function(data) {
+                    var date = new Date(data);
+                    return !isNaN(date) ? date.toLocaleString('pt-BR') : '';
+                }
             }
         ],
-        "order": [[4, 'desc']], // Ordena pela coluna de data_criacao
-        "orderCellsTop": true,
-        "ordering": true,
         "drawCallback": function(settings) {
             var api = this.api();
+
+            // Atualizar valores no DOM
+
+            // Habilitar ou desabilitar botão CSV com base na tabela
             $('#btn-baixar-csv').prop('disabled', api.data().length === 0);
         }
     });
