@@ -182,7 +182,9 @@
                 }
             }
         ],
-        "order": [[4, 'desc']], // Ordena a coluna 4 (data_criacao) do mais recente para o mais antigo
+        "order": [[4, 'desc']], // Ordena pela quinta coluna (índice 4) em ordem decrescente
+        "orderCellsTop": true, // Garante que a ordenação definida seja aplicada
+        "ordering": true, // Habilita a ordenação
         "drawCallback": function(settings) {
             var api = this.api();
 
