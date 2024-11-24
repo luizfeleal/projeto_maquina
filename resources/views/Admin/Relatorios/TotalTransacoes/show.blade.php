@@ -177,9 +177,16 @@
                 "data": "data_criacao",
                 "render": function(data) {
                     var date = new Date(data);
+                    // Formata a data para exibição no formato pt-BR
                     return !isNaN(date) ? date.toLocaleString('pt-BR') : '';
                 },
-                "type": "br-datetime" // Define o tipo de ordenação personalizado
+                "type": "date",
+                "orderDataType": "dom-text",  // Garante que a data será ordenada corretamente
+                "render": function(data) {
+                    var date = new Date(data);
+                    // Retorna a data no formato ISO para ordenação correta
+                    return !isNaN(date) ? date.toISOString() : ''; // Formato ISO para ordenação
+                }
             }
         ],
         "order": [[4, 'desc']], // Ordena pela coluna de data_criacao
@@ -187,8 +194,6 @@
         "ordering": true,
         "drawCallback": function(settings) {
             var api = this.api();
-
-            // Atualizar valores no DOM
             $('#btn-baixar-csv').prop('disabled', api.data().length === 0);
         }
     });
