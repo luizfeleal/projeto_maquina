@@ -104,6 +104,7 @@ class RelatoriosController extends Controller
 
                     $bodyReq = $request->all();
 
+                    return $resultado;
                     $dado = $resultado['data'];
 
                     if($ids_cliente){
