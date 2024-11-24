@@ -175,7 +175,7 @@
             },
             {
                 "data": "data_criacao",
-                "type": "date", // Define o tipo como data
+                "type": "datetime", // Define o tipo como data
                 "render": function(data) {
                     var date = new Date(data);
                     return !isNaN(date) ? date.toLocaleString('pt-BR') : '';
