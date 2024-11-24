@@ -101,7 +101,6 @@ class RelatoriosController extends Controller
             $totalTransacoes = $totalTransacoes - $estorno;
 
             $bodyReq = $request->all();
-            return $bodyReq;
             if ($request->ajax()) {
 
                 return response()->json($resultado);
