@@ -234,7 +234,7 @@ class RelatoriosController extends Controller
 
         // Aumentar a fonte para 12 em cada linha de dados
         $rowStyle = $sheet->getStyle('A' . $rowNum . ':' . $sheet->getHighestColumn() . $rowNum);
-        $rowStyle->getFont()->setSize(14);
+        $rowStyle->getFont()->setSize(13);
 
         $rowNum++;
     }
