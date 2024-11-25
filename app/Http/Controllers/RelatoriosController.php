@@ -102,7 +102,6 @@ class RelatoriosController extends Controller
 
             $bodyReq = $request->all();
 
-            return $bodyReq;
             if ($request->ajax()) {
 
                 return response()->json($resultado);
