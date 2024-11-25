@@ -198,7 +198,6 @@ class RelatoriosController extends Controller
 
         if ($isTotalTransacoes) {
             $data = ExtratoMaquinaService::coletarRelatorioTotalTransacoes($data)['data'];
-            return $data;
         }
 
         // Criação do Spreadsheet e do cabeçalho
@@ -215,13 +214,14 @@ class RelatoriosController extends Controller
         $rowNum = 2;
 
         // Escrever o conteúdo no arquivo
-        foreach ($data as $item) {
+        foreach ($data as &$item) {
             $itemArray = (array) $item;
 
             if ($isTaxaDesconto) {
                 $totalValorFinal += $itemArray['extrato_operacao_valor'];
             }
             if ($isTotalTransacoes) {
+                unset($item['extrato_operacao']);
                 $totalValorFinal += $itemArray['extrato_operacao_valor'];
             }
 
