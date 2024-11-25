@@ -221,7 +221,7 @@ class RelatoriosController extends Controller
                 $totalValorFinal += $itemArray['extrato_operacao_valor'];
             }
             if ($isTotalTransacoes) {
-                unset($item['extrato_operacao']);
+                unset($itemArray['extrato_operacao']);
                 $totalValorFinal += $itemArray['extrato_operacao_valor'];
             }
 
