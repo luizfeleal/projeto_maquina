@@ -189,78 +189,88 @@ class RelatoriosController extends Controller
     }
 
     public function downloadXlsxRelatorio(Request $request)
-    {
-        // Decodifica os dados JSON da requisição
-        $data = json_decode($request->input('data'));
-        $data = (array) $data;
-        $isTaxaDesconto = isset($request['tipo_csv']) && $request['tipo_csv'] == 'taxa_desconto';
-        $isTotalTransacoes = isset($request['tipo_csv']) && $request['tipo_csv'] == 'total_transacao';
+{
+    // Decodifica os dados JSON da requisição
+    $data = json_decode($request->input('data'));
+    $data = (array) $data;
+    $isTaxaDesconto = isset($request['tipo_csv']) && $request['tipo_csv'] == 'taxa_desconto';
+    $isTotalTransacoes = isset($request['tipo_csv']) && $request['tipo_csv'] == 'total_transacao';
 
-        if ($isTotalTransacoes) {
-            $data = ExtratoMaquinaService::coletarRelatorioTotalTransacoes($data)['data'];
-        }
-
-        // Criação do Spreadsheet e do cabeçalho
-        $spreadsheet = new Spreadsheet();
-        $sheet = $spreadsheet->getActiveSheet();
-
-        // Transformar os nomes das colunas em maiúsculas
-        $cabecalho = array_map('strtoupper', array_keys((array) $data[0]));
-
-        // Escrever o cabeçalho no arquivo
-        $sheet->fromArray($cabecalho, NULL, 'A1');
-
-        $totalValorFinal = 0;
-        $rowNum = 2;
-
-        // Escrever o conteúdo no arquivo
-        foreach ($data as &$item) {
-            $itemArray = (array) $item;
-
-            if ($isTaxaDesconto) {
-                $totalValorFinal += $itemArray['extrato_operacao_valor'];
-            }
-            if ($isTotalTransacoes) {
-                unset($itemArray['extrato_operacao']);
-                $totalValorFinal += $itemArray['extrato_operacao_valor'];
-            }
-
-            // Escrever a linha de dados no arquivo
-            $sheet->fromArray($itemArray, NULL, 'A' . $rowNum);
-            $rowNum++;
-        }
-
-        // Adicionar a linha de total se necessário
-        if ($isTotalTransacoes || $isTaxaDesconto) {
-            $totalRow = ['Total: R$ ' . number_format($totalValorFinal, 2, ',', '.')];
-            $sheet->fromArray($totalRow, NULL, 'A' . $rowNum);
-
-            // Estilizar a célula com o total
-            $style = $sheet->getStyle('A' . $rowNum);
-            $style->getFont()->setBold(true)->setSize(14)->getColor()->setRGB('FF0000'); // Fonte vermelha e maior
-            $style->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-                ->getStartColor()->setRGB('FFC7CE'); // Fundo vermelho claro
-        }
-
-        // Definindo o caminho do arquivo
-        $fileName = 'export_' . md5(uniqid()) . '.xlsx';
-        $filePath = storage_path('app/xlsx/' . $fileName);
-
-        // Certifique-se de que o diretório de destino exista
-        if (!is_dir(dirname($filePath))) {
-            mkdir(dirname($filePath), 0755, true);
-        }
-
-        // Criar o writer e salvar o arquivo
-        $writer = new Xlsx($spreadsheet);
-        $writer->save($filePath);
-
-        $headers = [
-            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-            'Content-Disposition' => 'attachment; filename="' . $fileName . '"',
-        ];
-
-        // Retornar o arquivo como resposta para download
-        return Response::download($filePath, $fileName, $headers)->deleteFileAfterSend(true);
+    if ($isTotalTransacoes) {
+        $data = ExtratoMaquinaService::coletarRelatorioTotalTransacoes($data)['data'];
     }
+
+    // Criação do Spreadsheet e do cabeçalho
+    $spreadsheet = new Spreadsheet();
+    $sheet = $spreadsheet->getActiveSheet();
+
+    // Transformar os nomes das colunas em maiúsculas
+    $cabecalho = array_map('strtoupper', array_keys((array) $data[0]));
+
+    // Escrever o cabeçalho no arquivo
+    $sheet->fromArray($cabecalho, NULL, 'A1');
+
+    // Aumentar a fonte do cabeçalho para 12
+    $headerStyle = $sheet->getStyle('A1:' . $sheet->getHighestColumn() . '1');
+    $headerStyle->getFont()->setBold(true)->setSize(12);
+
+    $totalValorFinal = 0;
+    $rowNum = 2;
+
+    // Escrever o conteúdo no arquivo
+    foreach ($data as &$item) {
+        $itemArray = (array) $item;
+
+        if ($isTaxaDesconto) {
+            $totalValorFinal += $itemArray['extrato_operacao_valor'];
+        }
+        if ($isTotalTransacoes) {
+            unset($itemArray['extrato_operacao']);
+            $totalValorFinal += $itemArray['extrato_operacao_valor'];
+        }
+
+        // Escrever a linha de dados no arquivo
+        $sheet->fromArray($itemArray, NULL, 'A' . $rowNum);
+
+        // Aumentar a fonte para 12 em cada linha de dados
+        $rowStyle = $sheet->getStyle('A' . $rowNum . ':' . $sheet->getHighestColumn() . $rowNum);
+        $rowStyle->getFont()->setSize(12);
+
+        $rowNum++;
+    }
+
+    // Adicionar a linha de total se necessário
+    if ($isTotalTransacoes || $isTaxaDesconto) {
+        $totalRow = ['Total: R$ ' . number_format($totalValorFinal, 2, ',', '.')];
+        $sheet->fromArray($totalRow, NULL, 'A' . $rowNum);
+
+        // Estilizar a célula com o total
+        $style = $sheet->getStyle('A' . $rowNum);
+        $style->getFont()->setBold(true)->setSize(14)->getColor()->setRGB('FF0000'); // Fonte vermelha e maior
+        $style->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+            ->getStartColor()->setRGB('FFC7CE'); // Fundo vermelho claro
+    }
+
+    // Definindo o caminho do arquivo
+    $fileName = 'export_' . md5(uniqid()) . '.xlsx';
+    $filePath = storage_path('app/xlsx/' . $fileName);
+
+    // Certifique-se de que o diretório de destino exista
+    if (!is_dir(dirname($filePath))) {
+        mkdir(dirname($filePath), 0755, true);
+    }
+
+    // Criar o writer e salvar o arquivo
+    $writer = new Xlsx($spreadsheet);
+    $writer->save($filePath);
+
+    $headers = [
+        'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'Content-Disposition' => 'attachment; filename="' . $fileName . '"',
+    ];
+
+    // Retornar o arquivo como resposta para download
+    return Response::download($filePath, $fileName, $headers)->deleteFileAfterSend(true);
+}
+
 }
