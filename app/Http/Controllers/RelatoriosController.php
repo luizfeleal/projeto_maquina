@@ -241,7 +241,7 @@ class RelatoriosController extends Controller
             if (is_numeric($cellValue)) {
                 $sheet->getStyle('C' . $rowNum)
                     ->getNumberFormat()
-                    ->setFormatCode('#,##0.00 "R$"');
+                    ->setFormatCode('"R$" #,##0.00');
             }
 
             $rowNum++;
