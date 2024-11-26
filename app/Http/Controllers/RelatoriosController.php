@@ -181,7 +181,7 @@ class RelatoriosController extends Controller
                 }
             }
 
-            $resultadosFiltrados = collect($resultadosFiltrados)->orderBy('data_criacao')->toArray();
+            $resultadosFiltrados = collect($resultadosFiltrados) ->sortByDesc('data_criacao')->values()->toArray();
 
             return view('Admin.Relatorios.RelatorioErros.show', compact('resultadosFiltrados'));
         }
