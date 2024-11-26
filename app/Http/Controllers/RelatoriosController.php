@@ -263,7 +263,7 @@ class RelatoriosController extends Controller
                 $itemArray = (array) $item;
         
                 // Converter a data do item para o formato padrão (YYYY-MM-DD)
-                $dataItem = date('Y-m-d', strtotime($itemArray['data_operacao']));
+                $dataItem = date('Y-m-d', strtotime($itemArray['data_criacao']));
         
                 // Somar os valores com base no período
                 if ($dataItem == $hoje) {
