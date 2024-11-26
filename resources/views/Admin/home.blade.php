@@ -15,7 +15,7 @@
             <div class="col-sm-4 text-center mb-3 mb-sm-0">
                 <div class="card" style="height: 100%;">
                     <h5 class="card-header">Saldo Disponível</h5>
-                    <div class="card-body">
+                    <div class="card-body" style="display: flex; justify-content: center; align-items: center;">
                         <p class="card-text">R$ {{number_format($saldo['data'], 2, ',', '.')}}</p>
                     </div>
                 </div>
