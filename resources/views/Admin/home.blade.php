@@ -38,7 +38,11 @@
                                 </div>
                             </div>
                         </div>
-                        <a href="#" class="">Ver detalhes</a>
+                        <form action="{{ route('cliente-relatorio-criar') }}" method="post" class="form-center">
+                                @csrf
+                                    <input type="hidden" name="tipo" value="maquinasOnOff">
+                                    <button type="submit" class="btn btn-primary w-100">Máquinas Online/Off-line</button>
+                                </form>
                     </div>
                 </div>
             </div>
