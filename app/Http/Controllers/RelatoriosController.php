@@ -248,10 +248,56 @@ class RelatoriosController extends Controller
         }
 
         // Adicionar a linha de total se necessário
-        if ($isTotalTransacoes || $isTaxaDesconto) {
+        if ($isTotalTransacoes) {
+            // Variáveis para os totais
+            $totalDiaAtual = 0;
+            $totalMesAtual = 0;
+            $totalMesAnterior = 0;
+        
+            // Datas atuais
+            $hoje = date('Y-m-d');
+            $mesAtual = date('Y-m');
+            $mesAnterior = date('Y-m', strtotime('-1 month'));
+        
+            foreach ($data as $item) {
+                $itemArray = (array) $item;
+        
+                // Converter a data do item para o formato padrão (YYYY-MM-DD)
+                $dataItem = date('Y-m-d', strtotime($itemArray['data_operacao']));
+        
+                // Somar os valores com base no período
+                if ($dataItem == $hoje) {
+                    $totalDiaAtual += $itemArray['extrato_operacao_valor'];
+                }
+                if (strpos($dataItem, $mesAtual) === 0) {
+                    $totalMesAtual += $itemArray['extrato_operacao_valor'];
+                }
+                if (strpos($dataItem, $mesAnterior) === 0) {
+                    $totalMesAnterior += $itemArray['extrato_operacao_valor'];
+                }
+            }
+        
+            // Adicionar os totais ao final do relatório
+            $totais = [
+                ['Período', 'Total'],
+                ['Dia Atual', 'R$ ' . number_format($totalDiaAtual, 2, ',', '.')],
+                ['Mês Atual', 'R$ ' . number_format($totalMesAtual, 2, ',', '.')],
+                ['Mês Anterior', 'R$ ' . number_format($totalMesAnterior, 2, ',', '.')],
+                ['Total Geral', 'R$ ' . number_format($totalValorFinal, 2, ',', '.')]
+            ];
+        
+            // Escrever os totais no arquivo
+            foreach ($totais as $linha) {
+                $sheet->fromArray($linha, NULL, 'A' . $rowNum);
+                $rowStyle = $sheet->getStyle('A' . $rowNum . ':' . $sheet->getHighestColumn() . $rowNum);
+                $rowStyle->getFont()->setBold(true)->setSize(12);
+                $rowNum++;
+            }
+        } elseif ($isTaxaDesconto) {
+            // Adicionar apenas o total geral se for taxa de desconto
             $totalRow = ['Total: R$ ' . number_format($totalValorFinal, 2, ',', '.')];
             $sheet->fromArray($totalRow, NULL, 'A' . $rowNum);
-
+        
             // Estilizar a célula com o total
             $style = $sheet->getStyle('A' . $rowNum);
             $style->getFont()->setBold(true)->setSize(14)->getColor()->setRGB('FF0000'); // Fonte vermelha e maior
