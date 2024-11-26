@@ -290,7 +290,9 @@ class RelatoriosController extends Controller
             foreach ($totais as $linha) {
                 $sheet->fromArray($linha, NULL, 'A' . $rowNum);
                 $rowStyle = $sheet->getStyle('A' . $rowNum . ':' . $sheet->getHighestColumn() . $rowNum);
-                $rowStyle->getFont()->setBold(true)->setSize(12);
+                $rowStyle->getFont()->setBold(true)->setSize(12)->getColor()->setRGB('FF0000');
+                $rowStyle->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+                ->getStartColor()->setRGB('FFC7CE');
                 $rowNum++;
             }
         } elseif ($isTaxaDesconto) {
