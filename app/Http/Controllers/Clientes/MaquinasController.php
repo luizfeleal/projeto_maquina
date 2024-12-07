@@ -8,6 +8,7 @@ use App\Services\MaquinasService;
 use App\Services\ExtratoMaquinaService;
 use App\Services\ClientesService;
 use App\Services\ClienteLocalService;
+use App\Services\MaquinasCartaoService;
 use App\Services\LiberarJogadaService;
 use App\Services\AuthService;
 use App\Http\Controllers\Controller;
@@ -212,6 +213,140 @@ class MaquinasController extends Controller
             }
         }catch(Exception $e){
             return back()->with('error', 'Houve um erro ao tentar se comunicar com a máquina e liberar a jogada.');
+        }
+    }
+
+    public function viewMaquinasCartao()
+    {
+        $id_cliente = session()->get('id_cliente');
+        $clienteLocal = ClienteLocalService::coletar();
+        $clienteLocal = array_filter($clienteLocal, function($item) use($id_cliente){
+            return $item['id_cliente'] == $id_cliente;
+        });
+        
+        $clienteLocal = collect($clienteLocal)->pluck('id_local')->toArray();
+        
+        $maquinas = MaquinasService::coletar();
+
+        $maquinas = array_filter($maquinas, function($item) use($clienteLocal){
+            return in_array($item['id_local'], $clienteLocal);
+        });
+        $maquinasCartao = MaquinasCartaoService::coletar();
+
+        $maquinasIndexadas = [];
+        foreach ($maquinas as $maquina) {
+            $maquinasIndexadas[$maquina['id_maquina']] = $maquina;
+        }
+
+        $maquinasCartaoFiltradas = [];
+        foreach ($maquinasCartao as $maquinaCartao) {
+            if (isset($maquinasIndexadas[$maquinaCartao['id_maquina']])) {
+                $maquinaCartao['maquina_nome'] = $maquinasIndexadas[$maquinaCartao['id_maquina']]['maquina_nome'];
+                $maquinasCartaoFiltradas[] = $maquinaCartao;
+            }
+        }
+
+        return view('Admin.Maquinas.MaquinaCartao.index', ['maquinasCartao' => $maquinasCartaoFiltradas]);
+    }
+    public function viewMaquinasCartaoCriar()
+    {
+        $id_cliente = session()->get('id_cliente');
+        $clienteLocal = ClienteLocalService::coletar();
+        $clienteLocal = array_filter($clienteLocal, function($item) use($id_cliente){
+            return $item['id_cliente'] == $id_cliente;
+        });
+        
+        $clienteLocal = collect($clienteLocal)->pluck('id_local')->toArray();
+        
+        $maquinas = MaquinasService::coletar();
+
+        $maquinas = array_filter($maquinas, function($item) use($clienteLocal){
+            return in_array($item['id_local'], $clienteLocal);
+        });
+
+        $maquinasCartao = MaquinasCartaoService::coletar();
+
+        $id_maquinas_com_cartao = [];
+
+        foreach ($maquinasCartao as $item) {
+            array_push($id_maquinas_com_cartao, $item['id_maquina']);
+        }
+
+        $maquinas_exibir = [];
+
+        foreach ($maquinas as $maquina) {
+            if (!in_array($maquina['id_maquina'], $id_maquinas_com_cartao)) {
+                array_push($maquinas_exibir, $maquina);
+            }
+        }
+
+        return view('Admin.Maquinas.MaquinaCartao.create', compact('maquinas_exibir'));
+    }
+
+    public function registrarMaquinasCartao(Request $request)
+    {
+        try {
+
+            $dados = [];
+            $dados['id_maquina'] = $request['select-maquina'];
+            $dados['device'] = $request['device'];
+            $dados['status'] = 1;
+
+            $result = MaquinasCartaoService::criar($dados);
+
+            return back()->with('success', $result['message']);
+        } catch (\Throwable $e) {
+            return back()->with('error', 'Houve um erro ao tentar cadastrar a máquina');
+        }
+    }
+
+    public function atualizarMaquina(Request $request)
+    {
+        try {
+            $dados = $request->all();
+            $dados_maquina =  $request->except('_token', 'id_maquina');
+            $id_maquina = $request['id_maquina'];
+
+            if (array_key_exists('bloqueio_jogada_efi', $dados)) {
+                if($dados['bloqueio_jogada_efi'] == "on"){
+                    $dados_maquina['bloqueio_jogada_efi'] = 1;
+                }else{
+                    $dados_maquina['bloqueio_jogada_efi'] = 0;
+                }
+            }else{
+                $dados_maquina['bloqueio_jogada_efi'] = 0;
+            }
+            
+            if (array_key_exists('bloqueio_jogada_pagbank', $dados)) {
+                if($dados['bloqueio_jogada_pagbank'] == "on"){
+                    $dados_maquina['bloqueio_jogada_pagbank'] = 1;
+                }else{
+                    $dados_maquina['bloqueio_jogada_pagbank'] = 0;
+                }
+            }else{
+                $dados_maquina['bloqueio_jogada_pagbank'] = 0;
+            }
+
+            $result = MaquinasService::atualizar($dados_maquina, $id_maquina);
+            
+            return back()->with('success', $result['message']);
+        } catch (\Throwable $e) {
+            return back()->with('error', 'Houve um erro ao tentar atualizar a máquina');
+        }
+    }
+
+    public function inativarMaquinasCartao(Request $request)
+    {
+        try {
+
+            $dados = [];
+            $dados['id'] = $request['id_device'];
+            $dados['status'] = $request['status'];
+
+            $result = MaquinasCartaoService::atualizar($dados);
+            return back()->with('success', $result->message);
+        } catch (\Throwable $e) {
+            return back()->with('error', 'Houve um erro ao tentar cadastrar a máquina');
         }
     }
 }

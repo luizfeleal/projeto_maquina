@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.Clientes.app')
 @section('title', 'QR Code')
 @section('content')
 
@@ -10,46 +10,37 @@
             <div class="container section container-platform div-center-column"
                 style="margin-top: 15px; height: 100%;">
                 
-                <form action="{{ route('qr') }}" class="needs-validation form-center" method="GET" id="novo-qr-form" class="w-100" novalidate>
+                <form action="{{ route('cliente-qr') }}" method="GET" id="novo-qr-form" class="w-100">
                     @csrf
 
                     <div class="row div-center-row" style=" margin-bottom: 30px; width: 100%;">
                         <div class="form-check form-check-inline col-md-3">
-                            <label for="input_filtro_local">Local*:</label>
-                            <select id="input_filtro_local" name="id_local" class="input_filtro_local form-control js-example-basic-multiple js-states" data-column="0" required>
-                                <option value="">Selecione...</option>
+                            <label for="input_data_inicio_filtro">Local:</label>
+                            <select id="input_filtro_local" name="id_local" class="form-control js-example-basic-multiple js-states" data-column="0">
+                                <option value=""></option>
                                 @foreach($locais as $local)
                                     <option value="{{$local['id_local']}}">{{$local['local_nome']}}</option>
                                 @endforeach
                             </select>
-                            <div class="invalid-feedback">
-                                    <p class="invalid-p invalid-p-name">Campo obrigatório</p>
-                                </div>
                         </div>
                         <div class="form-check form-check-inline col-md-3">
-                            <label for="input_filtro_cliente">Cliente:</label>
-                            <select id="input_filtro_cliente" class="input_filtro_cliente form-control js-example-basic-multiple js-states" data-column="0">
-                            <option value="">Selecione...</option>
+                            <label for="input_data_inicio_filtro">Cliente:</label>
+                            <select id="input_filtro_cliente" class="form-control js-example-basic-multiple js-states" data-column="0">
+                            <option value=""></option>
                                 @foreach($clientes as $cliente)
                                     <option value="{{$cliente['id_cliente']}}">{{$cliente['cliente_nome']}}</option>
                                 @endforeach
                             </select>
-                            <div class="invalid-feedback">
-                                    <p class="invalid-p invalid-p-name">Campo obrigatório</p>
-                                </div>
                         </div>
                         <div class="form-check form-check-inline col-md-3">
-                            <label for="input_filtro_maquina ">Máquina*:</label>
-                            <select id="input_filtro_maquina" name="id_maquina" class="input_filtro_maquina form-control js-example-basic-multiple js-states" data-column="0" required>
-                            <option value="">Selecione...</option>
+                            <label for="input_data_inicio_filtro ">Máquina:</label>
+                            <select id="input_filtro_maquina" name="id_maquina" class="form-control js-example-basic-multiple js-states" data-column="0">
+                            <option value=""></option>
 
                                 @foreach($maquinas as $maquina)
                                     <option value="{{$maquina['id_maquina']}}">{{$maquina['maquina_nome']}}</option>
                                 @endforeach
                             </select>
-                            <div class="invalid-feedback">
-                                    <p class="invalid-p invalid-p-name">Campo obrigatório</p>
-                                </div>
                         </div>
                     </div>
                 
@@ -60,52 +51,11 @@
 
                 @if(session('imageQr'))
 
-                    <div id="imagem_qr" class="div-imagem-qr-index">
-                        <div class="container">
-                            
-                            <div class="row w-100 d-flex">
-                                <div class="col-md-10" style="justify-content: center; align-items: center; text-align: center; padding-left: 80px;">
-                                    <h5>QR Gerado</h5>
-                                </div>
-
-                                <div class="col-md-1">
-                                    <a href="#" style="color: red !important;" data-bs-toggle="modal" data-bs-target="#ModalCenterExcluir" onclick="setIdQrExcluir({{session('dadosQr')['id_qr']}}, '#id_qr_input_excluir')"><i class="fa-solid fa-trash"></i></a>
-                                </div>
-                            </div>
-                            <div style="width: 60%;">
-                                <p><i class="fa-solid fa-location-dot"></i> {{session('local')['local_nome']}}</p>
-                                <p><i class="fa-solid fa-desktop"></i> {{session('maquina')['maquina_nome']}}</p>
-                            </div>
-                            <img src="{{session('imageQr')}}" width="350" alt="qr_code" style="padding-bottom: 10px;">
-    
-    
-                            <a href="{{route('qr-download',  ['qr_base64_image'=> session('imageQr')])}}" class="btn btn-primary"><i class="fa-solid fa-download"></i> Download</a>
-                        </div>
+                    <div id="imagem_qr">
+                        <img src="{{session('imageQr')['qr_image']}}" alt="qr_code">
                     </div>
                 
                 @endif
-
-                <div class="modal fade" id="ModalCenterExcluir" tabindex="-1" aria-labelledby="ModalCenterExcluir" aria-modal="true" role="dialog">
-                        <div class="modal-dialog modal-dialog-centered">
-                            <div class="modal-content">
-
-                                <div class="modal-header">
-                                    <h1 class="modal-title fs-5" id="ModalCenterTitleExcluir">Excluir QR Code</h1>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <p>Deseja excluir esse QR Code?</p>
-                                </div>
-                                <div class="modal-footer">
-                                    <form action="{{route('qr-excluir')}}" method="post" id="excluir-qr" class="w-100 " >
-                                    @csrf
-                                        <input type="hidden" name="id_qr" id="id_qr_input_excluir" value="" >
-                                        <button type="submit" class="btn btn-primary" data-bs-dismiss="modal" aria-label="Close" >Sim</button>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
 
                             @if(session('success'))
 
@@ -159,17 +109,17 @@
     <script>
 
         $(document).ready(function(){
-            $('.input_filtro_cliente').select2({
-                theme: 'bootstrap-5',
-                width: "100%"
+            $('#input_filtro_cliente').select2({
+            theme: 'bootstrap-5'
+            width: "100%"
             });
-            $('.input_filtro_local').select2({
-                theme: 'bootstrap-5',
-                width: "100%"
+            $('#input_filtro_local').select2({
+                theme: 'bootstrap-5'
+            width: "100%"
             });
-            $('.input_filtro_maquina').select2({
-                theme: 'bootstrap-5',
-                width: "100%"
+            $('#input_filtro_maquina').select2({
+                theme: 'bootstrap-5'
+            width: "100%"
             });
 
 

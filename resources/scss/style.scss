@@ -1,99 +1,43 @@
-// Defina as variáveis antes de importar o Bootstrap
-$primary_purple: #6524A6;
+$primary: #242A74;
 $width-offcanvas: 280px;
 $btn-color: #FFF;
 
+$theme-colors: (
+  "primary": $primary
+);
 
 
 :root {
   --bs-btn-color: #FFF !important;
 }
 
-
 .qr, .maquina, .local, .usuarios, .relatorios {
-    padding-left: 280px;
-    padding-bottom: 50px;
-  }
+  padding-left: 280px;
+  padding-bottom: 50px;
+}
 
-  a .btn:hover {
-    color: #fff;
-    text-decoration: none;
-  }
-  
-  .div-imagem-qr-index{
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    margin-top: 100px;
-    border-radius: 10px;
-              box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.2), 
-                          -10px -10px 20px rgba(255, 255, 255, 0.8);
-  }
-  .div-imagem-qr-index .container{
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    margin: 20px;
-  }
-  
-  .div-center-column {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-  }
-  
-  .div-center-row {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-  }
-  
-  .offcanvas-start {
-    width: 280px !important;
-  }
-  
-  .navbar {
-    z-index: 2000 !important;
-  }
-  
-  ul .list-unstyled {
-    padding-left: 55px;
-  }
-  
-  .form-center {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  .overlay-backdrop {
-    background-color: rgba(0, 0, 0, 0.5);
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 3040;
-  }
-  
-  .modal {
-    z-index: 4000 !important;
-  }
-  
-  @media screen and (max-width: 960px) {
-    .procedimentos, .planos, .termoAdesao, .prestadores, .cobrancas, .qr, .maquina, .local, .usuarios {
-      padding-left: 0px;
-    }
-  }
+a .btn:hover {
+  color: #fff;
+  text-decoration: none;
+}
 
-.btn {
-  color: #FFF !important;
+
+.div-imagem-qr-index {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-top: 100px;
+  border-radius: 10px;
+  box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.2), -10px -10px 20px rgba(255, 255, 255, 0.8);
+}
+
+.div-imagem-qr-index .container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: 20px;
 }
 
 .div-center-column {
@@ -110,12 +54,8 @@ $btn-color: #FFF;
   align-items: center;
 }
 
-.purple-primary{
-
-}
-
 .offcanvas-start {
-  width: $width-offcanvas !important;
+  width: 280px !important;
 }
 
 .navbar {
@@ -148,7 +88,62 @@ ul .list-unstyled {
   z-index: 4000 !important;
 }
 
+@media screen and (max-width: 960px) {
+  .procedimentos, .planos, .termoAdesao, .prestadores, .cobrancas, .qr, .maquina, .local, .usuarios {
+    padding-left: 0px;
+  }
+}
+.btn {
+  color: #FFF !important;
+}
 
+.div-center-column {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.div-center-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+.offcanvas-start {
+  width: 280px !important;
+}
+
+.navbar {
+  z-index: 2000 !important;
+}
+
+ul .list-unstyled {
+  padding-left: 55px;
+}
+
+.form-center {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.overlay-backdrop {
+  background-color: rgba(0, 0, 0, 0.5);
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 3040;
+}
+
+.modal {
+  z-index: 4000 !important;
+}
 
 @media screen and (max-width: 960px) {
   .procedimentos,
@@ -158,67 +153,17 @@ ul .list-unstyled {
   .cobrancas,
   .guias,
   .termosAdesao,
-  .reports,
+  .relatorios,
   .usuarios {
     padding-left: 0px;
   }
 }
 
+@media screen and (max-width: 768px){
+  .tabela_responsiva{
+    width: 345px;
+  }  
+}
 
-// Sobrescreva as variáveis do Bootstrap
-$theme-colors: (
-  primary: $primary_purple
-);
-// Importe o Bootstrap após definir as variáveis
-@import "../../node_modules/bootstrap/scss/bootstrap.scss";
-// Estilos personalizados para .btn-primary
-.btn-primary {
-    background-color: $primary_purple !important;
-    border-color: $primary_purple !important;
-  
-    &:hover {
-      background-color: darken($primary_purple, 10%) !important;
-      border-color: darken($primary_purple, 10%) !important;
-    }
-  
-    &:focus, &:active {
-      background-color: darken($primary_purple, 15%) !important;
-      border-color: darken($primary_purple, 15%) !important;
-      box-shadow: 0 0 0 0.2rem rgba($primary_purple, 0.5) !important; // Ajuste a sombra de foco
-    }
-  }
-  
-  // Estilos personalizados para o foco geral
-  a:focus, .btn:focus, .form-control:focus, .custom-select:focus {
-    box-shadow: 0 0 0 0.2rem rgba($primary_purple, 0.5) !important; // Ajuste a sombra de foco
-  }
-  
-  // Sombreamento ativo
-  .btn:active {
-    box-shadow: 0 0 0 0.2rem rgba($primary_purple, 0.5) !important; // Ajuste a sombra de ativo
-  }
-  
-  // Estilos adicionais para garantir que todos os elementos primários usem a cor personalizada
-  .bg-primary {
-    background-color: $primary_purple !important;
-  }
-  
-  .text-primary {
-    color: $primary_purple !important;
-  }
-
-  a {
-    color: $primary_purple !important; // Cor primária para links
-    text-decoration: none; // Remove o sublinhado padrão, se desejado
-  
-    &:hover {
-      color: darken($primary_purple, 10%) !important; // Cor primária para hover
-      text-decoration: underline; // Substitui o sublinhado no hover, se desejado
-    }
-  
-    &:focus, &:active {
-      color: darken($primary_purple, 15%) !important; // Cor primária para foco e ativo
-      text-decoration: underline; // Substitui o sublinhado no foco e ativo, se desejado
-      box-shadow: 0 0 0 0.2rem rgba($primary_purple, 0.5) !important; // Ajuste a sombra de foco
-    }
-  }
+// Importe novamente o Bootstrap para aplicar as personalizações
+@import "~bootstrap/scss/bootstrap";

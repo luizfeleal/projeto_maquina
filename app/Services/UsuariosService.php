@@ -88,13 +88,13 @@ class UsuariosService
 }
 
 
-    public function atualizar($dados, $id){
+    public static function atualizar($dados, $id){
         $url = env('APP_URL_API') . "/usuarios/$id";
 
         $token = AuthService::getToken();
         $response = Http::withHeaders([
             'Authorization' => 'Bearer ' . $token
-        ])->post($url, $dados);
+        ])->put($url, $dados);
 
         $usuario = $response->json();
 

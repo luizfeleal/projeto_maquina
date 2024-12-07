@@ -21,6 +21,9 @@ Route::get('/', function () {
 Route::prefix('home')->middleware('permission')->group(function(){
     Route::get('/', 'App\Http\Controllers\HomeController@coletar')->name('home');
 });
+Route::prefix('cliente-home')->middleware('permission')->group(function(){
+    Route::get('/', 'App\Http\Controllers\Clientes\HomeController@coletar')->name('cliente-home');
+});
 
 Route::prefix('maquinas')->middleware('permission')->group(function(){
     Route::get('/', 'App\Http\Controllers\MaquinasController@coletarTodasAsMaquinas')->name('maquinas');
@@ -47,6 +50,10 @@ Route::prefix('clientes-maquinas')->middleware('permission')->group(function(){
     Route::get('/acumulado', 'App\Http\Controllers\Clientes\MaquinasController@acumuladoMaquinas')->name('clientes-maquinas-acumulado');
     Route::get('/viewLiberarJogada', 'App\Http\Controllers\Clientes\MaquinasController@viewLiberarJogada')->name('view-clientes-maquinas-liberar-jogadas');
     Route::post('/liberarJogada', 'App\Http\Controllers\Clientes\MaquinasController@liberarJogada')->name('clientes-maquinas-liberar-jogadas');
+    Route::get('/maquinasCartao', 'App\Http\Controllers\Clientes\MaquinasController@viewMaquinasCartao')->name('cliente-maquinas-cartao');
+    Route::get('/maquinasCartao/criar', 'App\Http\Controllers\Clientes\MaquinasController@viewMaquinasCartaoCriar')->name('cliente-maquinas-cartao-criar');
+    Route::post('/maquinasCartao/registrar', 'App\Http\Controllers\Clientes\MaquinasController@registrarMaquinasCartao')->name('cliente-maquinas-cartao-registrar');
+    Route::post('/maquinasCartao/inativar', 'App\Http\Controllers\Clientes\MaquinasController@inativarMaquinasCartao')->name('cliente-maquinas-cartao-inativar');
 });
 
 Route::prefix('clientes-relatorio')->middleware('permission')->group(function(){
@@ -80,16 +87,29 @@ Route::prefix('qr')->middleware('permission')->group(function(){
     Route::post('/excluir', 'App\Http\Controllers\QrCodeController@excluirQr')->name('qr-excluir');
 });
 
+Route::prefix('clientes-qr')->middleware('permission')->group(function(){
+    Route::get('/', 'App\Http\Controllers\Clientes\QrCodeController@coletarQr')->name('cliente-qr');
+    Route::get('/criar', 'App\Http\Controllers\Clientes\QrCodeController@criarQr')->name('cliente-qr-criar');
+    Route::post('/registrar', 'App\Http\Controllers\Clientes\QrCodeController@registrarQr')->name('cliente-qr-registrar');
+    Route::get('/download', 'App\Http\Controllers\Clientes\QrCodeController@downloadQr')->name('cliente-qr-download');
+    Route::post('/excluir', 'App\Http\Controllers\Clientes\QrCodeController@excluirQr')->name('cliente-qr-excluir');
+});
+
 Route::prefix('relatorios')->middleware('permission')->group(function(){
     Route::get('/', 'App\Http\Controllers\RelatoriosController@view')->name('relatorio-view');
     Route::post('/exibir', 'App\Http\Controllers\RelatoriosController@exibirRelatorio')->name('relatorio-criar');
     Route::post('/download', 'App\Http\Controllers\RelatoriosController@downloadXlsxRelatorio')->name('relatorio-xlsx-download');
 });
 
+Route::prefix('clientes-credenciais')->middleware('permission')->group(function(){
+    Route::get('/criar/efi', 'App\Http\Controllers\Clientes\CredenciaisController@criarCredencialEfi')->name('cliente-credencial-criar-efi');
+    Route::get('/criar/pagbank', 'App\Http\Controllers\Clientes\CredenciaisController@criarCredencialPagbank')->name('cliente-credencial-criar-pagbank');
+    Route::post('/registrar', 'App\Http\Controllers\Clientes\CredenciaisController@registrarCredencial')->name('cliente-credencial-registrar');
+});
 Route::prefix('credenciais')->middleware('permission')->group(function(){
-    Route::get('/criar/efi', 'App\Http\Controllers\CredenciaisController@criarCredencialEfi')->name('credencial-criar-efi');
-    Route::get('/criar/pagbank', 'App\Http\Controllers\CredenciaisController@criarCredencialPagbank')->name('credencial-criar-pagbank');
-    Route::post('/exibir', 'App\Http\Controllers\CredenciaisController@registrarCredencial')->name('credencial-registrar');
+    Route::get('/criar/efi', 'App\Http\Controllers\Clientes\CredenciaisController@criarCredencialEfi')->name('credencial-criar-efi');
+    Route::get('/criar/pagbank', 'App\Http\Controllers\Clientes\CredenciaisController@criarCredencialPagbank')->name('credencial-criar-pagbank');
+    Route::post('/registrar', 'App\Http\Controllers\Clientes\CredenciaisController@registrarCredencial')->name('credencial-registrar');
 });
 
 Route::get('/login', 'App\Http\Controllers\LoginController@login')->name('login-view');

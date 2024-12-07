@@ -125,15 +125,41 @@ class ClientesController extends Controller
 
         $dados = $request->all();
 
+        $permissaoPagbank = false;
+            $permissaoEfi = false;
+
         if (array_key_exists('checkbox_pagbank', $dados)) {
+            $permissaoPagbank = true;
             $dados_cliente['checkbox_pagbank'] = 1;
+        }else{
+            $dados_cliente['checkbox_pagbank'] = 0;
         }
         
         if (array_key_exists('checkbox_efi', $dados)) {
+            $permissaoEfi = true;
             $dados_cliente['checkbox_efi'] = 1;
+        }else{
+            $dados_cliente['checkbox_efi'] = 0;
+        }
+
+        if($permissaoEfi && $permissaoPagbank){
+            $id_grupo_acesso = 2;
+        }else if($permissaoEfi){
+            $id_grupo_acesso = 3;
+        }else if($permissaoPagbank){
+            $id_grupo_acesso = 4;
         }
        
         ClientesService::atualizar($dados_cliente, $id_cliente);
+        $usuarios = UsuariosService::coletar();
+
+        $usuarios = array_filter($usuarios, function($item) use($id_cliente){
+            return $item['id_cliente'] == $id_cliente;
+        });
+
+        $usuarios = array_values($usuarios);
+        UsuariosService::atualizar(['id_grupo_acesso' => $id_grupo_acesso], $usuarios[0]['id_usuario']);
+
         return back()->with('success', "Usuário atualizado com sucesso!");
     }
 

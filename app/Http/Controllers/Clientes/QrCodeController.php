@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Clientes;
 
 use Illuminate\Http\Request;
 use App\Services\LocaisService;
@@ -12,19 +12,21 @@ use App\Services\QrCodeService;
 use App\Services\CredApiPixService;
 use App\Services\AuthService;
 use Illuminate\Support\Facades\Response;
+use App\Http\Controllers\Controller;
 
 
 class QrCodeController extends Controller
 {
-    public function coletarQr(Request $request){
+    public function coletarQr(Request $request)
+    {
 
-        if($request->has('id_local') && $request->has('id_maquina') ){
+        if ($request->has('id_local') && $request->has('id_maquina')) {
 
             $qrCode = QrCodeService::coletarComFiltro(['id_local' => $request['id_local'], 'id_maquina' => $request['id_maquina']], 'where');
             $maquina = MaquinasService::coletar($request['id_maquina']);
             $local = LocaisService::coletar($request['id_local']);
 
-            if(empty($qrCode)){
+            if (empty($qrCode)) {
                 return back()->with('error', 'Nenhum QR Code encontrado para os dados fornecidos.');
             }
 
@@ -93,12 +95,14 @@ class QrCodeController extends Controller
             // Libera memória
             imagedestroy($background);
             imagedestroy($overlay);
-            
-            if($request->has('abrir')){
+
+
+
+            if ($request->has('abrir')) {
                 $locais = LocaisService::coletar();
                 $maquinas = MaquinasService::coletar();
                 $clientes = ClientesService::coletar();
-                
+
                 session()->flash('imageQr', $qrImagem);
                 session()->flash('dadosQr', $qrCode[0]);
                 session()->flash('maquina', $maquina);
@@ -108,25 +112,64 @@ class QrCodeController extends Controller
                     'clientes' => $clientes,
                     'maquinas' => $maquinas,
                 ]);
-            }else{
-                return back()->with(['imageQr'=>$qrImagem, 'dadosQr' => $qrCode[0], 'maquina' => $maquina, 'local' => $local]);
+            } else {
+                return back()->with(['imageQr' => $qrImagem, 'dadosQr' => $qrCode[0], 'maquina' => $maquina, 'local' => $local]);
             }
-        }else{
+        } else {
             //return back()->with('error', 'Máquina não encontrada');
+            $id_cliente = session()->get('id_cliente');
+
+            $locais_clientes = ClienteLocalService::coletar();
+            $locais_clientes = array_filter($locais_clientes, function($item) use($id_cliente){
+                return $item['id_cliente'] == $id_cliente;
+            });
+            $locais_clientes = collect($locais_clientes)->pluck('id_local')->toArray();
+
             $locais = LocaisService::coletar();
-            $maquinas = MaquinasService::coletar();
+            $locais = array_filter($locais, function($item) use($locais_clientes){
+                return in_array($item['id_local'], $locais_clientes);
+            });
             $clientes = ClientesService::coletar();
-            return view('Admin.QR.index', compact('locais', 'maquinas', 'clientes'));
+
+            $clientes = array_filter($clientes, function($item) use($id_cliente){
+                return $item['id_cliente'] == $id_cliente;
+            });
+
+            $maquinas = MaquinasService::coletar();
+
+            $maquinas = array_filter($maquinas, function($item) use($locais_clientes){
+                return in_array($item['id_local'], $locais_clientes);
+            });
+            return view('Clientes.QR.index', compact('locais', 'maquinas', 'clientes'));
         }
-
-        
-
     }
 
-    public function criarQr(Request $request){
-        $locais = LocaisService::coletar();
-        $clientes = ClientesService::coletar();
-        $maquinas = MaquinasService::coletar();
+    public function criarQr(Request $request)
+    {
+
+        $id_cliente = session()->get('id_cliente');
+
+            $locais_clientes = ClienteLocalService::coletar();
+            $locais_clientes = array_filter($locais_clientes, function($item) use($id_cliente){
+                return $item['id_cliente'] == $id_cliente;
+            });
+            $locais_clientes = collect($locais_clientes)->pluck('id_local')->toArray();
+
+            $locais = LocaisService::coletar();
+            $locais = array_filter($locais, function($item) use($locais_clientes){
+                return in_array($item['id_local'], $locais_clientes);
+            });
+            $clientes = ClientesService::coletar();
+
+            $clientes = array_filter($clientes, function($item) use($id_cliente){
+                return $item['id_cliente'] == $id_cliente;
+            });
+
+            $maquinas = MaquinasService::coletar();
+
+            $maquinas = array_filter($maquinas, function($item) use($locais_clientes){
+                return in_array($item['id_local'], $locais_clientes);
+            });
 
         $qrCode = QrCodeService::coletar();
 
@@ -135,43 +178,41 @@ class QrCodeController extends Controller
         $qrCodeIdsLocais = array_column($qrCode, 'id_local');
 
         // Passo 2: Filtrar as máquinas que não têm o 'id_maquina' presente no array de QR codes
-        $maquinas = array_filter($maquinas, function($maquina) use ($qrCodeIdsMaquinas) {
+        $maquinas = array_filter($maquinas, function ($maquina) use ($qrCodeIdsMaquinas) {
             return !in_array($maquina['id_maquina'], $qrCodeIdsMaquinas);
         });
 
         // Passo 2: Filtrar as máquinas que não têm o 'id_maquina' presente no array de QR codes
 
 
-        $qrCodeFiltrado = array_filter($qrCode, function($qrCode){
+        $qrCodeFiltrado = array_filter($qrCode, function ($qrCode) {});
 
-        });
-
-        return view('Admin.QR.create', compact('locais', 'clientes', 'maquinas'));
+        return view('Clientes.QR.create', compact('locais', 'clientes', 'maquinas'));
     }
 
-    public function registrarQr(Request $request){
-        
-        try{
+    public function registrarQr(Request $request)
+    {
 
-            if($request['select_local'] == null || $request['select_maquina'] == null){
+        try {
+
+            if ($request['select_local'] == null || $request['select_maquina'] == null) {
                 return back()->with('error', 'Todos os campos obrigatórios devem ser preenchidos para a criação do QR Code.');
             }
             $qrExistente = QrCodeService::coletarComFiltro(['id_local' => $request['select_local'], 'id_maquina' => $request['select_maquina']], 'where');
 
-            if(!empty($qrExistente)){
+            if (!empty($qrExistente)) {
                 return back()->with('error', 'Não foi possível gerar um QR para os dados passados, pois já existe um QR Code para o local e máquina especificados.');
             }
 
             $id_local = $request['select_local'];
             $cliente_local = ClienteLocalService::coletar();
 
-            $cliente_local = array_filter($cliente_local, function($item) use($id_local){
+            $cliente_local = array_filter($cliente_local, function ($item) use ($id_local) {
                 return $item['id_local'] == $id_local && $item['cliente_local_principal'] == 1;
             });
 
-            if(empty($cliente_local)){
+            if (empty($cliente_local)) {
                 return back()->with('error', 'Não foi possível gerar um QR para os dados passados, pois não foi encontrado um cliente para o local especificado.');
-
             }
             $cliente_local = array_values($cliente_local);
 
@@ -179,13 +220,12 @@ class QrCodeController extends Controller
 
             $credenciais = CredApiPixService::coletar();
 
-            $credencial = array_filter($credenciais, function($item) use($id_cliente){
+            $credencial = array_filter($credenciais, function ($item) use ($id_cliente) {
                 return $item['id_cliente'] == $id_cliente && $item['tipo_cred'] == "efi";
             });
 
-            if(empty($credencial)){
+            if (empty($credencial)) {
                 return back()->with('error', 'Não foi possível gerar um QR para os dados passados, pois não foi encontrado uma credencial para o cliente informado');
-
             }
             $id_usuario_logado = session()->get('id_usuario');
             $request['id_usuario'] = $id_usuario_logado;
@@ -193,15 +233,14 @@ class QrCodeController extends Controller
 
             $qr = QrCodeService::criar($request);
 
-            if($qr['message'] == "Qr Code cadastrado com sucesso!"){
-                return back()-> with(['success' => $qr['message'], 'qr_base64_imagem' => $qr['response']['qr_image']]);
-            }else{
-                return back()-> with('error', $qr['message']);
+            if ($qr['message'] == "Qr Code cadastrado com sucesso!") {
+                return back()->with(['success' => $qr['message'], 'qr_base64_imagem' => $qr['response']['qr_image']]);
+            } else {
+                return back()->with('error', $qr['message']);
             }
-        }catch(Throwable $e){
+        } catch (Throwable $e) {
             return back()->with('error', 'Houve um erro inesperado ao tentar registrar o QR Code.');
         }
-
     }
 
     public function downloadQr(Request $request)
@@ -243,14 +282,15 @@ class QrCodeController extends Controller
         return response()->download($output_file, 'qr_code.png')->deleteFileAfterSend(true);
     }
 
-    public function excluirQr(Request $request){
-        try{
+    public function excluirQr(Request $request)
+    {
+        try {
 
-             $id_qr= $request['id_qr'];
-             $result = QrCodeService::deletar($id_qr);
-             return back()->with('success', $result['message']);
-         }catch(\Throwable $e){
-             return back()->with('error', 'Houve um erro ao tentar remover o QR Code');
-         }
+            $id_qr = $request['id_qr'];
+            $result = QrCodeService::deletar($id_qr);
+            return back()->with('success', $result['message']);
+        } catch (\Throwable $e) {
+            return back()->with('error', 'Houve um erro ao tentar remover o QR Code');
+        }
     }
 }

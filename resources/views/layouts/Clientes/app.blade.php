@@ -16,7 +16,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
     <!-- Or for RTL support -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.rtl.min.css" />
-    <link rel="stylesheet" href="{{ asset('site/style.css')}}">
+    <link rel="stylesheet" href="{{ asset('site/style.css')}}?v={{ time() }}">
 
 
 
@@ -55,12 +55,48 @@
 
 
 
+                <li class="mb-1">
+                        <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0">
+                            <a href="{{route('cliente-home')}}" class="text-decoration-none" style="{{ $currentRoute === 'cliente-home' ?  'color:grey !important;' : ' ' }}">
+                                <i class="fa-solid fa-house" style=" font-size: 25px;padding-right:5px;"></i>Home
+                            </a>
+                        </button>
+
+
+                    </li>
+                <li class="mb-1">
+                        <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed" data-bs-toggle="collapse" data-bs-target="#maquinas-collapse" aria-expanded="false">
+                            <a href="/" class="text-decoration-none">
+                                <i class="fa-solid fa-desktop"></i> Criar
+                            </a>
+                        </button>
+                        <div class="collapse {{$currentRoute === 'local-criar' || $currentRoute === 'local-incluir-usuario' ||$currentRoute === 'maquinas-criar' || $currentRoute === 'credencial-criar-pagbank' || $currentRoute === 'credencial-criar-efi' || $currentRoute === 'maquinas-cartao' ? 'show' : '' }}" id="maquinas-collapse">
+                            <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                                <li><a href="{{route('cliente-credencial-criar-efi')}}" class=" d-inline-flex text-decoration-none rounded" style="{{  $currentRoute === 'credencial-criar-efi' ? 'color:grey !important;': ' ' }}">Criar credencial EFI</a></li>
+                                <li><a href="{{route('cliente-credencial-criar-pagbank')}}" class=" d-inline-flex text-decoration-none rounded" style="{{  $currentRoute === 'credencial-criar-pagbank' ? 'color:grey !important;': ' ' }}">Criar credencial Pagbank</a></li>
+                                <li><a href="{{route('maquinas-cartao')}}" class=" d-inline-flex text-decoration-none rounded" style="{{  $currentRoute === 'maquinas-cartao' ? 'color:grey !important;': ' ' }}">Incluir Máquina Cartão</a></li>
+                            </ul>
+                        </div>
+                    </li>
                     <li class="mb-1">
                         <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0">
                             <a href="{{route('cliente-relatorio-view')}}" class="text-decoration-none" style="{{ $currentRoute === 'cliente-relatorio-view' || $currentRoute ===  'cliente-relatorio-criar' || $currentRoute === 'cliente-relatorio-exibir'  ?  'color:grey !important;' : ' ' }}">
                                 <i class="fa-solid fa-chart-pie icon-sidebar" style=" font-size: 22px;padding-right:5px;"></i>Relatórios
                             </a>
                         </button>
+                    </li>
+                    <li class="mb-1">
+                        <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed" data-bs-toggle="collapse" data-bs-target="#qr-collapse" aria-expanded="false">
+                            <a href="/" class="text-decoration-none">
+                                <i class="fa-solid fa-qrcode icon-sidebar" style=" font-size: 25px;padding-right:5px;"></i>Gerar QR
+                            </a>
+                        </button>
+                        <div class="collapse {{ $currentRoute === 'cliente-qr-criar' || $currentRoute === 'cliente-qr'  ? 'show' : '' }}" id="qr-collapse">
+                            <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                                <li><a href="{{route('cliente-qr-criar')}}" class=" d-inline-flex text-decoration-none rounded" style="{{ $currentRoute === 'cliente-qr-criar' ?  'color:grey !important;' : ' ' }}">Novo Qr</a></li>
+                                <li><a href="{{route('cliente-qr')}}" class=" d-inline-flex text-decoration-none rounded" style="{{ $currentRoute === 'cliente-qr' ?  'color:grey !important;' : ' ' }}">Qr</a></li>
+                            </ul>
+                        </div>
                     </li>
                     <li class="mb-1">
                         <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed" data-bs-toggle="collapse" data-bs-target="#termo-collapse" aria-expanded="false">

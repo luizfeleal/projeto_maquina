@@ -17,7 +17,7 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.4.1/css/responsive.dataTables.min.css">
     <!-- Or for RTL support -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.rtl.min.css" />
-    <link rel="stylesheet" href="{{ asset('site/style.css')}}">
+    <link rel="stylesheet" href="{{ asset('site/style.css')}}?v={{ time() }}">
 
 
 

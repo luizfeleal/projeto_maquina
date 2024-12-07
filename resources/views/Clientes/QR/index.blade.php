@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.Clientes.app')
 @section('title', 'QR Code')
 @section('content')
 
@@ -10,7 +10,7 @@
             <div class="container section container-platform div-center-column"
                 style="margin-top: 15px; height: 100%;">
                 
-                <form action="{{ route('qr') }}" class="needs-validation form-center" method="GET" id="novo-qr-form" class="w-100" novalidate>
+                <form action="{{ route('cliente-qr') }}" class="needs-validation form-center" method="GET" id="novo-qr-form" class="w-100" novalidate>
                     @csrf
 
                     <div class="row div-center-row" style=" margin-bottom: 30px; width: 100%;">
@@ -79,7 +79,7 @@
                             <img src="{{session('imageQr')}}" width="350" alt="qr_code" style="padding-bottom: 10px;">
     
     
-                            <a href="{{route('qr-download',  ['qr_base64_image'=> session('imageQr')])}}" class="btn btn-primary"><i class="fa-solid fa-download"></i> Download</a>
+                            <a href="{{route('cliente-qr-download',  ['qr_base64_image'=> session('imageQr')])}}" class="btn btn-primary"><i class="fa-solid fa-download"></i> Download</a>
                         </div>
                     </div>
                 
