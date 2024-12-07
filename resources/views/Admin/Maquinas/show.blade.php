@@ -63,6 +63,20 @@
 
             </div>
         </div>
+        <div class="row" style="display: flex; flex-direction: row; justify-content: center; margin-top: 10px; width: 100%;">
+            <div class="col-md-8">
+                <label for="select-cliente-email" class="form-label">Email(s):</label>
+                <select class="select-cliente-email js-example-basic-multiple js-states form-control" id="select-cliente-email" placeholder="Selecione" name="select-cliente-email[]" multiple="multiple" disabled>
+                    @foreach($clientes as $cliente)
+                    <option value="{{$cliente['cliente_email']}}" selected>{{$cliente['cliente_email']}}</option>
+                    @endforeach
+                </select>
+                <div class="invalid-feedback">
+                    <p class="invalid-p" id="select_cliente_mensagem">Campo obrigatório</p>
+                </div>
+
+            </div>
+        </div>
 
         <div class="row" style="display: flex; flex-direction: row; justify-content: center; margin-top: 10px;  width: 100%; margin-bottom: 20px;">
             <div class="col-md-4">
@@ -183,6 +197,9 @@
     $(document).ready(function() {
 
         $('.select-cliente').select2({
+            theme: 'bootstrap-5'
+        });
+        $('.select-cliente-email').select2({
             theme: 'bootstrap-5'
         });
         $('.select-local').select2({
