@@ -87,7 +87,6 @@ class ClientesController extends Controller
             }
     
             $cliente = ClientesService::criar($dadosCliente);
-            
             if($cliente['success']){
     
                 //Cadastrar credenciais
