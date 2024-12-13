@@ -57,7 +57,7 @@ class ClientesController extends Controller
     }
     public function registrarCliente(Request $request){
 
-        try{
+        //try{
             $dados = $request->all();
 
             $permissaoPagbank = false;
@@ -87,6 +87,7 @@ class ClientesController extends Controller
             }
     
             $cliente = ClientesService::criar($dadosCliente);
+            return $cliente;
             if($cliente['success']){
     
                 //Cadastrar credenciais
@@ -107,10 +108,10 @@ class ClientesController extends Controller
                 return back()->with('success', 'Cliente cadastrado com sucesso!');
             }
             return back()->with('error', 'Houve um erro ao tentar cadastrar o cliente com os dados prechidos!');
-        } catch(Exception $e){
+        /*} catch(Exception $e){
             Log::error($e);
             return back()->with('error', 'Houve um erro ao tentar cadastrar o cliente com os dados prechidos!');
-        }
+        }*/
         
 
     }
