@@ -56,8 +56,8 @@ class ClientesController extends Controller
         return view('Admin.Usuarios.create', compact('grupos', 'clientes'));
     }
     public function registrarCliente(Request $request){
-        
-        //try{
+
+        try{
             $dados = $request->all();
 
             $permissaoPagbank = false;
@@ -67,11 +67,15 @@ class ClientesController extends Controller
             if (array_key_exists('checkbox_pagbank', $dados)) {
                 $permissaoPagbank = true;
                 $dadosCliente['checkbox_pagbank'] = 1;
+            }else{
+                $dadosCliente['checkbox_pagbank'] = 0;
             }
             
             if (array_key_exists('checkbox_efi', $dados)) {
                 $permissaoEfi = true;
                 $dadosCliente['checkbox_efi'] = 1;
+            }else{
+                $dadosCliente['checkbox_efi'] = 0;
             }
     
             if($permissaoEfi && $permissaoPagbank){
@@ -84,6 +88,7 @@ class ClientesController extends Controller
     
             $cliente = ClientesService::criar($dadosCliente);
             
+            return $dadosCliente;
             if($cliente['success']){
     
                 //Cadastrar credenciais
@@ -104,10 +109,10 @@ class ClientesController extends Controller
                 return back()->with('success', 'Cliente cadastrado com sucesso!');
             }
             return back()->with('error', 'Houve um erro ao tentar cadastrar o cliente com os dados prechidos!');
-        //} catch(Exception $e){
-            //Log::error($e);
-            //return back()->with('error', 'Houve um erro ao tentar cadastrar o cliente com os dados prechidos!');
-        //}
+        } catch(Exception $e){
+            Log::error($e);
+            return back()->with('error', 'Houve um erro ao tentar cadastrar o cliente com os dados prechidos!');
+        }
         
 
     }
