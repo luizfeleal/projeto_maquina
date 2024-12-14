@@ -133,7 +133,6 @@
 
 @section('scriptTable')
 <script>
-   
    $(document).ready(function() {
     $.fn.dataTable.ext.type.order['datetime-ddmmyyyy-pre'] = function(d) {
                     if (d === 'Data não disponível') {
@@ -156,7 +155,8 @@
             "data": function(d) {
                 return $.extend({}, d, {
                     _token: '{{ csrf_token() }}',
-                    tipo: 'totalTransacoes'
+                    tipo: 'totalTransacoes',
+                    id_maquina: @json($id_maquina)
                 });
             }
         },
