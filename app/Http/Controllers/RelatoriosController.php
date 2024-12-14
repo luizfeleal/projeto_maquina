@@ -107,7 +107,11 @@ class RelatoriosController extends Controller
                 return response()->json($resultado);
             }
             $id_maquina = $request['id_maquina'];
-            return view('Admin.Relatorios.TotalTransacoes.show', compact('resultado', 'total', 'totalTransacoes', 'bodyReq', 'id_maquina'));
+            $id_cliente = $request['id_cliente'];
+            $tipo_transacao = $request['tipo_transacao'];
+            $data_extrato_inicio = $request['data_extrato_inicio'];
+            $data_extrato_fim = $request['data_extrato_fim'];
+            return view('Admin.Relatorios.TotalTransacoes.show', compact('resultado', 'total', 'totalTransacoes', 'bodyReq', 'id_maquina', 'id_cliente', 'tipo_transacao','data_extrato_inicio', 'data_extrato_fim'));
         }
 
         if ($nomeRelatorio == "taxasDesconto") {
