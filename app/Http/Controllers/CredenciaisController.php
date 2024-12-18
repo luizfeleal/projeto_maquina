@@ -24,6 +24,11 @@ class CredenciaisController extends Controller
         return view('Admin.Credenciais.PagBank.create', compact('clientes'));
     }
 
+    public function coletarCredenciais(Request $request) {
+        $credencial = CredApiPixService::coletar();
+        return $credencial;
+    }
+
     public function registrarCredencial(Request $request){
 
 

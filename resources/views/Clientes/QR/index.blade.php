@@ -97,7 +97,7 @@
                                     <p>Deseja excluir esse QR Code?</p>
                                 </div>
                                 <div class="modal-footer">
-                                    <form action="{{route('qr-excluir')}}" method="post" id="excluir-qr" class="w-100 " >
+                                    <form action="{{route('cliente-qr-excluir')}}" method="post" id="excluir-qr" class="w-100 " >
                                     @csrf
                                         <input type="hidden" name="id_qr" id="id_qr_input_excluir" value="" >
                                         <button type="submit" class="btn btn-primary" data-bs-dismiss="modal" aria-label="Close" >Sim</button>

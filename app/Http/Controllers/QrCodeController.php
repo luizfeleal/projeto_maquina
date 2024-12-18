@@ -193,12 +193,16 @@ class QrCodeController extends Controller
 
             $qr = QrCodeService::criar($request);
 
-            if($qr['message'] == "Qr Code cadastrado com sucesso!"){
-                return back()-> with(['success' => $qr['message'], 'qr_base64_imagem' => $qr['response']['qr_image']]);
+            if(isset($qr['message'])){
+                if($qr['message'] == "Qr Code cadastrado com sucesso!"){
+                    return back()-> with(['success' => $qr['message'], 'qr_base64_imagem' => $qr['response']['qr_image']]);
+                }else{
+                    return back()-> with('error', $qr['message']);
+                }
             }else{
-                return back()-> with('error', $qr['message']);
+                return back()-> with('error', 'Houve um erro ao tentar registrar o QR Code. Verifique se as Credenciais estão cadastradas corretamente e tente novamente.');
             }
-        }catch(Throwable $e){
+        }catch(\Throwable $e){
             return back()->with('error', 'Houve um erro inesperado ao tentar registrar o QR Code.');
         }
 

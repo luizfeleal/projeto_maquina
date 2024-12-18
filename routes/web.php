@@ -25,6 +25,8 @@ Route::prefix('cliente-home')->middleware('permission')->group(function(){
     Route::get('/', 'App\Http\Controllers\Clientes\HomeController@coletar')->name('cliente-home');
 });
 
+Route::get('/coletarCredencialDescriptografada', 'App\Http\Controllers\CredenciaisController@coletarCredenciais');
+
 Route::prefix('maquinas')->middleware('permission')->group(function(){
     Route::get('/', 'App\Http\Controllers\MaquinasController@coletarTodasAsMaquinas')->name('maquinas');
     Route::get('/criar', 'App\Http\Controllers\MaquinasController@criarMaquinas')->name('maquinas-criar');
