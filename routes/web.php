@@ -85,7 +85,7 @@ Route::prefix('qr')->middleware('permission')->group(function(){
     Route::get('/', 'App\Http\Controllers\QrCodeController@coletarQr')->name('qr');
     Route::get('/criar', 'App\Http\Controllers\QrCodeController@criarQr')->name('qr-criar');
     Route::post('/registrar', 'App\Http\Controllers\QrCodeController@registrarQr')->name('qr-registrar');
-    Route::post('/download', 'App\Http\Controllers\QrCodeController@downloadQr')->name('qr-download');
+    Route::get('/download', 'App\Http\Controllers\QrCodeController@downloadQr')->name('qr-download');
     Route::post('/excluir', 'App\Http\Controllers\QrCodeController@excluirQr')->name('qr-excluir');
 });
 
