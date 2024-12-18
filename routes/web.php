@@ -109,9 +109,9 @@ Route::prefix('clientes-credenciais')->middleware('permission')->group(function(
     Route::post('/registrar', 'App\Http\Controllers\Clientes\CredenciaisController@registrarCredencial')->name('cliente-credencial-registrar');
 });
 Route::prefix('credenciais')->middleware('permission')->group(function(){
-    Route::get('/criar/efi', 'App\Http\Controllers\Clientes\CredenciaisController@criarCredencialEfi')->name('credencial-criar-efi');
-    Route::get('/criar/pagbank', 'App\Http\Controllers\Clientes\CredenciaisController@criarCredencialPagbank')->name('credencial-criar-pagbank');
-    Route::post('/registrar', 'App\Http\Controllers\Clientes\CredenciaisController@registrarCredencial')->name('credencial-registrar');
+    Route::get('/criar/efi', 'App\Http\Controllers\CredenciaisController@criarCredencialEfi')->name('credencial-criar-efi');
+    Route::get('/criar/pagbank', 'App\Http\Controllers\CredenciaisController@criarCredencialPagbank')->name('credencial-criar-pagbank');
+    Route::post('/registrar', 'App\Http\Controllers\CredenciaisController@registrarCredencial')->name('credencial-registrar');
 });
 
 Route::get('/login', 'App\Http\Controllers\LoginController@login')->name('login-view');
