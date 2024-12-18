@@ -29,7 +29,7 @@
     @endphp
 
 
-    <nav class="navbar navbar-expand-lg bg-body-tertiary fixed-top" style="background-color:#242a74;">
+    <nav class="navbar navbar-expand-lg fixed-top" style="background-color:#242a74;">
         <div class="container-fluid">
             <a class="navbar-brand" href="#" style="cursor: default;"><img src="{{ asset('site/img/swift_pay_soluções_logo.svg') }}" width="250" height="63" alt="Swift Pay Soluções"></a>
             <!--<h1>LOGO</h1>-->
