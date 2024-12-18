@@ -195,7 +195,7 @@ class QrCodeController extends Controller
 
             if(isset($qr['message'])){
                 if($qr['message'] == "Qr Code cadastrado com sucesso!"){
-                    return back()-> with(['success' => $qr['message'], 'qr_base64_imagem' => $qr['response']['qr_image']]);
+                    return back()-> with(['success' => $qr['message'], 'id_local' => $request['select_local'], 'id_maquina' =>$request['select_maquina']]);
                 }else{
                     return back()-> with('error', $qr['message']);
                 }
@@ -210,16 +210,82 @@ class QrCodeController extends Controller
 
     public function downloadQr(Request $request)
     {
-        // Obtém a imagem base64 do request de forma segura
-        $base64_image = $request->input('qr_base64_image');
+        $id_local = $request['id_local'];
+        $id_maquina = $request['id_maquina'];
+        $qrCode = QrCodeService::coletarComFiltro(['id_local' => $id_local, 'id_maquina' => $id_maquina], 'where');
+        // Caminho da imagem de fundo
+        $backgroundPath = public_path('/site/img/qr-background.png');
+
+        // Base64 da imagem que será sobreposta
+        $base64Image = $qrCode[0]['qr_image'];
+
+        $base64Image = preg_replace('#^data:image/\w+;base64,#i', '', $base64Image);
+
+        // Decodifica a imagem base64
+        $decodedImage = base64_decode($base64Image);
+
+        // Cria uma imagem a partir do background (PNG)
+        $background = imagecreatefrompng($backgroundPath);
+
+        // Cria uma imagem a partir da base64 decodificada
+        $overlay = imagecreatefromstring($decodedImage);
+
+        // Obtém as dimensões originais da imagem sobreposta
+        $overlayWidth = imagesx($overlay);
+        $overlayHeight = imagesy($overlay);
+
+        // Define o novo tamanho da imagem sobreposta (por exemplo, aumentar 50%)
+        $newWidth = $overlayWidth * 1.4;  // 150% do tamanho original
+        $newHeight = $overlayHeight * 1.4;
+
+        // Cria uma nova imagem vazia com o novo tamanho
+        $resizedOverlay = imagecreatetruecolor($newWidth, $newHeight);
+
+        // Mantém a transparência ao redimensionar
+        imagealphablending($resizedOverlay, false);
+        imagesavealpha($resizedOverlay, true);
+
+        // Redimensiona a imagem sobreposta
+        imagecopyresampled(
+            $resizedOverlay,
+            $overlay,
+            0,
+            0,
+            0,
+            0,
+            $newWidth,
+            $newHeight,
+            $overlayWidth,
+            $overlayHeight
+        );
+
+        // Define a posição da imagem sobreposta (centralizada horizontalmente e deslocada 120px para baixo)
+        $x = (imagesx($background) - $newWidth) / 2;
+        $y = (imagesy($background) - $newHeight) / 2 + 150;
+
+        // Sobrepõe a imagem redimensionada sobre a de fundo
+        imagecopy($background, $resizedOverlay, $x, $y, 0, 0, $newWidth, $newHeight);
+
+        // Cria um buffer para armazenar a imagem como string
+        ob_start();
+        imagepng($background);
+        $imageData = ob_get_contents();
+        ob_end_clean();
+
+        // Converte a imagem final para base64
+        $qrImagem = 'data:image/png;base64,' . base64_encode($imageData);
+
+        // Libera memória
+        imagedestroy($background);
+        imagedestroy($overlay);
 
         // Verifica e remove o prefixo de dados se necessário
-        if (strpos($base64_image, 'data:image') === 0) {
-            $base64_image = preg_replace('#^data:image/\w+;base64,#i', '', $base64_image);
+        if (strpos($qrImagem, 'data:image') === 0) {
+            $qrImagem = preg_replace('#^data:image/\w+;base64,#i', '', $qrImagem);
         }
 
         // Decodifica a imagem base64
-        $decoded_image = base64_decode($base64_image);
+        $decoded_image = base64_decode($qrImagem);
 
         // Verifica se a decodificação foi bem-sucedida
         if ($decoded_image === false) {
