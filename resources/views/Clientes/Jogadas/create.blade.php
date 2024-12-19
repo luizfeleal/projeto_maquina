@@ -17,9 +17,15 @@
                             <label for="nome_local" class="form-label">Máquina*:</label>
                             <select class="select-local js-example-basic-multiple js-states form-control" id="select-id-placa" placeholder="Selecione" name="select-id-placa">
 																	
+                            @if(!$id_maquina)
                             <option value="" selected>Selecione</option>
+                            @endif
                             @foreach($maquinas as $maquina)
+                            @if($id_maquina && $maquina['id_maquina'] == $id_maquina)
+                                <option value="{{$maquina['id_placa']}}" selected>{{$maquina['maquina_nome']}}</option>
+                            @else
                                 <option value="{{$maquina['id_placa']}}">{{$maquina['maquina_nome']}}</option>
+                            @endif
                             @endforeach
                             </select>
                             <div class="invalid-feedback">
