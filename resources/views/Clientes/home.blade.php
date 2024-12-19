@@ -82,7 +82,7 @@
                         <td>{{$maquina['id_placa']}}</td>
                         <td>{{$maquina['maquina_nome']}}</td>
                         <td style="text-align: center;"><a href="/clientes-qr?id_local={{$maquina['id_local']}}&id_maquina={{$maquina['id_maquina']}}&abrir=true"><i class="fa-solid fa-qrcode icon-sidebar"></i></a></td>
-                        <td style="text-align: center;"><a href="/clientes-maquinas/liberarJogada?id_maquina={{$maquina['id_maquina']}}"><i class="fa-solid fa-play icon-sidebar"></i></a></td>
+                        <td style="text-align: center;"><a href="/clientes-maquinas/viewLiberarJogada?id_maquina={{$maquina['id_maquina']}}"><i class="fa-solid fa-play icon-sidebar"></i></a></td>
                     </tr>
                     @endforeach
 

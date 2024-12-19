@@ -51,8 +51,7 @@ Route::prefix('clientes-maquinas')->middleware('permission')->group(function(){
     Route::get('/transacoes', 'App\Http\Controllers\Clientes\MaquinasController@transacaoMaquinas')->name('clientes-maquinas-transacoes');
     Route::get('/acumulado', 'App\Http\Controllers\Clientes\MaquinasController@acumuladoMaquinas')->name('clientes-maquinas-acumulado');
     Route::get('/viewLiberarJogada', 'App\Http\Controllers\Clientes\MaquinasController@viewLiberarJogada')->name('view-clientes-maquinas-liberar-jogadas');
-    Route::get('/liberarJogada', 'App\Http\Controllers\Clientes\MaquinasController@liberarJogada')->name('clientes-maquinas-liberar-jogadas');
-    Route::post('/liberarJogadaRegistrar', 'App\Http\Controllers\Clientes\MaquinasController@liberarJogada')->name('clientes-maquinas-liberar-jogada');
+    Route::post('/liberarJogada', 'App\Http\Controllers\Clientes\MaquinasController@liberarJogada')->name('clientes-maquinas-liberar-jogadas');
     Route::get('/maquinasCartao', 'App\Http\Controllers\Clientes\MaquinasController@viewMaquinasCartao')->name('cliente-maquinas-cartao');
     Route::get('/maquinasCartao/criar', 'App\Http\Controllers\Clientes\MaquinasController@viewMaquinasCartaoCriar')->name('cliente-maquinas-cartao-criar');
     Route::post('/maquinasCartao/registrar', 'App\Http\Controllers\Clientes\MaquinasController@registrarMaquinasCartao')->name('cliente-maquinas-cartao-registrar');
