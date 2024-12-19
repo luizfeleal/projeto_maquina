@@ -10,7 +10,7 @@
                 style="margin-top: 15px; display: flex;flex-direction: column;justify-content: center;align-items: center; height: 100%;">
 
                 
-                <form action="{{ route('relatorio-xlsx-download') }}" method="post" class="form-center" id="form-csv">
+                <form action="{{ route('cliente-relatorio-xlsx-download') }}" method="post" class="form-center" id="form-csv">
                 <input type="hidden" name="data" value="json_encode($resultArray)">
                     <input type="hidden" name="tipo_csv" value="relatorioErros">
                         <h1>Relatório de Erros</h1>

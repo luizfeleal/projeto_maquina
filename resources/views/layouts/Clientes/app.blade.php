@@ -79,13 +79,6 @@
                         </div>
                     </li>
                     <li class="mb-1">
-                        <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0">
-                            <a href="{{route('cliente-relatorio-view')}}" class="text-decoration-none" style="{{ $currentRoute === 'cliente-relatorio-view' || $currentRoute ===  'cliente-relatorio-criar' || $currentRoute === 'cliente-relatorio-exibir'  ?  'color:grey !important;' : ' ' }}">
-                                <i class="fa-solid fa-chart-pie icon-sidebar" style=" font-size: 22px;padding-right:5px;"></i>Relatórios
-                            </a>
-                        </button>
-                    </li>
-                    <li class="mb-1">
                         <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed" data-bs-toggle="collapse" data-bs-target="#qr-collapse" aria-expanded="false">
                             <a href="/" class="text-decoration-none">
                                 <i class="fa-solid fa-qrcode icon-sidebar" style=" font-size: 25px;padding-right:5px;"></i>Gerar QR
@@ -107,6 +100,7 @@
                         <div class="collapse {{ $currentRoute === 'clientes-maquinas-transacoes' || $currentRoute === 'clientes-maquinas-acumulado' || $currentRoute === 'clientes-maquinas' ? 'show' : '' }}" id="termo-collapse">
                             <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
                                 <li><a href="{{route('clientes-maquinas')}}" class=" d-inline-flex text-decoration-none rounded" style="{{ $currentRoute === 'clientes-maquinas' ?  'color:grey !important;' : ' ' }}">Exibir Máquinas</a></li>
+                                <li><a href="{{route('cliente-relatorio-view')}}" class=" d-inline-flex text-decoration-none rounded" style="{{ $currentRoute === 'cliente-relatorio-view' ?  'color:grey !important;' : ' ' }}">Relatórios</a></li>
                                 <li><a href="{{route('clientes-maquinas-transacoes')}}" class=" d-inline-flex text-decoration-none rounded" style="{{ $currentRoute === 'clientes-maquinas-transacoes' ?  'color:grey !important;' : ' ' }}">Transações</a></li>
                                 <li><a href="{{route('clientes-maquinas-acumulado')}}" class=" d-inline-flex text-decoration-none rounded" style="{{ $currentRoute === 'clientes-maquinas-acumulado' ?  'color:grey !important;' : ' ' }}">Acumulado</a></li>
                             </ul>

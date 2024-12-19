@@ -9,7 +9,7 @@
                 <div class="container section container-platform"
                 style="margin-top: 15px; display: flex;flex-direction: column;justify-content: center;align-items: center; height: 100%;">
 
-                <form action="{{ route('relatorio-xlsx-download') }}" method="post" class="form-center" id="form-csv">
+                <form action="{{ route('cliente-relatorio-xlsx-download') }}" method="post" class="form-center" id="form-csv">
                     <h1>Máquinas Online/Offline</h1>
                     
                     @csrf
