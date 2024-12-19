@@ -19,9 +19,9 @@
                             <div class="col-md-3" style="cursor: pointer;">
                                 <button type="button" class="btn btn-primary w-100"  data-bs-toggle="collapse" data-bs-target="#multiCollapseExample2" aria-expanded="false" aria-controls="multiCollapseExample2">Taxas de Descontos</button>
                             </div>
-                            <!--<div class="col-md-3" style="cursor: pointer;">
+                            <div class="col-md-3" style="cursor: pointer;">
                                 <button type="button" class="btn btn-primary w-100"  data-bs-toggle="collapse" data-bs-target="#multiCollapseExample3" aria-expanded="false" aria-controls="multiCollapseExample3">Relatório de erros</button>
-                            </div>-->
+                            </div>
                             <div class="col-md-3" style="cursor: pointer;">
                                 <form action="{{ route('cliente-relatorio-criar') }}" method="post" class="form-center">
                                 @csrf
@@ -184,7 +184,7 @@
                         </div>
 
                         <!--RELATÓRIO DE ERROS-->
-                        <!--<div class="collapse multi-collapse" id="multiCollapseExample3" style="width: 100%;">
+                        <div class="collapse multi-collapse" id="multiCollapseExample3" style="width: 100%;">
                             <form action="{{ route('cliente-relatorio-criar') }}" method="post" class="form-center">
                                     @csrf
                                     <input type="hidden" name="tipo" value="relatorioErros">
@@ -243,7 +243,7 @@
                                         <button class="btn btn-primary" type="submit" style="width: 120px;">Gerar</button>
                                 </div>
                             </form>
-                        </div>-->
+                        </div>
 
                     <!--</form>-->
 
