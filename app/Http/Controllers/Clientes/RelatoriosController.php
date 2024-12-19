@@ -42,7 +42,6 @@ class RelatoriosController extends Controller
             return in_array($item['id_local'], $idsLocaisPermitidos);
         });
 
-        return $locais;
         return view('Clientes.Relatorios.index', compact('locais', 'maquinas'));
     }
 
@@ -131,7 +130,12 @@ class RelatoriosController extends Controller
 
                 return response()->json($resultado);
             }
-            return view('Clientes.Relatorios.TotalTransacoes.show', compact('resultado', 'total', 'totalTransacoes', 'bodyReq'));
+            $id_maquina = $request['id_maquina'];
+            $id_cliente = $request['id_cliente'];
+            $tipo_transacao = $request['tipo_transacao'];
+            $data_extrato_inicio = $request['data_extrato_inicio'];
+            $data_extrato_fim = $request['data_extrato_fim'];
+            return view('Clientes.Relatorios.TotalTransacoes.show', compact('resultado', 'total', 'totalTransacoes', 'bodyReq', 'id_maquina', 'id_cliente', 'tipo_transacao','data_extrato_inicio', 'data_extrato_fim'));
         }
 
         if ($nomeRelatorio == "taxasDesconto") {

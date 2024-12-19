@@ -18,7 +18,7 @@
                 <table id="total_transacoes" class="table table-striped table-responsive" style="width:100%">
                     <thead>
                         <tr>
-                            <th>Local</th>
+                            <!--<th>Local</th>-->
                             <th>Maquina</th>
                             <th>Tipo Transação</th>
                             <th>Valor</th>
@@ -30,7 +30,7 @@
                     </tbody>
                     <tfoot>
                         <tr>
-                            <th>Local</th>
+                            <!--<th>Local</th>-->
                             <th>Maquina</th>
                             <th>Tipo Transação</th>
                             <th>Valor</th>
@@ -144,7 +144,12 @@
             "data": function(d) {
                 return $.extend({}, d, {
                     _token: '{{ csrf_token() }}',
-                    tipo: 'totalTransacoes'
+                    tipo: 'totalTransacoes',
+                    id_maquina: @json($id_maquina),
+                    id_cliente: @json($id_cliente),
+                    tipo_transacao: @json($tipo_transacao),
+                    data_extrato_inicio: @json($data_extrato_inicio),
+                    data_extrato_fim: @json($data_extrato_fim)
                 });
             }
         },
