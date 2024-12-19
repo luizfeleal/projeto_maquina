@@ -68,61 +68,6 @@ class MaquinasController extends Controller
         }
     }
 
-    public function editarMaquinas(Request $request)
-    {
-
-        if ($request->has('id_maquina')) {
-            $id_maquina = $request->id;
-            $maquinas = MaquinasService::coletar($id_maquina);
-            $id_local = $maquinas[0]['id_local'];
-            $locais = LocaisService::coletar($id_local);
-            $clienteLocal = ClienteLocalService::coletar();
-            $clientes = ClientesService::coletar();
-
-            $maquinaCartao = MaquinasCartaoService::coletar();
-
-            $maquinaCartaoAssociada = array_filter($maquinaCartao, function($item) use($id_maquina){
-                return $id_maquina == $item['id_maquina'] && $item['status'] == 1;
-            });
-
-            if(empty($maquinaCartaoAssociada)){
-                $possuiMaquinaCartaoAssociada = false;
-            }else{
-                $possuiMaquinaCartaoAssociada = true;
-            }
-
-            $qr = QrCodeService::coletar();
-
-            $qrMaquina = array_filter($qr, function($item) use($id_maquina) {
-                return $item['ativo'] == 1 && $item['id_maquina'] == $id_maquina;
-            });
-
-            if(empty($qrMaquina)){
-                $possuiQrCode = false;
-            }else{
-                $possuiQrCode = true;
-            }
-
-            $localCliente = array_filter($clienteLocal, function ($item) use ($id_local) {
-                return $item['id_local'] == $id_local;
-            });
-
-            // Extraindo apenas os valores de "id_cliente"
-            $idClientes = array_map(function ($item) {
-                return $item['id_cliente'];
-            }, $localCliente);
-
-            $clientes = array_filter($clientes, function ($item) use ($idClientes) {
-                return in_array($item['id_cliente'],  $idClientes);
-            });
-
-            $maquinas = $maquinas[0];
-            return view('Admin.Maquinas.edit', compact('maquinas', 'locais', 'clientes', 'possuiMaquinaCartaoAssociada', 'possuiQrCode', 'localCliente'));
-        } else {
-            return back()->with('error', 'Máquina não encontrada');
-        }
-    }
-
     public function criarMaquinas(Request $request)
     {
         $locais = LocaisService::coletar();
