@@ -15,29 +15,32 @@
                 <input type="hidden" name="data" value="{{json_encode($bodyReq)}}">
                 <h1>Total Transações</h1>
 
-                <table id="total_transacoes" class="table table-striped table-responsive" style="width:100%">
-                    <thead>
-                        <tr>
-                            <!--<th>Local</th>-->
-                            <th>Maquina</th>
-                            <th>Tipo Transação</th>
-                            <th>Valor</th>
-                            <th>Data e Hora</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Dados serão carregados via AJAX -->
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <!--<th>Local</th>-->
-                            <th>Maquina</th>
-                            <th>Tipo Transação</th>
-                            <th>Valor</th>
-                            <th>Data e Hora</th>
-                        </tr>
-                    </tfoot>
-                </table>
+                <div class="tabela_responsiva">
+
+                    <table id="total_transacoes" class="table table-striped table-responsive" style="width:100%">
+                        <thead>
+                            <tr>
+                                <!--<th>Local</th>-->
+                                <th>Maquina</th>
+                                <th>Tipo Transação</th>
+                                <th>Valor</th>
+                                <th>Data e Hora</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Dados serão carregados via AJAX -->
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <!--<th>Local</th>-->
+                                <th>Maquina</th>
+                                <th>Tipo Transação</th>
+                                <th>Valor</th>
+                                <th>Data e Hora</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
 
                 <div class="row" style="display: flex; flex-direction: row; justify-content: center; width: 100%; margin-top: 50px;">
                     <div class="col-md-2">
@@ -130,16 +133,24 @@
 
 @section('scriptTable')
 <script>
-   
    $(document).ready(function() {
+    $.fn.dataTable.ext.type.order['datetime-ddmmyyyy-pre'] = function(d) {
+                    if (d === 'Data não disponível') {
+                        return 0;
+                    }
+                    var parts = d.split('/');
+                    return new Date(parts[2], parts[1] - 1, parts[0]).getTime();
+                };
     var table = $('#total_transacoes').DataTable({
         "language": {
             "url": "https://cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json"
         },
         "processing": true,
         "serverSide": true,
+        "scrollX": true,
+        "sort": true,
         "ajax": {
-            "url": "{{ route('cliente-relatorio-criar') }}",
+            "url": "{{ route('relatorio-criar') }}",
             "type": "POST",
             "data": function(d) {
                 return $.extend({}, d, {
@@ -154,11 +165,12 @@
             }
         },
         "columns": [
-            { "data": "local_nome" },
+            //{ "data": "local_nome" },
             { "data": "maquina_nome" },
             { "data": "extrato_operacao_tipo" },
             {
                 "data": "extrato_operacao_valor",
+                "orderable": true,
                 "render": function(data, type, row) {
                     if (data === null) {
                         return ''; // Retorna uma string vazia se o dado for nulo
@@ -176,10 +188,7 @@
             },
             {
                 "data": "data_criacao",
-                "render": function(data) {
-                    var date = new Date(data);
-                    return !isNaN(date) ? date.toLocaleString('pt-BR') : '';
-                }
+                "type": "datetime-ddmmyyyy",
             }
         ],
         "drawCallback": function(settings) {
