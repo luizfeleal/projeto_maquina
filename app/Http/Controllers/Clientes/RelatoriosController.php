@@ -127,7 +127,6 @@ class RelatoriosController extends Controller
 
             $bodyReq = $request->all();
             if ($request->ajax()) {
-
                 return response()->json($resultado);
             }
             $id_maquina = $request['id_maquina'];
@@ -150,12 +149,6 @@ class RelatoriosController extends Controller
             }
             return view('Clientes.Relatorios.TaxasDesconto.show', compact('resultadosFiltrados', 'resultArray', 'valor_total'));
         }
-
-
-
-
-
-
 
         if ($nomeRelatorio == "relatorioErros") {
             $maquina = $request->input('id_maquina');
