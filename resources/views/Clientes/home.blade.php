@@ -162,7 +162,6 @@
                 null,
                 null,
                 null,
-                null,
             ] // Use o array de objetos de coluna dinamicamente criado
         });
 
