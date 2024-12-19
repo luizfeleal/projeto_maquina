@@ -38,7 +38,7 @@
                                 </div>
                             </div>
                         </div>
-                        <form action="{{ route('relatorio-criar') }}" method="post" class="form-center">
+                        <form action="{{ route('cliente-relatorio-criar') }}" method="post" class="form-center">
                             @csrf
                             <input type="hidden" name="tipo" value="maquinasOnOff">
                             <button type="submit" class="btn btn-primary w-60">Ver detalhes</button>
@@ -53,7 +53,7 @@
                         <p class="card-text"><strong>Hoje:</strong> {{number_format($devolucoes['hoje'], 2, ',', '.')}}</p>
                         <p class="card-text"><strong>Esse Mês:</strong> {{number_format($devolucoes['mes_atual'], 2, ',', '.')}}</p>
                         <p class="card-text"><strong>Mês Passado:</strong> {{number_format($devolucoes['mes_passado'], 2, ',', '.')}}</p>
-                        <form action="{{ route('relatorio-criar') }}" method="post" class="form-center">
+                        <form action="{{ route('cliente-relatorio-criar') }}" method="post" class="form-center">
                             @csrf
                             <input type="hidden" name="tipo" value="totalTransacoes">
                             <input type="hidden" name="tipo_transacao" value="Estorno">
