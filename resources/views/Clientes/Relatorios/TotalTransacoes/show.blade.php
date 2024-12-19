@@ -150,7 +150,7 @@
         "scrollX": true,
         "sort": true,
         "ajax": {
-            "url": "{{ route('relatorio-criar') }}",
+            "url": "{{ route('cliente-relatorio-criar') }}",
             "type": "POST",
             "data": function(d) {
                 return $.extend({}, d, {

@@ -79,7 +79,7 @@
                             <img src="{{session('imageQr')}}" width="350" alt="qr_code" style="padding-bottom: 10px;">
     
     
-                            <a href="{{route('qr-download',  ['qr_base64_image'=> session('imageQr')])}}" class="btn btn-primary"><i class="fa-solid fa-download"></i> Download</a>
+                            <a href="{{route('qr-download', ['id_local'=> session('local')['id_local'], 'id_maquina' => session('maquina')['id_maquina']])}}" class="btn btn-primary"><i class="fa-solid fa-download"></i> Download</a>
                         </div>
                     </div>
                 
