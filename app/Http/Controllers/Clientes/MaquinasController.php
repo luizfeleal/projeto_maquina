@@ -177,9 +177,14 @@ class MaquinasController extends Controller
 
     }
 
-    public function viewLiberarJogada(){
+    public function viewLiberarJogada(Request $request){
         $id_cliente = session()->get('id_cliente');
 
+        if($request->has('id_maquina')){
+            $id_maquina = $request->id_maquina;
+        }else{
+            $id_maquina = null;
+        }
         $maquinas = MaquinasService::coletar();
         $localCliente = ClienteLocalService::coletar();
 
@@ -193,7 +198,7 @@ class MaquinasController extends Controller
             return in_array($maquina['id_local'], $idsLocaisPermitidos);
         });
 
-        return view('Clientes.Jogadas.create', compact('maquinas'));
+        return view('Clientes.Jogadas.create', compact("maquinas", "id_maquina"));
     }
 
     public function liberarJogada(Request $request){
