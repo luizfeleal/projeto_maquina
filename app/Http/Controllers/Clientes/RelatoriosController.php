@@ -41,6 +41,8 @@ class RelatoriosController extends Controller
         $locais = array_filter($locais, function ($item) use ($idsLocaisPermitidos) {
             return in_array($item['id_local'], $idsLocaisPermitidos);
         });
+
+        return $locais;
         return view('Clientes.Relatorios.index', compact('locais', 'maquinas'));
     }
 
