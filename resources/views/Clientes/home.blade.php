@@ -15,10 +15,15 @@
             <div class="col-sm-4 text-center mb-3 mb-sm-0">
                 <div class="card" style="height: 100%;">
                     <h5 class="card-header">Saldo Disponível</h5>
-                    <div class="card-body" style="display: flex; justify-content: center; align-items: center;">
+                    <div class="card-body">
                     <p class="card-text"><strong>Hoje:</strong> {{number_format($saldo['hoje'], 2, ',', '.')}}</p>
                         <p class="card-text"><strong>Esse Mês:</strong> {{number_format($saldo['mes_atual'], 2, ',', '.')}}</p>
                         <p class="card-text"><strong>Mês Passado:</strong> {{number_format($saldo['mes_passado'], 2, ',', '.')}}</p>
+                        <form action="{{ route('cliente-relatorio-criar') }}" method="post" class="form-center">
+                            @csrf
+                            <input type="hidden" name="tipo" value="totalTransacoes">
+                            <button type="submit" class="btn btn-primary w-60">Ver detalhes</button>
+                        </form>
                         
                     </div>
                 </div>
