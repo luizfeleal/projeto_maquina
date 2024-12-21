@@ -307,7 +307,7 @@ class MaquinasController extends Controller
             }
         }
 
-        return view('Admin.Maquinas.MaquinaCartao.index', ['maquinasCartao' => $maquinasCartaoFiltradas]);
+        return view('Clientes.Maquinas.MaquinaCartao.index', ['maquinasCartao' => $maquinasCartaoFiltradas]);
     }
     public function viewMaquinasCartaoCriar()
     {
@@ -341,7 +341,7 @@ class MaquinasController extends Controller
             }
         }
 
-        return view('Admin.Maquinas.MaquinaCartao.create', compact('maquinas_exibir'));
+        return view('Clientes.Maquinas.MaquinaCartao.create', compact('maquinas_exibir'));
     }
 
     public function registrarMaquinasCartao(Request $request)
