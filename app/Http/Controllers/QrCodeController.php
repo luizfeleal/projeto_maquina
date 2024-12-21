@@ -80,13 +80,13 @@ class QrCodeController extends Controller
         imagecopy($background, $resizedOverlay, $x, $y, 0, 0, $newWidth, $newHeight);
 
         // Adiciona texto à imagem
-        $text = $maquina['id_placa']; // Texto que será adicionado
-        $fontSize = 5; // Tamanho da fonte (1 a 5)
+        $text = $maquina['id_placa'];
+        $fontSize = 18;
         $textWidth = imagefontwidth($fontSize) * strlen($text);
         $textHeight = imagefontheight($fontSize);
-        $textX = (imagesx($background) - $textWidth) / 2; // Centralizado horizontalmente
-        $textY = imagesy($background) - $textHeight - 20; // 20px acima da borda inferior
-        $textColor = imagecolorallocate($background, 0, 0, 0); // Cor do texto: preto
+        $textX = (imagesx($background) - $textWidth) / 2;
+        $textY = imagesy($background) - $textHeight - 20;
+        $textColor = imagecolorallocate($background, 255, 255, 255);
 
         imagestring($background, $fontSize, $textX, $textY, $text, $textColor);
 
@@ -216,109 +216,97 @@ class QrCodeController extends Controller
     }
 
     public function downloadQr(Request $request)
-    {
-        $id_local = $request['id_local'];
-        $id_maquina = $request['id_maquina'];
-        $qrCode = QrCodeService::coletarComFiltro(['id_local' => $id_local, 'id_maquina' => $id_maquina], 'where');
-        // Caminho da imagem de fundo
-        $backgroundPath = public_path('/site/img/qr-background.png');
+{
+    $id_local = $request['id_local'];
+    $id_maquina = $request['id_maquina'];
+    $qrCode = QrCodeService::coletarComFiltro(['id_local' => $id_local, 'id_maquina' => $id_maquina], 'where');
 
-        // Base64 da imagem que será sobreposta
-        $base64Image = $qrCode[0]['qr_image'];
-
-        $base64Image = preg_replace('#^data:image/\w+;base64,#i', '', $base64Image);
-
-        // Decodifica a imagem base64
-        $decodedImage = base64_decode($base64Image);
-
-        // Cria uma imagem a partir do background (PNG)
-        $background = imagecreatefrompng($backgroundPath);
-
-        // Cria uma imagem a partir da base64 decodificada
-        $overlay = imagecreatefromstring($decodedImage);
-
-        // Obtém as dimensões originais da imagem sobreposta
-        $overlayWidth = imagesx($overlay);
-        $overlayHeight = imagesy($overlay);
-
-        // Define o novo tamanho da imagem sobreposta (por exemplo, aumentar 50%)
-        $newWidth = $overlayWidth * 1.4;  // 150% do tamanho original
-        $newHeight = $overlayHeight * 1.4;
-
-        // Cria uma nova imagem vazia com o novo tamanho
-        $resizedOverlay = imagecreatetruecolor($newWidth, $newHeight);
-
-        // Mantém a transparência ao redimensionar
-        imagealphablending($resizedOverlay, false);
-        imagesavealpha($resizedOverlay, true);
-
-        // Redimensiona a imagem sobreposta
-        imagecopyresampled(
-            $resizedOverlay,
-            $overlay,
-            0,
-            0,
-            0,
-            0,
-            $newWidth,
-            $newHeight,
-            $overlayWidth,
-            $overlayHeight
-        );
-
-        // Define a posição da imagem sobreposta (centralizada horizontalmente e deslocada 120px para baixo)
-        $x = (imagesx($background) - $newWidth) / 2;
-        $y = (imagesy($background) - $newHeight) / 2 + 150;
-
-        // Sobrepõe a imagem redimensionada sobre a de fundo
-        imagecopy($background, $resizedOverlay, $x, $y, 0, 0, $newWidth, $newHeight);
-
-        // Cria um buffer para armazenar a imagem como string
-        ob_start();
-        imagepng($background);
-        $imageData = ob_get_contents();
-        ob_end_clean();
-
-        // Converte a imagem final para base64
-        $qrImagem = 'data:image/png;base64,' . base64_encode($imageData);
-
-        // Libera memória
-        imagedestroy($background);
-        imagedestroy($overlay);
-
-        // Verifica e remove o prefixo de dados se necessário
-        if (strpos($qrImagem, 'data:image') === 0) {
-            $qrImagem = preg_replace('#^data:image/\w+;base64,#i', '', $qrImagem);
-        }
-
-        // Decodifica a imagem base64
-        $decoded_image = base64_decode($qrImagem);
-
-        // Verifica se a decodificação foi bem-sucedida
-        if ($decoded_image === false) {
-            return response()->json(['error' => 'Invalid base64 string'], 400);
-        }
-
-        // Define o nome do arquivo de saída
-        $output_file = 'qr_code.png';
-
-        // Abre o arquivo para escrita
-        if (false === ($ifp = fopen($output_file, 'wb'))) {
-            return response()->json(['error' => 'Failed to open file for writing'], 500);
-        }
-
-        // Escreve os dados decodificados no arquivo
-        if (false === fwrite($ifp, $decoded_image)) {
-            fclose($ifp);
-            return response()->json(['error' => 'Failed to write to file'], 500);
-        }
-
-        // Fecha o arquivo
-        fclose($ifp);
-
-        // Define o cabeçalho para download do arquivo
-        return response()->download($output_file, 'qr_code.png')->deleteFileAfterSend(true);
+    if (empty($qrCode)) {
+        return response()->json(['error' => 'Nenhum QR Code encontrado para os dados fornecidos.'], 404);
     }
+
+    // Caminho da imagem de fundo
+    $backgroundPath = public_path('/site/img/qr-background.png');
+
+    // Base64 da imagem que será sobreposta
+    $base64Image = preg_replace('#^data:image/\w+;base64,#i', '', $qrCode[0]['qr_image']);
+
+    // Decodifica a imagem base64
+    $decodedImage = base64_decode($base64Image);
+
+    // Cria uma imagem a partir do background (PNG)
+    $background = imagecreatefrompng($backgroundPath);
+
+    // Cria uma imagem a partir da base64 decodificada
+    $overlay = imagecreatefromstring($decodedImage);
+
+    // Obtém as dimensões originais da imagem sobreposta
+    $overlayWidth = imagesx($overlay);
+    $overlayHeight = imagesy($overlay);
+
+    // Define o novo tamanho da imagem sobreposta (por exemplo, aumentar 50%)
+    $newWidth = $overlayWidth * 1.4;  // 150% do tamanho original
+    $newHeight = $overlayHeight * 1.4;
+
+    // Cria uma nova imagem vazia com o novo tamanho
+    $resizedOverlay = imagecreatetruecolor($newWidth, $newHeight);
+
+    // Mantém a transparência ao redimensionar
+    imagealphablending($resizedOverlay, false);
+    imagesavealpha($resizedOverlay, true);
+
+    // Redimensiona a imagem sobreposta
+    imagecopyresampled(
+        $resizedOverlay,
+        $overlay,
+        0,
+        0,
+        0,
+        0,
+        $newWidth,
+        $newHeight,
+        $overlayWidth,
+        $overlayHeight
+    );
+
+    // Define a posição da imagem sobreposta (centralizada horizontalmente e deslocada 120px para baixo)
+    $x = (imagesx($background) - $newWidth) / 2;
+    $y = (imagesy($background) - $newHeight) / 2 + 150;
+
+    // Sobrepõe a imagem redimensionada sobre a de fundo
+    imagecopy($background, $resizedOverlay, $x, $y, 0, 0, $newWidth, $newHeight);
+
+    // Adiciona texto à imagem
+    $text = "Texto Exemplo"; // Texto que será adicionado
+    $fontSize = 5; // Tamanho da fonte (1 a 5)
+    $textWidth = imagefontwidth($fontSize) * strlen($text);
+    $textHeight = imagefontheight($fontSize);
+    $textX = (imagesx($background) - $textWidth) / 2; // Centralizado horizontalmente
+    $textY = $y - $textHeight - 10; // Posicionado 10px acima do QR code
+    $textColor = imagecolorallocate($background, 255, 255, 255); // Cor do texto: branco
+
+    imagestring($background, $fontSize, $textX, $textY, $text, $textColor);
+
+    // Cria um buffer para armazenar a imagem como string
+    ob_start();
+    imagepng($background);
+    $imageData = ob_get_contents();
+    ob_end_clean();
+
+    // Define o nome do arquivo de saída
+    $outputFile = public_path('qr_code.png');
+
+    // Salva a imagem gerada
+    file_put_contents($outputFile, $imageData);
+
+    // Libera memória
+    imagedestroy($background);
+    imagedestroy($overlay);
+
+    // Define o cabeçalho para download do arquivo
+    return response()->download($outputFile, 'qr_code.png')->deleteFileAfterSend(true);
+}
+
 
     public function excluirQr(Request $request){
         try{
