@@ -31,70 +31,80 @@ class QrCodeController extends Controller
             }
 
             // Caminho da imagem de fundo
-            $backgroundPath = public_path('/site/img/qr-background.png');
+        $backgroundPath = public_path('/site/img/qr-background.png');
 
-            // Base64 da imagem que será sobreposta
-            $base64Image = $qrCode[0]['qr_image'];
+        // Base64 da imagem que será sobreposta
+        $base64Image = $qrCode[0]['qr_image'];
+        $base64Image = preg_replace('#^data:image/\w+;base64,#i', '', $base64Image);
 
-            $base64Image = preg_replace('#^data:image/\w+;base64,#i', '', $base64Image);
+        // Decodifica a imagem base64
+        $decodedImage = base64_decode($base64Image);
 
-            // Decodifica a imagem base64
-            $decodedImage = base64_decode($base64Image);
+        // Cria uma imagem a partir do background (PNG)
+        $background = imagecreatefrompng($backgroundPath);
 
-            // Cria uma imagem a partir do background (PNG)
-            $background = imagecreatefrompng($backgroundPath);
+        // Cria uma imagem a partir da base64 decodificada
+        $overlay = imagecreatefromstring($decodedImage);
 
-            // Cria uma imagem a partir da base64 decodificada
-            $overlay = imagecreatefromstring($decodedImage);
+        // Obtém as dimensões originais da imagem sobreposta
+        $overlayWidth = imagesx($overlay);
+        $overlayHeight = imagesy($overlay);
 
-            // Obtém as dimensões originais da imagem sobreposta
-            $overlayWidth = imagesx($overlay);
-            $overlayHeight = imagesy($overlay);
+        // Define o novo tamanho da imagem sobreposta (por exemplo, aumentar 50%)
+        $newWidth = $overlayWidth * 1.4; // 150% do tamanho original
+        $newHeight = $overlayHeight * 1.4;
 
-            // Define o novo tamanho da imagem sobreposta (por exemplo, aumentar 50%)
-            $newWidth = $overlayWidth * 1.4;  // 150% do tamanho original
-            $newHeight = $overlayHeight * 1.4;
+        // Cria uma nova imagem vazia com o novo tamanho
+        $resizedOverlay = imagecreatetruecolor($newWidth, $newHeight);
 
-            // Cria uma nova imagem vazia com o novo tamanho
-            $resizedOverlay = imagecreatetruecolor($newWidth, $newHeight);
+        // Mantém a transparência ao redimensionar
+        imagealphablending($resizedOverlay, false);
+        imagesavealpha($resizedOverlay, true);
 
-            // Mantém a transparência ao redimensionar
-            imagealphablending($resizedOverlay, false);
-            imagesavealpha($resizedOverlay, true);
+        // Redimensiona a imagem sobreposta
+        imagecopyresampled(
+            $resizedOverlay,
+            $overlay,
+            0,
+            0,
+            0,
+            0,
+            $newWidth,
+            $newHeight,
+            $overlayWidth,
+            $overlayHeight
+        );
 
-            // Redimensiona a imagem sobreposta
-            imagecopyresampled(
-                $resizedOverlay,
-                $overlay,
-                0,
-                0,
-                0,
-                0,
-                $newWidth,
-                $newHeight,
-                $overlayWidth,
-                $overlayHeight
-            );
+        // Define a posição da imagem sobreposta (centralizada horizontalmente e deslocada 120px para baixo)
+        $x = (imagesx($background) - $newWidth) / 2;
+        $y = (imagesy($background) - $newHeight) / 2 + 150;
 
-            // Define a posição da imagem sobreposta (centralizada horizontalmente e deslocada 120px para baixo)
-            $x = (imagesx($background) - $newWidth) / 2;
-            $y = (imagesy($background) - $newHeight) / 2 + 150;
+        // Sobrepõe a imagem redimensionada sobre a de fundo
+        imagecopy($background, $resizedOverlay, $x, $y, 0, 0, $newWidth, $newHeight);
 
-            // Sobrepõe a imagem redimensionada sobre a de fundo
-            imagecopy($background, $resizedOverlay, $x, $y, 0, 0, $newWidth, $newHeight);
+        // Adiciona texto à imagem
+        $text = $maquina['id_placa'];
+        $fontSize = 30;
+        $textWidth = imagefontwidth($fontSize) * strlen($text);
+        $textHeight = imagefontheight($fontSize);
+        $textX = (imagesx($background) - $textWidth) / 2;
+        $textY = imagesy($background) - $textHeight - 20;
+        $textColor = imagecolorallocate($background, 255, 255, 255);
 
-            // Cria um buffer para armazenar a imagem como string
-            ob_start();
-            imagepng($background);
-            $imageData = ob_get_contents();
-            ob_end_clean();
+        imagestring($background, $fontSize, $textX, $textY, $text, $textColor);
 
-            // Converte a imagem final para base64
-            $qrImagem = 'data:image/png;base64,' . base64_encode($imageData);
+        // Cria um buffer para armazenar a imagem como string
+        ob_start();
+        imagepng($background);
+        $imageData = ob_get_contents();
+        ob_end_clean();
 
-            // Libera memória
-            imagedestroy($background);
-            imagedestroy($overlay);
+        // Converte a imagem final para base64
+        $qrImagem = 'data:image/png;base64,' . base64_encode($imageData);
+
+        // Libera memória
+        imagedestroy($background);
+        imagedestroy($overlay);
 
 
 
@@ -251,13 +261,13 @@ class QrCodeController extends Controller
     {
         $id_local = $request['id_local'];
         $id_maquina = $request['id_maquina'];
+        $maquina = MaquinasService::coletar($request['id_maquina']);
         $qrCode = QrCodeService::coletarComFiltro(['id_local' => $id_local, 'id_maquina' => $id_maquina], 'where');
         // Caminho da imagem de fundo
         $backgroundPath = public_path('/site/img/qr-background.png');
 
         // Base64 da imagem que será sobreposta
         $base64Image = $qrCode[0]['qr_image'];
-
         $base64Image = preg_replace('#^data:image/\w+;base64,#i', '', $base64Image);
 
         // Decodifica a imagem base64
@@ -274,7 +284,7 @@ class QrCodeController extends Controller
         $overlayHeight = imagesy($overlay);
 
         // Define o novo tamanho da imagem sobreposta (por exemplo, aumentar 50%)
-        $newWidth = $overlayWidth * 1.4;  // 150% do tamanho original
+        $newWidth = $overlayWidth * 1.4; // 150% do tamanho original
         $newHeight = $overlayHeight * 1.4;
 
         // Cria uma nova imagem vazia com o novo tamanho
@@ -304,6 +314,17 @@ class QrCodeController extends Controller
 
         // Sobrepõe a imagem redimensionada sobre a de fundo
         imagecopy($background, $resizedOverlay, $x, $y, 0, 0, $newWidth, $newHeight);
+
+        // Adiciona texto à imagem
+        $text = $maquina['id_placa'];
+        $fontSize = 30;
+        $textWidth = imagefontwidth($fontSize) * strlen($text);
+        $textHeight = imagefontheight($fontSize);
+        $textX = (imagesx($background) - $textWidth) / 2;
+        $textY = imagesy($background) - $textHeight - 20;
+        $textColor = imagecolorallocate($background, 255, 255, 255);
+
+        imagestring($background, $fontSize, $textX, $textY, $text, $textColor);
 
         // Cria um buffer para armazenar a imagem como string
         ob_start();
