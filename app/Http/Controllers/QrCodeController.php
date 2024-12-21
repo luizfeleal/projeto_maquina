@@ -16,50 +16,48 @@ use Illuminate\Support\Facades\Response;
 
 class QrCodeController extends Controller
 {
-    public function coletarQr(Request $request){
-
-        if($request->has('id_local') && $request->has('id_maquina') ){
-
+    public function coletarQr(Request $request)
+    {
+        if ($request->has('id_local') && $request->has('id_maquina')) {
             $qrCode = QrCodeService::coletarComFiltro(['id_local' => $request['id_local'], 'id_maquina' => $request['id_maquina']], 'where');
             $maquina = MaquinasService::coletar($request['id_maquina']);
             $local = LocaisService::coletar($request['id_local']);
-
-            if(empty($qrCode)){
+    
+            if (empty($qrCode)) {
                 return back()->with('error', 'Nenhum QR Code encontrado para os dados fornecidos.');
             }
-
+    
             // Caminho da imagem de fundo
             $backgroundPath = public_path('/site/img/qr-background.png');
-
+    
             // Base64 da imagem que será sobreposta
             $base64Image = $qrCode[0]['qr_image'];
-
             $base64Image = preg_replace('#^data:image/\w+;base64,#i', '', $base64Image);
-
+    
             // Decodifica a imagem base64
             $decodedImage = base64_decode($base64Image);
-
+    
             // Cria uma imagem a partir do background (PNG)
             $background = imagecreatefrompng($backgroundPath);
-
+    
             // Cria uma imagem a partir da base64 decodificada
             $overlay = imagecreatefromstring($decodedImage);
-
+    
             // Obtém as dimensões originais da imagem sobreposta
             $overlayWidth = imagesx($overlay);
             $overlayHeight = imagesy($overlay);
-
+    
             // Define o novo tamanho da imagem sobreposta (por exemplo, aumentar 50%)
             $newWidth = $overlayWidth * 1.4;  // 150% do tamanho original
             $newHeight = $overlayHeight * 1.4;
-
+    
             // Cria uma nova imagem vazia com o novo tamanho
             $resizedOverlay = imagecreatetruecolor($newWidth, $newHeight);
-
+    
             // Mantém a transparência ao redimensionar
             imagealphablending($resizedOverlay, false);
             imagesavealpha($resizedOverlay, true);
-
+    
             // Redimensiona a imagem sobreposta
             imagecopyresampled(
                 $resizedOverlay,
@@ -73,55 +71,72 @@ class QrCodeController extends Controller
                 $overlayWidth,
                 $overlayHeight
             );
-
+    
             // Define a posição da imagem sobreposta (centralizada horizontalmente e deslocada 120px para baixo)
             $x = (imagesx($background) - $newWidth) / 2;
             $y = (imagesy($background) - $newHeight) / 2 + 150;
-
+    
             // Sobrepõe a imagem redimensionada sobre a de fundo
             imagecopy($background, $resizedOverlay, $x, $y, 0, 0, $newWidth, $newHeight);
-
+    
+            // **Adicionando texto na parte inferior da imagem**
+            $text = "Texto personalizado aqui"; // Texto a ser adicionado
+            $fontPath = public_path('/site/fonts/Arial.ttf'); // Caminho para a fonte TrueType
+            $fontSize = 20; // Tamanho da fonte
+            $textColor = imagecolorallocate($background, 0, 0, 0); // Cor do texto (preto)
+            $padding = 20; // Espaço do texto para a borda inferior
+    
+            // Calcula o tamanho do texto
+            $bbox = imagettfbbox($fontSize, 0, $fontPath, $text);
+            $textWidth = $bbox[2] - $bbox[0]; // Largura do texto
+            $textHeight = $bbox[1] - $bbox[7]; // Altura do texto
+    
+            // Calcula a posição do texto (centralizado horizontalmente e deslocado para baixo)
+            $textX = (imagesx($background) - $textWidth) / 2;
+            $textY = imagesy($background) - $padding;
+    
+            // Desenha o texto na imagem
+            imagettftext($background, $fontSize, 0, $textX, $textY, $textColor, $fontPath, $text);
+    
             // Cria um buffer para armazenar a imagem como string
             ob_start();
             imagepng($background);
             $imageData = ob_get_contents();
             ob_end_clean();
-
+    
             // Converte a imagem final para base64
             $qrImagem = 'data:image/png;base64,' . base64_encode($imageData);
-
+    
             // Libera memória
             imagedestroy($background);
             imagedestroy($overlay);
-            
-            if($request->has('abrir')){
+    
+            if ($request->has('abrir')) {
                 $locais = LocaisService::coletar();
                 $maquinas = MaquinasService::coletar();
                 $clientes = ClientesService::coletar();
-                
+    
                 session()->flash('imageQr', $qrImagem);
                 session()->flash('dadosQr', $qrCode[0]);
                 session()->flash('maquina', $maquina);
                 session()->flash('local', $local);
+    
                 return view('Admin.QR.index', [
                     'locais' => $locais,
                     'clientes' => $clientes,
                     'maquinas' => $maquinas,
                 ]);
-            }else{
-                return back()->with(['imageQr'=>$qrImagem, 'dadosQr' => $qrCode[0], 'maquina' => $maquina, 'local' => $local]);
+            } else {
+                return back()->with(['imageQr' => $qrImagem, 'dadosQr' => $qrCode[0], 'maquina' => $maquina, 'local' => $local]);
             }
-        }else{
-            //return back()->with('error', 'Máquina não encontrada');
+        } else {
             $locais = LocaisService::coletar();
             $maquinas = MaquinasService::coletar();
             $clientes = ClientesService::coletar();
             return view('Admin.QR.index', compact('locais', 'maquinas', 'clientes'));
         }
-
-        
-
     }
+    
 
     public function criarQr(Request $request){
         $locais = LocaisService::coletar();
