@@ -98,7 +98,7 @@
                                                 <p>{{ session('success') }}</p>
                                             </div>
                                             <div class="modal-footer">
-                                                <a href="{{route('qr-download', ['id_local'=> session('id_local'), 'id_maquina' => session('id_maquina')])}}"   data-dismiss="modal" aria-label="Close"><button class="btn btn-primary" type="button">Imprimir QR</button></a>
+                                                <a href="{{route('cliente-qr-download', ['id_local'=> session('id_local'), 'id_maquina' => session('id_maquina')])}}"   data-dismiss="modal" aria-label="Close"><button class="btn btn-primary" type="button">Imprimir QR</button></a>
                                             </div>
 
                                         </div>
