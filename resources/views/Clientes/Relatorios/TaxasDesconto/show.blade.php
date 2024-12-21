@@ -56,7 +56,7 @@
                         </table>
                         <div class="row" style="display: flex; flex-direction: row; justify-content: center;width: 100%; margin-top: 10px; margin-bottom: 30px;">
                             <div class="col-md-8">
-                                <p><strong>Total Transações: </strong>  R$ {{ number_format($valor_total, 2, ',', '.')}}</p>
+                                <h4><strong>Total Transações: </strong>  R$ {{ number_format($valor_total, 2, ',', '.')}}</h4>
                             </div>
                             
                         </div>
