@@ -81,7 +81,7 @@ class QrCodeController extends Controller
 
         // Adiciona texto à imagem
         $text = $maquina['id_placa'];
-        $fontSize = 22;
+        $fontSize = 30;
         $textWidth = imagefontwidth($fontSize) * strlen($text);
         $textHeight = imagefontheight($fontSize);
         $textX = (imagesx($background) - $textWidth) / 2;
@@ -279,7 +279,7 @@ class QrCodeController extends Controller
 
     // Adiciona texto à imagem
     $text = $id_maquina['id_placa']; // Texto que será adicionado
-    $fontSize = 22; // Tamanho da fonte (1 a 5)
+    $fontSize = 30; // Tamanho da fonte (1 a 5)
     $textWidth = imagefontwidth($fontSize) * strlen($text);
     $textHeight = imagefontheight($fontSize);
     $textX = (imagesx($background) - $textWidth) / 2; // Centralizado horizontalmente
