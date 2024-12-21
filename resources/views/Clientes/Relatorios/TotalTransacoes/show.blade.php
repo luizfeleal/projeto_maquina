@@ -80,7 +80,7 @@
                 </div>
                 <div class="row" style="display: flex; flex-direction: row; justify-content: center; width: 100%; margin-top: 10px; margin-bottom: 30px;">
                     <div class="col-md-8">
-                        <h4><strong>Total Transações: </strong> R$
+                        <h4 style="color: #242a74;"><strong>Total Transações: </strong> R$
                             <span id="valor_total_pix">{{number_format($totalTransacoes, 2, ',', '.')}}</span></h4>
                     </div>
                 </div>
