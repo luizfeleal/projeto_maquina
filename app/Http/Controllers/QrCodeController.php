@@ -80,7 +80,7 @@ class QrCodeController extends Controller
         imagecopy($background, $resizedOverlay, $x, $y, 0, 0, $newWidth, $newHeight);
 
         // Adiciona texto à imagem
-        $text = $maquina[0]['id_placa']; // Texto que será adicionado
+        $text = $maquina['id_placa']; // Texto que será adicionado
         $fontSize = 5; // Tamanho da fonte (1 a 5)
         $textWidth = imagefontwidth($fontSize) * strlen($text);
         $textHeight = imagefontheight($fontSize);
