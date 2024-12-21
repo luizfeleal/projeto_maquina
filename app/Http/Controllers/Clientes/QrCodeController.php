@@ -117,7 +117,7 @@ class QrCodeController extends Controller
                 session()->flash('dadosQr', $qrCode[0]);
                 session()->flash('maquina', $maquina);
                 session()->flash('local', $local);
-                return view('Admin.QR.index', [
+                return view('Clientes.QR.index', [
                     'locais' => $locais,
                     'clientes' => $clientes,
                     'maquinas' => $maquinas,
