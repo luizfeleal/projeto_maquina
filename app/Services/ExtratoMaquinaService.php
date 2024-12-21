@@ -195,9 +195,9 @@ public static function coletarTotalTransacaoDasMaquinasDeUmCliente($dados){
 
 public static function coletarSaldoTotal($id = null) {
     if(!is_null($id)){
-        $url = env('APP_URL_API') . "/extrato/total/$id";
+        $url = env('APP_URL_API') . "/extrato/saldo/$id";
     }else{
-        $url = env('APP_URL_API') . "/extrato/total/";
+        $url = env('APP_URL_API') . "/extrato/saldo/";
     }
     $token = AuthService::getToken();
     $response = Http::withHeaders([

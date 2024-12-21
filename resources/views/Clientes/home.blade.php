@@ -16,7 +16,10 @@
                 <div class="card" style="height: 100%;">
                     <h5 class="card-header">Saldo Disponível</h5>
                     <div class="card-body" style="display: flex; justify-content: center; align-items: center;">
-                        <p class="card-text"> <strong>R$ {{number_format($saldo['data'], 2, ',', '.')}}</strong></p>
+                    <p class="card-text"><strong>Hoje:</strong> {{number_format($saldo['hoje'], 2, ',', '.')}}</p>
+                        <p class="card-text"><strong>Esse Mês:</strong> {{number_format($saldo['mes_atual'], 2, ',', '.')}}</p>
+                        <p class="card-text"><strong>Mês Passado:</strong> {{number_format($saldo['mes_passado'], 2, ',', '.')}}</p>
+                        
                     </div>
                 </div>
             </div>
