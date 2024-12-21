@@ -81,7 +81,7 @@ class QrCodeController extends Controller
 
         // Adiciona texto à imagem
         $text = $maquina['id_placa'];
-        $fontSize = 18;
+        $fontSize = 22;
         $textWidth = imagefontwidth($fontSize) * strlen($text);
         $textHeight = imagefontheight($fontSize);
         $textX = (imagesx($background) - $textWidth) / 2;
@@ -219,6 +219,7 @@ class QrCodeController extends Controller
 {
     $id_local = $request['id_local'];
     $id_maquina = $request['id_maquina'];
+    $maquina = MaquinasService::coletar($id_maquina);
     $qrCode = QrCodeService::coletarComFiltro(['id_local' => $id_local, 'id_maquina' => $id_maquina], 'where');
 
     if (empty($qrCode)) {
@@ -277,8 +278,8 @@ class QrCodeController extends Controller
     imagecopy($background, $resizedOverlay, $x, $y, 0, 0, $newWidth, $newHeight);
 
     // Adiciona texto à imagem
-    $text = "Texto Exemplo"; // Texto que será adicionado
-    $fontSize = 5; // Tamanho da fonte (1 a 5)
+    $text = $id_maquina['id_placa']; // Texto que será adicionado
+    $fontSize = 22; // Tamanho da fonte (1 a 5)
     $textWidth = imagefontwidth($fontSize) * strlen($text);
     $textHeight = imagefontheight($fontSize);
     $textX = (imagesx($background) - $textWidth) / 2; // Centralizado horizontalmente
