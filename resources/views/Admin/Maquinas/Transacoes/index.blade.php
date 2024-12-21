@@ -159,6 +159,7 @@
                                 }
                             }
                         ],
+                        ordering: true,
                         pageLength: 10,
                         paging: true,
                         lengthMenu: [10, 25, 50, 100]
