@@ -74,7 +74,7 @@
                             <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
                                 <li><a href="{{route('cliente-credencial-criar-efi')}}" class=" d-inline-flex text-decoration-none rounded" style="{{  $currentRoute === 'credencial-criar-efi' ? 'color:grey !important;': ' ' }}">Criar credencial EFI</a></li>
                                 <li><a href="{{route('cliente-credencial-criar-pagbank')}}" class=" d-inline-flex text-decoration-none rounded" style="{{  $currentRoute === 'credencial-criar-pagbank' ? 'color:grey !important;': ' ' }}">Criar credencial Pagbank</a></li>
-                                <li><a href="{{route('maquinas-cartao')}}" class=" d-inline-flex text-decoration-none rounded" style="{{  $currentRoute === 'maquinas-cartao' ? 'color:grey !important;': ' ' }}">Incluir Máquina Cartão</a></li>
+                                <li><a href="{{route('cliente-maquinas-cartao')}}" class=" d-inline-flex text-decoration-none rounded" style="{{  $currentRoute === 'maquinas-cartao' ? 'color:grey !important;': ' ' }}">Incluir Máquina Cartão</a></li>
                             </ul>
                         </div>
                     </li>
