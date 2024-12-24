@@ -204,7 +204,8 @@ class RelatoriosController extends Controller
         $isTotalTransacoes = isset($request['tipo_csv']) && $request['tipo_csv'] == 'total_transacao';
 
         if ($isTotalTransacoes) {
-            $data = ExtratoMaquinaService::coletarRelatorioTotalTransacoes($data)['data'];
+            $data = ExtratoMaquinaService::coletarRelatorioTotalTransacoes($data);
+            return $data;
         }
 
         // Criação do Spreadsheet e do cabeçalho
