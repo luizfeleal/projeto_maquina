@@ -90,7 +90,7 @@ class RelatoriosController extends Controller
             $totalTransacoes = 0;
             $estorno = 0;
 
-            foreach ($total['data'] as $item) {
+            foreach ($total as $item) {
                 if ($item['tipo'] != "Estorno") {
                     $totalTransacoes += $item['total'];
                 } else {
