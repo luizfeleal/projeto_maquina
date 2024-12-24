@@ -91,8 +91,7 @@ class RelatoriosController extends Controller
             $estorno = 0;
 
             foreach ($total['data'] as $item) {
-                return $item;
-                if ($item['tipo'] != "Estorno") {
+                if ($item['extrato_operacao_tipo'] != "Estorno") {
                     $totalTransacoes += $item['total'];
                 } else {
                     $estorno += $item['total'];
