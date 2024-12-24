@@ -200,6 +200,9 @@ class RelatoriosController extends Controller
         // Decodifica os dados JSON da requisição
         $data = json_decode($request->input('data'));
         $data = (array) $data;
+        if (array_key_exists('tipo_transacao', $data) && is_null($data['tipo_transacao'])) {
+            unset($data['tipo_transacao']);
+        }
         $isTaxaDesconto = isset($request['tipo_csv']) && $request['tipo_csv'] == 'taxa_desconto';
         $isTotalTransacoes = isset($request['tipo_csv']) && $request['tipo_csv'] == 'total_transacao';
 
