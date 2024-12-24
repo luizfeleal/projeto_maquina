@@ -9,7 +9,7 @@
         <div class="container section container-platform"
              style="margin-top: 15px; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%;">
 
-            <form action="{{ route('cliente-relatorio-xlsx-download') }}" method="post" class="form-center" id="form-csv">
+            <form action="{{ route('relatorio-xlsx-download') }}" method="post" class="form-center" id="form-csv">
                 @csrf
                 <input type="hidden" name="tipo_csv" value="total_transacao">
                 <input type="hidden" name="data" value="{{json_encode($bodyReq)}}">
