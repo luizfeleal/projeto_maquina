@@ -208,7 +208,7 @@ class RelatoriosController extends Controller
 
         if ($isTotalTransacoes) {
             
-            $data = ExtratoMaquinaService::coletarRelatorioTotalTransacoes($data)['data'];
+            $data = ExtratoMaquinaService::coletarRelatorioTotalTransacoes([])['data'];
         }
 
         // Criação do Spreadsheet e do cabeçalho
