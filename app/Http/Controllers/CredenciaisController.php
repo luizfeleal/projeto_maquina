@@ -36,7 +36,11 @@ class CredenciaisController extends Controller
 
             $dados = [];
             $dados['id_cliente'] = $request['select-cliente'];
-            $dados['client_id'] = $request['cliente_id'];
+            if($request['tipo_cred'] == "pagbank"){
+                $dados['client_id'] = strtolower($request['cliente_id']);
+            }else{
+                $dados['client_id'] = $request['cliente_id'];
+            }
             $dados['client_secret'] = $request['cliente_secret'];
             $dados['tipo_cred'] = $request['tipo_cred'];
             if($request['tipo_cred'] == "efi"){
