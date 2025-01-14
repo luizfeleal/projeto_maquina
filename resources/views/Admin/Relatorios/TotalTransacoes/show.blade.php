@@ -133,71 +133,78 @@
 
 @section('scriptTable')
 <script>
-   $(document).ready(function() {
-    $.fn.dataTable.ext.type.order['datetime-ddmmyyyy-pre'] = function(d) {
-                    if (d === 'Data não disponível') {
-                        return 0;
-                    }
-                    var parts = d.split('/');
-                    return new Date(parts[2], parts[1] - 1, parts[0]).getTime();
-                };
-    var table = $('#total_transacoes').DataTable({
-        "language": {
-            "url": "https://cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json"
-        },
-        "processing": true,
-        "serverSide": true,
-        "scrollX": true,
-        "sort": true,
-        "ajax": {
-            "url": "{{ route('relatorio-criar') }}",
-            "type": "POST",
-            "data": function(d) {
-                return $.extend({}, d, {
-                    _token: '{{ csrf_token() }}',
-                    tipo: 'totalTransacoes',
-                    id_maquina: @json($id_maquina),
-                    id_cliente: @json($id_cliente),
-                    tipo_transacao: @json($tipo_transacao),
-                    data_extrato_inicio: @json($data_extrato_inicio),
-                    data_extrato_fim: @json($data_extrato_fim)
-                });
-            }
-        },
-        "columns": [
-            //{ "data": "local_nome" },
-            { "data": "maquina_nome" },
-            { "data": "extrato_operacao_tipo" },
-            {
-                "data": "extrato_operacao_valor",
-                "orderable": true,
-                "render": function(data, type, row) {
-                    if (data === null) {
-                        return ''; // Retorna uma string vazia se o dado for nulo
-                    }
-                    var valor = parseFloat(data);
-                    if (isNaN(valor)) {
-                        return ''; // Retorna uma string vazia se o valor não for um número
-                    }
-                    if (row.extrato_operacao == "C") {
-                        return '+ R$ ' + valor.toFixed(2).replace('.', ',');
-                    } else {
-                        return '- R$ ' + valor.toFixed(2).replace('.', ',');
-                    }
-                }
-            },
-            {
-                "data": "data_criacao",
-                "type": "datetime-ddmmyyyy",
-            }
-        ],
-        "drawCallback": function(settings) {
-            var api = this.api();
+   $(document).ready(function () {
+    async function fetchToken() {
+        try {
+            let response = await fetch('https://www.swiftpaysolucoes.com/api/getToken');
+            let data = await response.json();
+            return data.token;
+        } catch (error) {
+            console.error('Erro ao obter o token:', error);
+            return null;
+        }
+    }
 
-            // Atualizar valores no DOM
-
-            // Habilitar ou desabilitar botão CSV com base na tabela
-            $('#btn-baixar-csv').prop('disabled', api.data().length === 0);
+    fetchToken().then(token => {
+        if (token) {
+            $('#tabela_maquinas_transacao').DataTable({
+                processing: true,
+                serverSide: true,
+                responsive: true,
+                scrollX: true,
+                ajax: {
+                    url: 'https://services.swiftpaysolucoes.com/api/extratoMaquina',
+                    type: 'GET',
+                    headers: {
+                        'Authorization': 'Bearer ' + token
+                    },
+                    data: function (d) {
+                        // DataTables envia os parâmetros conforme a estrutura do backend
+                        d.start = d.start || 0; // Índice inicial
+                        d.length = d.length || 10; // Número de registros por página
+                        d.search = d.search.value; // Filtro de pesquisa
+                    }
+                },
+                language: {
+                    url: "https://cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json"
+                },
+                columns: [
+                    {
+                        data: 'local_nome',
+                        title: 'Local'
+                    },
+                    {
+                        data: 'maquina_nome',
+                        title: 'Máquina'
+                    },
+                    {
+                        data: 'extrato_operacao',
+                        title: 'Última Transação',
+                        render: function (data, type, row) {
+                            var extrato_valor = row.extrato_operacao_valor ? row.extrato_operacao_valor : 0;
+                            var valor = parseFloat(extrato_valor).toFixed(2).replace('.', ',');
+                            return data === 'C' ? '+ R$ ' + valor : '- R$ ' + valor;
+                        }
+                    },
+                    {
+                        data: 'extrato_operacao_tipo',
+                        title: 'Fonte'
+                    },
+                    {
+                        data: 'data_criacao',
+                        title: 'Data e Hora',
+                        render: function (data) {
+                            // A data já vem formatada do backend como dd/mm/aaaa hh:mm
+                            return data;
+                        }
+                    }
+                ],
+                order: [[4, 'desc']], // Ordenar pela coluna "Data e Hora" (índice 4) em ordem decrescente
+                pageLength: 10,
+                paging: true,
+                lengthMenu: [10, 25, 50, 100],
+                ordering: true // Ativar ordenação
+            });
         }
     });
 });
