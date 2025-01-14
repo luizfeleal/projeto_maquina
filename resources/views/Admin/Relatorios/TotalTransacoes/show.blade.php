@@ -147,7 +147,7 @@
 
     fetchToken().then(token => {
         if (token) {
-            $('#tabela_maquinas_transacao').DataTable({
+            $('#total_transacoes').DataTable({
                 processing: true,
                 serverSide: true,
                 responsive: true,
