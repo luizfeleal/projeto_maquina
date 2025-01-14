@@ -92,81 +92,81 @@
 @section('scriptTable')
     <script>
 
-        $(document).ready(function(){
+$(document).ready(function () {
+    async function fetchToken() {
+        try {
+            let response = await fetch('https://www.swiftpaysolucoes.com/api/getToken');
+            let data = await response.json();
+            return data.token;
+        } catch (error) {
+            console.error('Erro ao obter o token:', error);
+            return null;
+        }
+    }
 
-            async function fetchToken() {
-                try {
-                    let response = await fetch('https://www.swiftpaysolucoes.com/api/getToken');
-                    let data = await response.json();
-                    return data.token;
-                } catch (error) {
-                    console.error('Erro ao obter o token:', error);
-                    return null;
-                }
-            }
-
-            fetchToken().then(token => {
-                if (token) {
-                    $('#tabela_maquinas_transacao').DataTable({
-                        processing: true,
-                        serverSide: true,
-                        responsive: true,
-                        scrollX: true,
-                        ajax: {
-                            url: 'https://services.swiftpaysolucoes.com/api/extratoMaquina', // URL da sua API
-                            type: 'GET', // Tipo de requisição
-                           
-                            headers: {
-                                'Authorization': 'Bearer ' + token, // Adicione seu token de autenticação
-                            },
-                            data: function (d) {
-                                d.page = (d.start / d.length) + 1; // DataTables usa índice baseado em 0
-                                d.per_page = d.length; // Define o número de registros por página
-                                d.search = d.search.value;
-                            }
-                        },
-                        language: {
-                            url: "https://cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json" // Idioma
-                        },
-                        columns: [
-                            {
-                                data: 'local_nome',
-                                title: 'Local'
-                            },
-                            {
-                                data: 'maquina_nome',
-                                title: 'Máquina'
-                            },
-                            {
-                                data: 'extrato_operacao',
-                                title: 'Última Transação',
-                                render: function(data, type, row) {
-                                    var extrato_valor = row.extrato_operacao_valor ? row.extrato_operacao_valor : 0;
-                                    var valor = parseFloat(extrato_valor).toFixed(2).replace('.', ',');
-                                    return data === 'C' ? '+ R$ ' + valor : '- R$ ' + valor;
-                                }
-                            },
-                            {
-                                data: 'extrato_operacao_tipo',
-                                title: 'Fonte'
-                            },
-                            {
-                                data: 'data_criacao',
-                                title: 'Data e Hora',
-                                render: function(data) {
-                                    var date = new Date(data);
-                                    return date.toLocaleDateString('pt-BR') + ' ' + date.toLocaleTimeString('pt-BR');
-                                }
-                            }
-                        ],
-                        ordering: true,
-                        pageLength: 10,
-                        paging: true,
-                        lengthMenu: [10, 25, 50, 100]
-                    });
-                }
-        })        
+    fetchToken().then(token => {
+        if (token) {
+            $('#tabela_maquinas_transacao').DataTable({
+                processing: true,
+                serverSide: true,
+                responsive: true,
+                scrollX: true,
+                ajax: {
+                    url: 'https://services.swiftpaysolucoes.com/api/extratoMaquina',
+                    type: 'GET',
+                    headers: {
+                        'Authorization': 'Bearer ' + token
+                    },
+                    data: function (d) {
+                        // DataTables envia os parâmetros conforme a estrutura do backend
+                        d.start = d.start || 0; // Índice inicial
+                        d.length = d.length || 10; // Número de registros por página
+                        d.search = d.search.value; // Filtro de pesquisa
+                    }
+                },
+                language: {
+                    url: "https://cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json"
+                },
+                columns: [
+                    {
+                        data: 'local_nome',
+                        title: 'Local'
+                    },
+                    {
+                        data: 'maquina_nome',
+                        title: 'Máquina'
+                    },
+                    {
+                        data: 'extrato_operacao',
+                        title: 'Última Transação',
+                        render: function (data, type, row) {
+                            var extrato_valor = row.extrato_operacao_valor ? row.extrato_operacao_valor : 0;
+                            var valor = parseFloat(extrato_valor).toFixed(2).replace('.', ',');
+                            return data === 'C' ? '+ R$ ' + valor : '- R$ ' + valor;
+                        }
+                    },
+                    {
+                        data: 'extrato_operacao_tipo',
+                        title: 'Fonte'
+                    },
+                    {
+                        data: 'data_criacao',
+                        title: 'Data e Hora',
+                        render: function (data) {
+                            // A data já vem formatada do backend como dd/mm/aaaa hh:mm
+                            return data;
+                        }
+                    }
+                ],
+                order: [[4, 'desc']], // Ordenar pela coluna "Data e Hora" (índice 4) em ordem decrescente
+                pageLength: 10,
+                paging: true,
+                lengthMenu: [10, 25, 50, 100],
+                ordering: true // Ativar ordenação
+            });
+        }
     });
+});
     </script>
 
 @endsection
