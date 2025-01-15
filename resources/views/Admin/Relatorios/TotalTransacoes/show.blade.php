@@ -134,7 +134,6 @@
 @section('scriptTable')
 <script>
 $(document).ready(function () {
-    console.log(@json($data_extrato_inicio))
     // Definir o tipo de ordenação personalizada para datas no formato dd/mm/yyyy
     $.fn.dataTable.ext.type.order['datetime-ddmmyyyy-pre'] = function (d) {
         if (d === 'Data não disponível' || !d) {
