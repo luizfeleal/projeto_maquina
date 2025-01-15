@@ -248,6 +248,10 @@ class MaquinasController extends Controller
 
         $id_maquinas_com_cartao = [];
 
+        $maquinasCartao = array_filter($maquinasCartao, function($item) {
+            return $item['status'] == 1;
+        });
+
         foreach ($maquinasCartao as $item) {
             array_push($id_maquinas_com_cartao, $item['id_maquina']);
         }
