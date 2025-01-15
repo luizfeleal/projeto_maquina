@@ -88,7 +88,7 @@
                                             <option value="PIX">Pix</option>
                                             <option value="Cartão">Cartão</option>
                                             <option value="Dinheiro">Dinheiro</option>
-                                            <option value="Dinheiro">Estorno</option>
+                                            <option value="Estorno">Estorno</option>
                                         </select>
                                         <div class="invalid-feedback">
                                             <p class="invalid-p invalid-p-name">Campo obrigatório</p>
@@ -157,25 +157,13 @@
 
                                 </div>
                                 <div class="row" style="display: flex; flex-direction: row; justify-content: center; margin-bottom: 20px; width: 100%;">
-                                    <div class="col-md-4">
+                                    <div class="col-md-8">
                                         <label for="id_local" class="form-label">Local:</label>
                                         <select class="select-local js-example-basic-multiple js-states form-control" id="id_local_taxa" placeholder="Selecione" name="id_local[]" multiple="multiple" >
 
                                             @foreach($locais as $local)
                                                 <option value="{{$local['id_local']}}">{{$local['local_nome']}}</option>
                                             @endforeach
-                                        </select>
-                                        <div class="invalid-feedback">
-                                            <p class="invalid-p invalid-p-name">Campo obrigatório</p>
-                                        </div>
-
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label for="id_maquina" class="form-label">Tipo:</label>
-                                        <select class="form-select" name="situacao_recebimento" id="situacao_recebimento" aria-label="Default select example">
-                                            <option value="" selected>Escolher...</option>
-                                            <option value="A Pagar">A Pagar</option>
-                                            <option value="Pago">Pago</option>
                                         </select>
                                         <div class="invalid-feedback">
                                             <p class="invalid-p invalid-p-name">Campo obrigatório</p>

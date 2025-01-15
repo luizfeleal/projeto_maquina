@@ -157,6 +157,7 @@ class RelatoriosController extends Controller
 
             $maquinas = collect(MaquinasService::coletarComLixo())->keyBy('id_maquina')->toArray();
 
+            return $relatorioDeErros;
 
             $resultadosFiltrados = [];
 
