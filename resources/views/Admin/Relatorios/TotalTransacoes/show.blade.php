@@ -134,6 +134,7 @@
 @section('scriptTable')
 <script>
 $(document).ready(function () {
+    console.log(@json($data_inicio))
     // Definir o tipo de ordenação personalizada para datas no formato dd/mm/yyyy
     $.fn.dataTable.ext.type.order['datetime-ddmmyyyy-pre'] = function (d) {
         if (d === 'Data não disponível' || !d) {
@@ -162,8 +163,8 @@ $(document).ready(function () {
                     id_maquina: @json($id_maquina),
                     id_cliente: @json($id_cliente),
                     tipo_transacao: @json($tipo_transacao),
-                    data_inicio: @json($data_inicio),
-                    data_fim: @json($data_fim)
+                    data_inicio: @json($data_extrato_inicio),
+                    data_fim: @json($data_extrato_fim)
                 });
             }
         },
