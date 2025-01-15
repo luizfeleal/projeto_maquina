@@ -79,7 +79,6 @@ class RelatoriosController extends Controller
 
         if ($nomeRelatorio == "totalTransacoes") {
 
-            return $request;
             $resultado = ExtratoMaquinaService::coletarRelatorioTotalTransacoes($request->all());
 
             $total = ExtratoMaquinaService::coletarRelatorioTotalTransacoesTotal($request->all());
