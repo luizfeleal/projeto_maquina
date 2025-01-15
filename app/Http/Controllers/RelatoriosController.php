@@ -161,7 +161,7 @@ class RelatoriosController extends Controller
             $resultadosFiltrados = [];
             
             foreach ($relatorioDeErros as &$item) {
-                return $maquinas[$item['id_maquina']];
+
 
                 $item['id_placa'] = isset($maquinas[$item['id_maquina']]['id_placa']) ? $maquinas[$item['id_maquina']]['id_placa'] : '';
                 $dataItem = strtotime($item["data_criacao"]);
