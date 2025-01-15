@@ -404,6 +404,7 @@ class MaquinasController extends Controller
             if($request['status'] == 1){
                 $maquinasCartaoExistente = MaquinasCartaoService::coletar();
 
+                return $maquinasCartaoExistente;
                 $maquinasCartaoExistente = array_filter($maquinasCartaoExistente, function($item) use($id_device){
                     return $item['id'] == $id_device;
                 });
@@ -413,7 +414,7 @@ class MaquinasController extends Controller
                 $deviceExistente = $maquinasCartaoExistente[0]['device'];
 
                 $maquinasCartaoExistente = array_filter($maquinasCartaoExistente, function($item) use($deviceExistente){
-                    return $item['device'] == $deviceExistente ;
+                    return $item['device'] == $deviceExistente && $ite;
                 });
                 return $maquinasCartaoExistente;
 
