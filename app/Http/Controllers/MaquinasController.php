@@ -332,6 +332,18 @@ class MaquinasController extends Controller
             $dados['device'] = $request['device'];
             $dados['status'] = 1;
 
+            $deviceNumber = $request['device'];
+
+            $maquinasCartaoExistente = MaquinasCartaoService::coletar();
+
+            $maquinasCartaoExistente = array_filter($maquinasCartaoExistente, function($item) use($deviceNumber){
+                return $item['device'] == $deviceNumber && $item['status'] == 1;
+            });
+
+            if(!empty($maquinasCartaoExistente)){
+                return back()->with('error', 'A máquina de cartão escolhida já está associada a uma placa. Caso queira prosseguir, inative essa máquina de cartão e associe novamente');
+            }
+
             $result = MaquinasCartaoService::criar($dados);
 
             return back()->with('success', $result['message']);
