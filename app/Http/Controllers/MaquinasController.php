@@ -264,7 +264,6 @@ class MaquinasController extends Controller
                 array_push($maquinas_exibir, $maquina);
             }
         }
-        return  $maquinas_exibir;
 
         return view('Admin.Maquinas.MaquinaCartao.create', compact('maquinas_exibir'));
     }
