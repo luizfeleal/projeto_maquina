@@ -236,6 +236,9 @@ class MaquinasController extends Controller
             if (isset($maquinasIndexadas[$maquinaCartao['id_maquina']])) {
                 $maquinaCartao['maquina_nome'] = $maquinasIndexadas[$maquinaCartao['id_maquina']]['maquina_nome'];
                 $maquinasCartaoFiltradas[] = $maquinaCartao;
+            }else{
+                $maquinaCartao['maquina_nome'] = 'Máquina Removida';
+                $maquinasCartaoFiltradas[] = $maquinaCartao;
             }
         }
 
