@@ -157,11 +157,11 @@ class RelatoriosController extends Controller
 
             $maquinas = collect(MaquinasService::coletarComLixo())->keyBy('id_maquina')->toArray();
 
-            return $relatorioDeErros;
-
+            
             $resultadosFiltrados = [];
-
+            
             foreach ($relatorioDeErros as &$item) {
+                return $maquinas;
 
                 $item['id_placa'] = $maquinas[$item['id_maquina']]['id_placa'];
                 $dataItem = strtotime($item["data_criacao"]);
