@@ -257,14 +257,14 @@ class MaquinasController extends Controller
         }
 
 
-        return $maquinasCartao;
         $maquinas_exibir = [];
-
+        
         foreach ($maquinas as $maquina) {
             if (!in_array($maquina['id_maquina'], $id_maquinas_com_cartao)) {
                 array_push($maquinas_exibir, $maquina);
             }
         }
+        return  $maquinas_exibir;
 
         return view('Admin.Maquinas.MaquinaCartao.create', compact('maquinas_exibir'));
     }
