@@ -105,6 +105,8 @@ class RelatoriosController extends Controller
 
                 return response()->json($resultado);
             }
+
+            return $request;
             $id_maquina = $request['id_maquina'];
             $id_cliente = $request['id_cliente'];
             $tipo_transacao = $request['tipo_transacao'];
