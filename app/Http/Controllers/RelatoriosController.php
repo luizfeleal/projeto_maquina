@@ -86,7 +86,6 @@ class RelatoriosController extends Controller
             // Calcular totais
 
 
-            return $resultado;
             $totalTransacoes = 0;
             $estorno = 0;
 
