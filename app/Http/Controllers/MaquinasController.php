@@ -408,6 +408,8 @@ class MaquinasController extends Controller
                     return $item['id'] == $id_device;
                 });
 
+                array_values($maquinasCartaoExistente);
+
                 return $maquinasCartaoExistente ;
                 $deviceExistente = $maquinasCartaoExistente[0]['device'];
 
