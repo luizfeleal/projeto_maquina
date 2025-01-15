@@ -106,12 +106,11 @@ class RelatoriosController extends Controller
                 return response()->json($resultado);
             }
 
-            return $request;
             $id_maquina = $request['id_maquina'];
             $id_cliente = $request['id_cliente'];
             $tipo_transacao = $request['tipo_transacao'];
-            $data_extrato_inicio = $request['data_extrato_inicio'];
-            $data_extrato_fim = $request['data_extrato_fim'];
+            $data_extrato_inicio = $request['data_inicio'];
+            $data_extrato_fim = $request['data_fim'];
             return view('Admin.Relatorios.TotalTransacoes.show', compact('resultado', 'total', 'totalTransacoes', 'bodyReq', 'id_maquina', 'id_cliente', 'tipo_transacao','data_extrato_inicio', 'data_extrato_fim'));
         }
 
