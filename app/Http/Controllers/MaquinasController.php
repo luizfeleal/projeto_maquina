@@ -256,6 +256,8 @@ class MaquinasController extends Controller
             array_push($id_maquinas_com_cartao, $item['id_maquina']);
         }
 
+
+        return $maquinasCartao;
         $maquinas_exibir = [];
 
         foreach ($maquinas as $maquina) {
