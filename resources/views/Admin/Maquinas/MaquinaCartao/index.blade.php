@@ -42,9 +42,9 @@
 
 
                                 @if($maquina['status'] == 1)
-                                <td style="text-align: center;"><a href="#" style="color: red !important;" data-bs-toggle="modal" data-bs-target="#ModalCenterExcluir" onclick="setIdMaquinaCartaoExcluir({{$maquina['id']}}, '#id_device_inativar')"><i class="fa-solid fa-ban"></i></a></td>
+                                <td style="text-align: center;"><a href="#"  data-bs-toggle="modal" data-bs-target="#ModalCenterExcluir" onclick="setIdMaquinaCartaoExcluir({{$maquina['id']}}, '#id_device_inativar')"><i class="fa-solid fa-ban"></i></a></td>
                                 @else
-                                <td style="text-align: center;"><a href="#" style="color: green !important;" data-bs-toggle="modal" data-bs-target="#ModalCenterAtivar" onclick="setIdMaquinaCartaoExcluir({{$maquina['id']}}, '#id_device_ativar')"><i class="fa-solid fa-circle-check"></i></a></td>
+                                <td style="text-align: center;"><a href="#" data-bs-toggle="modal" data-bs-target="#ModalCenterAtivar" onclick="setIdMaquinaCartaoExcluir({{$maquina['id']}}, '#id_device_ativar')"><i class="fa-solid fa-circle-check"></i></a></td>
                                 @endif
                             </tr>
                         @endforeach
