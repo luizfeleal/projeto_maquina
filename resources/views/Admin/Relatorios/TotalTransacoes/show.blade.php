@@ -162,8 +162,8 @@ $(document).ready(function () {
                     id_maquina: @json($id_maquina),
                     id_cliente: @json($id_cliente),
                     tipo_transacao: @json($tipo_transacao),
-                    data_extrato_inicio: @json($data_extrato_inicio),
-                    data_extrato_fim: @json($data_extrato_fim)
+                    data_inicio: @json($data_extrato_inicio),
+                    data_fim: @json($data_extrato_fim)
                 });
             }
         },
