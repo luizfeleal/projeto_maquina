@@ -74,7 +74,6 @@ class ExtratoMaquinaService
 public static function coletarRelatorioTotalTransacoes($dados, $id_cliente = null){
     $url = env('APP_URL_API') . "/relatorioTotalTransacoes";
 
-    return $dados;
     if(isset($id_cliente)){
         $dados['id_cliente'] = [$id_cliente];
     }
