@@ -413,7 +413,7 @@ class MaquinasController extends Controller
                 $deviceExistente = $maquinasCartaoExistente[0]['device'];
 
                 $maquinasCartaoExistente = array_filter($maquinasCartaoExistente, function($item) use($deviceExistente){
-                    return $item['device'] == $deviceExistente && $item['status'] == 1;
+                    return $item['device'] == $deviceExistente ;
                 });
                 return $maquinasCartaoExistente;
 
