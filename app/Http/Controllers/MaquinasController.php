@@ -412,10 +412,10 @@ class MaquinasController extends Controller
 
                 $deviceExistente = $maquinasCartaoExistente[0]['device'];
 
-                return $deviceExistente;
                 $maquinasCartaoExistente = array_filter($maquinasCartaoExistente, function($item) use($deviceExistente){
                     return $item['device'] == $deviceExistente && $item['status'] == 1;
                 });
+                return $maquinasCartaoExistente;
 
                 if(!empty($maquinasCartaoExistente)){
                     return back()->with('error', 'A máquina de cartão escolhida não pode ser ativada. Caso queira prosseguir, inative a máquina de cartão que está ativa e associada.');
