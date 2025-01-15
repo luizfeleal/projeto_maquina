@@ -392,7 +392,7 @@ class MaquinasController extends Controller
 
     public function inativarMaquinasCartao(Request $request)
     {
-        try {
+        //try {
 
             $dados = [];
             $dados['id'] = $request['id_device'];
@@ -422,8 +422,8 @@ class MaquinasController extends Controller
 
             $result = MaquinasCartaoService::atualizar($dados);
             return back()->with('success', $result->message);
-        } catch (\Throwable $e) {
+        //} catch (\Throwable $e) {
             return back()->with('error', 'Houve um erro ao tentar cadastrar a máquina');
-        }
+        //}
     }
 }
