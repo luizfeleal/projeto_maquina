@@ -405,8 +405,15 @@ class MaquinasController extends Controller
                 $maquinasCartaoExistente = MaquinasCartaoService::coletar();
 
                 $maquinasCartaoExistente = array_filter($maquinasCartaoExistente, function($item) use($id_device){
-                    return $item['id'] == $id_device && $item['status'] == 1;
+                    return $item['id'] == $id_device;
                 });
+
+                $deviceExistente = $maquinasCartaoExistente[0]['device'];
+
+                $maquinasCartaoExistente = array_filter($maquinasCartaoExistente, function($item) use($deviceExistente){
+                    return $item['device'] == $deviceExistente && $item['status'] == 1;
+                });
+
 
                 if(!empty($maquinasCartaoExistente)){
                     return back()->with('error', 'A máquina de cartão escolhida não pode ser ativada. Caso queira prosseguir, inative a máquina de cartão que está ativa e associada.');
