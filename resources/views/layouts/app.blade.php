@@ -34,7 +34,7 @@
         <div class="container-fluid">
             <a class="navbar-brand" href="{{route('home')}}" style="cursor: default;"><img src="{{ asset('site/img/swift_pay_solucoes_png.png') }}" width="250" height="63" alt="Swift Pay Soluções"></a>
             <!--<h1>LOGO</h1>-->
-            <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasScrolling" aria-controls="offcanvasScrolling">
+            <button class="navbar-toggler" type="button" style="background-color: #FFF !important;" data-bs-toggle="offcanvas" data-bs-target="#offcanvasScrolling" aria-controls="offcanvasScrolling">
                 <span class="navbar-toggler-icon"></span>
             </button>
 
