@@ -107,7 +107,7 @@
                     $('#tabela_maquinas_transacao').DataTable({
                         processing: true,
                         serverSide: true,
-                        responsive: true,
+                        responsive: false,
                         ajax: {
                             url: 'https://services.swiftpaysolucoes.com/api/totalTransacaoMaquinaCliente', // URL da sua API
                             type: 'POST', // Tipo de requisição

@@ -109,7 +109,7 @@ $(document).ready(function () {
             $('#tabela_maquinas_transacao').DataTable({
                 processing: true,
                 serverSide: true,
-                responsive: true,
+                responsive: false,
                 scrollX: true,
                 ajax: {
                     url: 'https://services.swiftpaysolucoes.com/api/extratoMaquina',
