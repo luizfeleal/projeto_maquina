@@ -202,7 +202,7 @@ class MaquinasController extends Controller
         ];
         $jogada = LiberarJogadaService::criar($dados);
 
-        if ($jogada['message'] == "Jogada liberada com sucesso") {
+        if (isset($jogada['message']) && $jogada['message'] == "Jogada liberada com sucesso") {
             return back()->with('success', "Jogada liberada com sucesso!");
         } else {
             return back()->with('error', 'Houve um erro ao tentar liberar a jogada.');
