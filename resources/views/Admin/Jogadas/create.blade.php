@@ -37,7 +37,7 @@
                     <div class="row" style="display: flex; flex-direction: row; justify-content: center;  width: 100%; ">
                         <div class="col-md-6">
                             <label for="Valor Credito" class="form-label">Valor Crédito*:</label>
-                            <input type="text" name="valor_credito" id="valor_credito" class="form-control input-text" placeholder="Valor Crédito" aria-label="Valor Credito" required>
+                            <input type="number" name="valor_credito" id="valor_credito" class="form-control input-text" placeholder="Valor Crédito" aria-label="Valor Credito" title="Digite apenas números inteiros" min="1" max="100" required>
                             
                             <div class="invalid-feedback">
                                 <p class="invalid-p" id="select_cliente_mensagem">Campo obrigatório</p>
