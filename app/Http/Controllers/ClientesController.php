@@ -154,6 +154,8 @@ class ClientesController extends Controller
             $id_grupo_acesso = 3;
         }else if($permissaoPagbank){
             $id_grupo_acesso = 4;
+        }else{
+            $id_grupo_acesso = 5;
         }
        
         ClientesService::atualizar($dados_cliente, $id_cliente);
