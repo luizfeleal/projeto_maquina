@@ -275,9 +275,9 @@ class MaquinasController extends Controller
     {
 
         if ($request->has('id_maquina')) {
-            $id_maquina = $request->id;
+            $id_maquina = $request->id_maquina;
             $maquinas = MaquinasService::coletar($id_maquina);
-            $id_local = $maquinas[0]['id_local'];
+            $id_local = $maquinas['id_local'];
             $locais = LocaisService::coletar($id_local);
             $clienteLocal = ClienteLocalService::coletar();
             $clientes = ClientesService::coletar();
@@ -319,7 +319,7 @@ class MaquinasController extends Controller
                 return in_array($item['id_cliente'],  $idClientes);
             });
 
-            $maquinas = $maquinas[0];
+            $maquinas = $maquinas;
             return view('Admin.Maquinas.edit', compact('maquinas', 'locais', 'clientes', 'possuiMaquinaCartaoAssociada', 'possuiQrCode', 'localCliente'));
         } else {
             return back()->with('error', 'Máquina não encontrada');
