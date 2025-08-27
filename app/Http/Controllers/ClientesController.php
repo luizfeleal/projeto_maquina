@@ -160,13 +160,13 @@ class ClientesController extends Controller
        
         ClientesService::atualizar($dados_cliente, $id_cliente);
         $usuarios = UsuariosService::coletar();
-
+        
         $usuarios = array_filter($usuarios, function($item) use($id_cliente){
             return $item['id_cliente'] == $id_cliente;
         });
-
+        
         $usuarios = array_values($usuarios);
-        UsuariosService::atualizar(['id_grupo_acesso' => $id_grupo_acesso], $usuarios[0]['id_usuario']);
+        UsuariosService::atualizar(['id_grupo_acesso' => $id_grupo_acesso, 'usuario_email' => $dados['cliente_email'], 'usuario_nome' => $dados['cliente_nome']], $usuarios[0]['id_usuario']);
 
         return back()->with('success', "Usuário atualizado com sucesso!");
     }
