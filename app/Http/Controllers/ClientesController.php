@@ -166,7 +166,7 @@ class ClientesController extends Controller
         });
         
         $usuarios = array_values($usuarios);
-        UsuariosService::atualizar(['id_grupo_acesso' => $id_grupo_acesso, 'usuario_email' => $dados['cliente_email'], 'usuario_nome' => $dados['cliente_nome']], $usuarios[0]['id_usuario']);
+        UsuariosService::atualizar(['id_grupo_acesso' => $id_grupo_acesso, 'usuario_email' => $dados['cliente_email'], 'usuario_login' => $dados['cliente_email'],'usuario_nome' => $dados['cliente_nome']], $usuarios[0]['id_usuario']);
 
         return back()->with('success', "Usuário atualizado com sucesso!");
     }
