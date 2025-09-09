@@ -93,6 +93,8 @@ class MaquinasController extends Controller
 
             return back()->with('success', $result['message']);
         } catch (\Throwable $e) {
+            \Log::error("erro ao registrar a maquina");
+            \Log::error($e);
             return back()->with('error', 'Houve um erro ao tentar cadastrar a máquina');
         }
     }
