@@ -245,7 +245,7 @@ class QrCodeController extends Controller
 
             if(isset($qr['message'])){
                 if($qr['message'] == "Qr Code cadastrado com sucesso!"){
-                    return back()-> with(['success' => $qr['message'], 'qr_base64_imagem' => $qr['response']['qr_image']]);
+                    return back()-> with(['success' => $qr['message'], 'qr_base64_imagem' => $qr['response']['qr_image'], 'id_local' => $request['select_local'], 'id_maquina' =>$request['select_maquina']]);
                 }else{
                     return back()-> with('error', $qr['message']);
                 }
