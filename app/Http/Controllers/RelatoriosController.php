@@ -208,8 +208,9 @@ class RelatoriosController extends Controller
         $isTotalTransacoes = isset($request['tipo_csv']) && $request['tipo_csv'] == 'total_transacao';
 
         if ($isTotalTransacoes) {
-            
-            $data = ExtratoMaquinaService::coletarRelatorioTotalTransacoes([])['data'];
+            // Para este relatório, "data" vem como filtros (cliente, máquina, período, etc.)
+            // então precisamos buscar novamente respeitando esses filtros (igual a tela de Total Transações).
+            $data = ExtratoMaquinaService::coletarRelatorioTotalTransacoes($data)['data'];
         }
 
         // Criação do Spreadsheet e do cabeçalho
