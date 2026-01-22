@@ -84,14 +84,41 @@ class QrCodeController extends Controller
 
         // Adiciona texto à imagem
         $text = $maquina['id_placa'];
-        $fontSize = 30;
-        $textWidth = imagefontwidth($fontSize) * strlen($text);
-        $textHeight = imagefontheight($fontSize);
-        $textX = (imagesx($background) - $textWidth) / 2;
-        $textY = imagesy($background) - $textHeight - 20;
         $textColor = imagecolorallocate($background, 255, 255, 255);
 
-        imagestring($background, $fontSize, $textX, $textY, $text, $textColor);
+        // Para aumentar o tamanho do texto de verdade, precisa usar fonte TTF (imagettftext).
+        // Coloque um arquivo .ttf em: public/site/fonts/DejaVuSans.ttf (ou altere o caminho abaixo).
+        $fontPath = public_path('/site/fonts/DejaVuSans.ttf');
+        $fontSize = 30;
+        $angle = 0;
+
+        if (is_file($fontPath)) {
+            $bbox = imagettfbbox($fontSize, $angle, $fontPath, $text);
+            $minX = min($bbox[0], $bbox[2], $bbox[4], $bbox[6]);
+            $maxX = max($bbox[0], $bbox[2], $bbox[4], $bbox[6]);
+            $minY = min($bbox[1], $bbox[3], $bbox[5], $bbox[7]);
+            $maxY = max($bbox[1], $bbox[3], $bbox[5], $bbox[7]);
+
+            $textWidth = $maxX - $minX;
+            $imgW = imagesx($background);
+            $imgH = imagesy($background);
+
+            // Centraliza horizontalmente e posiciona o "bottom" do texto a 20px da borda inferior
+            $textX = (($imgW - $textWidth) / 2) - $minX;
+            $desiredBottom = $imgH - 20;
+            $textY = $desiredBottom - $maxY;
+
+            imagettftext($background, $fontSize, $angle, (int) $textX, (int) $textY, $textColor, $fontPath, $text);
+        } else {
+            // Fallback (fonte interna do GD): tamanho máximo é 5
+            $font = 5;
+            $textWidth = imagefontwidth($font) * strlen($text);
+            $textHeight = imagefontheight($font);
+            $textX = (imagesx($background) - $textWidth) / 2;
+            $textY = imagesy($background) - $textHeight - 20;
+
+            imagestring($background, $font, (int) $textX, (int) $textY, $text, $textColor);
+        }
 
         // Cria um buffer para armazenar a imagem como string
         ob_start();
@@ -317,14 +344,41 @@ class QrCodeController extends Controller
 
         // Adiciona texto à imagem
         $text = $maquina['id_placa'];
-        $fontSize = 30;
-        $textWidth = imagefontwidth($fontSize) * strlen($text);
-        $textHeight = imagefontheight($fontSize);
-        $textX = (imagesx($background) - $textWidth) / 2;
-        $textY = imagesy($background) - $textHeight - 20;
         $textColor = imagecolorallocate($background, 255, 255, 255);
 
-        imagestring($background, $fontSize, $textX, $textY, $text, $textColor);
+        // Para aumentar o tamanho do texto de verdade, precisa usar fonte TTF (imagettftext).
+        // Coloque um arquivo .ttf em: public/site/fonts/DejaVuSans.ttf (ou altere o caminho abaixo).
+        $fontPath = public_path('/site/fonts/DejaVuSans.ttf');
+        $fontSize = 30;
+        $angle = 0;
+
+        if (is_file($fontPath)) {
+            $bbox = imagettfbbox($fontSize, $angle, $fontPath, $text);
+            $minX = min($bbox[0], $bbox[2], $bbox[4], $bbox[6]);
+            $maxX = max($bbox[0], $bbox[2], $bbox[4], $bbox[6]);
+            $minY = min($bbox[1], $bbox[3], $bbox[5], $bbox[7]);
+            $maxY = max($bbox[1], $bbox[3], $bbox[5], $bbox[7]);
+
+            $textWidth = $maxX - $minX;
+            $imgW = imagesx($background);
+            $imgH = imagesy($background);
+
+            // Centraliza horizontalmente e posiciona o "bottom" do texto a 20px da borda inferior
+            $textX = (($imgW - $textWidth) / 2) - $minX;
+            $desiredBottom = $imgH - 20;
+            $textY = $desiredBottom - $maxY;
+
+            imagettftext($background, $fontSize, $angle, (int) $textX, (int) $textY, $textColor, $fontPath, $text);
+        } else {
+            // Fallback (fonte interna do GD): tamanho máximo é 5
+            $font = 5;
+            $textWidth = imagefontwidth($font) * strlen($text);
+            $textHeight = imagefontheight($font);
+            $textX = (imagesx($background) - $textWidth) / 2;
+            $textY = imagesy($background) - $textHeight - 20;
+
+            imagestring($background, $font, (int) $textX, (int) $textY, $text, $textColor);
+        }
 
         // Cria um buffer para armazenar a imagem como string
         ob_start();
