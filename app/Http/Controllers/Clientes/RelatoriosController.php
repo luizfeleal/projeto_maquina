@@ -105,8 +105,21 @@ class RelatoriosController extends Controller
         if ($nomeRelatorio == "totalTransacoes") {
 
             $id_cliente = session()->get('id_cliente');
-            $resultado = ExtratoMaquinaService::coletarRelatorioTotalTransacoes($request->all(), $id_cliente);
-            $total = ExtratoMaquinaService::coletarRelatorioTotalTransacoesTotal($request->all(), $id_cliente);
+
+            // Normaliza filtros (o form envia data_inicio/data_fim, mas alguns fluxos antigos usam data_extrato_inicio/data_extrato_fim)
+            $payload = $request->all();
+            if (isset($payload['data_extrato_inicio']) && !isset($payload['data_inicio'])) {
+                $payload['data_inicio'] = $payload['data_extrato_inicio'];
+            }
+            if (isset($payload['data_extrato_fim']) && !isset($payload['data_fim'])) {
+                $payload['data_fim'] = $payload['data_extrato_fim'];
+            }
+            if (array_key_exists('tipo_transacao', $payload) && ($payload['tipo_transacao'] === null || $payload['tipo_transacao'] === '')) {
+                unset($payload['tipo_transacao']);
+            }
+
+            $resultado = ExtratoMaquinaService::coletarRelatorioTotalTransacoes($payload, $id_cliente);
+            $total = ExtratoMaquinaService::coletarRelatorioTotalTransacoesTotal($payload, $id_cliente);
 
             // Calcular totais
 
@@ -125,15 +138,14 @@ class RelatoriosController extends Controller
 
             $totalTransacoes = $totalTransacoes - $estorno;
 
-            $bodyReq = $request->all();
+            $bodyReq = $payload;
             if ($request->ajax()) {
                 return response()->json($resultado);
             }
-            $id_maquina = $request['id_maquina'];
-            $id_cliente = $request['id_cliente'];
-            $tipo_transacao = $request['tipo_transacao'];
-            $data_extrato_inicio = $request['data_extrato_inicio'];
-            $data_extrato_fim = $request['data_extrato_fim'];
+            $id_maquina = $payload['id_maquina'] ?? null;
+            $tipo_transacao = $payload['tipo_transacao'] ?? null;
+            $data_extrato_inicio = $payload['data_inicio'] ?? null;
+            $data_extrato_fim = $payload['data_fim'] ?? null;
             return view('Clientes.Relatorios.TotalTransacoes.show', compact('resultado', 'total', 'totalTransacoes', 'bodyReq', 'id_maquina', 'id_cliente', 'tipo_transacao','data_extrato_inicio', 'data_extrato_fim'));
         }
 
@@ -222,10 +234,22 @@ class RelatoriosController extends Controller
         // Decodifica os dados JSON da requisição
         $data = json_decode($request->input('data'));
         $data = (array) $data;
+        if (array_key_exists('tipo_transacao', $data) && (is_null($data['tipo_transacao']) || $data['tipo_transacao'] === '')) {
+            unset($data['tipo_transacao']);
+        }
+        // Normaliza datas (aceita tanto data_inicio/data_fim quanto data_extrato_inicio/data_extrato_fim)
+        if (isset($data['data_extrato_inicio']) && !isset($data['data_inicio'])) {
+            $data['data_inicio'] = $data['data_extrato_inicio'];
+        }
+        if (isset($data['data_extrato_fim']) && !isset($data['data_fim'])) {
+            $data['data_fim'] = $data['data_extrato_fim'];
+        }
         $isTaxaDesconto = isset($request['tipo_csv']) && $request['tipo_csv'] == 'taxa_desconto';
         $isTotalTransacoes = isset($request['tipo_csv']) && $request['tipo_csv'] == 'total_transacao';
         if ($isTotalTransacoes) {
-            $data = ExtratoMaquinaService::coletarRelatorioTotalTransacoes($data)['data'];
+            // Garante filtro por cliente no contexto de "Clientes"
+            $id_cliente = session()->get('id_cliente');
+            $data = ExtratoMaquinaService::coletarRelatorioTotalTransacoes($data, $id_cliente)['data'];
         }
 
 
