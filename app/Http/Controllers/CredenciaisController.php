@@ -15,6 +15,30 @@ use App\Services\AuthService;
 class CredenciaisController extends Controller
 {
 
+    public function listarCredenciais(Request $request){
+        $clientes = ClientesService::coletar();
+        $credenciais = CredApiPixService::coletar();
+        
+        if(!is_array($credenciais)){
+            $credenciais = [];
+        }
+
+        // Filtros opcionais
+        $id_cliente = $request->get('id_cliente');
+        $tipo_cred = $request->get('tipo_cred');
+
+        if($id_cliente){
+            $credenciais = array_filter($credenciais, fn($c) => $c['id_cliente'] == $id_cliente);
+        }
+        if($tipo_cred){
+            $credenciais = array_filter($credenciais, fn($c) => $c['tipo_cred'] == $tipo_cred);
+        }
+
+        $credenciais = array_values($credenciais);
+        
+        return view('Admin.Credenciais.index', compact('clientes', 'credenciais', 'id_cliente', 'tipo_cred'));
+    }
+
     public function criarCredencialEfi(Request $request){
         $clientes = ClientesService::coletar();
         return view('Admin.Credenciais.EFI.create', compact('clientes'));
