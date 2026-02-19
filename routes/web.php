@@ -120,6 +120,7 @@ Route::prefix('credenciais')->middleware('permission')->group(function(){
     Route::get('/editar/efi/{id}', 'App\Http\Controllers\CredenciaisController@editarCredencialEfi')->name('credencial-editar-efi');
     Route::get('/editar/pagbank/{id}', 'App\Http\Controllers\CredenciaisController@editarCredencialPagbank')->name('credencial-editar-pagbank');
     Route::put('/atualizar/{id}', 'App\Http\Controllers\CredenciaisController@atualizarCredencial')->name('credencial-atualizar');
+    Route::delete('/excluir/{id}', 'App\Http\Controllers\CredenciaisController@excluirCredencial')->name('credencial-excluir');
 });
 
 Route::get('/login', 'App\Http\Controllers\LoginController@login')->name('login-view');

@@ -159,7 +159,7 @@ class CredenciaisController extends Controller
             $id_cliente_session = session()->get('id_cliente');
             
             $dados = [];
-            $dados['id_cliente'] = $request['select-cliente'];
+            $dados['id_cliente'] = $request['id_cliente'];
             
             // Verifica se o cliente está tentando editar suas próprias credenciais
             if($dados['id_cliente'] != $id_cliente_session){

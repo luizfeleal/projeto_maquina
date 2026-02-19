@@ -144,7 +144,7 @@ class CredenciaisController extends Controller
     public function atualizarCredencial(Request $request, $id){
         try{
             $dados = [];
-            $dados['id_cliente'] = $request['select-cliente'];
+            $dados['id_cliente'] = $request['id_cliente'];
             if($request['tipo_cred'] == "pagbank"){
                 $dados['client_id'] = strtolower($request['cliente_id']);
             }else{

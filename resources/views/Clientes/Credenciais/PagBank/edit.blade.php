@@ -16,18 +16,9 @@
                     <input type="hidden" name="tipo_cred" value="pagbank">
                     <div class="row" style="display: flex; flex-direction: row; justify-content: center;  width: 100%;  margin-bottom: 20px;">
                         <div class="col-md-8">
-                            <label for="select-cliente" class="form-label">Selecione o cliente responsável*:</label>
-                            <select class="select-cliente js-example-basic-multiple js-states form-control" id="select-cliente" placeholder="Selecione" name="select-cliente" required>
-
-                            <option value="">Selecione</option>
-                            @foreach($clientes as $cliente)
-                                <option value="{{$cliente['id_cliente']}}" {{ $credencial['id_cliente'] == $cliente['id_cliente'] ? 'selected' : '' }}>{{$cliente['cliente_nome']}}</option>
-                            @endforeach
-                            </select>
-                            <div class="invalid-feedback">
-                                <p class="invalid-p" id="select_cliente_mensagem">Campo obrigatório</p>
-                            </div>
-
+                            <label for="cliente-exibicao" class="form-label">Cliente:</label>
+                            <input type="text" class="form-control bg-light" id="cliente-exibicao" value="{{ !empty($clientes) ? (reset($clientes)['cliente_nome'] ?? 'Meu cadastro') : 'Meu cadastro' }}" readonly>
+                            <input type="hidden" name="id_cliente" value="{{ $credencial['id_cliente'] ?? '' }}">
                         </div>
                     </div>
                     <div class="row" style="display: flex; flex-direction: row; justify-content: center;width: 100%; margin-bottom: 20px;">
@@ -104,10 +95,6 @@
 
 <script>
     $(document).ready(function() {
-        $('.select-cliente').select2({
-            theme: 'bootstrap-5'
-        });
-
         validaData();
     });
 </script>
