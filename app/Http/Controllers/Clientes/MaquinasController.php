@@ -410,4 +410,21 @@ class MaquinasController extends Controller
             return back()->with('error', 'Houve um erro ao tentar cadastrar a máquina');
         }
     }
+
+    public function excluirMaquinasCartao(Request $request)
+    {
+        try {
+            $id = $request->input('id_device');
+            if (!$id) {
+                return back()->with('error', 'ID da máquina não informado.');
+            }
+            $result = MaquinasCartaoService::excluir($id);
+            if ($result['success']) {
+                return redirect()->route('cliente-maquinas-cartao')->with('success', 'Máquina de cartão excluída com sucesso.');
+            }
+            return back()->with('error', $result['message'] ?? 'Erro ao excluir a máquina de cartão.');
+        } catch (\Throwable $e) {
+            return back()->with('error', 'Erro ao excluir a máquina de cartão: ' . $e->getMessage());
+        }
+    }
 }

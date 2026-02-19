@@ -73,7 +73,7 @@
                                             <i class="fa-solid fa-pen"></i> Editar
                                         </a>
                                     @endif
-                                    <button type="button" class="btn btn-sm btn-danger btn-excluir-credencial" data-id="{{ $credId }}" data-cliente="{{ $cliente_nome }}" data-tipo="{{ strtoupper($tipoCred) }}">
+                                    <button type="button" class="btn btn-sm btn-danger btn-excluir-credencial" data-id="{{ $credId }}" data-cliente="{{ $cliente_nome }}" data-tipo="{{ strtoupper($tipoCred) }}" style="background-color: #dc3545; border-color: #dc3545;">
                                         <i class="fa-solid fa-trash"></i> Excluir
                                     </button>
                                 @else

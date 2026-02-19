@@ -40,6 +40,7 @@ Route::prefix('maquinas')->middleware('permission')->group(function(){
     Route::get('/maquinasCartao/criar', 'App\Http\Controllers\MaquinasController@viewMaquinasCartaoCriar')->name('maquinas-cartao-criar');
     Route::post('/maquinasCartao/registrar', 'App\Http\Controllers\MaquinasController@registrarMaquinasCartao')->name('maquinas-cartao-registrar');
     Route::post('/maquinasCartao/inativar', 'App\Http\Controllers\MaquinasController@inativarMaquinasCartao')->name('maquinas-cartao-inativar');
+    Route::delete('/maquinasCartao/excluir', 'App\Http\Controllers\MaquinasController@excluirMaquinasCartao')->name('maquinas-cartao-excluir');
     Route::post('/excluir', 'App\Http\Controllers\MaquinasController@excluirMaquinas')->name('maquinas-excluir');
     Route::post('/atualizar', 'App\Http\Controllers\MaquinasController@atualizarMaquina')->name('maquinas-atualizar');
     Route::post('/liberarJogadaRegistrar', 'App\Http\Controllers\MaquinasController@liberarJogada')->name('maquinas-liberar-jogada');
@@ -56,6 +57,7 @@ Route::prefix('clientes-maquinas')->middleware('permission')->group(function(){
     Route::get('/maquinasCartao/criar', 'App\Http\Controllers\Clientes\MaquinasController@viewMaquinasCartaoCriar')->name('cliente-maquinas-cartao-criar');
     Route::post('/maquinasCartao/registrar', 'App\Http\Controllers\Clientes\MaquinasController@registrarMaquinasCartao')->name('cliente-maquinas-cartao-registrar');
     Route::post('/maquinasCartao/inativar', 'App\Http\Controllers\Clientes\MaquinasController@inativarMaquinasCartao')->name('cliente-maquinas-cartao-inativar');
+    Route::delete('/maquinasCartao/excluir', 'App\Http\Controllers\Clientes\MaquinasController@excluirMaquinasCartao')->name('cliente-maquinas-cartao-excluir');
 });
 
 Route::prefix('clientes-relatorio')->middleware('permission')->group(function(){

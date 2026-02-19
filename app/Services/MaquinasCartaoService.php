@@ -101,9 +101,9 @@ class MaquinasCartaoService
         return $maquina;
     }
 
-    public static function deletar($id)
+    public static function excluir($id)
     {
-        $url = env('APP_URL_API') . "/maquinasMaquinas/$id";
+        $url = env('APP_URL_API') . "/maquinasCartao/$id";
         $token = AuthService::getToken();
     
         $ch = curl_init($url);
@@ -122,15 +122,10 @@ class MaquinasCartaoService
 
     
         if ($status == 200 && $response !== false) {
-            return json_decode($response, true);
-        } else {
-            return response()->json([
-                'error' => 'Failed to delete the resource.',
-                'status' => $status,
-                'message' => $response,
-                'curl_error' => $error,
-            ], $status);
+            $data = json_decode($response, true);
+            return ['success' => true, 'message' => $data['message'] ?? 'Máquina de cartão excluída com sucesso.'];
         }
+        return ['success' => false, 'message' => 'Erro ao excluir a máquina de cartão.'];
     }
 }
 

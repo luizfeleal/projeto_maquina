@@ -26,7 +26,7 @@
                                 <th>Nome Máquina</th>
                                 <th>Número Máquina</th>
                                 <th>Status</th>
-                                <th>Ativar/Inativar</th>
+                                <th>Excluir</th>
     
     
                             </tr>
@@ -41,11 +41,11 @@
                                 <td>{{$maquina['status'] == 1 ? "Ativo" : "Inativo"}}</td>
 
 
-                                @if($maquina['status'] == 1)
-                                <td style="text-align: center;"><a href="#" style="color: red !important;" data-bs-toggle="modal" data-bs-target="#ModalCenterExcluir" onclick="setIdMaquinaCartaoExcluir({{$maquina['id']}}, '#id_device_inativar')"><i class="fa-solid fa-ban"></i></a></td>
-                                @else
-                                <td style="text-align: center;"><a href="#" style="color: green !important;" data-bs-toggle="modal" data-bs-target="#ModalCenterAtivar" onclick="setIdMaquinaCartaoExcluir({{$maquina['id']}}, '#id_device_ativar')"><i class="fa-solid fa-circle-check"></i></a></td>
-                                @endif
+                                <td style="text-align: center;">
+                                    <a href="#" class="btn btn-sm btn-danger btn-excluir-maquina-cartao" data-bs-toggle="modal" data-bs-target="#ModalCenterExcluir" data-id="{{ $maquina['id'] }}" data-info="{{ $maquina['maquina_nome'] }} - {{ $maquina['device'] }}">
+                                        <i class="fa-solid fa-trash"></i> Excluir
+                                    </a>
+                                </td>
                             </tr>
                         @endforeach
     
@@ -56,7 +56,7 @@
                                 <th>Nome Máquina</th>
                                 <th>Número Máquina</th>
                                 <th>Status</th>
-                                <th>Ativar/Inativar</th>
+                                <th>Excluir</th>
                             </tr>
                         </tfoot>
                     </table>
@@ -68,40 +68,19 @@
                             <div class="modal-content">
 
                                 <div class="modal-header">
-                                    <h1 class="modal-title fs-5" id="ModalCenterTitleExcluir">Inativar</h1>
+                                    <h1 class="modal-title fs-5" id="ModalCenterTitleExcluir">Excluir máquina de cartão</h1>
                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body">
-                                    <p>Deseja inativar essa máquina de cartão?</p>
+                                    <p>Tem certeza que deseja excluir a máquina de cartão <strong id="modalExcluirMaquinaInfo"></strong>? Esta ação não pode ser desfeita e o registro será removido permanentemente da base de dados.</p>
                                 </div>
                                 <div class="modal-footer">
-                                    <form action="{{route('maquinas-cartao-inativar')}}" method="post" id="excluir-cliente" class="w-100 " >
+                                    <form action="{{route('cliente-maquinas-cartao-excluir')}}" method="post" id="formExcluirMaquinaCartao" class="w-100">
                                     @csrf
-                                        <input type="hidden" name="id_device" id="id_device_inativar" value="" >
-                                        <input type="hidden" name="status" id="status_device" value="0" >
-                                        <button type="submit" class="btn btn-primary" data-bs-dismiss="modal" aria-label="Close" >Sim</button>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal fade" id="ModalCenterAtivar" tabindex="-1" aria-labelledby="ModalCenterAtivar" aria-modal="true" role="dialog">
-                        <div class="modal-dialog modal-dialog-centered">
-                            <div class="modal-content">
-
-                                <div class="modal-header">
-                                    <h1 class="modal-title fs-5" id="ModalCenterTitleAtivar">Inativar</h1>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <p>Deseja ativar essa máquina de cartão?</p>
-                                </div>
-                                <div class="modal-footer">
-                                    <form action="{{route('maquinas-cartao-inativar')}}" method="post" id="excluir-cliente" class="w-100 " >
-                                    @csrf
-                                        <input type="hidden" name="id_device" id="id_device_ativar" value="" >
-                                        <input type="hidden" name="status" id="status_device" value="1" >
-                                        <button type="submit" class="btn btn-primary" data-bs-dismiss="modal" aria-label="Close" >Sim</button>
+                                    @method('DELETE')
+                                        <input type="hidden" name="id_device" id="id_device_excluir" value="">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                        <button type="submit" class="btn btn-danger">Excluir</button>
                                     </form>
                                 </div>
                             </div>
@@ -159,7 +138,12 @@
     <script>
 
         $(document).ready(function(){
-
+            $(document).on('click', '.btn-excluir-maquina-cartao', function() {
+                var id = $(this).data('id');
+                var info = $(this).data('info');
+                $('#id_device_excluir').val(id);
+                $('#modalExcluirMaquinaInfo').text(info);
+            });
 
             var tabelaGuias= $('#tabela-local').DataTable({
                 "language": {
