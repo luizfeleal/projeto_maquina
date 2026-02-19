@@ -42,7 +42,7 @@
 
 
                                 <td style="text-align: center;">
-                                    <a href="#" class="btn btn-sm btn-danger btn-excluir-maquina-cartao" data-bs-toggle="modal" data-bs-target="#ModalCenterExcluir" data-id="{{ $maquina['id'] }}" data-info="{{ $maquina['maquina_nome'] }} - {{ $maquina['device'] }}">
+                                    <a href="#" class="btn btn-sm btn-danger btn-excluir-maquina-cartao" data-bs-toggle="modal" data-bs-target="#ModalCenterExcluir" data-id="{{ $maquina['id'] }}" data-info="{{ $maquina['maquina_nome'] }} - {{ $maquina['device'] }}" style="background-color: #dc3545; border-color: #dc3545;">
                                         <i class="fa-solid fa-trash"></i> Excluir
                                     </a>
                                 </td>
