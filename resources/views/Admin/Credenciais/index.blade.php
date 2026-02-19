@@ -36,7 +36,7 @@
             </div>
         </form>
 
-        <div class="table-responsive w-100">
+        <div class="table-responsive w-100" @if(empty($credenciais)) style="display:none;" @endif>
             <table id="tabela-credenciais" class="table table-striped table-hover">
                 <thead>
                     <tr>
@@ -133,16 +133,18 @@
     $(document).ready(function() {
         $('.select-cliente').select2({ theme: 'bootstrap-5' });
 
+        @if(!empty($credenciais))
         $('#tabela-credenciais').DataTable({
             language: { url: "https://cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json" }
         });
+        @endif
 
-        $('.btn-excluir-credencial').on('click', function() {
+        $(document).on('click', '.btn-excluir-credencial', function() {
             var id = $(this).data('id');
             var cliente = $(this).data('cliente');
             var tipo = $(this).data('tipo');
             $('#modalExcluirCredencialInfo').text(cliente + ' (' + tipo + ')');
-            $('#formExcluirCredencial').attr('action', '{{ route("credencial-excluir", "") }}/' + id);
+            $('#formExcluirCredencial').attr('action', '{{ url("credenciais/excluir") }}/' + id);
             new bootstrap.Modal('#modalExcluirCredencial').show();
         });
     });

@@ -186,5 +186,24 @@ class CredenciaisController extends Controller
         }
     }
 
-  
+    public function excluirCredencial($id){
+        try{
+            $id_cliente_session = session()->get('id_cliente');
+            $credencial = CredApiPixService::coletar($id);
+            if(!$credencial){
+                return redirect()->back()->with('error', 'Credencial não encontrada.');
+            }
+            $credencial = (array) $credencial;
+            if(($credencial['id_cliente'] ?? null) != $id_cliente_session){
+                return redirect()->back()->with('error', 'Você não tem permissão para excluir esta credencial.');
+            }
+            $result = CredApiPixService::excluirCredencial($id);
+            if($result['success']){
+                return redirect()->route('cliente-credencial-listar')->with('success', 'Credencial excluída com sucesso.');
+            }
+            return redirect()->back()->with('error', $result['error'] ?? 'Erro ao excluir credencial.');
+        }catch(\Throwable $e){
+            return redirect()->back()->with('error', 'Erro ao excluir credencial: ' . $e->getMessage());
+        }
+    }
 }

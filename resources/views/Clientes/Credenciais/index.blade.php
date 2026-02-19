@@ -25,8 +25,8 @@
             </div>
         </form>
 
-        <div class="table-responsive w-100">
-            <table class="table table-striped table-hover">
+        <div class="table-responsive w-100" @if(empty($credenciais)) style="display:none;" @endif>
+            <table id="tabela-credenciais" class="table table-striped table-hover">
                 <thead>
                     <tr>
                         <th>ID</th>
@@ -36,7 +36,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($credenciais as $credencial)
+                    @foreach($credenciais as $credencial)
                         @php
                             $credId = $credencial['id'] ?? $credencial['id_cred_api_pix'] ?? null;
                             $tipoCred = $credencial['tipo_cred'] ?? '';
@@ -57,26 +57,52 @@
                                             <i class="fa-solid fa-pen"></i> Editar
                                         </a>
                                     @else
-                                        <a href="{{ route('cliente-credencial-editar-pagbank', $credId) }}" class="btn btn-sm btn-success">
+                                        <a href="{{ route('cliente-credencial-editar-pagbank', $credId) }}" class="btn btn-sm btn-primary">
                                             <i class="fa-solid fa-pen"></i> Editar
                                         </a>
                                     @endif
+                                    <button type="button" class="btn btn-sm btn-danger btn-excluir-credencial" data-id="{{ $credId }}" data-cliente="{{ $cliente_nome }}" data-tipo="{{ strtoupper($tipoCred) }}">
+                                        <i class="fa-solid fa-trash"></i> Excluir
+                                    </button>
                                 @else
                                     <span class="text-muted">-</span>
                                 @endif
                             </td>
                         </tr>
-                    @empty
-                        <tr>
-                            <td colspan="4" class="text-center py-4">
-                                <i class="fa-solid fa-inbox fa-2x text-muted mb-2"></i>
-                                <p class="text-muted mb-0">Nenhuma credencial encontrada.</p>
-                                <small class="text-muted">Você pode <a href="{{ route('cliente-credencial-criar-efi') }}">criar uma credencial EFI</a> ou <a href="{{ route('cliente-credencial-criar-pagbank') }}">PagBank</a>.</small>
-                            </td>
-                        </tr>
-                    @endforelse
+                    @endforeach
                 </tbody>
             </table>
+        </div>
+
+        @if(empty($credenciais))
+            <div class="text-center py-4">
+                <i class="fa-solid fa-inbox fa-2x text-muted mb-2"></i>
+                <p class="text-muted mb-0">Nenhuma credencial encontrada.</p>
+                <small class="text-muted">Você pode <a href="{{ route('cliente-credencial-criar-efi') }}">criar uma credencial EFI</a> ou <a href="{{ route('cliente-credencial-criar-pagbank') }}">PagBank</a>.</small>
+            </div>
+        @endif
+
+        <!-- Modal de confirmação de exclusão -->
+        <div class="modal fade" id="modalExcluirCredencial" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Excluir credencial</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Tem certeza que deseja excluir a credencial <strong id="modalExcluirCredencialInfo"></strong>? Esta ação não pode ser desfeita.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <form id="formExcluirCredencial" method="POST" style="display:inline;">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-danger">Excluir</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
 
         @if(session('success'))
@@ -92,6 +118,21 @@
 
 @section('scriptTable')
 <script>
-    $(document).ready(function() {});
+    $(document).ready(function() {
+        @if(!empty($credenciais))
+        $('#tabela-credenciais').DataTable({
+            language: { url: "https://cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json" }
+        });
+        @endif
+
+        $(document).on('click', '.btn-excluir-credencial', function() {
+            var id = $(this).data('id');
+            var cliente = $(this).data('cliente');
+            var tipo = $(this).data('tipo');
+            $('#modalExcluirCredencialInfo').text(cliente + ' (' + tipo + ')');
+            $('#formExcluirCredencial').attr('action', '{{ url("clientes-credenciais/excluir") }}/' + id);
+            new bootstrap.Modal('#modalExcluirCredencial').show();
+        });
+    });
 </script>
 @endsection

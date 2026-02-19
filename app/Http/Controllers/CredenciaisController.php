@@ -169,5 +169,15 @@ class CredenciaisController extends Controller
         }
     }
 
-  
+    public function excluirCredencial($id){
+        try{
+            $result = CredApiPixService::excluirCredencial($id);
+            if($result['success']){
+                return redirect()->route('credencial-listar')->with('success', 'Credencial excluída com sucesso.');
+            }
+            return redirect()->back()->with('error', $result['error'] ?? 'Erro ao excluir credencial.');
+        }catch(\Throwable $e){
+            return redirect()->back()->with('error', 'Erro ao excluir credencial: ' . $e->getMessage());
+        }
+    }
 }

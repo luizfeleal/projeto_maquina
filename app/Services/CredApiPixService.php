@@ -159,4 +159,19 @@ class CredApiPixService
         }
     }
 
+    public static function excluirCredencial($id){
+        $url = env('APP_URL_API') . "/credApiPix/$id";
+        $token = AuthService::getToken();
+        $response = Http::withHeaders([
+            'Authorization' => 'Bearer ' . $token
+        ])->delete($url);
+
+        if ($response->successful()) {
+            return ['success' => true];
+        }
+        return [
+            'success' => false,
+            'error' => $response->json()['message'] ?? $response->json()['response'] ?? 'Erro ao excluir credencial'
+        ];
+    }
 }
