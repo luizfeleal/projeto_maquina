@@ -29,11 +29,35 @@ class ChecarPermissoes
         }else{
             $acessos = AcessosTelaService::coletar();
 
+            // Verificar se acessos é válido
+            if(!is_array($acessos)){
+                Log::error('AcessosTelaService retornou null ou não é array', [
+                    'tipo' => gettype($acessos),
+                    'valor' => $acessos
+                ]);
+                return back()->with('error', 'Erro ao carregar permissões. Tente fazer login novamente.');
+            }
+
             $acesso = array_filter($acessos, function($item) use($request){
-                return $item['id_grupo_acesso'] == session()->get('id_grupo_acesso') && $item['acesso_tela_viewname'] == $request->route()->getName() && $item['ativo'] == 1;
+                return isset($item['id_grupo_acesso']) 
+                    && isset($item['acesso_tela_viewname'])
+                    && $item['id_grupo_acesso'] == session()->get('id_grupo_acesso') 
+                    && $item['acesso_tela_viewname'] == $request->route()->getName();
             });
 
+            Log::info('Verificação de Acesso', [
+                'rota' => $request->route()->getName(),
+                'grupo' => session()->get('id_grupo_acesso'),
+                'total_acessos' => count($acessos),
+                'encontrou' => !empty($acesso)
+            ]);
+            
             if(empty($acesso)){
+                Log::warning('Acesso negado', [
+                    'usuario' => session()->get('usuario_nome'),
+                    'grupo' => session()->get('id_grupo_acesso'),
+                    'rota' => $request->route()->getName()
+                ]);
                 return back()->with('error', 'O usuário não possui permissão de acesso.');
             }
             

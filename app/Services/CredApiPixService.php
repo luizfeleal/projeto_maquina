@@ -119,4 +119,44 @@ class CredApiPixService
         return $usuario;
     }
 
+    public static function atualizarCredencial($dados, $id){
+        $url = env('APP_URL_API') . "/credApiPix/$id";
+    
+        $token = AuthService::getToken();
+    
+        $request = Http::withHeaders([
+            'Authorization' => 'Bearer ' . $token
+        ]);
+    
+        // Verifica se existe um arquivo para enviar
+        if (isset($dados['caminho_certificado']) && $dados['caminho_certificado']) {
+            $request->attach(
+                'caminho_certificado', // nome do campo esperado na API
+                file_get_contents($dados['caminho_certificado']->getRealPath()),
+                $dados['caminho_certificado']->getClientOriginalName()
+            );
+        }
+    
+        $response = $request->put($url, [
+            'id_cliente' => $dados['id_cliente'],
+            'client_secret' => $dados['client_secret'],
+            'client_id' => $dados['client_id'],
+            'tipo_cred' => $dados['tipo_cred']
+        ]);
+    
+        // Verifica se a requisição foi bem-sucedida
+        if ($response->successful()) {
+            return [
+                'success' => true,
+                'data' => $response->json()
+            ];
+        } else {
+            return [
+                'success' => false,
+                'status' => $response->status(),
+                'error' => $response->json()
+            ];
+        }
+    }
+
 }

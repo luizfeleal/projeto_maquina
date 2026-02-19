@@ -28,19 +28,35 @@ class AcessosTelaService
 
     public static function coletar(string $id = Null)
     {
-        if(is_null($id)){
-            $url = env('APP_URL_API') . "/acessosTela";
-        }else{
-            $url = env('APP_URL_API') . "/acessosTela/$id";
+        try {
+            if(is_null($id)){
+                $url = env('APP_URL_API') . "/acessosTela";
+            }else{
+                $url = env('APP_URL_API') . "/acessosTela/$id";
+            }
+            
+            $token = AuthService::getToken();
+            $response = Http::timeout(10)->withHeaders([
+                'Authorization' => 'Bearer ' . $token
+            ])->get($url);
+
+            if(!$response->successful()){
+                \Log::error('Falha ao buscar acessos', [
+                    'status' => $response->status(),
+                    'body' => $response->body()
+                ]);
+                return [];
+            }
+
+            $acessos = $response->json();
+            
+            // Garantir que sempre retorna array
+            return is_array($acessos) ? $acessos : [];
+            
+        } catch (\Exception $e) {
+            \Log::error('Erro ao coletar acessos: ' . $e->getMessage());
+            return [];
         }
-        $token = AuthService::getToken();
-        $response = Http::withHeaders([
-            'Authorization' => 'Bearer ' . $token
-        ])->get($url);
-
-        $acessos = $response->json();
-
-        return $acessos;
     }
 
     public static function coletarComFiltro($filtros, $tipo)
