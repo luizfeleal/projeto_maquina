@@ -9,7 +9,7 @@
             <div class="container section container-platform div-center-column"
                 style="margin-top: 15px; height: 100%;">
 
-                <form action="{{ route('cliente-credencial-atualizar', $credencial['id']) }}" id="editar-credencial-form"  class="w-100 needs-validation form-center"  method="post" enctype="multipart/form-data" novalidate>
+                <form action="{{ route('cliente-credencial-atualizar', $credencial['id'] ?? $credencial['id_cred_api_pix']) }}" id="editar-credencial-form"  class="w-100 needs-validation form-center"  method="post" enctype="multipart/form-data" novalidate>
                     @csrf
                     @method('PUT')
 

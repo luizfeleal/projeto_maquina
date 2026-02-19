@@ -38,25 +38,31 @@
                 <tbody>
                     @forelse($credenciais as $credencial)
                         @php
+                            $credId = $credencial['id'] ?? $credencial['id_cred_api_pix'] ?? null;
+                            $tipoCred = $credencial['tipo_cred'] ?? '';
                             $cliente_nome = !empty($clientes) ? (reset($clientes)['cliente_nome'] ?? 'Meu cadastro') : 'Meu cadastro';
                         @endphp
                         <tr>
-                            <td>{{ $credencial['id'] ?? '-' }}</td>
+                            <td>{{ $credId ?? '-' }}</td>
                             <td>{{ $cliente_nome }}</td>
                             <td>
-                                <span class="badge {{ $credencial['tipo_cred'] == 'efi' ? 'bg-primary' : 'bg-success' }}">
-                                    {{ strtoupper($credencial['tipo_cred']) }}
+                                <span class="badge {{ $tipoCred == 'efi' ? 'bg-primary' : 'bg-success' }}">
+                                    {{ strtoupper($tipoCred) }}
                                 </span>
                             </td>
                             <td>
-                                @if($credencial['tipo_cred'] == 'efi')
-                                    <a href="{{ route('cliente-credencial-editar-efi', $credencial['id']) }}" class="btn btn-sm btn-primary">
-                                        <i class="fa-solid fa-pen"></i> Editar
-                                    </a>
+                                @if($credId)
+                                    @if($tipoCred == 'efi')
+                                        <a href="{{ route('cliente-credencial-editar-efi', $credId) }}" class="btn btn-sm btn-primary">
+                                            <i class="fa-solid fa-pen"></i> Editar
+                                        </a>
+                                    @else
+                                        <a href="{{ route('cliente-credencial-editar-pagbank', $credId) }}" class="btn btn-sm btn-success">
+                                            <i class="fa-solid fa-pen"></i> Editar
+                                        </a>
+                                    @endif
                                 @else
-                                    <a href="{{ route('cliente-credencial-editar-pagbank', $credencial['id']) }}" class="btn btn-sm btn-success">
-                                        <i class="fa-solid fa-pen"></i> Editar
-                                    </a>
+                                    <span class="text-muted">-</span>
                                 @endif
                             </td>
                         </tr>

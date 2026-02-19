@@ -23,15 +23,22 @@ class CredenciaisController extends Controller
             $credenciais = [];
         }
 
+        // Normalizar para array associativo com chave 'id' (tabela usa id_cred_api_pix)
+        $credenciais = array_map(function($c) {
+            $c = (array) $c;
+            $c['id'] = $c['id_cred_api_pix'] ?? $c['id'] ?? $c['id_cred'] ?? null;
+            return $c;
+        }, $credenciais);
+
         // Filtros opcionais
         $id_cliente = $request->get('id_cliente');
         $tipo_cred = $request->get('tipo_cred');
 
         if($id_cliente){
-            $credenciais = array_filter($credenciais, fn($c) => $c['id_cliente'] == $id_cliente);
+            $credenciais = array_filter($credenciais, fn($c) => ($c['id_cliente'] ?? null) == $id_cliente);
         }
         if($tipo_cred){
-            $credenciais = array_filter($credenciais, fn($c) => $c['tipo_cred'] == $tipo_cred);
+            $credenciais = array_filter($credenciais, fn($c) => ($c['tipo_cred'] ?? '') == $tipo_cred);
         }
 
         $credenciais = array_values($credenciais);
@@ -104,7 +111,13 @@ class CredenciaisController extends Controller
         $clientes = ClientesService::coletar();
         $credencial = CredApiPixService::coletar($id);
         
-        if(!$credencial || $credencial['tipo_cred'] !== 'efi'){
+        if(!$credencial){
+            return redirect()->back()->with('error', 'Credencial não encontrada');
+        }
+        
+        $credencial = (array) $credencial;
+        $credencial['id'] = $credencial['id_cred_api_pix'] ?? $credencial['id'] ?? $id;
+        if(($credencial['tipo_cred'] ?? '') !== 'efi'){
             return redirect()->back()->with('error', 'Credencial não encontrada');
         }
         
@@ -115,7 +128,13 @@ class CredenciaisController extends Controller
         $clientes = ClientesService::coletar();
         $credencial = CredApiPixService::coletar($id);
         
-        if(!$credencial || $credencial['tipo_cred'] !== 'pagbank'){
+        if(!$credencial){
+            return redirect()->back()->with('error', 'Credencial não encontrada');
+        }
+        
+        $credencial = (array) $credencial;
+        $credencial['id'] = $credencial['id_cred_api_pix'] ?? $credencial['id'] ?? $id;
+        if(($credencial['tipo_cred'] ?? '') !== 'pagbank'){
             return redirect()->back()->with('error', 'Credencial não encontrada');
         }
         
