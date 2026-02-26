@@ -85,7 +85,7 @@
         <!-- Modal de confirmação de exclusão -->
         <div class="modal fade" id="modalExcluirCredencial" tabindex="-1">
             <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
+                <div class="modal-content modal-purple">
                     <div class="modal-header">
                         <h5 class="modal-title">Excluir credencial</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -98,7 +98,7 @@
                         <form id="formExcluirCredencial" method="POST" style="display:inline;">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="btn btn-danger">Excluir</button>
+                            <button type="submit" class="btn btn-purple">Excluir</button>
                         </form>
                     </div>
                 </div>

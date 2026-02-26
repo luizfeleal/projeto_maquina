@@ -65,7 +65,7 @@
 
                 <div class="modal fade" id="ModalCenterExcluir" tabindex="-1" aria-labelledby="ModalCenterExcluir" aria-modal="true" role="dialog">
                         <div class="modal-dialog modal-dialog-centered">
-                            <div class="modal-content">
+                            <div class="modal-content modal-purple">
 
                                 <div class="modal-header">
                                     <h1 class="modal-title fs-5" id="ModalCenterTitleExcluir">Excluir máquina de cartão</h1>
@@ -80,7 +80,7 @@
                                     @method('DELETE')
                                         <input type="hidden" name="id_device" id="id_device_excluir" value="">
                                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                        <button type="submit" class="btn btn-danger">Excluir</button>
+                                        <button type="submit" class="btn btn-purple">Excluir</button>
                                     </form>
                                 </div>
                             </div>
