@@ -26,3 +26,10 @@
     border-color: #59359a;
     color: white !important;
 }
+
+/* Fix for transparent Cancel button in modals */
+.modal-purple .btn-secondary {
+    background-color: #6c757d !important;
+    border-color: #6c757d !important;
+    color: white !important;
+}
