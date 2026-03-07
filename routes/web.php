@@ -58,6 +58,8 @@ Route::prefix('clientes-maquinas')->middleware('permission')->group(function(){
     Route::post('/maquinasCartao/registrar', 'App\Http\Controllers\Clientes\MaquinasController@registrarMaquinasCartao')->name('cliente-maquinas-cartao-registrar');
     Route::post('/maquinasCartao/inativar', 'App\Http\Controllers\Clientes\MaquinasController@inativarMaquinasCartao')->name('cliente-maquinas-cartao-inativar');
     Route::delete('/maquinasCartao/excluir', 'App\Http\Controllers\Clientes\MaquinasController@excluirMaquinasCartao')->name('cliente-maquinas-cartao-excluir');
+    Route::get('/editar', 'App\Http\Controllers\Clientes\MaquinasController@editarMaquinas')->name('clientes-maquinas-editar');
+    Route::post('/atualizar', 'App\Http\Controllers\Clientes\MaquinasController@atualizarMaquina')->name('clientes-maquinas-atualizar');
 });
 
 Route::prefix('clientes-relatorio')->middleware('permission')->group(function(){

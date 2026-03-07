@@ -223,13 +223,28 @@ class MaquinasController extends Controller
 
     public function editarMaquinas(Request $request)
     {
-
         if ($request->has('id_maquina')) {
-            $id_maquina = $request->id;
-            $maquinas = MaquinasService::coletar($id_maquina);
-            $id_local = $maquinas[0]['id_local'];
-            $locais = LocaisService::coletar($id_local);
+            $id_maquina = $request->id_maquina;
+            $maquina = MaquinasService::coletar($id_maquina);
+
+            if (!$maquina) {
+                return back()->with('error', 'Máquina não encontrada');
+            }
+
+            // Validar se a máquina pertence ao cliente
+            $id_cliente = session()->get('id_cliente');
+            $id_local = $maquina['id_local'];
             $clienteLocal = ClienteLocalService::coletar();
+            
+            $pertenceAoCliente = array_filter($clienteLocal, function ($item) use ($id_cliente, $id_local) {
+                return $item['id_cliente'] == $id_cliente && $item['id_local'] == $id_local;
+            });
+
+            if (empty($pertenceAoCliente)) {
+                return back()->with('error', 'Você não tem permissão para editar esta máquina');
+            }
+
+            $locais = LocaisService::coletar($id_local);
             $clientes = ClientesService::coletar();
 
             $maquinaCartao = MaquinasCartaoService::coletar();
@@ -238,11 +253,7 @@ class MaquinasController extends Controller
                 return $id_maquina == $item['id_maquina'] && $item['status'] == 1;
             });
 
-            if(empty($maquinaCartaoAssociada)){
-                $possuiMaquinaCartaoAssociada = false;
-            }else{
-                $possuiMaquinaCartaoAssociada = true;
-            }
+            $possuiMaquinaCartaoAssociada = !empty($maquinaCartaoAssociada);
 
             $qr = QrCodeService::coletar();
 
@@ -250,11 +261,7 @@ class MaquinasController extends Controller
                 return $item['ativo'] == 1 && $item['id_maquina'] == $id_maquina;
             });
 
-            if(empty($qrMaquina)){
-                $possuiQrCode = false;
-            }else{
-                $possuiQrCode = true;
-            }
+            $possuiQrCode = !empty($qrMaquina);
 
             $localCliente = array_filter($clienteLocal, function ($item) use ($id_local) {
                 return $item['id_local'] == $id_local;
@@ -269,10 +276,10 @@ class MaquinasController extends Controller
                 return in_array($item['id_cliente'],  $idClientes);
             });
 
-            $maquinas = $maquinas[0];
-            return view('Admin.Maquinas.edit', compact('maquinas', 'locais', 'clientes', 'possuiMaquinaCartaoAssociada', 'possuiQrCode', 'localCliente'));
+            $maquinas = $maquina;
+            return view('Clientes.Maquinas.edit', compact('maquinas', 'locais', 'clientes', 'possuiMaquinaCartaoAssociada', 'possuiQrCode', 'localCliente'));
         } else {
-            return back()->with('error', 'Máquina não encontrada');
+            return back()->with('error', 'ID da máquina não informado');
         }
     }
 
@@ -390,7 +397,7 @@ class MaquinasController extends Controller
 
             $result = MaquinasService::atualizar($dados_maquina, $id_maquina);
             
-            return back()->with('success', $result['message']);
+            return redirect()->route('cliente-home')->with('success', $result['message']);
         } catch (\Throwable $e) {
             return back()->with('error', 'Houve um erro ao tentar atualizar a máquina');
         }

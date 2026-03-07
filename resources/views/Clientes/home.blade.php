@@ -81,6 +81,7 @@
                         <th>Máquina</th>
                         <th>QR Code</th>
                         <th>Liberar Jogada</th>
+                        <th>Editar</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -91,6 +92,7 @@
                         <td>{{$maquina['maquina_nome']}}</td>
                         <td style="text-align: center;"><a href="/clientes-qr?id_local={{$maquina['id_local']}}&id_maquina={{$maquina['id_maquina']}}&abrir=true"><i class="fa-solid fa-qrcode icon-sidebar"></i></a></td>
                         <td style="text-align: center;"><a href="/clientes-maquinas/viewLiberarJogada?id_maquina={{$maquina['id_maquina']}}"><i class="fa-solid fa-play icon-sidebar"></i></a></td>
+                        <td style="text-align: center;"><a href="{{ route('clientes-maquinas-editar', ['id_maquina' => $maquina['id_maquina']]) }}"><i class="fa-solid fa-wrench icon-sidebar"></i></a></td>
                     </tr>
                     @endforeach
 
@@ -101,6 +103,7 @@
                         <th>Máquina</th>
                         <th>QR Code</th>
                         <th>Liberar Jogada</th>
+                        <th>Editar</th>
                     </tr>
                 </tfoot>
             </table>
@@ -166,6 +169,7 @@
             },
             "scrollX": true,
             "columns": [
+                null,
                 null,
                 null,
                 null,
