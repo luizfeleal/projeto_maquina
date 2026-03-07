@@ -89,7 +89,7 @@ class QrCodeController extends Controller
         // Para aumentar o tamanho do texto de verdade, precisa usar fonte TTF (imagettftext).
         // Coloque um arquivo .ttf em: public/site/fonts/DejaVuSans.ttf (ou altere o caminho abaixo).
         $fontPath = public_path('/site/fonts/DejaVuSans.ttf');
-        $fontSize = 30;
+        $fontSize = 60;
         $angle = 0;
 
         if (is_file($fontPath)) {
@@ -349,7 +349,7 @@ class QrCodeController extends Controller
         // Para aumentar o tamanho do texto de verdade, precisa usar fonte TTF (imagettftext).
         // Coloque um arquivo .ttf em: public/site/fonts/DejaVuSans.ttf (ou altere o caminho abaixo).
         $fontPath = public_path('/site/fonts/DejaVuSans.ttf');
-        $fontSize = 30;
+        $fontSize = 60;
         $angle = 0;
 
         if (is_file($fontPath)) {
