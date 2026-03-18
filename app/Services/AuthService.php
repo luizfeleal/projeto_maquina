@@ -3,12 +3,18 @@ namespace App\Services;
 
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Cache;
 
 class AuthService
 {
     public static function getToken()
     {
         try {
+            // Verifica se o token já está no cache
+            if (Cache::has('api_token')) {
+                return Cache::get('api_token');
+            }
+
             $url = env('APP_URL_API') . '/auth/login';
             
             // Verifica se as credenciais estão configuradas
@@ -47,7 +53,11 @@ class AuthService
             }
 
             $token = $responseData['access_token'];
-            Log::info('Token obtido com sucesso');
+            
+            // Armazena o token no cache por 50 minutos
+            Cache::put('api_token', $token, now()->addMinutes(50));
+            
+            Log::info('Token obtido e armazenado no cache com sucesso');
             
             return $token;
             
