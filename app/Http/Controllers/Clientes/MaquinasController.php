@@ -10,6 +10,7 @@ use App\Services\ClientesService;
 use App\Services\ClienteLocalService;
 use App\Services\MaquinasCartaoService;
 use App\Services\LiberarJogadaService;
+use App\Services\QrCodeService;
 use App\Services\AuthService;
 use App\Http\Controllers\Controller;
 use Exception;
