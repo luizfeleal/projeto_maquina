@@ -112,13 +112,13 @@ class CredenciaisController extends Controller
         $credencial = CredApiPixService::coletar($id);
         
         if(!$credencial){
-            return redirect()->back()->with('error', 'Credencial não encontrada');
+            return redirect()->route('credencial-listar')->with('error', 'Credencial não encontrada');
         }
         
         $credencial = (array) $credencial;
         $credencial['id'] = $credencial['id_cred_api_pix'] ?? $credencial['id'] ?? $id;
         if(($credencial['tipo_cred'] ?? '') !== 'efi'){
-            return redirect()->back()->with('error', 'Credencial não encontrada');
+            return redirect()->route('credencial-listar')->with('error', 'Credencial não encontrada ou tipo incorreto para esta rota.');
         }
         
         return view('Admin.Credenciais.EFI.edit', compact('clientes', 'credencial'));
@@ -129,13 +129,13 @@ class CredenciaisController extends Controller
         $credencial = CredApiPixService::coletar($id);
         
         if(!$credencial){
-            return redirect()->back()->with('error', 'Credencial não encontrada');
+            return redirect()->route('credencial-listar')->with('error', 'Credencial não encontrada');
         }
         
         $credencial = (array) $credencial;
         $credencial['id'] = $credencial['id_cred_api_pix'] ?? $credencial['id'] ?? $id;
         if(($credencial['tipo_cred'] ?? '') !== 'pagbank'){
-            return redirect()->back()->with('error', 'Credencial não encontrada');
+            return redirect()->route('credencial-listar')->with('error', 'Credencial não encontrada ou tipo incorreto para esta rota.');
         }
         
         return view('Admin.Credenciais.PagBank.edit', compact('clientes', 'credencial'));

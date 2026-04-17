@@ -65,9 +65,11 @@ class CredApiPixService
             'Authorization' => 'Bearer ' . $token
         ])->get($url);
 
-        $usuarios = $response->json();
+        if (!is_null($id) && !$response->successful()) {
+            return null;
+        }
 
-        return $usuarios;
+        return $response->json();
     }
 
     public static function coletarComFiltro($filtros, $tipo)

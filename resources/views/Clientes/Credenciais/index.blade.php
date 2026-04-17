@@ -6,6 +6,13 @@
     <h1 style="padding-top: 80px; text-align: center;">Editar Credenciais API PIX</h1>
     <div class="container section container-platform div-center-column" style="margin-top: 15px; height: 100%;">
 
+        @if(session('success'))
+            <div class="alert alert-success w-100">{{ session('success') }}</div>
+        @endif
+        @if(session('error'))
+            <div class="alert alert-danger w-100">{{ session('error') }}</div>
+        @endif
+
         <form method="GET" action="{{ route('cliente-credencial-listar') }}" class="w-100 mb-4">
             <div class="row g-3 align-items-end">
                 <div class="col-md-6">
@@ -105,12 +112,6 @@
             </div>
         </div>
 
-        @if(session('success'))
-            <div class="alert alert-success mt-3">{{ session('success') }}</div>
-        @endif
-        @if(session('error'))
-            <div class="alert alert-danger mt-3">{{ session('error') }}</div>
-        @endif
     </div>
 </div>
 

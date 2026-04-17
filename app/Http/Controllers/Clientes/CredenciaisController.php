@@ -119,13 +119,13 @@ class CredenciaisController extends Controller
         $credencial = CredApiPixService::coletar($id);
         
         if(!$credencial){
-            return redirect()->back()->with('error', 'Credencial não encontrada');
+            return redirect()->route('cliente-credencial-listar')->with('error', 'Credencial não encontrada');
         }
         
         $credencial = (array) $credencial;
         $credencial['id'] = $credencial['id_cred_api_pix'] ?? $credencial['id'] ?? $id;
         if(($credencial['tipo_cred'] ?? '') !== 'efi' || ($credencial['id_cliente'] ?? null) != $id_cliente_session){
-            return redirect()->back()->with('error', 'Credencial não encontrada');
+            return redirect()->route('cliente-credencial-listar')->with('error', 'Credencial não encontrada ou sem permissão para editar.');
         }
         
         return view('Clientes.Credenciais.EFI.edit', compact('clientes', 'credencial'));
@@ -142,13 +142,13 @@ class CredenciaisController extends Controller
         $credencial = CredApiPixService::coletar($id);
         
         if(!$credencial){
-            return redirect()->back()->with('error', 'Credencial não encontrada');
+            return redirect()->route('cliente-credencial-listar')->with('error', 'Credencial não encontrada');
         }
         
         $credencial = (array) $credencial;
         $credencial['id'] = $credencial['id_cred_api_pix'] ?? $credencial['id'] ?? $id;
         if(($credencial['tipo_cred'] ?? '') !== 'pagbank' || ($credencial['id_cliente'] ?? null) != $id_cliente_session){
-            return redirect()->back()->with('error', 'Credencial não encontrada');
+            return redirect()->route('cliente-credencial-listar')->with('error', 'Credencial não encontrada ou sem permissão para editar.');
         }
         
         return view('Clientes.Credenciais.PagBank.edit', compact('clientes', 'credencial'));
