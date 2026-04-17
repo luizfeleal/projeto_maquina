@@ -122,29 +122,34 @@ class CredApiPixService
     }
 
     public static function atualizarCredencial($dados, $id){
-        $url = env('APP_URL_API') . "/credApiPix/$id";
-    
+        $base = rtrim(env('APP_URL_API'), '/');
         $token = AuthService::getToken();
-    
-        $request = Http::withHeaders([
-            'Authorization' => 'Bearer ' . $token
-        ]);
-    
-        // Verifica se existe um arquivo para enviar
-        if (isset($dados['caminho_certificado']) && $dados['caminho_certificado']) {
-            $request->attach(
-                'caminho_certificado', // nome do campo esperado na API
-                file_get_contents($dados['caminho_certificado']->getRealPath()),
-                $dados['caminho_certificado']->getClientOriginalName()
-            );
-        }
-    
-        $response = $request->put($url, [
+
+        $payload = [
             'id_cliente' => $dados['id_cliente'],
             'client_secret' => $dados['client_secret'],
             'client_id' => $dados['client_id'],
-            'tipo_cred' => $dados['tipo_cred']
-        ]);
+            'tipo_cred' => $dados['tipo_cred'],
+        ];
+
+        $temCertificado = isset($dados['caminho_certificado']) && $dados['caminho_certificado'];
+
+        if ($temCertificado) {
+            // Multipart + PUT: muitos stacks não expõem o arquivo em $request->file(); POST espelha o fluxo de store().
+            $url = "{$base}/credApiPix/{$id}/atualizar";
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer ' . $token,
+            ])->attach(
+                'caminho_certificado',
+                file_get_contents($dados['caminho_certificado']->getRealPath()),
+                $dados['caminho_certificado']->getClientOriginalName()
+            )->post($url, $payload);
+        } else {
+            $url = "{$base}/credApiPix/{$id}";
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer ' . $token,
+            ])->put($url, $payload);
+        }
     
         // Verifica se a requisição foi bem-sucedida
         if ($response->successful()) {
