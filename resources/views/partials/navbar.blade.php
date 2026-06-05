@@ -1,0 +1,33 @@
+@php
+    $userName = session('usuario_nome', '');
+    $userRole = session('grupo_nome', '');
+    $parts    = explode(' ', trim($userName));
+    $initials = strtoupper(
+        (isset($parts[0]) ? mb_substr($parts[0], 0, 1) : '') .
+        (isset($parts[1]) ? mb_substr($parts[1], 0, 1) : '')
+    );
+@endphp
+
+<header class="top-navbar">
+    <button class="navbar-mobile-toggle" id="sidebarToggleBtn" type="button" aria-label="Abrir menu">
+        <iconify-icon icon="solar:hamburger-menu-bold"></iconify-icon>
+    </button>
+
+    <div class="navbar-brand-mobile">
+        <img src="{{ asset('site/img/swift_pay_solucoes_png.png') }}" alt="Swift Pay">
+    </div>
+
+    <div class="navbar-spacer"></div>
+
+    <div class="navbar-user">
+        <div class="user-info">
+            <span class="user-name">{{ $userName }}</span>
+            <span class="user-role">{{ $userRole }}</span>
+        </div>
+        <div class="user-avatar" title="{{ $userName }}">{{ $initials ?: 'U' }}</div>
+        <a href="{{ route('logout') }}" class="navbar-logout">
+            <iconify-icon icon="solar:logout-3-bold"></iconify-icon>
+            <span>Sair</span>
+        </a>
+    </div>
+</header>

@@ -1,0 +1,138 @@
+// =========================================================
+// Top Navbar
+// =========================================================
+
+.top-navbar {
+  display: flex;
+  align-items: center;
+  height: 64px;
+  padding: 0 20px;
+  background: #ffffff;
+  border-bottom: 1px solid #e8ecf0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  flex-shrink: 0;
+  gap: 12px;
+
+  // ---- Mobile hamburger ----
+  .navbar-mobile-toggle {
+    display: none;
+    background: none;
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    align-items: center;
+    justify-content: center;
+    color: #374151;
+    cursor: pointer;
+    transition: background 0.2s;
+    flex-shrink: 0;
+
+    &:hover { background: #f3f4f6; }
+
+    iconify-icon { font-size: 22px; }
+  }
+
+  // ---- Mobile logo ----
+  .navbar-brand-mobile {
+    display: none;
+    flex-shrink: 0;
+
+    img {
+      height: 32px;
+      width: auto;
+    }
+  }
+
+  .navbar-spacer { flex: 1; }
+
+  // ---- User area ----
+  .navbar-user {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+  }
+
+  .user-info {
+    text-align: right;
+
+    .user-name {
+      display: block;
+      font-size: 0.84rem;
+      font-weight: 600;
+      color: #111827;
+      line-height: 1.25;
+      white-space: nowrap;
+    }
+
+    .user-role {
+      display: block;
+      font-size: 0.7rem;
+      color: #9ca3af;
+      line-height: 1.4;
+      white-space: nowrap;
+    }
+  }
+
+  .user-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 9px;
+    background: linear-gradient(135deg, #242A74 0%, #3b52d4 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 0.78rem;
+    font-weight: 700;
+    flex-shrink: 0;
+    letter-spacing: 0.03em;
+    user-select: none;
+  }
+
+  .navbar-logout {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 13px;
+    background: none;
+    border: 1.5px solid #e5e7eb;
+    border-radius: 8px;
+    color: #6b7280 !important;
+    font-size: 0.78rem;
+    font-weight: 500;
+    text-decoration: none !important;
+    transition: all 0.2s;
+    white-space: nowrap;
+
+    &:hover {
+      background: #fef2f2;
+      border-color: #fca5a5;
+      color: #ef4444 !important;
+    }
+
+    iconify-icon { font-size: 15px; }
+  }
+}
+
+// ---- Responsive ----
+@media (max-width: 991px) {
+  .top-navbar {
+    height: 56px;
+    padding: 0 14px;
+
+    .navbar-mobile-toggle { display: flex; }
+    .navbar-brand-mobile  { display: block; }
+
+    .user-info { display: none; }
+
+    .navbar-logout span { display: none; }
+    .navbar-logout {
+      padding: 7px 10px;
+    }
+  }
+}

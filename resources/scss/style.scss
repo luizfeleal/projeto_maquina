@@ -1,169 +1,202 @@
+// =========================================================
+// Variables
+// =========================================================
 $primary: #242A74;
-$width-offcanvas: 280px;
-$btn-color: #FFF;
 
 $theme-colors: (
   "primary": $primary
 );
 
-
 :root {
-  --bs-btn-color: #FFF !important;
+  --bs-btn-color: #FFF;
 }
 
-.qr, .maquina, .local, .usuarios, .relatorios {
-  padding-left: 280px;
-  padding-bottom: 50px;
+// =========================================================
+// Bootstrap (imported first so our overrides take effect)
+// =========================================================
+@import "~bootstrap/scss/bootstrap";
+
+// =========================================================
+// Partials
+// =========================================================
+@import "sidebar";
+@import "navbar";
+@import "login";
+
+// =========================================================
+// Global utilities
+// =========================================================
+
+// Ensure filled buttons always have white text
+.btn-primary,
+.btn-success,
+.btn-danger,
+.btn-warning,
+.btn-info,
+.btn-dark,
+.btn-secondary {
+  color: #fff !important;
+
+  &:hover, &:focus, &:active {
+    color: #fff !important;
+  }
 }
 
+// Fix anchor-wrapped buttons
 a .btn:hover {
-  color: #fff;
   text-decoration: none;
 }
 
+.div-center-column {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
 
+.div-center-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+.form-center {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.overlay-backdrop {
+  background-color: rgba(0, 0, 0, 0.5);
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 3040;
+}
+
+.modal {
+  z-index: 4000 !important;
+}
+
+// QR code display card
 .div-imagem-qr-index {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  margin-top: 100px;
-  border-radius: 10px;
-  box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.2), -10px -10px 20px rgba(255, 255, 255, 0.8);
-}
+  margin-top: 40px;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  background: #fff;
+  padding: 24px;
 
-.div-imagem-qr-index .container {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  margin: 20px;
-}
-
-.div-center-column {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-
-.div-center-row {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-}
-
-.offcanvas-start {
-  width: 280px !important;
-}
-
-.navbar {
-  z-index: 2000 !important;
-}
-
-ul .list-unstyled {
-  padding-left: 55px;
-}
-
-.form-center {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
-.overlay-backdrop {
-  background-color: rgba(0, 0, 0, 0.5);
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 3040;
-}
-
-.modal {
-  z-index: 4000 !important;
-}
-
-@media screen and (max-width: 960px) {
-  .procedimentos, .planos, .termoAdesao, .prestadores, .cobrancas, .qr, .maquina, .local, .usuarios {
-    padding-left: 0px;
-  }
-}
-.btn {
-  color: #FFF !important;
-}
-
-.div-center-column {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-
-.div-center-row {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-}
-
-.offcanvas-start {
-  width: 280px !important;
-}
-
-.navbar {
-  z-index: 2000 !important;
-}
-
-ul .list-unstyled {
-  padding-left: 55px;
-}
-
-.form-center {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
-.overlay-backdrop {
-  background-color: rgba(0, 0, 0, 0.5);
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 3040;
-}
-
-.modal {
-  z-index: 4000 !important;
-}
-
-@media screen and (max-width: 960px) {
-  .procedimentos,
-  .planos,
-  .termoAdesao,
-  .prestadores,
-  .cobrancas,
-  .guias,
-  .termosAdesao,
-  .relatorios,
-  .usuarios {
-    padding-left: 0px;
+  .container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 20px;
   }
 }
 
-@media screen and (max-width: 768px){
-  .tabela_responsiva{
-    width: 345px;
-  }  
+// Page title / heading area
+.page-heading {
+  padding: 24px 24px 0;
+
+  h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 4px;
+  }
+
+  p {
+    color: #6b7280;
+    font-size: 0.875rem;
+  }
 }
 
-// Importe novamente o Bootstrap para aplicar as personalizações
-@import "~bootstrap/scss/bootstrap";
+// Card improvements
+.card {
+  border: 1px solid #e8ecf0;
+  border-radius: 12px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+
+  .card-header {
+    background: #f8fafc;
+    border-bottom: 1px solid #e8ecf0;
+    border-radius: 12px 12px 0 0 !important;
+    font-weight: 600;
+    color: #374151;
+  }
+}
+
+// Full-page loader (display controlled by JS on window.load)
+.loader {
+  position: fixed;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  backdrop-filter: blur(2px);
+}
+
+.spinner-load {
+  color: $primary;
+}
+
+// =========================================================
+// Global mobile helpers
+// =========================================================
+
+// Prevent content overflow on very small screens
+* {
+  box-sizing: border-box;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+// Forms: stack on mobile
+@media (max-width: 576px) {
+  .row {
+    --bs-gutter-x: 12px;
+  }
+
+  .container,
+  .container-fluid {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .btn {
+    font-size: 0.875rem;
+  }
+
+  // Tables scroll on mobile
+  .dataTables_wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+// Modals: fix on small screens
+@media (max-width: 576px) {
+  .modal-dialog {
+    margin: 12px;
+  }
+}
+
+// Select2: ensure full width on mobile
+.select2-container {
+  width: 100% !important;
+}

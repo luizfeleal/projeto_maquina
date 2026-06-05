@@ -3,7 +3,6 @@
 @section('content')
 
 <div class="usuarios div-center-column w-100" style="padding-top: 99px;">
-    <h1 style="padding-top: 80px; text-align: center;">Editar Credenciais API PIX</h1>
     <div class="container section container-platform div-center-column" style="margin-top: 15px; height: 100%;">
 
         @if(session('success'))

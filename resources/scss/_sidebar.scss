@@ -1,0 +1,387 @@
+// =========================================================
+// Sidebar — tema claro
+// =========================================================
+
+$sidebar-width: 272px;
+$sidebar-bg: #ffffff;
+$sidebar-header-bg: #242A74;
+$sidebar-border-color: #e8ecf0;
+$sidebar-text: #4b5563;
+$sidebar-text-active: #242A74;
+$sidebar-active-bg: #eef2ff;
+$sidebar-hover-bg: #f8fafc;
+$sidebar-accent: #242A74;
+$sidebar-group-color: #9ca3af;
+
+// ---- Shell ----
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: $sidebar-width;
+  height: 100vh;
+  background: $sidebar-bg;
+  border-right: 1px solid $sidebar-border-color;
+  display: flex;
+  flex-direction: column;
+  z-index: 1000;
+  overflow: hidden;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 2px 0 16px rgba(0, 0, 0, 0.05);
+}
+
+// ---- Close button (mobile only) ----
+.sidebar-close-btn {
+  display: none;
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  background: rgba(255, 255, 255, 0.18);
+  border: none;
+  color: #fff;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+  z-index: 10;
+  flex-shrink: 0;
+
+  &:hover { background: rgba(255, 255, 255, 0.3); }
+  iconify-icon { font-size: 16px; }
+}
+
+// ---- Logo header (brand colored strip) ----
+.sidebar-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 22px 20px 20px;
+  background: $sidebar-header-bg;
+  text-decoration: none;
+  flex-shrink: 0;
+  position: relative;
+
+  img {
+    max-width: 160px;
+    height: auto;
+    filter: brightness(0) invert(1);
+    opacity: 0.95;
+  }
+
+  .logo-icon { display: none; }
+}
+
+// ---- Scrollable menu area ----
+.sidebar-menu-area {
+  flex: 1;
+  padding: 10px 0 24px;
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  &::-webkit-scrollbar { width: 4px; }
+  &::-webkit-scrollbar-track { background: transparent; }
+  &::-webkit-scrollbar-thumb {
+    background: #e5e7eb;
+    border-radius: 2px;
+  }
+}
+
+// ---- Menu list ----
+.sidebar-menu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+
+  > li { margin: 1px 0; }
+
+  // Group label
+  .sidebar-menu-group-title {
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: $sidebar-group-color;
+    padding: 18px 18px 6px;
+    margin: 0;
+  }
+
+  // Regular link items
+  > li > a {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    padding: 9px 16px;
+    color: $sidebar-text;
+    text-decoration: none !important;
+    border-radius: 9px;
+    margin: 2px 8px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: background 0.18s, color 0.18s;
+    white-space: nowrap;
+
+    .menu-icon {
+      font-size: 19px;
+      flex-shrink: 0;
+      color: #9ca3af;
+      transition: color 0.18s;
+    }
+
+    &:hover {
+      background: $sidebar-hover-bg;
+      color: #111827;
+
+      .menu-icon { color: $sidebar-accent; }
+    }
+
+    &.active-page {
+      background: $sidebar-active-bg;
+      color: $sidebar-text-active;
+      font-weight: 600;
+
+      .menu-icon { color: $sidebar-accent; }
+    }
+  }
+
+  // Dropdown parent
+  .dropdown {
+    > a {
+      &::after {
+        content: '';
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m9 18 6-6-6-6'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: contain;
+        margin-left: auto;
+        flex-shrink: 0;
+        transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      &.open::after { transform: rotate(90deg); }
+    }
+
+    &.active > a {
+      background: $sidebar-active-bg;
+      color: $sidebar-text-active;
+      font-weight: 600;
+
+      .menu-icon { color: $sidebar-accent; }
+
+      &::after {
+        transform: rotate(90deg);
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23242A74' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m9 18 6-6-6-6'/%3E%3C/svg%3E");
+      }
+    }
+  }
+}
+
+// ---- Submenu ----
+.sidebar-submenu {
+  list-style: none;
+  padding: 2px 0;
+  margin: 0;
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &.open { max-height: 600px; }
+
+  li > a {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 7px 16px 7px 46px;
+    color: #6b7280;
+    font-size: 0.82rem;
+    text-decoration: none !important;
+    border-radius: 8px;
+    margin: 1px 8px;
+    transition: background 0.18s, color 0.18s;
+
+    .circle-icon {
+      display: inline-block;
+      width: 5px;
+      height: 5px;
+      background: #d1d5db;
+      border-radius: 50%;
+      flex-shrink: 0;
+      transition: background 0.18s;
+    }
+
+    &:hover {
+      background: $sidebar-hover-bg;
+      color: #111827;
+
+      .circle-icon { background: $sidebar-accent; }
+    }
+
+    &.active-submenu {
+      color: $sidebar-text-active;
+      font-weight: 600;
+
+      .circle-icon { background: $sidebar-accent; }
+    }
+  }
+}
+
+// ---- Mobile overlay ----
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 999;
+  backdrop-filter: blur(2px);
+
+  &.active { display: block; }
+}
+
+// =========================================================
+// App layout wrapper
+// =========================================================
+
+.app-wrapper {
+  display: flex;
+  min-height: 100vh;
+}
+
+.main-content {
+  flex: 1;
+  margin-left: $sidebar-width;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: #f4f6fb;
+  min-width: 0; // Prevents flex overflow on mobile
+}
+
+// =========================================================
+// Page container (white card)
+// =========================================================
+
+.content-body {
+  flex: 1;
+  padding: 20px;
+}
+
+.page-container {
+  background: #ffffff;
+  border-radius: 14px;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+  min-height: calc(100vh - 64px - 40px);
+}
+
+// ---- Breadcrumb header inside page-container ----
+.page-header {
+  padding: 20px 28px 16px;
+  border-bottom: 1px solid #f1f5f9;
+  background: #fafbfc;
+
+  .page-header-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #111827;
+    margin: 0 0 4px;
+    line-height: 1.3;
+  }
+
+  .breadcrumb {
+    margin: 0;
+    padding: 0;
+    background: none;
+    --bs-breadcrumb-divider: '›';
+    --bs-breadcrumb-item-padding-x: 5px;
+
+    .breadcrumb-item {
+      font-size: 0.75rem;
+      color: #9ca3af;
+
+      &.active {
+        color: #6b7280;
+        font-weight: 500;
+      }
+
+      a {
+        color: #9ca3af;
+        text-decoration: none;
+        transition: color 0.15s;
+
+        &:hover { color: #242A74; }
+      }
+
+      + .breadcrumb-item::before { color: #d1d5db; }
+    }
+  }
+}
+
+// Legacy view wrappers — remove old navbar offset; card handles spacing
+.qr, .maquina, .local, .usuarios, .relatorios, .login {
+  padding-left: 0 !important;
+  padding-bottom: 24px;
+}
+
+// Override legacy inline padding-top (was for fixed navbar)
+.page-container [style*="padding-top"] {
+  padding-top: 24px !important;
+}
+
+// =========================================================
+// Mobile responsive
+// =========================================================
+
+@media (max-width: 991px) {
+  .sidebar {
+    transform: translateX(-$sidebar-width);
+    z-index: 1001;
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.12);
+
+    &.sidebar-open {
+      transform: translateX(0);
+    }
+
+    .sidebar-close-btn {
+      display: flex;
+    }
+  }
+
+  .main-content {
+    margin-left: 0;
+  }
+
+  .content-body {
+    padding: 12px;
+  }
+
+  .page-header {
+    padding: 16px 20px 12px;
+  }
+}
+
+@media (max-width: 576px) {
+  .content-body {
+    padding: 8px;
+  }
+
+  .page-header {
+    padding: 14px 16px 10px;
+
+    .page-header-title {
+      font-size: 1rem;
+    }
+  }
+}
+
+// Tables: always scrollable on small screens
+.tabela_responsiva,
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
