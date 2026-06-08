@@ -11,149 +11,47 @@ use App\Services\ClienteLocalService;
 use App\Services\QrCodeService;
 use App\Services\CredApiPixService;
 use App\Services\AuthService;
+use App\Helpers\QrImageHelper;
 use Illuminate\Support\Facades\Response;
 
 
 class QrCodeController extends Controller
 {
     public function coletarQr(Request $request)
-{
-    if ($request->has('id_local') && $request->has('id_maquina')) {
-        $qrCode = QrCodeService::coletarComFiltro(['id_local' => $request['id_local'], 'id_maquina' => $request['id_maquina']], 'where');
-        $maquina = MaquinasService::coletar($request['id_maquina']);
-        $local = LocaisService::coletar($request['id_local']);
+    {
+        if ($request->has('id_local') && $request->has('id_maquina')) {
+            $qrCode  = QrCodeService::coletarComFiltro(['id_local' => $request['id_local'], 'id_maquina' => $request['id_maquina']], 'where');
+            $maquina = MaquinasService::coletar($request['id_maquina']);
+            $local   = LocaisService::coletar($request['id_local']);
 
-        if (empty($qrCode)) {
-            return back()->with('error', 'Nenhum QR Code encontrado para os dados fornecidos.');
-        }
+            if (empty($qrCode)) {
+                return back()->with('error', 'Nenhum QR Code encontrado para os dados fornecidos.');
+            }
 
-        // Caminho da imagem de fundo
-        $backgroundPath = public_path('/site/img/qr-background.png');
+            $rawBase64 = preg_replace('#^data:image/\w+;base64,#i', '', $qrCode[0]['qr_image']);
+            $fontPath  = public_path('site/fonts/DejaVuSans.ttf');
+            $qrImagem  = QrImageHelper::buildQrImage($rawBase64, $maquina['id_placa'], $fontPath);
 
-        // Base64 da imagem que será sobreposta
-        $base64Image = $qrCode[0]['qr_image'];
-        $base64Image = preg_replace('#^data:image/\w+;base64,#i', '', $base64Image);
+            if ($request->has('abrir')) {
+                $locais   = LocaisService::coletar();
+                $maquinas = MaquinasService::coletar();
+                $clientes = ClientesService::coletar();
 
-        // Decodifica a imagem base64
-        $decodedImage = base64_decode($base64Image);
+                session()->flash('imageQr', $qrImagem);
+                session()->flash('dadosQr', $qrCode[0]);
+                session()->flash('maquina', $maquina);
+                session()->flash('local', $local);
+                return view('Admin.QR.index', compact('locais', 'clientes', 'maquinas'));
+            }
 
-        // Cria uma imagem a partir do background (PNG)
-        $background = imagecreatefrompng($backgroundPath);
-
-        // Cria uma imagem a partir da base64 decodificada
-        $overlay = imagecreatefromstring($decodedImage);
-
-        // Obtém as dimensões originais da imagem sobreposta
-        $overlayWidth = imagesx($overlay);
-        $overlayHeight = imagesy($overlay);
-
-        // Define o novo tamanho da imagem sobreposta (por exemplo, aumentar 50%)
-        $newWidth = $overlayWidth * 1.4; // 150% do tamanho original
-        $newHeight = $overlayHeight * 1.4;
-
-        // Cria uma nova imagem vazia com o novo tamanho
-        $resizedOverlay = imagecreatetruecolor($newWidth, $newHeight);
-
-        // Mantém a transparência ao redimensionar
-        imagealphablending($resizedOverlay, false);
-        imagesavealpha($resizedOverlay, true);
-
-        // Redimensiona a imagem sobreposta
-        imagecopyresampled(
-            $resizedOverlay,
-            $overlay,
-            0,
-            0,
-            0,
-            0,
-            $newWidth,
-            $newHeight,
-            $overlayWidth,
-            $overlayHeight
-        );
-
-        // Define a posição da imagem sobreposta (centralizada horizontalmente e deslocada 120px para baixo)
-        $x = (imagesx($background) - $newWidth) / 2;
-        $y = (imagesy($background) - $newHeight) / 2 + 150;
-
-        // Sobrepõe a imagem redimensionada sobre a de fundo
-        imagecopy($background, $resizedOverlay, $x, $y, 0, 0, $newWidth, $newHeight);
-
-        // Adiciona texto à imagem
-        $text = $maquina['id_placa'];
-        $textColor = imagecolorallocate($background, 255, 255, 255);
-
-        // Para aumentar o tamanho do texto de verdade, precisa usar fonte TTF (imagettftext).
-        // Coloque um arquivo .ttf em: public/site/fonts/DejaVuSans.ttf (ou altere o caminho abaixo).
-        $fontPath = public_path('/site/fonts/DejaVuSans.ttf');
-        $fontSize = 60;
-        $angle = 0;
-
-        if (is_file($fontPath)) {
-            $bbox = imagettfbbox($fontSize, $angle, $fontPath, $text);
-            $minX = min($bbox[0], $bbox[2], $bbox[4], $bbox[6]);
-            $maxX = max($bbox[0], $bbox[2], $bbox[4], $bbox[6]);
-            $minY = min($bbox[1], $bbox[3], $bbox[5], $bbox[7]);
-            $maxY = max($bbox[1], $bbox[3], $bbox[5], $bbox[7]);
-
-            $textWidth = $maxX - $minX;
-            $imgW = imagesx($background);
-            $imgH = imagesy($background);
-
-            // Centraliza horizontalmente e posiciona o "bottom" do texto a 20px da borda inferior
-            $textX = (($imgW - $textWidth) / 2) - $minX;
-            $desiredBottom = $imgH - 20;
-            $textY = $desiredBottom - $maxY;
-
-            imagettftext($background, $fontSize, $angle, (int) $textX, (int) $textY, $textColor, $fontPath, $text);
-        } else {
-            // Fallback (fonte interna do GD): tamanho máximo é 5
-            $font = 5;
-            $textWidth = imagefontwidth($font) * strlen($text);
-            $textHeight = imagefontheight($font);
-            $textX = (imagesx($background) - $textWidth) / 2;
-            $textY = imagesy($background) - $textHeight - 20;
-
-            imagestring($background, $font, (int) $textX, (int) $textY, $text, $textColor);
-        }
-
-        // Cria um buffer para armazenar a imagem como string
-        ob_start();
-        imagepng($background);
-        $imageData = ob_get_contents();
-        ob_end_clean();
-
-        // Converte a imagem final para base64
-        $qrImagem = 'data:image/png;base64,' . base64_encode($imageData);
-
-        // Libera memória
-        imagedestroy($background);
-        imagedestroy($overlay);
-
-        if ($request->has('abrir')) {
-            $locais = LocaisService::coletar();
-            $maquinas = MaquinasService::coletar();
-            $clientes = ClientesService::coletar();
-
-            session()->flash('imageQr', $qrImagem);
-            session()->flash('dadosQr', $qrCode[0]);
-            session()->flash('maquina', $maquina);
-            session()->flash('local', $local);
-            return view('Admin.QR.index', [
-                'locais' => $locais,
-                'clientes' => $clientes,
-                'maquinas' => $maquinas,
-            ]);
-        } else {
             return back()->with(['imageQr' => $qrImagem, 'dadosQr' => $qrCode[0], 'maquina' => $maquina, 'local' => $local]);
         }
-    } else {
-        $locais = LocaisService::coletar();
+
+        $locais   = LocaisService::coletar();
         $maquinas = MaquinasService::coletar();
         $clientes = ClientesService::coletar();
         return view('Admin.QR.index', compact('locais', 'maquinas', 'clientes'));
     }
-}
 
     
 
@@ -245,129 +143,28 @@ class QrCodeController extends Controller
     public function downloadQr(Request $request)
     {
         if ($request->has('id_local') && $request->has('id_maquina')) {
-            $qrCode = QrCodeService::coletarComFiltro(['id_local' => $request['id_local'], 'id_maquina' => $request['id_maquina']], 'where');
+            $qrCode  = QrCodeService::coletarComFiltro(['id_local' => $request['id_local'], 'id_maquina' => $request['id_maquina']], 'where');
             $maquina = MaquinasService::coletar($request['id_maquina']);
-            $local = LocaisService::coletar($request['id_local']);
-    
+
             if (empty($qrCode)) {
                 return back()->with('error', 'Nenhum QR Code encontrado para os dados fornecidos.');
             }
-    
-            // Caminho da imagem de fundo
-        $backgroundPath = public_path('/site/img/qr-background.png');
 
-        // Base64 da imagem que será sobreposta
-        $base64Image = $qrCode[0]['qr_image'];
-        $base64Image = preg_replace('#^data:image/\w+;base64,#i', '', $base64Image);
+            $rawBase64 = preg_replace('#^data:image/\w+;base64,#i', '', $qrCode[0]['qr_image']);
+            $fontPath  = public_path('site/fonts/DejaVuSans.ttf');
+            $qrImagem  = QrImageHelper::buildQrImage($rawBase64, $maquina['id_placa'], $fontPath);
 
-        // Decodifica a imagem base64
-        $decodedImage = base64_decode($base64Image);
-
-        // Cria uma imagem a partir do background (PNG)
-        $background = imagecreatefrompng($backgroundPath);
-
-        // Cria uma imagem a partir da base64 decodificada
-        $overlay = imagecreatefromstring($decodedImage);
-
-        // Obtém as dimensões originais da imagem sobreposta
-        $overlayWidth = imagesx($overlay);
-        $overlayHeight = imagesy($overlay);
-
-        // Define o novo tamanho da imagem sobreposta (por exemplo, aumentar 50%)
-        $newWidth = $overlayWidth * 1.4; // 150% do tamanho original
-        $newHeight = $overlayHeight * 1.4;
-
-        // Cria uma nova imagem vazia com o novo tamanho
-        $resizedOverlay = imagecreatetruecolor($newWidth, $newHeight);
-
-        // Mantém a transparência ao redimensionar
-        imagealphablending($resizedOverlay, false);
-        imagesavealpha($resizedOverlay, true);
-
-        // Redimensiona a imagem sobreposta
-        imagecopyresampled(
-            $resizedOverlay,
-            $overlay,
-            0,
-            0,
-            0,
-            0,
-            $newWidth,
-            $newHeight,
-            $overlayWidth,
-            $overlayHeight
-        );
-
-        // Define a posição da imagem sobreposta (centralizada horizontalmente e deslocada 120px para baixo)
-        $x = (imagesx($background) - $newWidth) / 2;
-        $y = (imagesy($background) - $newHeight) / 2 + 150;
-
-        // Sobrepõe a imagem redimensionada sobre a de fundo
-        imagecopy($background, $resizedOverlay, $x, $y, 0, 0, $newWidth, $newHeight);
-
-        // Adiciona texto à imagem
-        $text = $maquina['id_placa'];
-        $textColor = imagecolorallocate($background, 255, 255, 255);
-
-        // Para aumentar o tamanho do texto de verdade, precisa usar fonte TTF (imagettftext).
-        // Coloque um arquivo .ttf em: public/site/fonts/DejaVuSans.ttf (ou altere o caminho abaixo).
-        $fontPath = public_path('/site/fonts/DejaVuSans.ttf');
-        $fontSize = 60;
-        $angle = 0;
-
-        if (is_file($fontPath)) {
-            $bbox = imagettfbbox($fontSize, $angle, $fontPath, $text);
-            $minX = min($bbox[0], $bbox[2], $bbox[4], $bbox[6]);
-            $maxX = max($bbox[0], $bbox[2], $bbox[4], $bbox[6]);
-            $minY = min($bbox[1], $bbox[3], $bbox[5], $bbox[7]);
-            $maxY = max($bbox[1], $bbox[3], $bbox[5], $bbox[7]);
-
-            $textWidth = $maxX - $minX;
-            $imgW = imagesx($background);
-            $imgH = imagesy($background);
-
-            // Centraliza horizontalmente e posiciona o "bottom" do texto a 20px da borda inferior
-            $textX = (($imgW - $textWidth) / 2) - $minX;
-            $desiredBottom = $imgH - 20;
-            $textY = $desiredBottom - $maxY;
-
-            imagettftext($background, $fontSize, $angle, (int) $textX, (int) $textY, $textColor, $fontPath, $text);
-        } else {
-            // Fallback (fonte interna do GD): tamanho máximo é 5
-            $font = 5;
-            $textWidth = imagefontwidth($font) * strlen($text);
-            $textHeight = imagefontheight($font);
-            $textX = (imagesx($background) - $textWidth) / 2;
-            $textY = imagesy($background) - $textHeight - 20;
-
-            imagestring($background, $font, (int) $textX, (int) $textY, $text, $textColor);
-        }
-
-        // Cria um buffer para armazenar a imagem como string
-        ob_start();
-        imagepng($background);
-        $imageData = ob_get_contents();
-        ob_end_clean();
-
-        // Converte a imagem final para base64
-        $qrImagem = 'data:image/png;base64,' . base64_encode($imageData);
-
-        // Libera memória
-        imagedestroy($background);
-        imagedestroy($overlay);
-
-    
-            // Gera o arquivo para download
+            $imageData  = base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $qrImagem));
             $outputFile = storage_path('app/public/qr_code_download.png');
             file_put_contents($outputFile, $imageData);
-    
+
             return response()->download($outputFile, 'qr_code.png')->deleteFileAfterSend(true);
-        } else {
-            $locais = LocaisService::coletar();
-            $maquinas = MaquinasService::coletar();
-            $clientes = ClientesService::coletar();
-            return view('Admin.QR.index', compact('locais', 'maquinas', 'clientes'));
         }
+
+        $locais   = LocaisService::coletar();
+        $maquinas = MaquinasService::coletar();
+        $clientes = ClientesService::coletar();
+        return view('Admin.QR.index', compact('locais', 'maquinas', 'clientes'));
     }
     
 

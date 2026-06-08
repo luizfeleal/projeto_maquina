@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
+use App\Support\ApiClient;
 use App\Services\AuthService;
 use App\Services\EmailService;
 use App\Services\UsuariosService;
@@ -85,14 +85,8 @@ class LoginController extends Controller
         try{
             $email = $request['usuario_email'];
 
-            $token = AuthService::getToken();
-            //$usuario = UsuariosService::coletarComFiltro(['usuario_email'=>$email], 'where');
-            $url = env('APP_URL_API') . '/usuarios';
-            $response = Http::withHeaders([
-                'Authorization' => 'Bearer ' . $token
-            ])->get($url);
-
-            $usuarios = $response->json();
+            AuthService::getToken();
+            $usuarios = ApiClient::get('/usuarios')->json();
 
             $usuarioArray = array_filter($usuarios, function ($usuario) use ($email) {
                 return $usuario['usuario_email'] == $email;
@@ -118,14 +112,8 @@ class LoginController extends Controller
         $tokenEmail = $request->token;
         if(isset($tokenEmail)){
 
-            $token = AuthService::getToken();
-            //$usuario = UsuariosService::coletarComFiltro(['usuario_email'=>$email], 'where');
-            $url = env('APP_URL_API') . "/usuarios/$id_usuario";
-            $response = Http::withHeaders([
-                'Authorization' => 'Bearer ' . $token
-            ])->get($url);
-
-            $usuarios = $response->json();
+            AuthService::getToken();
+            $usuarios = ApiClient::get("/usuarios/{$id_usuario}")->json();
 
             //return hash('sha256', $usuarios['usuario_email']) == $tokenEmail;
            if(!empty($usuarios)){
@@ -145,23 +133,12 @@ class LoginController extends Controller
             $senha = $request['usuario_senha'];
             $tokenEmail = $request['token'];
             if($request['usuario_senha'] == $request['usuario_confirmacao_senha']){
-                $token = AuthService::getToken();
-                //$usuario = UsuariosService::coletarComFiltro(['usuario_email'=>$email], 'where');
-                $url = env('APP_URL_API') . "/usuarios/$id_usuario";
-                $response = Http::withHeaders([
-                    'Authorization' => 'Bearer ' . $token
-                ])->get($url);
-
-                $usuarios = $response->json();
-
+                AuthService::getToken();
+                $usuarios = ApiClient::get("/usuarios/{$id_usuario}")->json();
 
                if(!empty($usuarios) && hash('sha256', $usuarios['usuario_email']) == $request['token']){
-                  $dados = [];
-                  $dados['usuario_senha'] = $senha;
-                  $url = env('APP_URL_API') . "/usuarios/$id_usuario";
-                  $response = Http::withHeaders([
-                      'Authorization' => 'Bearer ' . $token
-                  ])->put($url, $dados);
+                  $dados = ['usuario_senha' => $senha];
+                  ApiClient::put("/usuarios/{$id_usuario}", $dados);
                   return back()->with('success', 'Senha alterada com sucesso!');
                }else{
                   return back()->with('error', "Não foi possível redefinir a senha para esse usuário.");

@@ -26,7 +26,7 @@
 
                         <div class="tabela_responsiva">
 
-                            <table id="maquinas_online_offline" class="table table-striped table-responsive" style="width:100%">
+                            <table id="maquinas_online_offline" class="table table-striped table-responsive" style="width:100%" no-card-view>
                                 <thead>
                                     <tr>
                                         <th>Máquina</th>

@@ -2,126 +2,78 @@
 @section('title', 'Minhas Máquinas -> Transações')
 @section('content')
 
-        <div id="guias" class="maquina w-100 div-center-column"
-                style=" padding-top: 99px; padding-bottom: 100px;">
+    <div class="page-heading">
+        <h1>Transações</h1>
+        <p>Histórico completo de movimentações das suas máquinas</p>
+    </div>
 
+    <div class="content-body" style="padding-top:0;">
+        <div class="page-container">
+            <div class="page-header">
+                <div class="d-flex align-items-center gap-2">
+                    <iconify-icon icon="solar:transfer-horizontal-bold-duotone"
+                                  style="font-size:1.2rem; color:#2C9BA5;"></iconify-icon>
+                    <span class="page-header-title">Transações</span>
+                </div>
+            </div>
 
-            <div class="container section container-platform div-center-column"
-                style="margin-top: 15px; height: 100%;">
-                
+            <div style="padding:20px;">
                 <table id="tabela_maquinas_transacao" class="table table-striped" style="width:100%">
                     <thead>
                         <tr>
                             <th>Local</th>
                             <th>Máquina</th>
-                            <th>Última transação</th>
+                            <th>Valor</th>
                             <th>Fonte</th>
                             <th>Data e Hora</th>
                         </tr>
                     </thead>
                     <tbody>
-
-                        
-
+                        @foreach($resultado as $tx)
+                            @php
+                                $isCredito = ($tx['extrato_operacao'] ?? 'C') === 'C';
+                                $valor     = $tx['extrato_operacao_valor'] ?? 0;
+                            @endphp
+                            <tr>
+                                <td>{{ $tx['local_nome'] ?? '—' }}</td>
+                                <td>{{ $tx['maquina_nome'] ?? '—' }}</td>
+                                <td>
+                                    <span style="font-weight:700; color:{{ $isCredito ? '#16a34a' : '#ef4444' }}; white-space:nowrap;">
+                                        {{ $isCredito ? '+' : '−' }} R$ {{ number_format($valor, 2, ',', '.') }}
+                                    </span>
+                                </td>
+                                <td>{{ $tx['extrato_operacao_tipo'] ?? '—' }}</td>
+                                <td>{{ date('d/m/Y H:i:s', strtotime($tx['data_criacao'])) }}</td>
+                            </tr>
+                        @endforeach
                     </tbody>
                     <tfoot>
                         <tr>
                             <th>Local</th>
                             <th>Máquina</th>
-                            <th>Última transação</th>
+                            <th>Valor</th>
                             <th>Fonte</th>
                             <th>Data e Hora</th>
                         </tr>
                     </tfoot>
                 </table>
-
-
             </div>
         </div>
-
-
-
+    </div>
 
 @endsection
 
 @section('scriptTable')
-    <script>
-
-        $(document).ready(function(){
-
-            
-            async function fetchToken() {
-                try {
-                    let response = await fetch('https://www.swiftpaysolucoes.com/api/getToken');
-                    let data = await response.json();
-                    return data.token;
-                } catch (error) {
-                    console.error('Erro ao obter o token:', error);
-                    return null;
-                }
-            }
-
-            fetchToken().then(token => {
-                if (token) {
-                    $('#tabela_maquinas_transacao').DataTable({
-                        processing: true,
-                        serverSide: true,
-                        responsive: false,
-                        ajax: {
-                            url: 'https://services.swiftpaysolucoes.com/api/totalTransacaoMaquinaCliente', // URL da sua API
-                            type: 'POST', // Tipo de requisição
-                            dataSrc: 'data', // Propriedade da resposta que contém os dados
-                            headers: {
-                                'Authorization': 'Bearer ' + token, // Adicione seu token de autenticação
-                            },
-                            data: function (d) {
-                                d.id_cliente = {!!json_decode($id_cliente)!!}
-                                d.page = (d.start / d.length) + 1; // DataTables usa índice baseado em 0
-                                d.per_page = d.length; // Define o número de registros por página
-                            }
-                        },
-                        language: {
-                            url: "https://cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json" // Idioma
-                        },
-                        columns: [
-                            {
-                                data: 'local_nome',
-                                title: 'Local'
-                            },
-                            {
-                                data: 'maquina_nome',
-                                title: 'Máquina'
-                            },
-                            {
-                                data: 'extrato_operacao',
-                                title: 'Última Transação',
-                                render: function(data, type, row) {
-                                    var extrato_valor = row.extrato_operacao_valor ? row.extrato_operacao_valor : 0;
-                                    var valor = parseFloat(extrato_valor).toFixed(2).replace('.', ',');
-                                    return data === 'C' ? '+ R$ ' + valor : '- R$ ' + valor;
-                                }
-                            },
-                            {
-                                data: 'extrato_operacao_tipo',
-                                title: 'Fonte'
-                            },
-                            {
-                                data: 'data_criacao',
-                                title: 'Data e Hora',
-                                render: function(data) {
-                                    var date = new Date(data);
-                                    return date.toLocaleDateString('pt-BR') + ' ' + date.toLocaleTimeString('pt-BR');
-                                }
-                            }
-                        ],
-                        pageLength: 10,
-                        paging: true,
-                        lengthMenu: [10, 25, 50, 100]
-                    });
-                }
-            });
+<script>
+    $(document).ready(function () {
+        $('#tabela_maquinas_transacao').DataTable({
+            language: {
+                url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json'
+            },
+            order: [[4, 'desc']],
+            pageLength: 25,
+            lengthMenu: [10, 25, 50, 100]
         });
-    </script>
-
+    });
+</script>
 @endsection
-

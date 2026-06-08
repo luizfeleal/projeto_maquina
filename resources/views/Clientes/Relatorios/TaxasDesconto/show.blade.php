@@ -17,7 +17,7 @@
                         @csrf
 
                         
-                        <table id="total_transacoes" class="table table-striped table-responsive" style="width:100%">
+                        <table id="total_transacoes" class="table table-striped table-responsive" style="width:100%" no-card-view>
                             <thead>
                                 <tr>
                                     <th>Local</th>
@@ -55,7 +55,7 @@
                         </table>
                         <div class="row" style="display: flex; flex-direction: row; justify-content: center;width: 100%; margin-top: 10px; margin-bottom: 30px;">
                             <div class="col-md-8">
-                                <h4 style="color: #242a74;"><strong>Total Transações: </strong>  R$ {{ number_format($valor_total, 2, ',', '.')}}</h4>
+                                <h4 style="color: #1e2e5e;"><strong>Total Transações: </strong>  R$ {{ number_format($valor_total, 2, ',', '.')}}</h4>
                             </div>
                             
                         </div>

@@ -55,7 +55,7 @@
                 <tbody>
                     @foreach($credenciais as $credencial)
                         @php
-                            $credId = $credencial['id'] ?? $credencial['id_cred_api_pix'] ?? null;
+                            $credId = $credencial['id_credencial'] ?? $credencial['id'] ?? $credencial['id_cred_api_pix'] ?? null;
                             $idCliente = $credencial['id_cliente'] ?? null;
                             $tipoCred = $credencial['tipo_cred'] ?? '';
                             $cliente_nome = collect($clientes)->firstWhere('id_cliente', $idCliente)['cliente_nome'] ?? 'Cliente #' . $idCliente;
@@ -72,15 +72,19 @@
                                 @if($credId)
                                     @if($tipoCred == 'efi')
                                         <a href="{{ route('credencial-editar-efi', $credId) }}" class="btn btn-sm btn-primary">
-                                            <i class="fa-solid fa-pen"></i> Editar
+                                            <iconify-icon icon="solar:pen-linear"></iconify-icon> Editar
                                         </a>
                                     @else
                                         <a href="{{ route('credencial-editar-pagbank', $credId) }}" class="btn btn-sm btn-primary">
-                                            <i class="fa-solid fa-pen"></i> Editar
+                                            <iconify-icon icon="solar:pen-linear"></iconify-icon> Editar
                                         </a>
                                     @endif
-                                    <button type="button" class="btn btn-sm btn-danger btn-excluir-credencial" data-id="{{ $credId }}" data-cliente="{{ $cliente_nome }}" data-tipo="{{ strtoupper($tipoCred) }}" style="background-color: #dc3545; border-color: #dc3545;">
-                                        <i class="fa-solid fa-trash"></i> Excluir
+                                    <button type="button"
+                                            class="btn btn-sm btn-danger btn-excluir-credencial"
+                                            data-id="{{ $credId }}"
+                                            data-cliente="{{ $cliente_nome }}"
+                                            data-tipo="{{ strtoupper($tipoCred) }}">
+                                        <iconify-icon icon="solar:trash-bin-trash-linear"></iconify-icon> Excluir
                                     </button>
                                 @else
                                     <span class="text-muted">-</span>
@@ -100,28 +104,10 @@
             </div>
         @endif
 
-        <!-- Modal de confirmação de exclusão -->
-        <div class="modal fade" id="modalExcluirCredencial" tabindex="-1">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content modal-purple">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Excluir credencial</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <p>Tem certeza que deseja excluir a credencial <strong id="modalExcluirCredencialInfo"></strong>? Esta ação não pode ser desfeita.</p>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        <form id="formExcluirCredencial" method="POST" style="display:inline;">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-purple">Excluir</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <form id="formExcluirCredencial" method="POST" class="d-none">
+            @csrf
+            @method('DELETE')
+        </form>
 
     </div>
 </div>
@@ -143,9 +129,20 @@
             var id = $(this).data('id');
             var cliente = $(this).data('cliente');
             var tipo = $(this).data('tipo');
-            $('#modalExcluirCredencialInfo').text(cliente + ' (' + tipo + ')');
-            $('#formExcluirCredencial').attr('action', '{{ url("credenciais/excluir") }}/' + id);
-            new bootstrap.Modal('#modalExcluirCredencial').show();
+
+            Swal.fire({
+                icon: 'warning',
+                title: 'Excluir credencial?',
+                text: 'Tem certeza que deseja excluir a credencial ' + tipo + ' de ' + cliente + '? Esta ação não pode ser desfeita.',
+                showCancelButton: true,
+                confirmButtonText: 'Excluir',
+                cancelButtonText: 'Cancelar',
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+            }).then(function(result) {
+                if (!result.isConfirmed) return;
+                $('#formExcluirCredencial').attr('action', '{{ url("credenciais/excluir") }}/' + id).submit();
+            });
         });
     });
 </script>

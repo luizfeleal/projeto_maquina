@@ -82,7 +82,7 @@
     width: 36px;
     height: 36px;
     border-radius: 9px;
-    background: linear-gradient(135deg, #242A74 0%, #3b52d4 100%);
+    background: linear-gradient(135deg, #1E2E5E 0%, #2C9BA5 100%);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -125,8 +125,9 @@
     height: 56px;
     padding: 0 14px;
 
-    .navbar-mobile-toggle { display: flex; }
-    .navbar-brand-mobile  { display: block; }
+    // Hamburger and mobile logo replaced by bottom bar on mobile
+    .navbar-mobile-toggle { display: none; }
+    .navbar-brand-mobile  { display: none; }
 
     .user-info { display: none; }
 

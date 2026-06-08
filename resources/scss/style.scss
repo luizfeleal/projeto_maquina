@@ -1,7 +1,14 @@
 // =========================================================
 // Variables
 // =========================================================
-$primary: #242A74;
+// SwiftPay brand palette
+$color-deep:    #0F1A3B;
+$color-dark:    #1E2E5E;
+$color-teal:    #2C9BA5;
+$color-mid:     #16526D;
+
+// Teal is the action color — used for all buttons, links, highlights
+$primary: $color-teal;
 
 $theme-colors: (
   "primary": $primary
@@ -17,11 +24,24 @@ $theme-colors: (
 @import "~bootstrap/scss/bootstrap";
 
 // =========================================================
+// Force CSS custom properties to brand palette
+// (overrides any CDN or third-party Bootstrap reset)
+// =========================================================
+:root {
+  --bs-primary:          #{$color-teal};
+  --bs-primary-rgb:      44, 155, 165;
+  --bs-link-color:       #{$color-teal};
+  --bs-link-hover-color: #{$color-mid};
+}
+
+// =========================================================
 // Partials
 // =========================================================
 @import "sidebar";
 @import "navbar";
 @import "login";
+@import "cards";
+@import "bottom-bar";
 
 // =========================================================
 // Global utilities

@@ -10,7 +10,7 @@
                 style="margin-top: 15px; height: 100%;">
                 
 
-                <table id="tabela-local" class="table table-striped" style="width:100%">
+                <table id="tabela-local" class="table table-striped" style="width:100%" no-card-view>
                     <thead>
                         <tr>
                             <th>Local</th>

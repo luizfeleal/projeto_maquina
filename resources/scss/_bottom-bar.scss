@@ -1,0 +1,110 @@
+// =========================================================
+// Bottom Navigation Bar — mobile only (≤ 991px)
+// =========================================================
+
+$bottom-bar-height: 60px;
+$bottom-bar-bg:     #ffffff;
+$bottom-bar-border: #e8ecf0;
+$bottom-bar-active: #2C9BA5;
+$bottom-bar-idle:   #9ca3af;
+
+.bottom-nav {
+  display: none; // shown only on mobile via media query below
+}
+
+@media (max-width: 991px) {
+
+  // ---- Bar shell ----
+  .bottom-nav {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: calc(#{$bottom-bar-height} + env(safe-area-inset-bottom));
+    padding-bottom: env(safe-area-inset-bottom);
+    background: $bottom-bar-bg;
+    border-top: 1px solid $bottom-bar-border;
+    box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.07);
+    z-index: 1002;
+    align-items: stretch;
+  }
+
+  // ---- Each tab item ----
+  .bottom-nav-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    text-decoration: none !important;
+    color: $bottom-bar-idle;
+    font-size: 0.62rem;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    padding: 6px 4px 4px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    transition: color 0.18s;
+    position: relative;
+    -webkit-tap-highlight-color: transparent;
+
+    iconify-icon {
+      font-size: 22px;
+      line-height: 1;
+      transition: color 0.18s, transform 0.18s;
+    }
+
+    span {
+      display: block;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 64px;
+      text-align: center;
+    }
+
+    // Active indicator dot above icon
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%) scaleX(0);
+      width: 28px;
+      height: 3px;
+      border-radius: 0 0 4px 4px;
+      background: $bottom-bar-active;
+      transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    &:hover {
+      color: darken($bottom-bar-active, 8%);
+    }
+
+    // Active state
+    &.active {
+      color: $bottom-bar-active;
+
+      iconify-icon {
+        transform: translateY(-1px);
+      }
+
+      &::before {
+        transform: translateX(-50%) scaleX(1);
+      }
+    }
+  }
+
+  // ---- "Mais" button (opens sidebar drawer) ----
+  .bottom-nav-more {
+    // inherits .bottom-nav-item styles
+  }
+
+  // ---- Push main content above the bar ----
+  .main-content {
+    padding-bottom: calc(#{$bottom-bar-height} + env(safe-area-inset-bottom));
+  }
+}

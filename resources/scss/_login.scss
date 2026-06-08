@@ -16,7 +16,7 @@
   justify-content: center;
   width: 44%;
   min-height: 100vh;
-  background: linear-gradient(145deg, #242A74 0%, #1B205A 55%, #111443 100%);
+  background: linear-gradient(145deg, #1E2E5E 0%, #16526D 55%, #0F1A3B 100%);
   padding: 60px 48px;
   position: relative;
   overflow: hidden;
@@ -149,8 +149,8 @@
       &::placeholder { color: #9ca3af; }
 
       &:focus {
-        border-color: #242A74;
-        box-shadow: 0 0 0 3px rgba(36, 42, 116, 0.1);
+        border-color: #2C9BA5;
+        box-shadow: 0 0 0 3px rgba(44, 155, 165, 0.15);
         outline: none;
       }
 
@@ -168,7 +168,7 @@
 
   .login-forgot {
     font-size: 0.82rem;
-    color: #242A74;
+    color: #2C9BA5;
     text-decoration: none;
     font-weight: 500;
 
@@ -179,7 +179,7 @@
     display: block;
     width: 100%;
     height: 48px;
-    background: #242A74;
+    background: #2C9BA5;
     color: #fff !important;
     border: none;
     border-radius: 10px;
@@ -192,9 +192,9 @@
     text-decoration: none;
 
     &:hover {
-      background: #1B205A;
+      background: #16526D;
       transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(36, 42, 116, 0.3);
+      box-shadow: 0 4px 12px rgba(44, 155, 165, 0.35);
     }
 
     &:active { transform: translateY(0); }

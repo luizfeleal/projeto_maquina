@@ -10,7 +10,7 @@
                 style="margin-top: 15px; height: 100%;">
                 
                 <div class="tabela_responsiva">
-                    <table id="tabela_maquinas_transacao" class="display responsive table-striped" style="width:100%">
+                    <table id="tabela_maquinas_transacao" class="display responsive table-striped" style="width:100%" no-card-view>
                         <thead>
                             <tr>
                                 <th>Local</th>

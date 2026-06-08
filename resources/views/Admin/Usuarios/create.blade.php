@@ -69,20 +69,24 @@
                         </div>
                     </div>
 
-                    <h5>Permissões:</h5>
                     <div class="row" style="display: flex; flex-direction: row; justify-content: center;width: 100%; margin-bottom: 20px;">
                         <div class="col-md-8">
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" name="checkbox_efi" type="checkbox" role="switch" id="checkboxEfi">
-                                <label class="form-check-label" for="flexSwitchCheckDefault">Pix</label>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row" style="display: flex; flex-direction: row; justify-content: center;width: 100%; margin-bottom: 20px;">
-                        <div class="col-md-8">
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" name="checkbox_pagbank" type="checkbox" role="switch" id="checkboxPagbank">
-                                <label class="form-check-label" for="flexSwitchCheckDefault">Máquininha de cartão (Pagbank)</label>
+                            <h5 class="perm-section-label">Permissões:</h5>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-check form-switch perm-switch-wrap">
+                                        <input class="form-check-input perm-switch" name="checkbox_efi"
+                                               type="checkbox" role="switch" id="checkboxEfi">
+                                        <label class="form-check-label" for="checkboxEfi">Pix</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check form-switch perm-switch-wrap">
+                                        <input class="form-check-input perm-switch" name="checkbox_pagbank"
+                                               type="checkbox" role="switch" id="checkboxPagbank">
+                                        <label class="form-check-label" for="checkboxPagbank">Máquininha de cartão (Pagbank)</label>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>

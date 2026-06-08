@@ -18,7 +18,7 @@
 
                         <div class="tabela_responsiva">
 
-                            <table id="total_transacoes" class="table table-striped table-responsive" style="width:100%">
+                            <table id="total_transacoes" class="table table-striped table-responsive" style="width:100%" no-card-view>
                                 <thead>
                                     <tr>
                                         <th>Status</th>

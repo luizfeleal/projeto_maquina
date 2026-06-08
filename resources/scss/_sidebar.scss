@@ -4,13 +4,13 @@
 
 $sidebar-width: 272px;
 $sidebar-bg: #ffffff;
-$sidebar-header-bg: #242A74;
+$sidebar-header-bg: #ffffff;
 $sidebar-border-color: #e8ecf0;
 $sidebar-text: #4b5563;
-$sidebar-text-active: #242A74;
-$sidebar-active-bg: #eef2ff;
+$sidebar-text-active: #1E2E5E;
+$sidebar-active-bg: #e6f4f5;
 $sidebar-hover-bg: #f8fafc;
-$sidebar-accent: #242A74;
+$sidebar-accent: #2C9BA5;
 $sidebar-group-color: #9ca3af;
 
 // ---- Shell ----
@@ -36,30 +36,31 @@ $sidebar-group-color: #9ca3af;
   position: absolute;
   top: 14px;
   right: 14px;
-  background: rgba(255, 255, 255, 0.18);
+  background: #f3f4f6;
   border: none;
-  color: #fff;
+  color: #6b7280;
   width: 30px;
   height: 30px;
   border-radius: 8px;
   cursor: pointer;
   align-items: center;
   justify-content: center;
-  transition: background 0.2s;
+  transition: background 0.2s, color 0.2s;
   z-index: 10;
   flex-shrink: 0;
 
-  &:hover { background: rgba(255, 255, 255, 0.3); }
+  &:hover { background: #e5e7eb; color: #111827; }
   iconify-icon { font-size: 16px; }
 }
 
-// ---- Logo header (brand colored strip) ----
+// ---- Logo header ----
 .sidebar-logo {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 22px 20px 20px;
+  padding: 20px 20px 18px;
   background: $sidebar-header-bg;
+  border-bottom: 1px solid $sidebar-border-color;
   text-decoration: none;
   flex-shrink: 0;
   position: relative;
@@ -67,8 +68,6 @@ $sidebar-group-color: #9ca3af;
   img {
     max-width: 160px;
     height: auto;
-    filter: brightness(0) invert(1);
-    opacity: 0.95;
   }
 
   .logo-icon { display: none; }
@@ -175,7 +174,7 @@ $sidebar-group-color: #9ca3af;
 
       &::after {
         transform: rotate(90deg);
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23242A74' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m9 18 6-6-6-6'/%3E%3C/svg%3E");
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232C9BA5' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m9 18 6-6-6-6'/%3E%3C/svg%3E");
       }
     }
   }
@@ -313,7 +312,7 @@ $sidebar-group-color: #9ca3af;
         text-decoration: none;
         transition: color 0.15s;
 
-        &:hover { color: #242A74; }
+        &:hover { color: #2C9BA5; }
       }
 
       + .breadcrumb-item::before { color: #d1d5db; }

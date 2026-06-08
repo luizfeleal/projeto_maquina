@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', function () {
         icon: 'success',
         title: 'Sucesso!',
         text: @json(session('success')),
-        confirmButtonColor: '#242A74',
+        confirmButtonColor: '#2C9BA5',
         confirmButtonText: 'OK',
         timer: 6000,
         timerProgressBar: true,
@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', function () {
         icon: 'error',
         title: 'Erro!',
         text: @json(session('error')),
-        confirmButtonColor: '#242A74',
+        confirmButtonColor: '#2C9BA5',
         confirmButtonText: 'OK',
     });
 });
@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', function () {
         icon: 'warning',
         title: 'Atenção!',
         text: @json(session('warning')),
-        confirmButtonColor: '#242A74',
+        confirmButtonColor: '#2C9BA5',
         confirmButtonText: 'OK',
     });
 });
@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', function () {
         icon: 'info',
         title: 'Informação',
         text: @json(session('info')),
-        confirmButtonColor: '#242A74',
+        confirmButtonColor: '#2C9BA5',
         confirmButtonText: 'OK',
     });
 });

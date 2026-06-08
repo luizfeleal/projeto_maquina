@@ -19,7 +19,7 @@
 
                             <option value="">Selecione</option>
                             @foreach($clientes as $cliente)
-                                <option value="{{$cliente['id_cliente']}}">{{$cliente['cliente_nome']}}</option>
+                                <option value="{{$cliente['id_cliente']}}" {{ (string) request('id_cliente') === (string) $cliente['id_cliente'] ? 'selected' : '' }}>{{$cliente['cliente_nome']}}</option>
                             @endforeach
                             </select>
                             <div class="invalid-feedback">

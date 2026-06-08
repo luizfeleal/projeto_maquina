@@ -3,11 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title') — Swift Pay</title>
+    <title>@yield('title') — SwiftPay Soluções</title>
 
-    <link rel="icon" href="{{ asset('site/img/favico.ico') }}" sizes="32x32">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('site/img/favicon-32.png') }}">
+    <link rel="apple-touch-icon" href="{{ asset('site/img/apple-touch-icon.png') }}">
+    <link rel="manifest" href="{{ asset('site/manifest.json') }}">
+    <meta name="theme-color" content="#1E2E5E">
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
+    {{-- App styles (Bootstrap + custom SCSS compiled) --}}
     <link rel="stylesheet" href="{{ asset('site/style.css') }}?v={{ time() }}">
     <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js" defer></script>
 </head>

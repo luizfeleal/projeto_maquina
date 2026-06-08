@@ -1,228 +1,110 @@
 <?php
 
 namespace App\Services;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Mail;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\Http;
 
-
+use App\Support\ApiClient;
 
 class ExtratoMaquinaService
 {
-
-    public static function criar($dados){
-        $url = env('APP_URL_API') . "/extratoMaquina";
-
-        $token = AuthService::getToken();
-        $response = Http::withHeaders([
-            'Authorization' => 'Bearer ' . $token
-        ])->post($url, $dados);
-
-        $extrato_maquinas = $response->json();
-
-        return $extrato_maquinas;
+    public static function criar($dados)
+    {
+        return ApiClient::post('/extratoMaquina', $dados)->json();
     }
 
-    public static function coletar(string $id = Null)
+    public static function coletar(string $id = null)
     {
-        if(is_null($id)){
-            $url = env('APP_URL_API') . "/extratoMaquina";
-        }else{
-            $url = env('APP_URL_API') . "/extratoMaquina/$id";
-        }
-        $token = AuthService::getToken();
-        $response = Http::withHeaders([
-            'Authorization' => 'Bearer ' . $token
-        ])->get($url);
-
-        $extrato_maquinas = $response->json();
-
-        return $extrato_maquinas;
+        $path = is_null($id) ? '/extratoMaquina' : "/extratoMaquina/{$id}";
+        return ApiClient::get($path)->json();
     }
 
     public static function coletarComPaginacao(array $filtros = [], int $page = 1)
-{
-    // Define a URL base da API de extrato de máquinas
-    $url = env('APP_URL_API') . "/extratoMaquina";
+    {
+        $params = array_merge($filtros, ['page' => $page]);
+        $response = ApiClient::get('/extratoMaquina', $params);
 
-    // Adiciona os parâmetros de paginação e filtros na requisição
-    $params = array_merge($filtros, ['page' => $page]);
+        if ($response->successful()) {
+            return $response->json();
+        }
 
-    // Coleta o token para autenticação
-    $token = AuthService::getToken();
-
-    // Faz a requisição HTTP com o token e parâmetros
-    $response = Http::withHeaders([
-        'Authorization' => 'Bearer ' . $token
-    ])->get($url, $params);
-
-    // Verifica se a resposta foi bem-sucedida
-    if ($response->successful()) {
-        // Retorna os dados da resposta da API
-        return $response->json();
-    } else {
-        // Tratamento de erro caso a requisição falhe
         return [
             'data' => [],
             'current_page' => 1,
             'last_page' => 1,
         ];
     }
-}
 
-public static function coletarRelatorioTotalTransacoes($dados, $id_cliente = null){
-    $url = env('APP_URL_API') . "/relatorioTotalTransacoes";
+    public static function coletarRelatorioTotalTransacoes($dados, $id_cliente = null)
+    {
+        if (isset($id_cliente)) {
+            $dados['id_cliente'] = [$id_cliente];
+        }
 
-    if(isset($id_cliente)){
-        $dados['id_cliente'] = [$id_cliente];
-    }
-        $token = AuthService::getToken();
-        $response = Http::withHeaders([
-            'Authorization' => 'Bearer ' . $token
-        ])->post($url, $dados);
-
-        $extrato_maquinas = $response->json();
-
-        return $extrato_maquinas;
-}
-
-public static function coletarRelatorioTotalTransacoesTotal($dados, $id_cliente = null){
-    $url = env('APP_URL_API') . "/relatorioTotalTransacoesTotal";
-
-    if(isset($id_cliente)){
-        $dados['id_cliente'] = [$id_cliente];
+        return ApiClient::post('/relatorioTotalTransacoes', $dados)->json();
     }
 
-        $token = AuthService::getToken();
-        $response = Http::withHeaders([
-            'Authorization' => 'Bearer ' . $token
-        ])->post($url, $dados);
+    public static function coletarRelatorioTotalTransacoesTotal($dados, $id_cliente = null)
+    {
+        if (isset($id_cliente)) {
+            $dados['id_cliente'] = [$id_cliente];
+        }
 
-        $extrato_maquinas = $response->json();
-
-        return $extrato_maquinas;
-}
-
-public static function coletarRelatorioTotalTransacoesTaxa($dados, $id_cliente = null){
-    $url = env('APP_URL_API') . "/relatorioTotalTransacoesTaxa";
-
-
-    if(isset($id_cliente)){
-        $dados['id_cliente'] = [$id_cliente];
+        return ApiClient::post('/relatorioTotalTransacoesTotal', $dados)->json();
     }
-        $token = AuthService::getToken();
-        $response = Http::withHeaders([
-            'Authorization' => 'Bearer ' . $token
-        ])->post($url, $dados);
 
-        $extrato_maquinas = $response->json();
+    public static function coletarRelatorioTotalTransacoesTaxa($dados, $id_cliente = null)
+    {
+        if (isset($id_cliente)) {
+            $dados['id_cliente'] = [$id_cliente];
+        }
 
-        return $extrato_maquinas;
-}
+        return ApiClient::post('/relatorioTotalTransacoesTaxa', $dados)->json();
+    }
 
-public static function coletarExtratoDasMaquinasDeUmCliente($dados){
-    $url = env('APP_URL_API') . "/transacaoMaquinaCliente";
+    public static function coletarExtratoDasMaquinasDeUmCliente($dados)
+    {
+        return ApiClient::post('/transacaoMaquinaCliente', $dados)->json();
+    }
 
-        $token = AuthService::getToken();
-        $response = Http::withHeaders([
-            'Authorization' => 'Bearer ' . $token
-        ])->post($url, $dados);
-
-        $extrato_maquinas = $response->json();
-
-        return $extrato_maquinas;
-}
-
-public static function coletarTotalTransacaoDasMaquinasDeUmCliente($dados){
-    $url = env('APP_URL_API') . "/totalTransacaoMaquinaCliente";
-
-        $token = AuthService::getToken();
-        $response = Http::withHeaders([
-            'Authorization' => 'Bearer ' . $token
-        ])->post($url, $dados);
-
-        $extrato_maquinas = $response->json();
-
-        return $extrato_maquinas;
-}
-
+    public static function coletarTotalTransacaoDasMaquinasDeUmCliente($dados)
+    {
+        return ApiClient::post('/totalTransacaoMaquinaCliente', $dados)->json();
+    }
 
     public static function coletarComFiltro($filtros, $tipo)
     {
-        $url = env('APP_URL_API') . "/extratoMaquina";
+        $response = ApiClient::get('/extratoMaquina');
 
-        $token = AuthService::getToken();
-        $response = Http::withHeaders([
-            'Authorization' => 'Bearer ' . $token
-        ])->get($url);
-
-        if ($response->successful()) {
-            // Obtenha os clientes da resposta JSON
-            $extrato_maquinas = $response->json();
-            
-            // Filtrar os clientes com base nos filtros fornecidos
-            foreach ($filtros as $chave => $valor) {
-                // Verifique se a chave existe e se o valor não está vazio
-                if (isset($chave) && $valor !== null) {
-                    // Filtrar os clientes com base no valor do filtro
-                    $extrato_maquinas = array_filter($extrato_maquinas, function ($extrato_maquina) use ($chave, $valor) {
-                        return $extrato_maquina[$chave] === $valor;
-                    });
-                }
-            }
-
-            // Retorna os clientes filtrados
-            return $extrato_maquinas;
-        } else {
-            // Em caso de falha na chamada à API, retorne um array vazio ou uma mensagem de erro
+        if (!$response->successful()) {
             return [];
         }
+
+        $extrato_maquinas = $response->json();
+
+        foreach ($filtros as $chave => $valor) {
+            if ($valor !== null) {
+                $extrato_maquinas = array_filter($extrato_maquinas, function ($extrato_maquina) use ($chave, $valor) {
+                    return isset($extrato_maquina[$chave]) && $extrato_maquina[$chave] == $valor;
+                });
+            }
+        }
+
+        return $extrato_maquinas;
     }
 
-    public function atualizar($dados, $id){
-        $url = env('APP_URL_API') . "/extratoMaquina/$id";
-
-        $token = AuthService::getToken();
-        $response = Http::withHeaders([
-            'Authorization' => 'Bearer ' . $token
-        ])->post($url, $dados);
-
-        $extrato_maquina = $response->json();
-
-        return $extrato_maquina;
+    public function atualizar($dados, $id)
+    {
+        return ApiClient::post("/extratoMaquina/{$id}", $dados)->json();
     }
 
-public static function coletarSaldoTotal($id = null) {
-    if(!is_null($id)){
-        $url = env('APP_URL_API') . "/extrato/saldo/$id";
-    }else{
-        $url = env('APP_URL_API') . "/extrato/saldo/";
+    public static function coletarSaldoTotal($id = null)
+    {
+        $path = is_null($id) ? '/extrato/saldo/' : "/extrato/saldo/{$id}";
+        return ApiClient::get($path)->json();
     }
-    $token = AuthService::getToken();
-    $response = Http::withHeaders([
-        'Authorization' => 'Bearer ' . $token
-    ])->get($url);
 
-    $extrato_maquinas = $response->json();
-
-    return $extrato_maquinas; 
-}
-public static function coletarDevolucoes($id = null) {
-    if(!is_null($id)){
-        $url = env('APP_URL_API') . "/extrato/devolucao/$id";
-    }else{
-        $url = env('APP_URL_API') . "/extrato/devolucao/";
+    public static function coletarDevolucoes($id = null)
+    {
+        $path = is_null($id) ? '/extrato/devolucao/' : "/extrato/devolucao/{$id}";
+        return ApiClient::get($path)->json();
     }
-    $token = AuthService::getToken();
-    $response = Http::withHeaders([
-        'Authorization' => 'Bearer ' . $token
-    ])->get($url);
-
-
-    $extrato_maquinas = $response->json();
-
-    return $extrato_maquinas; 
-}
-
 }
