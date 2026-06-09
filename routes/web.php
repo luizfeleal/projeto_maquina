@@ -45,6 +45,8 @@ Route::prefix('maquinas')->middleware('permission')->group(function(){
     Route::post('/atualizar', 'App\Http\Controllers\MaquinasController@atualizarMaquina')->name('maquinas-atualizar');
     Route::post('/liberarJogadaRegistrar', 'App\Http\Controllers\MaquinasController@liberarJogada')->name('maquinas-liberar-jogada');
     Route::get('/liberarJogada', 'App\Http\Controllers\MaquinasController@viewLiberarJogada')->name('view-liberar-jogadas');
+    Route::post('/reset-parcial', 'App\Http\Controllers\MaquinasController@resetParcial')->name('maquinas-reset-parcial');
+    Route::get('/resets-historico', 'App\Http\Controllers\MaquinasController@historicoResets')->name('maquinas-resets-historico');
 });
 
 Route::prefix('clientes-maquinas')->middleware('permission')->group(function(){
@@ -60,6 +62,9 @@ Route::prefix('clientes-maquinas')->middleware('permission')->group(function(){
     Route::delete('/maquinasCartao/excluir', 'App\Http\Controllers\Clientes\MaquinasController@excluirMaquinasCartao')->name('cliente-maquinas-cartao-excluir');
     Route::get('/editar', 'App\Http\Controllers\Clientes\MaquinasController@editarMaquinas')->name('clientes-maquinas-editar');
     Route::post('/atualizar', 'App\Http\Controllers\Clientes\MaquinasController@atualizarMaquina')->name('clientes-maquinas-atualizar');
+    Route::post('/reset-parcial', 'App\Http\Controllers\Clientes\MaquinasController@resetParcial')->name('clientes-maquinas-reset-parcial');
+    Route::post('/reset-parcial-todas', 'App\Http\Controllers\Clientes\MaquinasController@resetParcialTodas')->name('clientes-maquinas-reset-parcial-todas');
+    Route::get('/resets-historico', 'App\Http\Controllers\Clientes\MaquinasController@historicoResets')->name('clientes-maquinas-resets-historico');
 });
 
 Route::prefix('clientes-relatorio')->middleware('permission')->group(function(){

@@ -25,6 +25,7 @@ if (!function_exists('getRouteBreadcrumbs')) {
             'maquinas-show'                         => [$home, $maquinas, ['label' => 'Detalhes da Máquina']],
             'maquinas-transacoes'                   => [$home, $maquinas, ['label' => 'Transações']],
             'maquinas-acumulado'                    => [$home, $maquinas, ['label' => 'Acumulado']],
+            'maquinas-resets-historico'             => [$home, $maquinas, ['label' => 'Acumulado', 'route' => 'maquinas-acumulado'], ['label' => 'Histórico de Resets']],
             'maquinas-cartao'                       => [$home, $criar, ['label' => 'Máquina Cartão']],
             'maquinas-cartao-criar'                 => [$home, $criar, ['label' => 'Incluir Máquina Cartão']],
             'local'                                 => [$home, ['label' => 'Locais']],
@@ -53,6 +54,7 @@ if (!function_exists('getRouteBreadcrumbs')) {
             'clientes-maquinas'                     => [$home, $maquinas],
             'clientes-maquinas-transacoes'          => [$home, $maquinas, ['label' => 'Transações']],
             'clientes-maquinas-acumulado'           => [$home, $maquinas, ['label' => 'Acumulado']],
+            'clientes-maquinas-resets-historico'    => [$home, $maquinas, ['label' => 'Acumulado', 'route' => 'clientes-maquinas-acumulado'], ['label' => 'Histórico de Resets']],
             'cliente-maquinas-cartao'               => [$home, $criar, ['label' => 'Máquina Cartão']],
             'cliente-credencial-listar'             => [$home, $cred],
             'cliente-credencial-criar-efi'          => [$home, $cred, ['label' => 'Nova Credencial EFI']],
@@ -106,12 +108,13 @@ if (!function_exists('getSidebar')) {
                 [
                     'title'         => 'Minhas máquinas',
                     'icon'          => 'solar:monitor-bold-duotone',
-                    'active_routes' => ['maquinas', 'maquinas-transacoes', 'maquinas-acumulado', 'relatorio-view', 'relatorio-criar', 'relatorio-exibir'],
+                    'active_routes' => ['maquinas', 'maquinas-transacoes', 'maquinas-acumulado', 'maquinas-resets-historico', 'relatorio-view', 'relatorio-criar', 'relatorio-exibir'],
                     'sub_menu'      => [
-                        ['title' => 'Exibir máquinas', 'route' => 'maquinas'],
-                        ['title' => 'Transações',       'route' => 'maquinas-transacoes'],
-                        ['title' => 'Acumulado',        'route' => 'maquinas-acumulado'],
-                        ['title' => 'Relatórios',       'route' => 'relatorio-view'],
+                        ['title' => 'Exibir máquinas',    'route' => 'maquinas'],
+                        ['title' => 'Transações',          'route' => 'maquinas-transacoes'],
+                        ['title' => 'Acumulado',           'route' => 'maquinas-acumulado'],
+                        ['title' => 'Histórico de Resets', 'route' => 'maquinas-resets-historico'],
+                        ['title' => 'Relatórios',          'route' => 'relatorio-view'],
                     ],
                 ],
                 [
@@ -177,13 +180,14 @@ if (!function_exists('getSidebar')) {
             [
                 'title'         => 'Minhas máquinas',
                 'icon'          => 'solar:monitor-bold-duotone',
-                'active_routes' => ['clientes-maquinas', 'cliente-relatorio-view', 'clientes-maquinas-transacoes', 'clientes-maquinas-acumulado'],
-                'sub_menu'      => [
-                    ['title' => 'Exibir máquinas', 'route' => 'clientes-maquinas'],
-                    ['title' => 'Relatórios',       'route' => 'cliente-relatorio-view'],
-                    ['title' => 'Transações',       'route' => 'clientes-maquinas-transacoes'],
-                    ['title' => 'Acumulado',        'route' => 'clientes-maquinas-acumulado'],
-                ],
+                    'active_routes' => ['clientes-maquinas', 'cliente-relatorio-view', 'clientes-maquinas-transacoes', 'clientes-maquinas-acumulado', 'clientes-maquinas-resets-historico'],
+                    'sub_menu'      => [
+                        ['title' => 'Exibir máquinas',    'route' => 'clientes-maquinas'],
+                        ['title' => 'Relatórios',          'route' => 'cliente-relatorio-view'],
+                        ['title' => 'Transações',          'route' => 'clientes-maquinas-transacoes'],
+                        ['title' => 'Acumulado',           'route' => 'clientes-maquinas-acumulado'],
+                        ['title' => 'Histórico de Resets', 'route' => 'clientes-maquinas-resets-historico'],
+                    ],
             ],
             [
                 'title'         => 'Liberar Jogada',

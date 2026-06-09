@@ -114,11 +114,9 @@
             <div class="row" style="display: flex; flex-direction: row; justify-content: center;width: 100%; margin-bottom: 20px;">
                 <div class="col-md-8">
                     <div class="form-check form-switch">
-                        @if($maquinas['bloqueio_jogada_efi'] == 1)
-
+                        @if(($maquinas['bloqueio_jogada_efi'] ?? 0) == 1)
                         <input class="form-check-input" name="bloqueio_jogada_efi" type="checkbox" role="switch" id="checkboxEfi" checked>
                         @else
-
                         <input class="form-check-input" name="bloqueio_jogada_efi" type="checkbox" role="switch" id="checkboxEfi">
                         @endif
                         <label class="form-check-label" for="flexSwitchCheckDefault">Bloquear jogada Pix</label>
@@ -129,7 +127,7 @@
             <div class="row" style="display: flex; flex-direction: row; justify-content: center;width: 100%; margin-bottom: 20px;">
                 <div class="col-md-8">
                     <div class="form-check form-switch">
-                        @if($maquinas['bloqueio_jogada_pagbank'] == 1)
+                        @if(($maquinas['bloqueio_jogada_pagbank'] ?? 0) == 1)
                         <input class="form-check-input" name="bloqueio_jogada_pagbank" type="checkbox" role="switch" id="checkboxPagbank" checked>
                         @else
                         <input class="form-check-input" name="bloqueio_jogada_pagbank" type="checkbox" role="switch" id="checkboxPagbank">

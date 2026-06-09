@@ -107,4 +107,41 @@ class ExtratoMaquinaService
         $path = is_null($id) ? '/extrato/devolucao/' : "/extrato/devolucao/{$id}";
         return ApiClient::get($path)->json();
     }
+
+    public static function coletarAcumulado(array $filtros = [])
+    {
+        $response = ApiClient::get('/extrato/acumulado', $filtros);
+
+        if ($response->successful()) {
+            return $response->json();
+        }
+
+        return ['data' => [], 'current_page' => 1, 'last_page' => 1];
+    }
+
+    public static function resetParcial(string $idMaquina, array $dados)
+    {
+        $response = ApiClient::post("/maquinas/{$idMaquina}/reset-parcial", $dados);
+
+        if ($response->successful()) {
+            return ['success' => true, 'data' => $response->json()];
+        }
+
+        $body = $response->json();
+        return [
+            'success' => false,
+            'message' => $body['message'] ?? 'Erro ao registrar o reset parcial.',
+        ];
+    }
+
+    public static function historicoResets(array $filtros = [])
+    {
+        $response = ApiClient::get('/reset-parcial/historico', $filtros);
+
+        if ($response->successful()) {
+            return $response->json();
+        }
+
+        return ['data' => [], 'current_page' => 1, 'last_page' => 1, 'total' => 0];
+    }
 }

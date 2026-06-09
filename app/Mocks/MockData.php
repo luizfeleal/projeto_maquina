@@ -225,6 +225,21 @@ class MockData
 
             'extratoCliente' => [],
 
+            'resetsParciais' => [
+                [
+                    'id' => 1,
+                    'id_maquina' => 1,
+                    'maquina_nome' => 'Máquina Demo 01',
+                    'local_nome' => 'Local Central Mock',
+                    'valor_ultima_coleta' => 500.00,
+                    'valor_acumulado_total' => 500.00,
+                    'realizado_por' => '1',
+                    'realizado_por_nome' => 'Administrador Mock',
+                    'observacao' => null,
+                    'created_at' => now()->subDays(3)->format('Y-m-d H:i:s'),
+                ],
+            ],
+
             'acessosTela' => self::buildAcessosTela(),
 
             'placasDisponiveis' => [
@@ -245,6 +260,7 @@ class MockData
                 'logs' => 2,
                 'extratoMaquina' => 3,
                 'extratoCliente' => 0,
+                'resetsParciais' => 1,
                 'acessosTela' => 0,
             ],
         ];
@@ -255,6 +271,7 @@ class MockData
         $adminRoutes = [
             'home', 'maquinas', 'maquinas-criar', 'maquinas-editar', 'maquinas-visualizar',
             'maquinas-registrar', 'maquinas-gerar-id-placa', 'maquinas-transacoes', 'maquinas-acumulado',
+            'maquinas-reset-parcial', 'maquinas-resets-historico',
             'maquinas-cartao', 'maquinas-cartao-criar', 'maquinas-cartao-registrar', 'maquinas-cartao-inativar',
             'maquinas-cartao-excluir', 'maquinas-excluir', 'maquinas-atualizar', 'maquinas-liberar-jogada',
             'view-liberar-jogadas', 'local', 'local-incluir-usuario', 'local-registrar-usuario', 'local-criar',
@@ -267,6 +284,7 @@ class MockData
 
         $clienteRoutes = [
             'cliente-home', 'clientes-maquinas', 'clientes-maquinas-transacoes', 'clientes-maquinas-acumulado',
+            'clientes-maquinas-reset-parcial', 'clientes-maquinas-reset-parcial-todas', 'clientes-maquinas-resets-historico',
             'view-clientes-maquinas-liberar-jogadas', 'clientes-maquinas-liberar-jogadas', 'cliente-maquinas-cartao',
             'cliente-maquinas-cartao-criar', 'cliente-maquinas-cartao-registrar', 'cliente-maquinas-cartao-inativar',
             'cliente-maquinas-cartao-excluir', 'clientes-maquinas-editar', 'clientes-maquinas-atualizar',

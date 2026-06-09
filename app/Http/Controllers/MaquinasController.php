@@ -12,6 +12,7 @@ use App\Services\ClientesService;
 use App\Services\ClienteLocalService;
 use App\Services\AuthService;
 use App\Services\QrCodeService;
+use App\Services\ExtratoMaquinaService;
 
 class MaquinasController extends Controller
 {
@@ -134,6 +135,46 @@ class MaquinasController extends Controller
     public function transacaoMaquinas(Request $request)
     {
         return view('Admin.Maquinas.Transacoes.index');
+    }
+
+    public function resetParcial(Request $request)
+    {
+        $request->validate(['id_maquina' => 'required']);
+
+        try {
+            $idMaquina   = $request->input('id_maquina');
+            $realizadoPor = session('id_usuario') ?? session('usuario_id') ?? auth()->id() ?? '1';
+
+            $dados = [
+                'realizado_por' => (string) $realizadoPor,
+                'observacao'    => $request->input('observacao'),
+            ];
+
+            $resultado = ExtratoMaquinaService::resetParcial($idMaquina, $dados);
+
+            if ($resultado['success'] ?? false) {
+                return back()->with('success', 'Reset parcial registrado com sucesso.');
+            }
+
+            return back()->with('error', $resultado['message'] ?? 'Houve um erro ao registrar o reset parcial.');
+        } catch (\Throwable $e) {
+            \Log::error('[resetParcial] Erro: ' . $e->getMessage());
+            return back()->with('error', 'Houve um erro ao registrar o reset parcial.');
+        }
+    }
+
+    public function historicoResets(Request $request)
+    {
+        $filtros = array_filter([
+            'id_maquina' => $request->input('id_maquina'),
+            'data_inicio' => $request->input('data_inicio'),
+            'data_fim'    => $request->input('data_fim'),
+            'page'        => $request->input('page', 1),
+        ]);
+
+        $resets = ExtratoMaquinaService::historicoResets($filtros);
+
+        return view('Admin.Maquinas.Acumulado.historico', compact('resets'));
     }
 
     public function acumuladoMaquinas(Request $request)
