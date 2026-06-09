@@ -1,0 +1,17 @@
+# Homologação (VPS) — use com:
+#   docker compose -f docker-compose.yml -f docker-compose.hml.yml up -d
+#
+# Requer no .env:
+#   APP_PORT=8081
+#   APP_URL=http://hml.swiftpaysolucoes.com
+#   API_MOCK_ENABLED=false
+
+services:
+  app:
+    depends_on:
+      redis:
+        condition: service_started
+
+  db:
+    profiles:
+      - with-db

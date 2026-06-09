@@ -1,0 +1,23 @@
+# Modo simples (VPS): só PHP-FPM + Redis no Docker.
+# O Nginx do HOST serve os arquivos e repassa PHP para o container.
+#
+# Uso:
+#   docker compose -f docker-compose.yml -f docker-compose.simple.yml up -d
+#
+# Requer Nginx no host: docker/nginx/host-simple.conf.example
+
+services:
+  nginx:
+    profiles:
+      - with-nginx
+
+  db:
+    profiles:
+      - with-db
+
+  app:
+    ports:
+      - "127.0.0.1:9001:9000"
+    depends_on:
+      redis:
+        condition: service_started
