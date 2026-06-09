@@ -1,12 +1,12 @@
 # =============================================================================
-# Dockerfile — PHP 8.1-FPM (Desenvolvimento)
+# Dockerfile — PHP 8.2-FPM (Desenvolvimento / Homolog)
 # Projeto: SwiftPay / ProjetoMaquina — Laravel 8
 # =============================================================================
 # Usa Debian Bookworm (base oficial PHP) por ter melhor compatibilidade com
 # extensões nativas que precisam de compilação (GD com freetype/jpeg, intl).
 # Alpine não é recomendado aqui por conta das libs GD para geração de QR Code.
 # =============================================================================
-FROM php:8.1-fpm-bookworm
+FROM php:8.2-fpm-bookworm
 
 # -----------------------------------------------------------------------------
 # 1. Argumentos de build (podem ser sobrescritos via docker-compose build args)
