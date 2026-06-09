@@ -4,7 +4,7 @@
 # =============================================================================
 #
 # Serviços:
-#   app   → PHP 8.2-FPM (processa PHP, executa artisan/composer)
+#   app   → PHP 8.3-FPM (processa PHP, executa artisan/composer)
 #   nginx → Servidor web, recebe requisições HTTP e repassa ao PHP-FPM via FastCGI
 #   db    → MySQL 8.0 (banco de dados local do Laravel: sessions, cache, migrations)
 #   redis → Redis 7 (cache do token da API externa + driver de sessão opcional)
@@ -24,7 +24,7 @@
 services:
 
   # ---------------------------------------------------------------------------
-  # app — PHP 8.2-FPM
+  # app — PHP 8.3-FPM
   # Responsável por: processar PHP, executar Artisan, Composer e Queues.
   # ---------------------------------------------------------------------------
   app:
