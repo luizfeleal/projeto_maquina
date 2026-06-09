@@ -16,6 +16,9 @@ services:
       - with-db
 
   app:
+    # Evita "FPM initialization failed" no Linux (gosu + stderr)
+    entrypoint: []
+    command: ["php-fpm", "-F"]
     ports:
       - "127.0.0.1:9001:9000"
     depends_on:
