@@ -307,13 +307,17 @@ class MockData
             ];
         }
 
-        foreach ($clienteRoutes as $route) {
-            $acessos[] = [
-                'id_acesso_tela' => $id++,
-                'id_grupo_acesso' => 5,
-                'acesso_tela_viewname' => $route,
-                'acesso_tela_nome' => $route,
-            ];
+        $gruposCliente = [2, 3, 4, 5];
+
+        foreach ($gruposCliente as $idGrupoCliente) {
+            foreach ($clienteRoutes as $route) {
+                $acessos[] = [
+                    'id_acesso_tela' => $id++,
+                    'id_grupo_acesso' => $idGrupoCliente,
+                    'acesso_tela_viewname' => $route,
+                    'acesso_tela_nome' => $route,
+                ];
+            }
         }
 
         return $acessos;

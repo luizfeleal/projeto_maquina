@@ -591,6 +591,25 @@
   }
 }
 
+.badge-cred-efi,
+.badge-cred-pagbank {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 20px;
+  letter-spacing: 0.03em;
+}
+
+.badge-cred-efi {
+  background: #2563eb;
+  color: #fff;
+}
+
+.badge-cred-pagbank {
+  background: #16a34a;
+  color: #fff;
+}
+
 .credential-actions {
   display: flex;
   flex-wrap: wrap;

@@ -12,6 +12,13 @@
             <div class="alert alert-danger w-100">{{ session('error') }}</div>
         @endif
 
+        <div class="w-100 mb-3 d-flex justify-content-end">
+            <button type="button" class="btn btn-primary" id="btn-criar-credencial">
+                <iconify-icon icon="solar:add-circle-bold-duotone" style="vertical-align:middle; margin-right:4px;"></iconify-icon>
+                Criar credencial
+            </button>
+        </div>
+
         <form method="GET" action="{{ route('credencial-listar') }}" class="w-100 mb-4">
             <div class="row g-3 align-items-end">
                 <div class="col-md-4">
@@ -64,7 +71,7 @@
                             <td>{{ $credId ?? '-' }}</td>
                             <td>{{ $cliente_nome }}</td>
                             <td>
-                                <span class="badge {{ $tipoCred == 'efi' ? 'bg-primary' : 'bg-success' }}">
+                                <span class="badge {{ $tipoCred == 'efi' ? 'badge-cred-efi' : 'badge-cred-pagbank' }}">
                                     {{ strtoupper($tipoCred) }}
                                 </span>
                             </td>
@@ -124,6 +131,36 @@
             language: { url: "https://cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json" }
         });
         @endif
+
+        $('#btn-criar-credencial').on('click', function () {
+            Swal.fire({
+                icon: 'question',
+                title: 'Criar credencial',
+                text: 'Qual tipo de credencial você deseja criar?',
+                input: 'select',
+                inputOptions: {
+                    efi: 'EFI',
+                    pagbank: 'PagBank'
+                },
+                inputPlaceholder: 'Selecione o tipo',
+                showCancelButton: true,
+                confirmButtonText: 'Continuar',
+                cancelButtonText: 'Cancelar',
+                confirmButtonColor: '#2C9BA5',
+                cancelButtonColor: '#6b7280',
+                reverseButtons: true,
+                inputValidator: function (value) {
+                    if (!value) return 'Selecione um tipo de credencial';
+                }
+            }).then(function (result) {
+                if (!result.isConfirmed) return;
+                if (result.value === 'efi') {
+                    window.location.href = '{{ route('credencial-criar-efi') }}';
+                } else if (result.value === 'pagbank') {
+                    window.location.href = '{{ route('credencial-criar-pagbank') }}';
+                }
+            });
+        });
 
         $(document).on('click', '.btn-excluir-credencial', function() {
             var id = $(this).data('id');

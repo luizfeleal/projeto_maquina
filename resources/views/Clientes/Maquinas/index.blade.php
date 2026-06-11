@@ -9,7 +9,7 @@
 
 <div class="content-body" style="padding-top:0;">
 
-    @if(empty($maquinas))
+    @if(!$temMaquinas)
         <div style="background:#fff; border:1px dashed #e8ecf0; border-radius:14px;
                     padding:60px 24px; text-align:center; color:#9ca3af;">
             <iconify-icon icon="solar:devices-bold-duotone"
@@ -17,6 +17,39 @@
             <p style="margin:0; font-size:.9rem; font-weight:600;">Nenhuma máquina encontrada.</p>
         </div>
     @else
+        <form id="form-busca-maquinas" method="GET" action="{{ route('clientes-maquinas') }}"
+              class="view-toggle-bar" role="search" aria-label="Buscar máquinas">
+            <div class="view-search-wrap">
+                <span class="view-search-icon" aria-hidden="true">
+                    <iconify-icon icon="solar:magnifer-linear"></iconify-icon>
+                </span>
+                <input type="search" name="busca" class="view-search-input"
+                       placeholder="Pesquisar por máquina, local ou ID da placa..."
+                       value="{{ $busca }}" aria-label="Pesquisar máquinas" autocomplete="off">
+            </div>
+            <span class="view-count-badge" aria-live="polite" aria-atomic="true">
+                @if($paginator->hasPages())
+                    Página {{ $paginator->currentPage() }} de {{ $paginator->lastPage() }} ·
+                @endif
+                Exibindo {{ $paginator->firstItem() }}–{{ $paginator->lastItem() }}
+                de {{ $paginator->total() }} máquina{{ $paginator->total() !== 1 ? 's' : '' }}
+            </span>
+        </form>
+
+        @if($paginator->isEmpty())
+            <div style="background:#fff; border:1px dashed #e8ecf0; border-radius:14px;
+                        padding:48px 24px; text-align:center; color:#9ca3af;">
+                <iconify-icon icon="solar:magnifer-zoom-in-bold-duotone"
+                              style="font-size:2.2rem; display:block; margin:0 auto 12px;"></iconify-icon>
+                <p style="margin:0 0 8px; font-size:.9rem; font-weight:600;">Nenhuma máquina encontrada para esta busca.</p>
+                @if($busca !== '')
+                    <a href="{{ route('clientes-maquinas') }}"
+                       style="font-size:.82rem; color:#2C9BA5; text-decoration:none; font-weight:600;">
+                        Limpar busca
+                    </a>
+                @endif
+            </div>
+        @else
         <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(300px,1fr));
                     gap:16px;">
             @foreach($maquinas as $maq)
@@ -26,8 +59,14 @@
                 $saldo      = $maq['saldo_periodo']    ?? $total;
                 $temReset   = $maq['tem_reset']        ?? false;
                 $idMaquina  = $maq['id_maquina'];
+                $idLocal    = $maq['id_local']         ?? null;
+                $possuiQr   = $maq['possui_qr']        ?? false;
                 $nome       = $maq['maquina_nome']     ?? 'Máquina';
                 $local      = $maq['local_nome']       ?? '—';
+                $idPlaca    = $maq['id_placa']         ?? '—';
+                $qrHref     = ($idLocal && $possuiQr)
+                    ? route('cliente-qr', ['id_local' => $idLocal, 'id_maquina' => $idMaquina, 'abrir' => true])
+                    : route('cliente-qr-criar');
             @endphp
             <div style="background:#fff; border:1px solid #e8ecf0; border-radius:16px;
                         box-shadow:0 1px 4px rgba(0,0,0,.05); overflow:hidden; display:flex; flex-direction:column;">
@@ -51,6 +90,12 @@
                                 <iconify-icon icon="solar:map-point-bold-duotone"
                                               style="font-size:.85rem;"></iconify-icon>
                                 {{ $local }}
+                            </p>
+                            <p style="margin:3px 0 0; font-size:.72rem; color:#9ca3af;
+                                      display:flex; align-items:center; gap:4px;">
+                                <iconify-icon icon="solar:cpu-bold-duotone"
+                                              style="font-size:.8rem;"></iconify-icon>
+                                ID placa: <span style="font-weight:600; color:#6b7280;">{{ $idPlaca }}</span>
                             </p>
                         </div>
                     </div>
@@ -108,15 +153,6 @@
                         Transações
                     </a>
 
-                    <a href="{{ route('clientes-maquinas-acumulado') }}"
-                       style="flex:1; min-width:100px; text-align:center; text-decoration:none;
-                              background:#f8fafc; border:1px solid #e8ecf0; border-radius:8px;
-                              padding:8px 10px; font-size:.78rem; font-weight:600; color:#374151;
-                              display:flex; align-items:center; justify-content:center; gap:5px;">
-                        <iconify-icon icon="solar:chart-bold-duotone"
-                                      style="font-size:.95rem; color:#16a34a;"></iconify-icon>
-                        Acumulado
-                    </a>
 
                     <a href="{{ route('view-clientes-maquinas-liberar-jogadas', ['id_maquina' => $idMaquina]) }}"
                        style="flex:1; min-width:100px; text-align:center; text-decoration:none;
@@ -126,6 +162,16 @@
                         <iconify-icon icon="solar:play-circle-bold-duotone"
                                       style="font-size:.95rem; color:#ca8a04;"></iconify-icon>
                         Liberar Jogada
+                    </a>
+
+                    <a href="{{ $qrHref }}"
+                       style="flex:1; min-width:100px; text-align:center; text-decoration:none;
+                              background:#f8fafc; border:1px solid #e8ecf0; border-radius:8px;
+                              padding:8px 10px; font-size:.78rem; font-weight:600; color:#374151;
+                              display:flex; align-items:center; justify-content:center; gap:5px;">
+                        <iconify-icon icon="solar:qr-code-bold-duotone"
+                                      style="font-size:.95rem; color:#7c3aed;"></iconify-icon>
+                        {{ $possuiQr ? 'Ver QR Code' : 'Gerar QR Code' }}
                     </a>
 
                     <a href="{{ route('clientes-maquinas-editar', ['id_maquina' => $idMaquina]) }}"
@@ -142,7 +188,79 @@
             </div>
             @endforeach
         </div>
+
+        @if($paginator->hasPages())
+            @php
+                $paginaAtual = $paginator->currentPage();
+                $ultimaPagina = $paginator->lastPage();
+                $inicio = max(1, $paginaAtual - 2);
+                $fim    = min($ultimaPagina, $paginaAtual + 2);
+                $linkPagina = fn($p) => route('clientes-maquinas', array_filter([
+                    'busca' => $busca !== '' ? $busca : null,
+                    'page'  => $p > 1 ? $p : null,
+                ]));
+            @endphp
+            <div class="card-pager" style="padding:16px 0 4px;">
+                <nav aria-label="Paginação de máquinas">
+                    <ul class="pagination justify-content-center flex-wrap mb-0">
+                        <li class="page-item {{ $paginaAtual <= 1 ? 'disabled' : '' }}">
+                            <a class="page-link" href="{{ $linkPagina($paginaAtual - 1) }}" aria-label="Anterior">
+                                <iconify-icon icon="solar:arrow-left-linear" aria-hidden="true"></iconify-icon>
+                            </a>
+                        </li>
+
+                        @if($inicio > 1)
+                            <li class="page-item">
+                                <a class="page-link" href="{{ $linkPagina(1) }}">1</a>
+                            </li>
+                            @if($inicio > 2)
+                                <li class="page-item disabled"><span class="page-link">&hellip;</span></li>
+                            @endif
+                        @endif
+
+                        @for($p = $inicio; $p <= $fim; $p++)
+                            <li class="page-item {{ $p === $paginaAtual ? 'active' : '' }}">
+                                <a class="page-link" href="{{ $linkPagina($p) }}">{{ $p }}</a>
+                            </li>
+                        @endfor
+
+                        @if($fim < $ultimaPagina)
+                            @if($fim < $ultimaPagina - 1)
+                                <li class="page-item disabled"><span class="page-link">&hellip;</span></li>
+                            @endif
+                            <li class="page-item">
+                                <a class="page-link" href="{{ $linkPagina($ultimaPagina) }}">{{ $ultimaPagina }}</a>
+                            </li>
+                        @endif
+
+                        <li class="page-item {{ $paginaAtual >= $ultimaPagina ? 'disabled' : '' }}">
+                            <a class="page-link" href="{{ $linkPagina($paginaAtual + 1) }}" aria-label="Próxima">
+                                <iconify-icon icon="solar:arrow-right-linear" aria-hidden="true"></iconify-icon>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        @endif
+        @endif
     @endif
 
 </div>
+@endsection
+
+@section('scriptTable')
+<script>
+$(document).ready(function () {
+    var $form  = $('#form-busca-maquinas');
+    var $input = $form.find('.view-search-input');
+    var timer;
+
+    $input.on('input', function () {
+        clearTimeout(timer);
+        timer = setTimeout(function () {
+            $form.submit();
+        }, 400);
+    });
+});
+</script>
 @endsection

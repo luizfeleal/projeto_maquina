@@ -134,7 +134,10 @@ class MaquinasController extends Controller
 
     public function transacaoMaquinas(Request $request)
     {
-        return view('Admin.Maquinas.Transacoes.index');
+        $clientes = ClientesService::coletar();
+        $locais   = LocaisService::coletar();
+        $maquinas = MaquinasService::coletar();
+        return view('Admin.Maquinas.Transacoes.index', compact('clientes', 'locais', 'maquinas'));
     }
 
     public function resetParcial(Request $request)
@@ -278,9 +281,11 @@ class MaquinasController extends Controller
         foreach ($maquinasCartao as $maquinaCartao) {
             if (isset($maquinasIndexadas[$maquinaCartao['id_maquina']])) {
                 $maquinaCartao['maquina_nome'] = $maquinasIndexadas[$maquinaCartao['id_maquina']]['maquina_nome'];
+                $maquinaCartao['id'] = $maquinaCartao['id_maquina_cartao'] ?? $maquinaCartao['id'] ?? null;
                 $maquinasCartaoFiltradas[] = $maquinaCartao;
             }else{
                 $maquinaCartao['maquina_nome'] = 'Máquina Removida';
+                $maquinaCartao['id'] = $maquinaCartao['id_maquina_cartao'] ?? $maquinaCartao['id'] ?? null;
                 $maquinasCartaoFiltradas[] = $maquinaCartao;
             }
         }

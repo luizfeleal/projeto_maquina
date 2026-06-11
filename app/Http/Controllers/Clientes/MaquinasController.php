@@ -14,12 +14,16 @@ use App\Services\QrCodeService;
 use App\Services\AuthService;
 use App\Http\Controllers\Controller;
 use Exception;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class MaquinasController extends Controller
 {
 
     public function coletarTodasAsMaquinas(Request $request){
         $id_cliente = session()->get('id_cliente');
+        $busca      = trim((string) $request->input('busca', ''));
+        $perPage    = 10;
+        $page       = max(1, (int) $request->input('page', 1));
 
         // Fonte de status: mesma lógica da home (MaquinasService + ClienteLocalService)
         $clienteLocal = ClienteLocalService::coletar();
@@ -34,31 +38,82 @@ class MaquinasController extends Controller
             }
         }
 
-        // Dados financeiros (totais/saldo) vindos do acumulado
-        $acumulado     = ExtratoMaquinaService::coletarAcumulado(['id_cliente' => $id_cliente]);
-        $acumuladoData = $acumulado['data'] ?? (is_array($acumulado) ? $acumulado : []);
-        $acumuladoPorId = [];
-        foreach ($acumuladoData as $item) {
-            $acumuladoPorId[(string) $item['id_maquina']] = $item;
+        $qrPorMaquina = [];
+        foreach (QrCodeService::coletar() as $qr) {
+            if (($qr['ativo'] ?? 0) == 1) {
+                $qrPorMaquina[(string) $qr['id_maquina']] = true;
+            }
         }
 
-        // Mescla: status da fonte correta + financeiro do acumulado
-        $maquinas = [];
+        $listaBase = [];
         foreach ($maquinasPorId as $idMaq => $maq) {
-            $fin = $acumuladoPorId[$idMaq] ?? [];
-            $maquinas[] = array_merge($fin, [
-                'id_maquina'    => $idMaq,
-                'maquina_nome'  => $maq['maquina_nome']   ?? ($fin['maquina_nome'] ?? ''),
-                'local_nome'    => $maq['local_nome']     ?? ($fin['local_nome']   ?? '—'),
-                'maquina_status'=> $maq['maquina_status'] ?? 1,
-                'total_maquina' => $fin['total_maquina']  ?? 0,
-                'saldo_periodo' => $fin['saldo_periodo']  ?? 0,
-                'tem_reset'     => $fin['tem_reset']      ?? false,
+            $listaBase[] = [
+                'id_maquina'     => $idMaq,
+                'id_local'       => $maq['id_local']       ?? null,
+                'id_placa'       => $maq['id_placa']       ?? '—',
+                'possui_qr'      => isset($qrPorMaquina[$idMaq]),
+                'maquina_nome'   => $maq['maquina_nome']   ?? '',
+                'local_nome'     => $maq['local_nome']     ?? '—',
+                'maquina_status' => $maq['maquina_status'] ?? 1,
+            ];
+        }
+
+        if ($busca !== '') {
+            $buscaLower = mb_strtolower($busca);
+            $listaBase = array_values(array_filter($listaBase, function ($maq) use ($buscaLower) {
+                $haystack = mb_strtolower(
+                    ($maq['maquina_nome'] ?? '') . ' ' .
+                    ($maq['local_nome'] ?? '') . ' ' .
+                    ($maq['id_placa'] ?? '')
+                );
+
+                return str_contains($haystack, $buscaLower);
+            }));
+        }
+
+        $totalItens = count($listaBase);
+        $offset     = ($page - 1) * $perPage;
+        $paginaBase = array_slice($listaBase, $offset, $perPage);
+
+        $idsPagina = array_column($paginaBase, 'id_maquina');
+        $acumuladoPorId = [];
+        if (!empty($idsPagina)) {
+            $acumulado     = ExtratoMaquinaService::coletarAcumulado(['id_cliente' => $id_cliente]);
+            $acumuladoData = $acumulado['data'] ?? (is_array($acumulado) ? $acumulado : []);
+            foreach ($acumuladoData as $item) {
+                $idMaq = (string) ($item['id_maquina'] ?? '');
+                if (in_array($idMaq, $idsPagina, true)) {
+                    $acumuladoPorId[$idMaq] = $item;
+                }
+            }
+        }
+
+        $maquinas = [];
+        foreach ($paginaBase as $maq) {
+            $idMaq = (string) $maq['id_maquina'];
+            $fin   = $acumuladoPorId[$idMaq] ?? [];
+            $maquinas[] = array_merge($maq, [
+                'total_maquina'     => $fin['total_maquina']     ?? 0,
+                'saldo_periodo'     => $fin['saldo_periodo']     ?? 0,
+                'tem_reset'         => $fin['tem_reset']         ?? false,
                 'data_ultimo_reset' => $fin['data_ultimo_reset'] ?? null,
             ]);
         }
 
-        return view('Clientes.Maquinas.index', compact('maquinas'));
+        $paginator = new LengthAwarePaginator(
+            $maquinas,
+            $totalItens,
+            $perPage,
+            $page,
+            [
+                'path'  => $request->url(),
+                'query' => $request->query(),
+            ]
+        );
+
+        $temMaquinas = count($maquinasPorId) > 0;
+
+        return view('Clientes.Maquinas.index', compact('maquinas', 'paginator', 'busca', 'temMaquinas'));
     }
 
     public function transacaoMaquinas(Request $request){
@@ -345,6 +400,7 @@ class MaquinasController extends Controller
         foreach ($maquinasCartao as $maquinaCartao) {
             if (isset($maquinasIndexadas[$maquinaCartao['id_maquina']])) {
                 $maquinaCartao['maquina_nome'] = $maquinasIndexadas[$maquinaCartao['id_maquina']]['maquina_nome'];
+                $maquinaCartao['id'] = $maquinaCartao['id_maquina_cartao'] ?? $maquinaCartao['id'] ?? null;
                 $maquinasCartaoFiltradas[] = $maquinaCartao;
             }
         }

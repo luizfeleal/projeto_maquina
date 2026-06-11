@@ -9,41 +9,123 @@ use App\Services\MaquinasService;
 use App\Services\ExtratoMaquinaService;
 use App\Services\ClientesService;
 use App\Services\ClienteLocalService;
+use App\Services\QrCodeService;
 use App\Services\AuthService;
 use App\Http\Controllers\Controller;
 
 class HomeController extends Controller
 {
-    
-    public function coletar(Request $request){
-        $id_cliente = session()->get('id_cliente');
-        $saldo = ExtratoMaquinaService::coletarSaldoTotal($id_cliente);
+
+    public function coletar(Request $request)
+    {
+        $id_cliente      = session()->get('id_cliente');
+        $idMaquinaFiltro = $request->input('id_maquina');
+
+        $saldo      = ExtratoMaquinaService::coletarSaldoTotal($id_cliente);
         $devolucoes = ExtratoMaquinaService::coletarDevolucoes($id_cliente);
-        $maquinas = MaquinasService::coletar();
-        $cliente_local = ClienteLocalService::coletar();
 
-        $cliente_local = array_filter($cliente_local, function($item) use($id_cliente){
-            return $item['id_cliente'] == $id_cliente;
-        });
+        $cliente_local = array_filter(ClienteLocalService::coletar(), fn($item) => $item['id_cliente'] == $id_cliente);
+        $ids_locais    = collect($cliente_local)->pluck('id_local');
+        $ids_locais_arr = $ids_locais->toArray();
 
-        $ids_locais = collect($cliente_local)->pluck('id_local');
-
-        $maquinas = array_filter($maquinas, function($item) use($ids_locais){
-            return in_array($item['id_local'], $ids_locais->toArray());
-        });
-
+        $maquinas = array_values(array_filter(MaquinasService::coletar(), fn($item) => in_array($item['id_local'], $ids_locais_arr)));
         $maquinas_ids = collect($maquinas)->pluck('id_maquina')->toArray();
 
-        $maquinas_online = array_filter($maquinas, function($item) use($maquinas_ids){
-            return $item['maquina_status'] == 1 && in_array($item['id_maquina'], $maquinas_ids);
-        });
-        $maquinas_offline = array_filter($maquinas, function($item) use($maquinas_ids){
-            return $item['maquina_status'] == 0 && in_array($item['id_maquina'], $maquinas_ids);
-        });
+        $maquinas_online = array_values(array_filter($maquinas, fn($item) => $item['maquina_status'] == 1));
+        $maquinas_offline = array_values(array_filter($maquinas, fn($item) => $item['maquina_status'] == 0));
 
+        $locais = array_values(array_filter(LocaisService::coletar(), fn($item) => in_array($item['id_local'], $ids_locais_arr)));
+        $maquinasRelatorio = $maquinas;
 
-        return view('Clientes.home', compact('maquinas', 'maquinas_online', 'maquinas_offline', 'saldo', 'devolucoes'));
+        // Máquinas enriquecidas (status + financeiro + QR)
+        $acumulado     = ExtratoMaquinaService::coletarAcumulado(['id_cliente' => $id_cliente]);
+        $acumuladoData = $acumulado['data'] ?? (is_array($acumulado) ? $acumulado : []);
+        $acumuladoPorId = [];
+        foreach ($acumuladoData as $item) {
+            $acumuladoPorId[(string) $item['id_maquina']] = $item;
+        }
+
+        $qrPorMaquina = [];
+        foreach (QrCodeService::coletar() as $qr) {
+            if (($qr['ativo'] ?? 0) == 1) {
+                $qrPorMaquina[(string) $qr['id_maquina']] = true;
+            }
+        }
+
+        $maquinasDashboard = [];
+        foreach ($maquinas as $maq) {
+            $idMaq = (string) $maq['id_maquina'];
+            $fin   = $acumuladoPorId[$idMaq] ?? [];
+            $maquinasDashboard[] = array_merge($fin, [
+                'id_maquina'        => $idMaq,
+                'id_local'          => $maq['id_local'] ?? ($fin['id_local'] ?? null),
+                'possui_qr'         => isset($qrPorMaquina[$idMaq]),
+                'maquina_nome'      => $maq['maquina_nome'] ?? ($fin['maquina_nome'] ?? ''),
+                'local_nome'        => $maq['local_nome'] ?? ($fin['local_nome'] ?? '—'),
+                'maquina_status'    => $maq['maquina_status'] ?? 1,
+                'total_maquina'     => $fin['total_maquina'] ?? 0,
+                'saldo_periodo'     => $fin['saldo_periodo'] ?? 0,
+                'tem_reset'         => $fin['tem_reset'] ?? false,
+                'data_ultimo_reset' => $fin['data_ultimo_reset'] ?? null,
+            ]);
+        }
+
+        $listaMaquinas = array_map(fn($m) => [
+            'id_maquina'   => $m['id_maquina'],
+            'maquina_nome' => $m['maquina_nome'] ?? '—',
+            'local_nome'   => $m['local_nome'] ?? '—',
+        ], $maquinasDashboard);
+
+        // Transações recentes + totais por tipo
+        $todasTransacoes = array_values(
+            ExtratoMaquinaService::coletarExtratoDasMaquinasDeUmCliente(['id_cliente' => $id_cliente])
+        );
+
+        $transacoesFiltradas = $idMaquinaFiltro
+            ? array_values(array_filter($todasTransacoes, fn($tx) => (string)($tx['id_maquina'] ?? '') === (string)$idMaquinaFiltro))
+            : $todasTransacoes;
+
+        usort($transacoesFiltradas, fn($a, $b) => strtotime($b['data_criacao'] ?? 0) - strtotime($a['data_criacao'] ?? 0));
+        $ultimasTransacoes = array_slice($transacoesFiltradas, 0, 15);
+
+        $totalPix = $totalCartao = $totalDinheiro = $totalDevolucao = 0.0;
+        foreach ($transacoesFiltradas as $tx) {
+            $valor = (float)($tx['extrato_operacao_valor'] ?? 0);
+            $tipo  = strtolower($tx['extrato_operacao_tipo'] ?? '');
+            $op    = $tx['extrato_operacao'] ?? 'C';
+
+            if ($op === 'D') {
+                $totalDevolucao += $valor;
+            } elseif (str_contains($tipo, 'pix')) {
+                $totalPix += $valor;
+            } elseif (str_contains($tipo, 'cart')) {
+                $totalCartao += $valor;
+            } elseif (str_contains($tipo, 'dinheir') || str_contains($tipo, 'físic') || str_contains($tipo, 'fisic')) {
+                $totalDinheiro += $valor;
+            }
+        }
+
+        $maquinasFiltradasAcum = $idMaquinaFiltro
+            ? array_values(array_filter($maquinasDashboard, fn($m) => (string)$m['id_maquina'] === (string)$idMaquinaFiltro))
+            : $maquinasDashboard;
+
+        $resumoFinanceiro = [
+            'total_acumulado' => array_sum(array_column($maquinasFiltradasAcum, 'total_maquina')),
+            'total_saldo'     => array_sum(array_column($maquinasFiltradasAcum, 'saldo_periodo')),
+            'total_pix'       => $totalPix,
+            'total_cartao'    => $totalCartao,
+            'total_dinheiro'  => $totalDinheiro,
+            'total_devolucao' => $totalDevolucao,
+        ];
+
+        return view('Clientes.home', compact(
+            'maquinas', 'maquinas_online', 'maquinas_offline',
+            'saldo', 'devolucoes', 'locais', 'maquinasRelatorio',
+            'maquinasDashboard', 'ultimasTransacoes', 'resumoFinanceiro',
+            'listaMaquinas', 'idMaquinaFiltro'
+        ));
     }
+
     public function registrarLocais(Request $request){
 
         try{

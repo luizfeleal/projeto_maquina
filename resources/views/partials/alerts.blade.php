@@ -3,6 +3,7 @@
     Include once in layouts, after @yield('scriptTable') and after SweetAlert2 CDN.
 --}}
 @if(session('success'))
+@php $redirectAfterSuccess = session('redirect_after_success'); @endphp
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     Swal.fire({
@@ -11,8 +12,16 @@ document.addEventListener('DOMContentLoaded', function () {
         text: @json(session('success')),
         confirmButtonColor: '#2C9BA5',
         confirmButtonText: 'OK',
+        @if(!$redirectAfterSuccess)
         timer: 6000,
         timerProgressBar: true,
+        @endif
+    }).then(function (result) {
+        @if($redirectAfterSuccess)
+        if (result.isConfirmed) {
+            window.location.href = @json($redirectAfterSuccess);
+        }
+        @endif
     });
 });
 </script>

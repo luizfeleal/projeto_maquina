@@ -42,18 +42,18 @@
             <iconify-icon icon="solar:filter-bold-duotone" style="vertical-align:middle; margin-right:4px;"></iconify-icon>
             Filtrar máquina:
         </label>
-        <select name="id_maquina" onchange="this.form.submit()"
-                style="border:1px solid #e8ecf0; border-radius:8px; padding:8px 14px;
-                       font-size:.875rem; color:#374151; background:#fff;
-                       box-shadow:0 1px 3px rgba(0,0,0,.05); min-width:260px; cursor:pointer;">
-            <option value="">Todas as máquinas</option>
-            @foreach($listaMaquinas as $maq)
-                <option value="{{ $maq['id_maquina'] }}"
-                    {{ (string)$idMaquinaSel === (string)$maq['id_maquina'] ? 'selected' : '' }}>
-                    {{ $maq['maquina_nome'] }} — {{ $maq['local_nome'] }}
-                </option>
-            @endforeach
-        </select>
+        <div style="min-width:280px; max-width:400px; flex:1;">
+            <select name="id_maquina" id="filtro-maquina-transacoes"
+                    class="select-filtro-maquina-transacoes form-control">
+                <option value="">Todas as máquinas</option>
+                @foreach($listaMaquinas as $maq)
+                    <option value="{{ $maq['id_maquina'] }}"
+                        {{ (string)$idMaquinaSel === (string)$maq['id_maquina'] ? 'selected' : '' }}>
+                        {{ $maq['maquina_nome'] }} — {{ $maq['local_nome'] }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
         @if($idMaquinaSel)
             <a href="{{ route('clientes-maquinas-transacoes') }}"
                style="font-size:.8rem; color:#6b7280; text-decoration:none;">
@@ -111,14 +111,14 @@
                        padding:7px 16px; font-size:.825rem; font-weight:600; color:#6b7280;
                        cursor:pointer; display:inline-flex; align-items:center; gap:6px;
                        background:#fff; box-shadow:0 1px 3px rgba(0,0,0,.05);">
-            <iconify-icon id="btn-detalhes-icon" icon="solar:alt-arrow-down-bold-duotone"
+            <iconify-icon id="btn-detalhes-icon" icon="solar:alt-arrow-up-bold-duotone"
                           style="font-size:1rem; transition:transform .2s;"></iconify-icon>
-            <span id="btn-detalhes-label">Ver mais informações</span>
+            <span id="btn-detalhes-label">Ocultar detalhes</span>
         </button>
     </div>
 
     {{-- ── Cards: PIX / Cartão / Físico / Devolução ───────────────── --}}
-    <div id="cards-detalhes" style="display:none; gap:12px; flex-wrap:wrap; margin-bottom:20px;">
+    <div id="cards-detalhes" style="display:flex; gap:12px; flex-wrap:wrap; margin-bottom:20px;">
 
         <div style="flex:1; min-width:140px; background:#fff; border:1px solid #e8ecf0;
                     border-radius:14px; padding:14px 18px;
@@ -252,6 +252,25 @@
 @section('scriptTable')
 <script>
 $(document).ready(function () {
+
+    var $filtroMaquina = $('#filtro-maquina-transacoes');
+    if ($filtroMaquina.length) {
+        $filtroMaquina.select2({
+            theme: 'bootstrap-5',
+            width: '100%',
+            placeholder: 'Todas as máquinas',
+            allowClear: true,
+            minimumResultsForSearch: 0,
+            language: {
+                noResults: function () { return 'Nenhuma máquina encontrada'; },
+                searching: function () { return 'Pesquisando...'; }
+            }
+        });
+
+        $filtroMaquina.on('change', function () {
+            $(this).closest('form').submit();
+        });
+    }
 
     @if(session('success'))
         Swal.fire({
