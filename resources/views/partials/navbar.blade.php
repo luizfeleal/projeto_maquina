@@ -19,6 +19,10 @@
 
     <div class="navbar-spacer"></div>
 
+    <button type="button" class="navbar-pwa-install d-none" id="navbarPwaInstallBtn" title="Instalar app" aria-label="Instalar app SwiftPay">
+        <iconify-icon icon="solar:download-minimalistic-bold-duotone"></iconify-icon>
+    </button>
+
     <div class="navbar-user">
         <div class="user-info">
             <span class="user-name">{{ $userName }}</span>

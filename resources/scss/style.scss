@@ -220,3 +220,65 @@ img {
 .select2-container {
   width: 100% !important;
 }
+
+// PWA install modal
+.pwa-install-modal {
+  border-radius: 16px;
+  border: 1px solid $border-color;
+  overflow: hidden;
+
+  .modal-header {
+    padding: 1.25rem 1.25rem 0;
+  }
+
+  .modal-body {
+    padding: 0 1.25rem 1rem;
+  }
+
+  .modal-footer {
+    padding: 0 1.25rem 1.25rem;
+  }
+}
+
+.pwa-install-icon img {
+  border-radius: 14px;
+  box-shadow: 0 4px 12px rgba($primary, 0.2);
+}
+
+.pwa-install-list {
+  margin: 0;
+  padding-left: 1.1rem;
+  font-size: 0.875rem;
+  color: #4b5563;
+
+  li + li {
+    margin-top: 0.35rem;
+  }
+
+  &--ordered {
+    padding-left: 1.25rem;
+  }
+}
+
+.navbar-pwa-install {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid $border-color;
+  border-radius: 10px;
+  background: #fff;
+  color: $primary;
+  margin-right: 12px;
+  transition: background 0.15s, color 0.15s;
+
+  &:hover {
+    background: rgba($secondary, 0.1);
+    color: $secondary;
+  }
+
+  iconify-icon {
+    font-size: 1.15rem;
+  }
+}

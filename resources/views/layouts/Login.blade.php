@@ -7,8 +7,7 @@
 
     <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('site/img/favicon-32.png') }}">
     <link rel="apple-touch-icon" href="{{ asset('site/img/apple-touch-icon.png') }}">
-    <link rel="manifest" href="{{ asset('site/manifest.json') }}">
-    <meta name="theme-color" content="#1E2E5E">
+    @include('partials.pwa-head')
 
     {{-- App styles (Bootstrap + custom SCSS compiled) --}}
     <link rel="stylesheet" href="{{ asset('site/style.css') }}?v={{ time() }}">
@@ -30,5 +29,7 @@
     @yield('scriptTable')
 
     @include('partials.alerts')
+
+    @include('partials.pwa-install')
 </body>
 </html>

@@ -8,8 +8,7 @@
 
     <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('site/img/favicon-32.png') }}">
     <link rel="apple-touch-icon" href="{{ asset('site/img/apple-touch-icon.png') }}">
-    <link rel="manifest" href="{{ asset('site/manifest.json') }}">
-    <meta name="theme-color" content="#1E2E5E">
+    @include('partials.pwa-head')
 
     {{-- DataTables --}}
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
@@ -448,6 +447,8 @@
     </script>
 
     @include('partials.bottom-bar-cliente')
+
+    @include('partials.pwa-install')
 
 </body>
 </html>
