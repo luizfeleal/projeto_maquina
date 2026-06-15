@@ -1,32 +1,26 @@
 # =============================================================================
-# docker-compose.yml — Ambiente de Desenvolvimento
-# Projeto: SwiftPay / ProjetoMaquina — Laravel 8
+# docker-compose.yml — SwiftPay / ProjetoMaquina (Laravel 8)
 # =============================================================================
 #
-# Serviços:
-#   app   → PHP 8.3-FPM (processa PHP, executa artisan/composer)
-#   nginx → Servidor web, recebe requisições HTTP e repassa ao PHP-FPM via FastCGI
-#   db    → MySQL 8.0 (banco de dados local do Laravel: sessions, cache, migrations)
-#   redis → Redis 7 (cache do token da API externa + driver de sessão opcional)
-#   node  → Node.js 20 (compilação de assets com Laravel Mix / HMR)
+# VPS / Homologação (comando único):
+#   docker compose up -d
 #
-# Como nginx e PHP-FPM se comunicam:
-#   Nginx não executa PHP — ele repassa requisições .php ao serviço `app` via
-#   protocolo FastCGI TCP na porta 9000 (padrão do PHP-FPM). O volume compartilhado
-#   com o código fonte permite que ambos leiam os mesmos arquivos.
+#   Sobe: app (PHP-FPM em 127.0.0.1:9001) + redis
+#   O Nginx do HOST deve usar fastcgi_pass 127.0.0.1:9001
 #
-# Rede interna (app_network):
-#   Todos os serviços estão na mesma rede Docker bridge. O serviço `app` acessa
-#   `db` pelo hostname `db` e `redis` pelo hostname `redis`. O `.env` do Laravel
-#   deve refletir esses hostnames (DB_HOST=db, REDIS_HOST=redis).
+# Desenvolvimento local (com Nginx no Docker):
+#   docker compose --profile dev up -d
+#   docker compose --profile dev --profile assets up node -d
+#
+# Deploy após git pull na VPS:
+#   git pull
+#   docker compose exec app composer install --no-dev --optimize-autoloader
+#   docker compose exec app php artisan config:clear
+#   docker compose exec app php artisan cache:clear
 # =============================================================================
 
 services:
 
-  # ---------------------------------------------------------------------------
-  # app — PHP 8.3-FPM
-  # Responsável por: processar PHP, executar Artisan, Composer e Queues.
-  # ---------------------------------------------------------------------------
   app:
     build:
       context: .
@@ -35,147 +29,62 @@ services:
     restart: unless-stopped
     working_dir: /var/www/html
     environment:
-      # PUID/PGID: sincroniza o usuário do container com o usuário do host.
-      # No Linux: rode `id -u` e `id -g` para descobrir seus valores.
-      # No macOS com Docker Desktop: 1000/1000 funcionam sem ajustes.
       PUID: ${PUID:-1000}
       PGID: ${PGID:-1000}
+    ports:
+      # Nginx do host (VPS) conecta aqui via FastCGI
+      - "127.0.0.1:${PHP_FPM_PORT:-9001}:9000"
     volumes:
-      # Código fonte: bind mount para live-reload sem necessidade de rebuild
       - .:/var/www/html
-      # Volume nomeado para vendor: evita conflitos de binários compilados
-      # entre o sistema operacional do host (macOS/Windows) e o container Linux.
       - vendor_data:/var/www/html/vendor
     networks:
       - app_network
     depends_on:
-      db:
-        condition: service_healthy
       redis:
         condition: service_started
 
-  # ---------------------------------------------------------------------------
-  # nginx — Servidor Web
-  # Recebe requisições na porta 80 e encaminha PHP ao PHP-FPM via FastCGI.
-  # ---------------------------------------------------------------------------
-  nginx:
-    image: nginx:1.25-alpine
-    container_name: projetomaquina_nginx
-    restart: unless-stopped
-    ports:
-      # Porta do host → porta do container Nginx
-      - "${APP_PORT:-80}:80"
-    volumes:
-      # Nginx também precisa acessar os arquivos estáticos (public/)
-      - .:/var/www/html
-      # Configuração customizada do Nginx para o Laravel
-      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
-    networks:
-      - app_network
-    depends_on:
-      - app
-
-  # ---------------------------------------------------------------------------
-  # db — MySQL 8.0
-  # Banco de dados local para: sessions, cache (file→database), migrations do
-  # Laravel. A persistência principal de negócio fica na API externa.
-  # ---------------------------------------------------------------------------
-  db:
-    image: mysql:8.0
-    container_name: projetomaquina_db
-    restart: unless-stopped
-    environment:
-      MYSQL_DATABASE: ${DB_DATABASE:-projeto_maquina}
-      MYSQL_USER: ${DB_USERNAME:-laravel}
-      MYSQL_PASSWORD: ${DB_PASSWORD:-laravel}
-      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-root_secret}
-    ports:
-      # Expõe MySQL ao host para conexão via DBeaver/TablePlus/etc.
-      - "${DB_EXTERNAL_PORT:-3306}:3306"
-    volumes:
-      # Volume nomeado: dados do MySQL sobrevivem a `docker-compose down`
-      - db_data:/var/lib/mysql
-    networks:
-      - app_network
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_ROOT_PASSWORD:-root_secret}"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 30s
-
-  # ---------------------------------------------------------------------------
-  # redis — Redis 7
-  # Utilizado como driver de cache para o token da API externa (api_token).
-  # Também pode ser driver de sessão para maior performance.
-  # ---------------------------------------------------------------------------
   redis:
     image: redis:7-alpine
     container_name: projetomaquina_redis
     restart: unless-stopped
     networks:
       - app_network
-    # Descomente para persistir dados do Redis entre reinicializações:
-    # volumes:
-    #   - redis_data:/data
-    # command: redis-server --appendonly yes
 
-  # ---------------------------------------------------------------------------
-  # node — Node.js 20 LTS
-  # Responsável exclusivamente pela compilação de assets com Laravel Mix.
-  # NÃO é um servidor web — apenas roda `npm run watch` ou `npm run hot`.
-  #
-  # Por que serviço separado e não instalar Node no container PHP?
-  # Separação de responsabilidades: o container PHP-FPM fica leve e focado.
-  # O serviço `node` pode ser iniciado/parado independentemente.
-  #
-  # HMR (Hot Module Replacement) com Laravel Mix no Docker:
-  # O webpack-dev-server roda DENTRO deste container na porta 8080.
-  # A porta 8080 é mapeada para o host. O navegador (no host) se conecta a
-  # localhost:8080 para receber atualizações de CSS/JS em tempo real.
-  # ---------------------------------------------------------------------------
+  nginx:
+    profiles:
+      - dev
+    image: nginx:1.25-alpine
+    container_name: projetomaquina_nginx
+    restart: unless-stopped
+    ports:
+      - "${APP_PORT:-80}:80"
+    volumes:
+      - .:/var/www/html
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    networks:
+      - app_network
+    depends_on:
+      - app
+
   node:
+    profiles:
+      - assets
     image: node:20-alpine
     container_name: projetomaquina_node
     working_dir: /var/www/html
-    # Por padrão inicia o watcher de desenvolvimento (sem HMR).
-    # Para HMR: altere para `npm run hot` e descomente a porta 8080.
     command: sh -c "npm install && npm run watch-poll"
     volumes:
       - .:/var/www/html
-      # Volume nomeado para node_modules: evita conflitos de binários nativos
       - node_modules_data:/var/www/html/node_modules
     ports:
-      # Porta do webpack-dev-server para HMR.
-      # Necessária apenas quando usar `npm run hot`.
       - "${MIX_HMR_PORT:-8080}:8080"
     networks:
       - app_network
-    # O serviço node só precisa rodar quando você está desenvolvendo assets.
-    # Use `docker-compose up node` para iniciá-lo sob demanda.
-    profiles:
-      - assets
 
-# =============================================================================
-# Volumes nomeados
-# =============================================================================
 volumes:
-  # Dados persistentes do MySQL
-  db_data:
-
-  # Vendor PHP: binários compilados pelo container Linux (evita incompatibilidade
-  # entre extensões compiladas para macOS e o container Linux)
   vendor_data:
-
-  # node_modules: mesmo motivo — binários nativos do Node compilados para Linux
   node_modules_data:
 
-  # Descomente se usar persistência no Redis:
-  # redis_data:
-
-# =============================================================================
-# Redes
-# =============================================================================
 networks:
   app_network:
     driver: bridge
