@@ -15,8 +15,10 @@
 #   1. Lê as variáveis PUID e PGID do ambiente (definidas no docker-compose.yml)
 #   2. Altera o UID/GID do usuário `www-data` para coincidir com o do host
 #   3. Corrige permissões das pastas que o Laravel precisa escrever
-#   4. Usa `gosu` para trocar para o usuário `www-data` antes de iniciar o PHP-FPM
-#      (gosu é o equivalante seguro de `su` para containers — sem TTY problemático)
+#   4. Inicia PHP-FPM como root (processo master); workers usam www-data do pool.
+#      NÃO usar gosu para php-fpm — no Linux da VPS isso quebra stderr e o FPM cai
+#      com "Permission denied" em /proc/self/fd/2.
+#   5. Para artisan/composer interativos, usa gosu www-data.
 #
 # IMPORTANTE para macOS:
 #   Docker Desktop no Mac usa uma VM intermediária. As permissões de bind mount
@@ -71,10 +73,13 @@ chmod -R 775 \
     /var/www/html/bootstrap/cache
 
 # -----------------------------------------------------------------------------
-# 4. Inicia o processo principal (php-fpm) como usuário www-data via gosu.
-#    `exec` substitui o processo do shell pelo PHP-FPM (PID 1 correto).
-#    `gosu www-data` é equivalente a `su -s /bin/bash www-data -c` mas
-#    compatível com sinais Unix (SIGTERM, SIGINT) — essencial para containers.
+# 4. Inicia o processo principal.
 # -----------------------------------------------------------------------------
 echo "[entrypoint] Iniciando: $@"
+
+if [ "$1" = "php-fpm" ]; then
+    shift
+    exec php-fpm -F "$@"
+fi
+
 exec gosu www-data "$@"
