@@ -60,3 +60,4 @@ class AcessosTelaService
         return ApiClient::post("/acessosTela/{$id}", $dados)->json();
     }
 }
+

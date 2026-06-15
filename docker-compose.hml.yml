@@ -8,6 +8,9 @@
 
 services:
   app:
+    # Evita "FPM initialization failed" / exit 78 no Linux (gosu + stderr)
+    entrypoint: []
+    command: ["php-fpm", "-F"]
     depends_on:
       redis:
         condition: service_started
