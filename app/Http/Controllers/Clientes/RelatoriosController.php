@@ -21,28 +21,9 @@ class RelatoriosController extends Controller
 {
     public function view(Request $request)
     {
+        $hash = $request->has('tipo') ? 'relatorios-' . $request->tipo : 'relatorios';
 
-        $id_cliente = session()->get('id_cliente');
-        $localCliente = ClienteLocalService::coletar();
-        $locais = LocaisService::coletar();
-        $clientes = ClientesService::coletar();
-        $maquinas = MaquinasService::coletar();
-
-        $locaisPermitidos = array_filter($localCliente, function ($local) use ($id_cliente) {
-            return $local['id_cliente'] == $id_cliente;
-        });
-
-        $idsLocaisPermitidos = array_column($locaisPermitidos, 'id_local');
-
-        $maquinas = array_filter($maquinas, function ($maquina) use ($idsLocaisPermitidos) {
-            return in_array($maquina['id_local'], $idsLocaisPermitidos);
-        });
-
-        $locais = array_filter($locais, function ($item) use ($idsLocaisPermitidos) {
-            return in_array($item['id_local'], $idsLocaisPermitidos);
-        });
-
-        return view('Clientes.Relatorios.index', compact('locais', 'maquinas'));
+        return redirect(route('cliente-home') . '#' . $hash);
     }
 
     public function exibirRelatorio(Request $request)

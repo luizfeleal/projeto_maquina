@@ -28,10 +28,10 @@ class CredenciaisController extends Controller
             $credenciais = [];
         }
 
-        // Normalizar para array associativo com chave 'id' (tabela usa id_cred_api_pix)
+        // Normalizar ID (mock: id_credencial | API: id_cred_api_pix)
         $credenciais = array_map(function($c) {
             $c = (array) $c;
-            $c['id'] = $c['id_cred_api_pix'] ?? $c['id'] ?? $c['id_cred'] ?? null;
+            $c['id'] = $c['id_credencial'] ?? $c['id_cred_api_pix'] ?? $c['id'] ?? $c['id_cred'] ?? null;
             return $c;
         }, $credenciais);
 
@@ -123,7 +123,7 @@ class CredenciaisController extends Controller
         }
         
         $credencial = (array) $credencial;
-        $credencial['id'] = $credencial['id_cred_api_pix'] ?? $credencial['id'] ?? $id;
+        $credencial['id'] = $credencial['id_credencial'] ?? $credencial['id_cred_api_pix'] ?? $credencial['id'] ?? $id;
         if(($credencial['tipo_cred'] ?? '') !== 'efi' || ($credencial['id_cliente'] ?? null) != $id_cliente_session){
             return redirect()->route('cliente-credencial-listar')->with('error', 'Credencial não encontrada ou sem permissão para editar.');
         }
@@ -146,7 +146,7 @@ class CredenciaisController extends Controller
         }
         
         $credencial = (array) $credencial;
-        $credencial['id'] = $credencial['id_cred_api_pix'] ?? $credencial['id'] ?? $id;
+        $credencial['id'] = $credencial['id_credencial'] ?? $credencial['id_cred_api_pix'] ?? $credencial['id'] ?? $id;
         if(($credencial['tipo_cred'] ?? '') !== 'pagbank' || ($credencial['id_cliente'] ?? null) != $id_cliente_session){
             return redirect()->route('cliente-credencial-listar')->with('error', 'Credencial não encontrada ou sem permissão para editar.');
         }

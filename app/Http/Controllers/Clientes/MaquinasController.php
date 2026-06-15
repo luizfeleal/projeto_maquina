@@ -14,112 +14,207 @@ use App\Services\QrCodeService;
 use App\Services\AuthService;
 use App\Http\Controllers\Controller;
 use Exception;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class MaquinasController extends Controller
 {
 
     public function coletarTodasAsMaquinas(Request $request){
         $id_cliente = session()->get('id_cliente');
+        $busca      = trim((string) $request->input('busca', ''));
+        $perPage    = 10;
+        $page       = max(1, (int) $request->input('page', 1));
 
-             //$clienteLocal = ClienteLocalService::coletarComFiltro(['id_cliente' => $id_cliente], 'where');
-             /*$clienteLocal = ClienteLocalService::coletar();
+        // Fonte de status: mesma lógica da home (MaquinasService + ClienteLocalService)
+        $clienteLocal = ClienteLocalService::coletar();
+        $clienteLocal = array_filter($clienteLocal, fn($item) => $item['id_cliente'] == $id_cliente);
+        $idsLocais    = array_column(array_values($clienteLocal), 'id_local');
 
-             $clienteLocal = array_filter($clienteLocal, function($item) use($id_cliente){
-                return $item['id_cliente'] == $id_cliente;
-             });
-
-             
-             $idLocais = array_column($clienteLocal, 'id_local');
-
-
-        $locais = LocaisService::coletar();*/
-        //$maquinas = MaquinasService::coletarTodasAsMaquinasComUltimaTransacao();
-        $maquinas = ExtratoMaquinaService::coletarExtratoDasMaquinasDeUmCliente(["id_cliente" => $id_cliente]);
-        //$maquinas_extrato = ExtratoMaquinaService::coletar();
-
-        // Indexando locais por id_local
-        /*$locais_indexados = [];
-        foreach ($locais as $local) {
-            $locais_indexados[$local['id_local']] = $local;
+        $todasMaquinas = MaquinasService::coletar();
+        $maquinasPorId = [];
+        foreach ($todasMaquinas as $m) {
+            if (in_array($m['id_local'], $idsLocais)) {
+                $maquinasPorId[(string) $m['id_maquina']] = $m;
+            }
         }
 
-        
-        $locais_indexados = array_filter($locais_indexados, function($item) use($idLocais){
-            return in_array($item['id_local'], $idLocais);
-        });
-        
-        $maquinas = array_filter($maquinas, function($item) use($idLocais){
-            return in_array($item['id_local'], $idLocais);
-        });
-        
-        // Indexando maquinas por id_maquina
-        $maquinas_indexadas = [];
-        foreach ($maquinas as $maquina) {
-            $maquinas_indexadas[$maquina['id_maquina']] = $maquina;
-        }*/
-        
-        // Array para armazenar o resultado final
-        //$resultado = [];
-        
-        // Percorrendo o extrato para armazenar apenas a última transação de cada máquina
-        
-            /*foreach ($maquinas_extrato as $extrato) {
-                $id_maquina = $extrato['id_maquina'];
-                
-                // Verifica se a máquina existe
-                if (isset($maquinas_indexadas[$id_maquina])) {
-                    $maquina = $maquinas_indexadas[$id_maquina];
-                    $id_local = $maquina['id_local'];
-                    
-                    // Verifica se o local existe
-                    if (isset($locais_indexados[$id_local])) {
-                        $local = $locais_indexados[$id_local];
-                        
-                        // Combina as informações
-                        $extrato_completo = $extrato;
-                        $extrato_completo['maquina'] = $maquina;
-                        $extrato_completo['local'] = $local;
-                        
-                        // Armazena ou substitui a última transação da máquina no array de resultados
-                        $resultado[$id_maquina] = $extrato_completo;
-                    }
-                }
-            }*/
-        
-        // Verifica máquinas sem extrato e adiciona com transação zero
-        /*foreach ($maquinas_indexadas as $id_maquina => $maquina) {
-            if (!isset($resultado[$id_maquina])) {
-                $id_local = $maquina['id_local'];
-    
-                if (isset($locais_indexados[$id_local])) {
-                    $local = $locais_indexados[$id_local];
-    
-                    $resultado[$id_maquina] = [
-                        'id_maquina' => $id_maquina,
-                        'extrato_operacao_valor' => 0, // Define a última transação como 0
-                        'extrato_operacao' => "C",
-                        'extrato_operacao_tipo' => "N/A",
-                        'data_criacao' => $maquina['data_criacao'],
-                        'maquina' => $maquina,
-                        'local' => $local
-                    ];
+        $qrPorMaquina = [];
+        foreach (QrCodeService::coletar() as $qr) {
+            if (($qr['ativo'] ?? 0) == 1) {
+                $qrPorMaquina[(string) $qr['id_maquina']] = true;
+            }
+        }
+
+        $listaBase = [];
+        foreach ($maquinasPorId as $idMaq => $maq) {
+            $listaBase[] = [
+                'id_maquina'     => $idMaq,
+                'id_local'       => $maq['id_local']       ?? null,
+                'id_placa'       => $maq['id_placa']       ?? '—',
+                'possui_qr'      => isset($qrPorMaquina[$idMaq]),
+                'maquina_nome'   => $maq['maquina_nome']   ?? '',
+                'local_nome'     => $maq['local_nome']     ?? '—',
+                'maquina_status' => $maq['maquina_status'] ?? 1,
+            ];
+        }
+
+        if ($busca !== '') {
+            $buscaLower = mb_strtolower($busca);
+            $listaBase = array_values(array_filter($listaBase, function ($maq) use ($buscaLower) {
+                $haystack = mb_strtolower(
+                    ($maq['maquina_nome'] ?? '') . ' ' .
+                    ($maq['local_nome'] ?? '') . ' ' .
+                    ($maq['id_placa'] ?? '')
+                );
+
+                return str_contains($haystack, $buscaLower);
+            }));
+        }
+
+        $totalItens = count($listaBase);
+        $offset     = ($page - 1) * $perPage;
+        $paginaBase = array_slice($listaBase, $offset, $perPage);
+
+        $idsPagina = array_column($paginaBase, 'id_maquina');
+        $acumuladoPorId = [];
+        if (!empty($idsPagina)) {
+            $acumulado     = ExtratoMaquinaService::coletarAcumulado(['id_cliente' => $id_cliente]);
+            $acumuladoData = $acumulado['data'] ?? (is_array($acumulado) ? $acumulado : []);
+            foreach ($acumuladoData as $item) {
+                $idMaq = (string) ($item['id_maquina'] ?? '');
+                if (in_array($idMaq, $idsPagina, true)) {
+                    $acumuladoPorId[$idMaq] = $item;
                 }
             }
-        }*/
+        }
 
-        $resultado = array_values($maquinas);
+        $maquinas = [];
+        foreach ($paginaBase as $maq) {
+            $idMaq = (string) $maq['id_maquina'];
+            $fin   = $acumuladoPorId[$idMaq] ?? [];
+            $maquinas[] = array_merge($maq, [
+                'total_maquina'     => $fin['total_maquina']     ?? 0,
+                'saldo_periodo'     => $fin['saldo_periodo']     ?? 0,
+                'tem_reset'         => $fin['tem_reset']         ?? false,
+                'data_ultimo_reset' => $fin['data_ultimo_reset'] ?? null,
+            ]);
+        }
 
-        return view('Clientes.Maquinas.index', compact('resultado'));
+        $paginator = new LengthAwarePaginator(
+            $maquinas,
+            $totalItens,
+            $perPage,
+            $page,
+            [
+                'path'  => $request->url(),
+                'query' => $request->query(),
+            ]
+        );
+
+        $temMaquinas = count($maquinasPorId) > 0;
+
+        return view('Clientes.Maquinas.index', compact('maquinas', 'paginator', 'busca', 'temMaquinas'));
     }
 
     public function transacaoMaquinas(Request $request){
 
-        $id_cliente = session()->get('id_cliente');
-        $resultado  = array_values(
+        $id_cliente    = session()->get('id_cliente');
+        $idMaquinaSel  = $request->input('id_maquina');
+
+        // Todas as transações do cliente
+        $todasTransacoes = array_values(
             ExtratoMaquinaService::coletarExtratoDasMaquinasDeUmCliente(['id_cliente' => $id_cliente])
         );
 
-        return view('Clientes.Maquinas.Transacoes.index', compact('resultado'));
+        // Acumulado por máquina (usado para o resumo e lista de máquinas do filtro)
+        $acumulado     = ExtratoMaquinaService::coletarAcumulado(['id_cliente' => $id_cliente]);
+        $maquinasAcum  = $acumulado['data'] ?? (is_array($acumulado) ? $acumulado : []);
+
+        // Lista de máquinas para o filtro (nome + local)
+        $listaMaquinas = array_map(fn($m) => [
+            'id_maquina'   => $m['id_maquina'],
+            'maquina_nome' => $m['maquina_nome'] ?? '—',
+            'local_nome'   => $m['local_nome']   ?? '—',
+        ], $maquinasAcum);
+
+        // Filtrar transações pela máquina selecionada
+        $resultado = $idMaquinaSel
+            ? array_values(array_filter($todasTransacoes, fn($tx) => (string)($tx['id_maquina'] ?? '') === (string)$idMaquinaSel))
+            : $todasTransacoes;
+
+        // Acumulado filtrado para os cards de resumo
+        $maquinasFiltradas = $idMaquinaSel
+            ? array_values(array_filter($maquinasAcum, fn($m) => (string)$m['id_maquina'] === (string)$idMaquinaSel))
+            : $maquinasAcum;
+
+        // Totais por tipo de pagamento
+        $totalPix = $totalCartao = $totalDinheiro = $totalDevolucao = 0.0;
+        foreach ($resultado as $tx) {
+            $valor = (float)($tx['extrato_operacao_valor'] ?? 0);
+            $tipo  = strtolower($tx['extrato_operacao_tipo'] ?? '');
+            $op    = $tx['extrato_operacao'] ?? 'C';
+
+            if ($op === 'D') {
+                $totalDevolucao += $valor;
+            } elseif (str_contains($tipo, 'pix')) {
+                $totalPix += $valor;
+            } elseif (str_contains($tipo, 'cart')) {
+                $totalCartao += $valor;
+            } elseif (str_contains($tipo, 'dinheir') || str_contains($tipo, 'físic') || str_contains($tipo, 'fisic')) {
+                $totalDinheiro += $valor;
+            }
+        }
+
+        $resumo = [
+            'total_acumulado'  => array_sum(array_column($maquinasFiltradas, 'total_maquina')),
+            'total_saldo'      => array_sum(array_column($maquinasFiltradas, 'saldo_periodo')),
+            'tem_reset'        => !empty(array_filter(array_column($maquinasFiltradas, 'tem_reset'))),
+            'ids_maquinas'     => array_column($maquinasFiltradas, 'id_maquina'),
+            'total_pix'        => $totalPix,
+            'total_cartao'     => $totalCartao,
+            'total_dinheiro'   => $totalDinheiro,
+            'total_devolucao'  => $totalDevolucao,
+        ];
+
+        return view('Clientes.Maquinas.Transacoes.index', compact('resultado', 'resumo', 'listaMaquinas', 'idMaquinaSel'));
+    }
+
+    public function resetParcialTodas(Request $request)
+    {
+        $id_cliente   = session()->get('id_cliente');
+        $realizadoPor = (string) (session('id_usuario') ?? session('usuario_id') ?? '1');
+
+        $ids = $request->input('ids_maquinas', []);
+
+        if (empty($ids)) {
+            return back()->with('error', 'Nenhuma máquina encontrada para resetar.');
+        }
+
+        $erros   = [];
+        $sucesso = 0;
+
+        foreach ($ids as $idMaquina) {
+            $resultado = ExtratoMaquinaService::resetParcial((string) $idMaquina, [
+                'realizado_por' => $realizadoPor,
+                'observacao'    => $request->input('observacao'),
+            ]);
+
+            if ($resultado['success'] ?? false) {
+                $sucesso++;
+            } else {
+                $erros[] = $idMaquina;
+            }
+        }
+
+        if (empty($erros)) {
+            return back()->with('success', "Reset parcial registrado com sucesso em {$sucesso} máquina(s).");
+        }
+
+        if ($sucesso > 0) {
+            return back()->with('error', "Reset aplicado em {$sucesso} máquina(s), mas falhou em " . count($erros) . ' máquina(s).');
+        }
+
+        return back()->with('error', 'Houve um erro ao registrar o reset parcial.');
     }
 
     public function acumuladoMaquinas(Request $request){
@@ -127,6 +222,49 @@ class MaquinasController extends Controller
         $id_cliente = session()->get('id_cliente');
         return view('Clientes.Maquinas.Acumulado.index', compact('id_cliente'));
 
+    }
+
+    public function resetParcial(Request $request)
+    {
+        $request->validate(['id_maquina' => 'required']);
+
+        try {
+            $idMaquina    = $request->input('id_maquina');
+            $realizadoPor = session('id_usuario') ?? session('usuario_id') ?? auth()->id() ?? '1';
+
+            $dados = [
+                'realizado_por' => (string) $realizadoPor,
+                'observacao'    => $request->input('observacao'),
+            ];
+
+            $resultado = ExtratoMaquinaService::resetParcial($idMaquina, $dados);
+
+            if ($resultado['success'] ?? false) {
+                return back()->with('success', 'Reset parcial registrado com sucesso.');
+            }
+
+            return back()->with('error', $resultado['message'] ?? 'Houve um erro ao registrar o reset parcial.');
+        } catch (\Throwable $e) {
+            \Log::error('[cliente.resetParcial] Erro: ' . $e->getMessage());
+            return back()->with('error', 'Houve um erro ao registrar o reset parcial.');
+        }
+    }
+
+    public function historicoResets(Request $request)
+    {
+        $id_cliente = session()->get('id_cliente');
+
+        $filtros = array_filter([
+            'id_maquina' => $request->input('id_maquina'),
+            'data_inicio' => $request->input('data_inicio'),
+            'data_fim'    => $request->input('data_fim'),
+            'id_cliente'  => $id_cliente,
+            'page'        => $request->input('page', 1),
+        ]);
+
+        $resets = ExtratoMaquinaService::historicoResets($filtros);
+
+        return view('Clientes.Maquinas.Acumulado.historico', compact('resets'));
     }
 
     public function viewLiberarJogada(Request $request){
@@ -262,6 +400,7 @@ class MaquinasController extends Controller
         foreach ($maquinasCartao as $maquinaCartao) {
             if (isset($maquinasIndexadas[$maquinaCartao['id_maquina']])) {
                 $maquinaCartao['maquina_nome'] = $maquinasIndexadas[$maquinaCartao['id_maquina']]['maquina_nome'];
+                $maquinaCartao['id'] = $maquinaCartao['id_maquina_cartao'] ?? $maquinaCartao['id'] ?? null;
                 $maquinasCartaoFiltradas[] = $maquinaCartao;
             }
         }

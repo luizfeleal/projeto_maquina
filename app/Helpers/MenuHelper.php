@@ -13,7 +13,7 @@ if (!function_exists('getRouteBreadcrumbs')) {
         $criar     = ['label' => 'Criar',          'route' => null];
         $maquinas  = ['label' => 'Máquinas',        'route' => $role === 'cliente' ? 'clientes-maquinas' : 'maquinas'];
         $qr        = ['label' => 'QR Code',         'route' => $role === 'cliente' ? 'cliente-qr' : 'qr'];
-        $relatorio = ['label' => 'Relatórios',      'route' => $role === 'cliente' ? 'cliente-relatorio-view' : 'relatorio-view'];
+        $relatorio = ['label' => 'Relatórios',      'route' => $role === 'cliente' ? 'cliente-home' : 'relatorio-view'];
         $cred      = ['label' => 'Credenciais',     'route' => $role === 'cliente' ? 'cliente-credencial-listar' : 'credencial-listar'];
 
         $map = [
@@ -25,6 +25,7 @@ if (!function_exists('getRouteBreadcrumbs')) {
             'maquinas-show'                         => [$home, $maquinas, ['label' => 'Detalhes da Máquina']],
             'maquinas-transacoes'                   => [$home, $maquinas, ['label' => 'Transações']],
             'maquinas-acumulado'                    => [$home, $maquinas, ['label' => 'Acumulado']],
+            'maquinas-resets-historico'             => [$home, $maquinas, ['label' => 'Acumulado', 'route' => 'maquinas-acumulado'], ['label' => 'Histórico de Resets']],
             'maquinas-cartao'                       => [$home, $criar, ['label' => 'Máquina Cartão']],
             'maquinas-cartao-criar'                 => [$home, $criar, ['label' => 'Incluir Máquina Cartão']],
             'local'                                 => [$home, ['label' => 'Locais']],
@@ -53,6 +54,7 @@ if (!function_exists('getRouteBreadcrumbs')) {
             'clientes-maquinas'                     => [$home, $maquinas],
             'clientes-maquinas-transacoes'          => [$home, $maquinas, ['label' => 'Transações']],
             'clientes-maquinas-acumulado'           => [$home, $maquinas, ['label' => 'Acumulado']],
+            'clientes-maquinas-resets-historico'    => [$home, $maquinas, ['label' => 'Acumulado', 'route' => 'clientes-maquinas-acumulado'], ['label' => 'Histórico de Resets']],
             'cliente-maquinas-cartao'               => [$home, $criar, ['label' => 'Máquina Cartão']],
             'cliente-credencial-listar'             => [$home, $cred],
             'cliente-credencial-criar-efi'          => [$home, $cred, ['label' => 'Nova Credencial EFI']],
@@ -84,15 +86,13 @@ if (!function_exists('getSidebar')) {
                 [
                     'title'         => 'Criar',
                     'icon'          => 'solar:add-circle-bold-duotone',
-                    'active_routes' => ['maquinas-criar', 'local-incluir-usuario', 'local-criar', 'credencial-criar-efi', 'credencial-criar-pagbank', 'credencial-listar', 'maquinas-cartao'],
+                    'active_routes' => ['maquinas-criar', 'local-incluir-usuario', 'local-criar', 'credencial-listar', 'credencial-criar-efi', 'credencial-criar-pagbank', 'credencial-editar-efi', 'credencial-editar-pagbank', 'maquinas-cartao'],
                     'sub_menu'      => [
-                        ['title' => 'Nova máquina',       'route' => 'maquinas-criar'],
-                        ['title' => 'Incluir usuários',   'route' => 'local-incluir-usuario'],
-                        ['title' => 'Criar local',        'route' => 'local-criar'],
-                        ['title' => 'Credencial EFI',     'route' => 'credencial-criar-efi'],
-                        ['title' => 'Credencial PagBank', 'route' => 'credencial-criar-pagbank'],
-                        ['title' => 'Editar credenciais', 'route' => 'credencial-listar'],
-                        ['title' => 'Máquina Cartão',     'route' => 'maquinas-cartao'],
+                        ['title' => 'Nova máquina',     'route' => 'maquinas-criar'],
+                        ['title' => 'Incluir usuários', 'route' => 'local-incluir-usuario'],
+                        ['title' => 'Criar local',      'route' => 'local-criar'],
+                        ['title' => 'Credenciais',      'route' => 'credencial-listar'],
+                        ['title' => 'Máquina Cartão',   'route' => 'maquinas-cartao'],
                     ],
                 ],
                 [
@@ -106,12 +106,10 @@ if (!function_exists('getSidebar')) {
                 [
                     'title'         => 'Minhas máquinas',
                     'icon'          => 'solar:monitor-bold-duotone',
-                    'active_routes' => ['maquinas', 'maquinas-transacoes', 'maquinas-acumulado', 'relatorio-view', 'relatorio-criar', 'relatorio-exibir'],
+                    'active_routes' => ['maquinas', 'maquinas-transacoes', 'maquinas-acumulado', 'maquinas-resets-historico', 'relatorio-view', 'relatorio-criar', 'relatorio-exibir'],
                     'sub_menu'      => [
                         ['title' => 'Exibir máquinas', 'route' => 'maquinas'],
-                        ['title' => 'Transações',       'route' => 'maquinas-transacoes'],
-                        ['title' => 'Acumulado',        'route' => 'maquinas-acumulado'],
-                        ['title' => 'Relatórios',       'route' => 'relatorio-view'],
+                        ['title' => 'Transações',      'route' => 'maquinas-transacoes'],
                     ],
                 ],
                 [
@@ -157,12 +155,10 @@ if (!function_exists('getSidebar')) {
             [
                 'title'         => 'Criar',
                 'icon'          => 'solar:add-circle-bold-duotone',
-                'active_routes' => ['cliente-credencial-criar-efi', 'cliente-credencial-criar-pagbank', 'cliente-credencial-listar', 'cliente-maquinas-cartao'],
+                'active_routes' => ['cliente-credencial-listar', 'cliente-credencial-criar-efi', 'cliente-credencial-criar-pagbank', 'cliente-credencial-editar-efi', 'cliente-credencial-editar-pagbank', 'cliente-maquinas-cartao'],
                 'sub_menu'      => [
-                    ['title' => 'Credencial EFI',     'route' => 'cliente-credencial-criar-efi'],
-                    ['title' => 'Credencial PagBank', 'route' => 'cliente-credencial-criar-pagbank'],
-                    ['title' => 'Editar credenciais', 'route' => 'cliente-credencial-listar'],
-                    ['title' => 'Máquina Cartão',     'route' => 'cliente-maquinas-cartao'],
+                    ['title' => 'Credenciais',    'route' => 'cliente-credencial-listar'],
+                    ['title' => 'Máquina Cartão', 'route' => 'cliente-maquinas-cartao'],
                 ],
             ],
             [
@@ -177,13 +173,11 @@ if (!function_exists('getSidebar')) {
             [
                 'title'         => 'Minhas máquinas',
                 'icon'          => 'solar:monitor-bold-duotone',
-                'active_routes' => ['clientes-maquinas', 'cliente-relatorio-view', 'clientes-maquinas-transacoes', 'clientes-maquinas-acumulado'],
-                'sub_menu'      => [
-                    ['title' => 'Exibir máquinas', 'route' => 'clientes-maquinas'],
-                    ['title' => 'Relatórios',       'route' => 'cliente-relatorio-view'],
-                    ['title' => 'Transações',       'route' => 'clientes-maquinas-transacoes'],
-                    ['title' => 'Acumulado',        'route' => 'clientes-maquinas-acumulado'],
-                ],
+                    'active_routes' => ['clientes-maquinas', 'clientes-maquinas-transacoes', 'clientes-maquinas-acumulado', 'clientes-maquinas-resets-historico'],
+                    'sub_menu'      => [
+                        ['title' => 'Exibir máquinas', 'route' => 'clientes-maquinas'],
+                        ['title' => 'Transações',      'route' => 'clientes-maquinas-transacoes'],
+                    ],
             ],
             [
                 'title'         => 'Liberar Jogada',

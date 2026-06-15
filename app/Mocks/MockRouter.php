@@ -133,6 +133,27 @@ class MockRouter
             return self::json(['response' => $updated ?? [], 'message' => 'Credencial atualizada com sucesso.']);
         }
 
+        // GET /extrato/acumulado — retorna dados enriquecidos com campos de reset
+        if ($method === 'GET' && $path === '/extrato/acumulado') {
+            return self::json(self::buildAcumuladoComReset($query));
+        }
+
+        // POST /maquinas/{id}/reset-parcial
+        if ($method === 'POST' && preg_match('#^/maquinas/([^/]+)/reset-parcial$#', $path, $m)) {
+            return self::handleResetParcial($m[1], is_array($data) ? $data : []);
+        }
+
+        // GET /reset-parcial/historico
+        if ($method === 'GET' && $path === '/reset-parcial/historico') {
+            return self::json(self::buildHistoricoResets($query));
+        }
+
+        // POST /totalTransacaoMaquinaAcumuladoCliente — enriquece com campos de reset
+        if ($method === 'POST' && $path === '/totalTransacaoMaquinaAcumuladoCliente') {
+            $idCliente = is_array($data) ? ($data['id_cliente'] ?? null) : null;
+            return self::json(self::buildAcumuladoClienteComReset($idCliente, $query));
+        }
+
         return null;
     }
 
@@ -351,6 +372,128 @@ class MockRouter
         ];
 
         return $messages[$segment] ?? 'Registro excluído com sucesso.';
+    }
+
+    private static function buildAcumuladoComReset(array $query): array
+    {
+        $maquinas = MockStore::collection('maquinas');
+        $resets   = MockStore::collection('resetsParciais');
+
+        $ultimoReset = [];
+        foreach ($resets as $reset) {
+            $idMaq = (string) $reset['id_maquina'];
+            if (!isset($ultimoReset[$idMaq]) || $reset['created_at'] > $ultimoReset[$idMaq]['created_at']) {
+                $ultimoReset[$idMaq] = $reset;
+            }
+        }
+
+        $data = [];
+        foreach ($maquinas as $maq) {
+            $idMaq      = (string) $maq['id_maquina'];
+            $totalMaq   = 15.50; // soma de todos os extratos mock
+            $reset      = $ultimoReset[$idMaq] ?? null;
+
+            $ultimaColeta = $reset ? (float) $reset['valor_ultima_coleta'] : null;
+            $saldo        = $ultimaColeta !== null ? ($totalMaq - $ultimaColeta) : $totalMaq;
+
+            $data[] = [
+                'id_maquina'       => $idMaq,
+                'maquina_nome'     => $maq['maquina_nome'],
+                'local_nome'       => 'Local Central Mock',
+                'total_maquina'    => $totalMaq,
+                'total_pix'        => 10.50,
+                'total_cartao'     => 5.00,
+                'total_dinheiro'   => 0.00,
+                'ultima_coleta'    => $ultimaColeta,
+                'saldo_periodo'    => round($saldo, 2),
+                'data_ultimo_reset' => $reset ? $reset['created_at'] : null,
+                'tem_reset'        => $reset !== null,
+            ];
+        }
+
+        $page    = (int) ($query['page'] ?? 1);
+        $perPage = (int) ($query['per_page'] ?? 10);
+
+        return [
+            'draw'            => (int) ($query['draw'] ?? 1),
+            'recordsTotal'    => count($data),
+            'recordsFiltered' => count($data),
+            'data'            => array_values($data),
+            'current_page'    => $page,
+            'last_page'       => 1,
+        ];
+    }
+
+    private static function buildAcumuladoClienteComReset($idCliente, array $query): array
+    {
+        $resultado = self::buildAcumuladoComReset($query);
+        return $resultado;
+    }
+
+    private static function handleResetParcial(string $idMaquina, array $data): Response
+    {
+        $resets  = MockStore::collection('resetsParciais');
+        $maquinas = MockStore::collection('maquinas');
+
+        $maquina = null;
+        foreach ($maquinas as $m) {
+            if ((string) $m['id_maquina'] === $idMaquina) {
+                $maquina = $m;
+                break;
+            }
+        }
+
+        if (!$maquina) {
+            return self::json(['message' => 'Máquina não encontrada.'], 404);
+        }
+
+        if (empty($data['realizado_por'])) {
+            return self::json(['message' => 'O campo realizado_por é obrigatório.', 'errors' => ['realizado_por' => ['Campo obrigatório']]], 422);
+        }
+
+        $totalMaquina = 15.50;
+        $now = now()->format('Y-m-d H:i:s');
+
+        $novoReset = [
+            'id'                  => count($resets) + 1,
+            'id_maquina'          => (int) $idMaquina,
+            'maquina_nome'        => $maquina['maquina_nome'],
+            'local_nome'          => 'Local Central Mock',
+            'valor_ultima_coleta' => $totalMaquina,
+            'valor_acumulado_total' => $totalMaquina,
+            'realizado_por'       => $data['realizado_por'],
+            'realizado_por_nome'  => 'Usuário Mock',
+            'observacao'          => $data['observacao'] ?? null,
+            'created_at'          => $now,
+        ];
+
+        MockStore::create('resetsParciais', $novoReset, 'id');
+
+        return self::json([
+            'message' => 'Reset parcial registrado com sucesso.',
+            'data' => array_merge($novoReset, ['saldo_periodo' => 0.00]),
+        ], 201);
+    }
+
+    private static function buildHistoricoResets(array $query): array
+    {
+        $resets  = MockStore::collection('resetsParciais');
+        $filtrados = array_values($resets);
+
+        if (!empty($query['id_maquina'])) {
+            $filtrados = array_values(array_filter($filtrados, fn($r) => (string) $r['id_maquina'] === (string) $query['id_maquina']));
+        }
+
+        $page    = (int) ($query['page'] ?? 1);
+        $perPage = (int) ($query['per_page'] ?? 10);
+
+        return [
+            'current_page' => $page,
+            'last_page'    => 1,
+            'per_page'     => $perPage,
+            'total'        => count($filtrados),
+            'data'         => $filtrados,
+        ];
     }
 
     private static function json($body, int $status = 200): Response

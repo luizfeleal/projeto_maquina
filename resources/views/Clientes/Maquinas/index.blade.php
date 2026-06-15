@@ -1,170 +1,266 @@
 @extends('layouts.Clientes.app')
-@section('title', 'Extrato de Transações')
-
-@php
-    // Agrupa as transações por data (dia)
-    $grouped = [];
-    $totalCredito = 0;
-    $totalDebito  = 0;
-
-    foreach ($resultado as $item) {
-        $dia = date('Y-m-d', strtotime($item['data_criacao']));
-        $grouped[$dia][] = $item;
-        if (($item['extrato_operacao'] ?? 'C') === 'C') {
-            $totalCredito += $item['extrato_operacao_valor'] ?? 0;
-        } else {
-            $totalDebito += $item['extrato_operacao_valor'] ?? 0;
-        }
-    }
-    krsort($grouped); // mais recente primeiro
-
-    $hoje    = date('Y-m-d');
-    $ontem   = date('Y-m-d', strtotime('-1 day'));
-
-    function diaLabel(string $dia, string $hoje, string $ontem): string {
-        if ($dia === $hoje)  return 'Hoje';
-        if ($dia === $ontem) return 'Ontem';
-        return date('d/m/Y', strtotime($dia));
-    }
-
-    function tipoIcon(string $tipo): string {
-        return match(strtolower($tipo)) {
-            'pix'      => 'solar:transfer-horizontal-bold-duotone',
-            'cartão', 'cartao' => 'solar:card-bold-duotone',
-            'dinheiro' => 'solar:banknote-2-bold-duotone',
-            default    => 'solar:wallet-money-bold-duotone',
-        };
-    }
-
-    function tipoColor(string $tipo): string {
-        return match(strtolower($tipo)) {
-            'pix'      => '#2C9BA5',
-            'cartão', 'cartao' => '#1E2E5E',
-            'dinheiro' => '#16a34a',
-            default    => '#6b7280',
-        };
-    }
-@endphp
+@section('title', 'Minhas Máquinas')
 
 @section('content')
 <div class="page-heading">
-    <h1>Extrato de Transações</h1>
-    <p>Histórico de movimentações das suas máquinas</p>
+    <h1>Minhas Máquinas</h1>
+    <p>Visão geral das suas máquinas e atalhos de ação</p>
 </div>
 
-<div class="content-body" style="padding-top: 0;">
+<div class="content-body" style="padding-top:0;">
 
-    {{-- ── Resumo ─────────────────────────────────────────────── --}}
-    <div style="display:flex; gap:12px; flex-wrap:wrap; margin-bottom:20px;">
-
-        <div style="flex:1; min-width:160px; background:#fff; border:1px solid #e8ecf0;
-                    border-radius:14px; padding:18px 20px;
-                    box-shadow:0 1px 4px rgba(0,0,0,.05);">
-            <p style="font-size:.72rem; font-weight:600; text-transform:uppercase;
-                       letter-spacing:.06em; color:#9ca3af; margin:0 0 6px;">Total de entradas</p>
-            <p style="font-size:1.35rem; font-weight:700; color:#16a34a; margin:0;">
-                + R$ {{ number_format($totalCredito, 2, ',', '.') }}
-            </p>
-        </div>
-
-        <div style="flex:1; min-width:160px; background:#fff; border:1px solid #e8ecf0;
-                    border-radius:14px; padding:18px 20px;
-                    box-shadow:0 1px 4px rgba(0,0,0,.05);">
-            <p style="font-size:.72rem; font-weight:600; text-transform:uppercase;
-                       letter-spacing:.06em; color:#9ca3af; margin:0 0 6px;">Total de transações</p>
-            <p style="font-size:1.35rem; font-weight:700; color:#111827; margin:0;">
-                {{ count($resultado) }}
-            </p>
-        </div>
-
-    </div>
-
-    {{-- ── Lista agrupada por dia ──────────────────────────────── --}}
-    @if(count($resultado) === 0)
+    @if(!$temMaquinas)
         <div style="background:#fff; border:1px dashed #e8ecf0; border-radius:14px;
                     padding:60px 24px; text-align:center; color:#9ca3af;">
-            <iconify-icon icon="solar:inbox-line-duotone" style="font-size:2.5rem; display:block; margin:0 auto 10px;"></iconify-icon>
-            <p style="margin:0; font-size:.875rem;">Nenhuma transação encontrada.</p>
+            <iconify-icon icon="solar:devices-bold-duotone"
+                          style="font-size:2.5rem; display:block; margin:0 auto 12px;"></iconify-icon>
+            <p style="margin:0; font-size:.9rem; font-weight:600;">Nenhuma máquina encontrada.</p>
         </div>
     @else
-        @foreach($grouped as $dia => $itens)
-            {{-- Separador de data --}}
-            <div style="display:flex; align-items:center; gap:10px; margin:20px 0 10px;">
-                <span style="font-size:.75rem; font-weight:700; color:#6b7280;
-                             text-transform:uppercase; letter-spacing:.06em; white-space:nowrap;">
-                    {{ diaLabel($dia, $hoje, $ontem) }}
+        <form id="form-busca-maquinas" method="GET" action="{{ route('clientes-maquinas') }}"
+              class="view-toggle-bar" role="search" aria-label="Buscar máquinas">
+            <div class="view-search-wrap">
+                <span class="view-search-icon" aria-hidden="true">
+                    <iconify-icon icon="solar:magnifer-linear"></iconify-icon>
                 </span>
-                <div style="flex:1; height:1px; background:#e8ecf0;"></div>
-                <span style="font-size:.72rem; color:#9ca3af; white-space:nowrap;">
-                    {{ count($itens) }} {{ count($itens) === 1 ? 'transação' : 'transações' }}
-                </span>
+                <input type="search" name="busca" class="view-search-input"
+                       placeholder="Pesquisar por máquina, local ou ID da placa..."
+                       value="{{ $busca }}" aria-label="Pesquisar máquinas" autocomplete="off">
             </div>
+            <span class="view-count-badge" aria-live="polite" aria-atomic="true">
+                @if($paginator->hasPages())
+                    Página {{ $paginator->currentPage() }} de {{ $paginator->lastPage() }} ·
+                @endif
+                Exibindo {{ $paginator->firstItem() }}–{{ $paginator->lastItem() }}
+                de {{ $paginator->total() }} máquina{{ $paginator->total() !== 1 ? 's' : '' }}
+            </span>
+        </form>
 
-            {{-- Card do dia --}}
-            <div style="background:#fff; border:1px solid #e8ecf0; border-radius:14px;
-                        box-shadow:0 1px 4px rgba(0,0,0,.05); overflow:hidden;">
-                @foreach($itens as $i => $tx)
-                    @php
-                        $isCredito = ($tx['extrato_operacao'] ?? 'C') === 'C';
-                        $tipo      = $tx['extrato_operacao_tipo'] ?? 'Outro';
-                        $status    = $tx['extrato_operacao_status'] ?? 'aprovado';
-                        $valor     = $tx['extrato_operacao_valor'] ?? 0;
-                        $nome      = $tx['maquina_nome'] ?? '—';
-                        $hora      = date('H:i', strtotime($tx['data_criacao']));
-                        $icon      = tipoIcon($tipo);
-                        $iconColor = tipoColor($tipo);
-                        $isLast    = $i === count($itens) - 1;
-                    @endphp
+        @if($paginator->isEmpty())
+            <div style="background:#fff; border:1px dashed #e8ecf0; border-radius:14px;
+                        padding:48px 24px; text-align:center; color:#9ca3af;">
+                <iconify-icon icon="solar:magnifer-zoom-in-bold-duotone"
+                              style="font-size:2.2rem; display:block; margin:0 auto 12px;"></iconify-icon>
+                <p style="margin:0 0 8px; font-size:.9rem; font-weight:600;">Nenhuma máquina encontrada para esta busca.</p>
+                @if($busca !== '')
+                    <a href="{{ route('clientes-maquinas') }}"
+                       style="font-size:.82rem; color:#2C9BA5; text-decoration:none; font-weight:600;">
+                        Limpar busca
+                    </a>
+                @endif
+            </div>
+        @else
+        <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(300px,1fr));
+                    gap:16px;">
+            @foreach($maquinas as $maq)
+            @php
+                $ativo      = ($maq['maquina_status'] ?? 1) == 1;
+                $total      = $maq['total_maquina']   ?? 0;
+                $saldo      = $maq['saldo_periodo']    ?? $total;
+                $temReset   = $maq['tem_reset']        ?? false;
+                $idMaquina  = $maq['id_maquina'];
+                $idLocal    = $maq['id_local']         ?? null;
+                $possuiQr   = $maq['possui_qr']        ?? false;
+                $nome       = $maq['maquina_nome']     ?? 'Máquina';
+                $local      = $maq['local_nome']       ?? '—';
+                $idPlaca    = $maq['id_placa']         ?? '—';
+                $qrHref     = ($idLocal && $possuiQr)
+                    ? route('cliente-qr', ['id_local' => $idLocal, 'id_maquina' => $idMaquina, 'abrir' => true])
+                    : route('cliente-qr-criar');
+            @endphp
+            <div style="background:#fff; border:1px solid #e8ecf0; border-radius:16px;
+                        box-shadow:0 1px 4px rgba(0,0,0,.05); overflow:hidden; display:flex; flex-direction:column;">
 
-                    <div style="display:flex; align-items:center; gap:14px; padding:14px 18px; background:#fff;
-                                {{ $isLast ? '' : 'border-bottom:1px solid #f3f4f6;' }}">
-
-                        {{-- Ícone do tipo de pagamento --}}
+                {{-- Cabeçalho do card --}}
+                <div style="padding:18px 20px 14px; border-bottom:1px solid #f3f4f6;
+                            display:flex; align-items:flex-start; justify-content:space-between; gap:10px;">
+                    <div style="display:flex; align-items:center; gap:12px; min-width:0;">
                         <div style="width:44px; height:44px; border-radius:12px; flex-shrink:0;
-                                    background:{{ $iconColor }}18;
-                                    display:flex; align-items:center; justify-content:center;">
-                            <iconify-icon icon="{{ $icon }}"
-                                          style="font-size:22px; color:{{ $iconColor }};"></iconify-icon>
+                                    background:#e0f2fe; display:flex; align-items:center; justify-content:center;">
+                            <iconify-icon icon="solar:monitor-bold-duotone"
+                                          style="font-size:1.4rem; color:#0284c7;"></iconify-icon>
                         </div>
-
-                        {{-- Descrição --}}
-                        <div style="flex:1; min-width:0;">
-                            <p style="margin:0 0 3px; font-size:.875rem; font-weight:600;
-                                      color:#111827; white-space:nowrap; overflow:hidden;
-                                      text-overflow:ellipsis;">
+                        <div style="min-width:0;">
+                            <p style="margin:0 0 2px; font-size:.95rem; font-weight:700; color:#111827;
+                                      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
                                 {{ $nome }}
                             </p>
                             <p style="margin:0; font-size:.75rem; color:#9ca3af;
-                                      display:flex; align-items:center; gap:5px; flex-wrap:wrap;">
-                                <span>{{ $tipo }}</span>
-                                <span style="width:3px; height:3px; background:#e5e7eb; border-radius:50%; display:inline-block; flex-shrink:0;"></span>
-                                <span>{{ $hora }}</span>
-                                @if(strtolower($status) === 'aprovado')
-                                    <span style="width:3px; height:3px; background:#e5e7eb; border-radius:50%; display:inline-block; flex-shrink:0;"></span>
-                                    <span style="color:#16a34a; font-weight:600;">✓ Aprovado</span>
-                                @elseif(strtolower($status) === 'pendente')
-                                    <span style="width:3px; height:3px; background:#e5e7eb; border-radius:50%; display:inline-block; flex-shrink:0;"></span>
-                                    <span style="color:#d97706; font-weight:600;">⏳ Pendente</span>
-                                @elseif(strtolower($status) === 'cancelado' || strtolower($status) === 'recusado')
-                                    <span style="width:3px; height:3px; background:#e5e7eb; border-radius:50%; display:inline-block; flex-shrink:0;"></span>
-                                    <span style="color:#ef4444; font-weight:600;">✕ {{ ucfirst($status) }}</span>
-                                @endif
+                                      display:flex; align-items:center; gap:4px;">
+                                <iconify-icon icon="solar:map-point-bold-duotone"
+                                              style="font-size:.85rem;"></iconify-icon>
+                                {{ $local }}
+                            </p>
+                            <p style="margin:3px 0 0; font-size:.72rem; color:#9ca3af;
+                                      display:flex; align-items:center; gap:4px;">
+                                <iconify-icon icon="solar:cpu-bold-duotone"
+                                              style="font-size:.8rem;"></iconify-icon>
+                                ID placa: <span style="font-weight:600; color:#6b7280;">{{ $idPlaca }}</span>
                             </p>
                         </div>
-
-                        {{-- Valor em destaque --}}
-                        <div style="text-align:right; flex-shrink:0;">
-                            <p style="margin:0; font-size:1.05rem; font-weight:700; letter-spacing:-.01em;
-                                      color:{{ $isCredito ? '#16a34a' : '#ef4444' }};">
-                                {{ $isCredito ? '+' : '−' }}&nbsp;R$&nbsp;{{ number_format($valor, 2, ',', '.') }}
-                            </p>
-                        </div>
-
                     </div>
-                @endforeach
+                    {{-- Badge de status --}}
+                    <span style="flex-shrink:0; font-size:.7rem; font-weight:700; padding:3px 10px;
+                                 border-radius:20px; white-space:nowrap; display:flex; align-items:center; gap:5px;
+                                 background:{{ $ativo ? '#dcfce7' : '#fee2e2' }};
+                                 color:{{ $ativo ? '#16a34a' : '#dc2626' }};">
+                        <span style="width:6px; height:6px; border-radius:50%; flex-shrink:0;
+                                     background:{{ $ativo ? '#16a34a' : '#dc2626' }};
+                                     {{ $ativo ? 'box-shadow:0 0 0 2px #bbf7d0;' : '' }}"></span>
+                        {{ $ativo ? 'Online' : 'Offline' }}
+                    </span>
+                </div>
+
+                {{-- Totais --}}
+                <div style="padding:14px 20px; display:flex; gap:16px; border-bottom:1px solid #f3f4f6;">
+                    <div style="flex:1; text-align:center;">
+                        <p style="margin:0 0 2px; font-size:.65rem; font-weight:600; text-transform:uppercase;
+                                   letter-spacing:.06em; color:#9ca3af;">Total acumulado</p>
+                        <p style="margin:0; font-size:1rem; font-weight:700; color:#0284c7;">
+                            R$ {{ number_format($total, 2, ',', '.') }}
+                        </p>
+                    </div>
+                    <div style="width:1px; background:#f3f4f6;"></div>
+                    <div style="flex:1; text-align:center;">
+                        <p style="margin:0 0 2px; font-size:.65rem; font-weight:600; text-transform:uppercase;
+                                   letter-spacing:.06em; color:#9ca3af;">Saldo do período</p>
+                        <p style="margin:0; font-size:1rem; font-weight:700;
+                                  color:{{ $saldo < 0 ? '#dc2626' : '#16a34a' }};">
+                            R$ {{ number_format($saldo, 2, ',', '.') }}
+                        </p>
+                    </div>
+                    @if($temReset)
+                    <div style="width:1px; background:#f3f4f6;"></div>
+                    <div style="flex:1; text-align:center;">
+                        <p style="margin:0 0 2px; font-size:.65rem; font-weight:600; text-transform:uppercase;
+                                   letter-spacing:.06em; color:#9ca3af;">Último reset</p>
+                        <p style="margin:0; font-size:.75rem; font-weight:600; color:#6b7280;">
+                            {{ $maq['data_ultimo_reset'] ? date('d/m/Y', strtotime($maq['data_ultimo_reset'])) : '—' }}
+                        </p>
+                    </div>
+                    @endif
+                </div>
+
+                {{-- Ações --}}
+                <div style="padding:14px 20px; display:flex; flex-wrap:wrap; gap:8px; margin-top:auto;">
+                    <a href="{{ route('clientes-maquinas-transacoes', ['id_maquina' => $idMaquina]) }}"
+                       style="flex:1; min-width:100px; text-align:center; text-decoration:none;
+                              background:#f8fafc; border:1px solid #e8ecf0; border-radius:8px;
+                              padding:8px 10px; font-size:.78rem; font-weight:600; color:#374151;
+                              display:flex; align-items:center; justify-content:center; gap:5px;">
+                        <iconify-icon icon="solar:transfer-horizontal-bold-duotone"
+                                      style="font-size:.95rem; color:#2C9BA5;"></iconify-icon>
+                        Transações
+                    </a>
+
+
+                    <a href="{{ route('view-clientes-maquinas-liberar-jogadas', ['id_maquina' => $idMaquina]) }}"
+                       style="flex:1; min-width:100px; text-align:center; text-decoration:none;
+                              background:#f8fafc; border:1px solid #e8ecf0; border-radius:8px;
+                              padding:8px 10px; font-size:.78rem; font-weight:600; color:#374151;
+                              display:flex; align-items:center; justify-content:center; gap:5px;">
+                        <iconify-icon icon="solar:play-circle-bold-duotone"
+                                      style="font-size:.95rem; color:#ca8a04;"></iconify-icon>
+                        Liberar Jogada
+                    </a>
+
+                    <a href="{{ $qrHref }}"
+                       style="flex:1; min-width:100px; text-align:center; text-decoration:none;
+                              background:#f8fafc; border:1px solid #e8ecf0; border-radius:8px;
+                              padding:8px 10px; font-size:.78rem; font-weight:600; color:#374151;
+                              display:flex; align-items:center; justify-content:center; gap:5px;">
+                        <iconify-icon icon="solar:qr-code-bold-duotone"
+                                      style="font-size:.95rem; color:#7c3aed;"></iconify-icon>
+                        {{ $possuiQr ? 'Ver QR Code' : 'Gerar QR Code' }}
+                    </a>
+
+                    <a href="{{ route('clientes-maquinas-editar', ['id_maquina' => $idMaquina]) }}"
+                       style="flex:1; min-width:100px; text-align:center; text-decoration:none;
+                              background:#f8fafc; border:1px solid #e8ecf0; border-radius:8px;
+                              padding:8px 10px; font-size:.78rem; font-weight:600; color:#374151;
+                              display:flex; align-items:center; justify-content:center; gap:5px;">
+                        <iconify-icon icon="solar:pen-bold-duotone"
+                                      style="font-size:.95rem; color:#6366f1;"></iconify-icon>
+                        Editar
+                    </a>
+                </div>
+
             </div>
-        @endforeach
+            @endforeach
+        </div>
+
+        @if($paginator->hasPages())
+            @php
+                $paginaAtual = $paginator->currentPage();
+                $ultimaPagina = $paginator->lastPage();
+                $inicio = max(1, $paginaAtual - 2);
+                $fim    = min($ultimaPagina, $paginaAtual + 2);
+                $linkPagina = fn($p) => route('clientes-maquinas', array_filter([
+                    'busca' => $busca !== '' ? $busca : null,
+                    'page'  => $p > 1 ? $p : null,
+                ]));
+            @endphp
+            <div class="card-pager" style="padding:16px 0 4px;">
+                <nav aria-label="Paginação de máquinas">
+                    <ul class="pagination justify-content-center flex-wrap mb-0">
+                        <li class="page-item {{ $paginaAtual <= 1 ? 'disabled' : '' }}">
+                            <a class="page-link" href="{{ $linkPagina($paginaAtual - 1) }}" aria-label="Anterior">
+                                <iconify-icon icon="solar:arrow-left-linear" aria-hidden="true"></iconify-icon>
+                            </a>
+                        </li>
+
+                        @if($inicio > 1)
+                            <li class="page-item">
+                                <a class="page-link" href="{{ $linkPagina(1) }}">1</a>
+                            </li>
+                            @if($inicio > 2)
+                                <li class="page-item disabled"><span class="page-link">&hellip;</span></li>
+                            @endif
+                        @endif
+
+                        @for($p = $inicio; $p <= $fim; $p++)
+                            <li class="page-item {{ $p === $paginaAtual ? 'active' : '' }}">
+                                <a class="page-link" href="{{ $linkPagina($p) }}">{{ $p }}</a>
+                            </li>
+                        @endfor
+
+                        @if($fim < $ultimaPagina)
+                            @if($fim < $ultimaPagina - 1)
+                                <li class="page-item disabled"><span class="page-link">&hellip;</span></li>
+                            @endif
+                            <li class="page-item">
+                                <a class="page-link" href="{{ $linkPagina($ultimaPagina) }}">{{ $ultimaPagina }}</a>
+                            </li>
+                        @endif
+
+                        <li class="page-item {{ $paginaAtual >= $ultimaPagina ? 'disabled' : '' }}">
+                            <a class="page-link" href="{{ $linkPagina($paginaAtual + 1) }}" aria-label="Próxima">
+                                <iconify-icon icon="solar:arrow-right-linear" aria-hidden="true"></iconify-icon>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        @endif
+        @endif
     @endif
 
 </div>
+@endsection
+
+@section('scriptTable')
+<script>
+$(document).ready(function () {
+    var $form  = $('#form-busca-maquinas');
+    var $input = $form.find('.view-search-input');
+    var timer;
+
+    $input.on('input', function () {
+        clearTimeout(timer);
+        timer = setTimeout(function () {
+            $form.submit();
+        }, 400);
+    });
+});
+</script>
 @endsection

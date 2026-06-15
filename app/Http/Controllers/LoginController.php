@@ -20,8 +20,13 @@ class LoginController extends Controller
       $senha = $request['senha'];
 
       if(!empty($usuario_request) && !empty($senha)){
-          $usuario = UsuariosService::coletarComFiltro(['usuario_login'=>$usuario_request, 'usuario_senha'=>$senha], 'where');
-          $usuario = array_values($usuario);
+          $usuarios = UsuariosService::coletar();
+          $usuario = array_values(array_filter($usuarios, function ($item) use ($usuario_request, $senha) {
+              $loginOuEmail = ($item['usuario_login'] ?? '') === $usuario_request
+                  || ($item['usuario_email'] ?? '') === $usuario_request;
+
+              return $loginOuEmail && ($item['usuario_senha'] ?? '') === $senha;
+          }));
           if(empty($usuario)){
 
             return back()->with('error', 'Nenhum usuário com os respectivos dados informados foi encontrado.');
@@ -51,8 +56,12 @@ class LoginController extends Controller
         return redirect()->route('login-view');
     }
     public function login(){
-        if(session('id_cliente') && session('id_grupo_acesso')){
-            return redirect()->route('home');
+        if(session()->has('id_usuario') && session()->has('id_grupo_acesso')){
+            if(session('grupo_nome') === 'admin'){
+                return redirect()->route('home');
+            }
+
+            return redirect()->route('cliente-home');
         }
 
         return view('Login.Login');

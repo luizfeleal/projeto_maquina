@@ -38,6 +38,12 @@ class MockStore
 
     public static function collection(string $key): array
     {
+        // acessosTela é configuração de sistema e deve sempre refletir o seed atual,
+        // independente do state.json persistido, para que novas rotas sejam reconhecidas.
+        if ($key === 'acessosTela') {
+            return MockData::seed()['acessosTela'] ?? [];
+        }
+
         $data = self::all();
 
         return $data[$key] ?? [];

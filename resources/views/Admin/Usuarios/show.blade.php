@@ -101,6 +101,51 @@
             </div>
         </div>
 
+        {{-- ── Permissões de pagamento ── --}}
+        <div class="col-12">
+            <div style="background:#fff; border:1px solid #e8ecf0; border-radius:16px;
+                        box-shadow:0 1px 4px rgba(0,0,0,.05); overflow:hidden;">
+                <div style="padding:16px 20px; border-bottom:1px solid #f3f4f6;
+                            display:flex; align-items:center; gap:8px;">
+                    <iconify-icon icon="solar:lock-bold-duotone"
+                                  style="font-size:1.1rem; color:#ca8a04;"></iconify-icon>
+                    <h3 style="margin:0; font-size:.9rem; font-weight:700; color:#111827;">Permissões de Pagamento</h3>
+                </div>
+
+                <div style="padding:16px 20px; display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:12px;">
+
+                    <div style="display:flex; align-items:center; gap:8px;
+                                padding:12px; border-radius:10px; border:1px solid #f3f4f6;
+                                background:{{ $permiteEfi ? '#f0fdf4' : '#fff7f7' }};">
+                        <iconify-icon icon="solar:money-bag-bold-duotone"
+                                      style="font-size:1.1rem; color:{{ $permiteEfi ? '#16a34a' : '#dc2626' }};"></iconify-icon>
+                        <div>
+                            <p style="margin:0; font-size:.85rem; font-weight:600; color:#374151;">Jogada Pix</p>
+                            <p style="margin:0; font-size:.72rem; font-weight:700;
+                                      color:{{ $permiteEfi ? '#16a34a' : '#dc2626' }};">
+                                {{ $permiteEfi ? 'Liberado' : 'Bloqueado' }}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div style="display:flex; align-items:center; gap:8px;
+                                padding:12px; border-radius:10px; border:1px solid #f3f4f6;
+                                background:{{ $permitePagbank ? '#f0fdf4' : '#fff7f7' }};">
+                        <iconify-icon icon="solar:card-recive-bold-duotone"
+                                      style="font-size:1.1rem; color:{{ $permitePagbank ? '#16a34a' : '#dc2626' }};"></iconify-icon>
+                        <div>
+                            <p style="margin:0; font-size:.85rem; font-weight:600; color:#374151;">Jogada Máquininha</p>
+                            <p style="margin:0; font-size:.72rem; font-weight:700;
+                                      color:{{ $permitePagbank ? '#16a34a' : '#dc2626' }};">
+                                {{ $permitePagbank ? 'Liberado' : 'Bloqueado' }}
+                            </p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
         {{-- ── Coluna esquerda: Credenciais ── --}}
         <div class="col-lg-6">
             <div class="detail-section-card">

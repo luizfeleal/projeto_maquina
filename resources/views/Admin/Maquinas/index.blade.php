@@ -28,7 +28,6 @@
     
                             @foreach($resultado as $extrato)
                                 <tr>
-                                    <!--<td>{{$extrato['local_nome']}}</td>-->
                                     <td>{{$extrato['maquina_nome']}}</td>
                                     @if($extrato['maquina_status'] == 0) 
                                             <td><i class="fa-solid fa-circle text-danger" ></i></td>
