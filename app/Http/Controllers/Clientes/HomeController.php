@@ -47,6 +47,9 @@ class HomeController extends Controller
 
         $qrPorMaquina = [];
         foreach (QrCodeService::coletar() as $qr) {
+            if (!is_array($qr) || !isset($qr['id_maquina'])) {
+                continue;
+            }
             if (($qr['ativo'] ?? 0) == 1) {
                 $qrPorMaquina[(string) $qr['id_maquina']] = true;
             }

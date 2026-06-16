@@ -15,12 +15,43 @@ class QrCodeService
     public static function coletar(string $id = null)
     {
         $path = is_null($id) ? '/QRCode' : "/QRCode/{$id}";
-        return ApiClient::get($path)->json();
+        $response = ApiClient::get($path);
+
+        if (!$response->successful()) {
+            return [];
+        }
+
+        $data = $response->json();
+
+        if (!is_array($data)) {
+            return [];
+        }
+
+        if ($id !== null) {
+            return isset($data['id_qr']) || isset($data['id_maquina']) ? [$data] : [];
+        }
+
+        if (isset($data['data']) && is_array($data['data'])) {
+            return $data['data'];
+        }
+
+        // Resposta de erro da API: { "message": "..." }
+        if (isset($data['message']) && !isset($data[0])) {
+            return [];
+        }
+
+        foreach ($data as $item) {
+            if (!is_array($item)) {
+                return [];
+            }
+        }
+
+        return $data;
     }
 
     public static function coletarComFiltro($filtros, $tipo)
     {
-        $qrCode = ApiClient::get('/QRCode')->json();
+        $qrCode = self::coletar();
 
         foreach ($filtros as $chave => $valor) {
             if ($valor !== null) {
