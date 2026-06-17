@@ -71,7 +71,16 @@ class HomeController extends Controller
             'local_nome'   => $m['local_nome'] ?? '—',
         ], $maquinasDashboard);
 
-        $todasTransacoes = array_values(ExtratoMaquinaService::coletar() ?? []);
+        $extratoResponse = ExtratoMaquinaService::coletarComPaginacao([
+            'length' => 5000,
+            'start'  => 0,
+            'order'  => [['column' => 4, 'dir' => 'desc']],
+        ]);
+        $rawTransacoes = $extratoResponse['data'] ?? $extratoResponse ?? [];
+        $todasTransacoes = array_values(array_filter(
+            is_array($rawTransacoes) ? $rawTransacoes : [],
+            fn($tx) => is_array($tx)
+        ));
 
         $transacoesFiltradas = $idMaquinaFiltro
             ? array_values(array_filter($todasTransacoes, fn($tx) => (string)($tx['id_maquina'] ?? '') === (string)$idMaquinaFiltro))
