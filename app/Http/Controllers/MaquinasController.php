@@ -135,10 +135,12 @@ class MaquinasController extends Controller
 
     public function transacaoMaquinas(Request $request)
     {
-        $clientes = ClientesService::coletar();
-        $locais   = LocaisService::coletar();
-        $maquinas = MaquinasService::coletar();
-        return view('Admin.Maquinas.Transacoes.index', compact('clientes', 'locais', 'maquinas'));
+        $clientes     = ClientesService::coletar();
+        $locais       = LocaisService::coletar();
+        $maquinas     = MaquinasService::coletar();
+        $clienteLocal = ClienteLocalService::coletar();
+
+        return view('Admin.Maquinas.Transacoes.index', compact('clientes', 'locais', 'maquinas', 'clienteLocal'));
     }
 
     public function transacaoMaquinasDados(Request $request)
@@ -150,11 +152,11 @@ class MaquinasController extends Controller
         $idLocal   = $request->input('id_local');
         $idMaquina = $request->input('id_maquina');
 
-        $filtraPorLocalOuCliente = !empty($idLocal) || !empty($idCliente);
+        $hasFilter = !empty($idCliente) || !empty($idLocal) || !empty($idMaquina);
 
         $params = $this->buildExtratoMaquinaQueryParams($request);
 
-        if ($filtraPorLocalOuCliente && empty($idMaquina)) {
+        if ($hasFilter) {
             $params['start']  = 0;
             $params['length'] = 5000;
         }
@@ -201,36 +203,22 @@ class MaquinasController extends Controller
         }
         $data = array_values(array_filter($data, fn($tx) => is_array($tx)));
 
-        if ($filtraPorLocalOuCliente && empty($idMaquina)) {
-            $maquinasPorId = collect(MaquinasService::coletar())->keyBy('id_maquina');
-            $locaisCliente = [];
+        if ($hasFilter) {
+            $maquinasFiltradas = $this->resolveMaquinasFiltradas($idCliente, $idLocal, $idMaquina);
 
-            if ($idCliente) {
-                $locaisCliente = array_column(
-                    array_filter(
-                        ClienteLocalService::coletar(),
-                        fn($cl) => (string) ($cl['id_cliente'] ?? '') === (string) $idCliente
-                    ),
-                    'id_local'
-                );
+            if (empty($maquinasFiltradas)) {
+                return response()->json([
+                    'draw'            => (int) $request->input('draw', 1),
+                    'recordsTotal'    => 0,
+                    'recordsFiltered' => 0,
+                    'data'            => [],
+                ]);
             }
 
-            $data = array_values(array_filter($data, function ($tx) use ($idLocal, $locaisCliente, $maquinasPorId) {
-                $maq = $maquinasPorId->get($tx['id_maquina'] ?? null);
-                if (!$maq) {
-                    return false;
-                }
-
-                if ($idLocal && (string) ($maq['id_local'] ?? '') !== (string) $idLocal) {
-                    return false;
-                }
-
-                if (!empty($locaisCliente) && !in_array($maq['id_local'], $locaisCliente)) {
-                    return false;
-                }
-
-                return true;
-            }));
+            $data = array_values(array_filter(
+                $data,
+                fn($tx) => $this->transacaoCorrespondeMaquinas($tx, $maquinasFiltradas)
+            ));
 
             $total = count($data);
             $data  = array_slice($data, $start, $length);
@@ -251,6 +239,66 @@ class MaquinasController extends Controller
         ]);
     }
 
+    private function resolveMaquinasFiltradas(?string $idCliente, ?string $idLocal, ?string $idMaquina): array
+    {
+        $maquinas = MaquinasService::coletar();
+        if (!is_array($maquinas)) {
+            return [];
+        }
+
+        $filtradas = array_values($maquinas);
+
+        if ($idMaquina) {
+            $filtradas = array_values(array_filter(
+                $filtradas,
+                fn($m) => (string) ($m['id_maquina'] ?? '') === (string) $idMaquina
+            ));
+        }
+
+        if ($idLocal) {
+            $filtradas = array_values(array_filter(
+                $filtradas,
+                fn($m) => (string) ($m['id_local'] ?? '') === (string) $idLocal
+            ));
+        }
+
+        if ($idCliente) {
+            $locaisCliente = array_column(
+                array_filter(
+                    ClienteLocalService::coletar(),
+                    fn($cl) => (string) ($cl['id_cliente'] ?? '') === (string) $idCliente
+                ),
+                'id_local'
+            );
+            $filtradas = array_values(array_filter(
+                $filtradas,
+                fn($m) => in_array($m['id_local'] ?? null, $locaisCliente)
+            ));
+        }
+
+        return $filtradas;
+    }
+
+    private function transacaoCorrespondeMaquinas(array $tx, array $maquinasFiltradas): bool
+    {
+        $txMaquina = trim((string) ($tx['maquina_nome'] ?? ''));
+        $txIdMaq   = $tx['id_maquina'] ?? null;
+
+        foreach ($maquinasFiltradas as $maq) {
+            $idMaq = $maq['id_maquina'] ?? null;
+
+            if ($txIdMaq !== null && (string) $txIdMaq === (string) $idMaq) {
+                return true;
+            }
+
+            if ($txMaquina !== '' && strcasecmp($txMaquina, trim((string) ($maq['maquina_nome'] ?? ''))) === 0) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     private function buildExtratoMaquinaQueryParams(Request $request): array
     {
         $params = [];
@@ -261,7 +309,7 @@ class MaquinasController extends Controller
                 continue;
             }
 
-            if (in_array($key, ['search_value', 'page', 'per_page'], true)) {
+            if (in_array($key, ['search_value', 'page', 'per_page', 'id_cliente', 'id_local', 'id_maquina'], true)) {
                 continue;
             }
 

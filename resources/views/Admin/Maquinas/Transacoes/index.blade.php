@@ -44,10 +44,14 @@
                 </div>
 
                 <div class="d-flex justify-content-between align-items-center mt-3">
-                    <button id="btn-aplicar-filtro" class="btn btn-primary btn-sm">
-                        <i class="fa-solid fa-filter me-1"></i>Aplicar filtro
-                    </button>
-                    {{-- ── Botão de taxas ───────────────────────────────────────── --}}
+                    <div class="d-flex gap-2">
+                        <button id="btn-aplicar-filtro" class="btn btn-primary btn-sm">
+                            <i class="fa-solid fa-filter me-1"></i>Aplicar filtro
+                        </button>
+                        <button id="btn-limpar-filtro" class="btn btn-outline-secondary btn-sm">
+                            <i class="fa-solid fa-xmark me-1"></i>Limpar
+                        </button>
+                    </div>
                     <button id="btn-toggle-taxas" class="btn btn-outline-secondary btn-sm">
                         <i class="fa-solid fa-eye me-1"></i>Mostrar Taxas
                     </button>
@@ -93,8 +97,83 @@
 <script>
 $(document).ready(function () {
 
-    // ── Select2 nos filtros ──────────────────────────────────────────────
+    var locaisData      = @json($locais);
+    var maquinasData    = @json($maquinas);
+    var clienteLocalData = @json($clienteLocal);
+
     $('.select2-filter').select2({ theme: 'bootstrap-5', width: '100%' });
+
+    function locaisDoCliente(idCliente) {
+        if (!idCliente) return locaisData;
+        var ids = clienteLocalData
+            .filter(function (cl) { return String(cl.id_cliente) === String(idCliente); })
+            .map(function (cl) { return String(cl.id_local); });
+        return locaisData.filter(function (l) { return ids.indexOf(String(l.id_local)) !== -1; });
+    }
+
+    function maquinasDoFiltro(idCliente, idLocal) {
+        var lista = maquinasData;
+        if (idCliente) {
+            var locaisIds = locaisDoCliente(idCliente).map(function (l) { return String(l.id_local); });
+            lista = lista.filter(function (m) { return locaisIds.indexOf(String(m.id_local)) !== -1; });
+        }
+        if (idLocal) {
+            lista = lista.filter(function (m) { return String(m.id_local) === String(idLocal); });
+        }
+        return lista;
+    }
+
+    function repopularSelect($select, placeholder, items, valueKey, labelKey, selected) {
+        var html = '<option value="">' + placeholder + '</option>';
+        items.forEach(function (item) {
+            var val = item[valueKey];
+            var sel = selected && String(selected) === String(val) ? ' selected' : '';
+            html += '<option value="' + val + '"' + sel + '>' + item[labelKey] + '</option>';
+        });
+        $select.html(html).trigger('change.select2');
+    }
+
+    function atualizarOpcoesLocal() {
+        var idCliente = $('#filter-cliente').val();
+        var idLocal   = $('#filter-local').val();
+        repopularSelect(
+            $('#filter-local'),
+            'Todos os locais',
+            locaisDoCliente(idCliente),
+            'id_local',
+            'local_nome',
+            idLocal
+        );
+        if (idLocal && !$('#filter-local').val()) {
+            $('#filter-local').val('').trigger('change.select2');
+        }
+    }
+
+    function atualizarOpcoesMaquina() {
+        var idCliente = $('#filter-cliente').val();
+        var idLocal   = $('#filter-local').val();
+        var idMaquina = $('#filter-maquina').val();
+        repopularSelect(
+            $('#filter-maquina'),
+            'Todas as máquinas',
+            maquinasDoFiltro(idCliente, idLocal),
+            'id_maquina',
+            'maquina_nome',
+            idMaquina
+        );
+        if (idMaquina && !$('#filter-maquina').val()) {
+            $('#filter-maquina').val('').trigger('change.select2');
+        }
+    }
+
+    $('#filter-cliente').on('change', function () {
+        atualizarOpcoesLocal();
+        atualizarOpcoesMaquina();
+    });
+
+    $('#filter-local').on('change', function () {
+        atualizarOpcoesMaquina();
+    });
 
     var taxasVisiveis = false;
 
@@ -119,78 +198,96 @@ $(document).ready(function () {
         language: {
             url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json'
         },
+        columnDefs: [
+            { targets: 'col-taxa', visible: false }
+        ],
         columns: [
-                { data: 'local_nome',  title: 'Local' },
-                { data: 'maquina_nome', title: 'Máquina' },
-                {
-                    data: 'extrato_operacao',
-                    title: 'Última Transação',
-                    render: function (data, type, row) {
-                        var val = parseFloat(row.extrato_operacao_valor || 0).toFixed(2).replace('.', ',');
-                        return data === 'C' ? '+ R$ ' + val : '- R$ ' + val;
-                    }
-                },
-                { data: 'extrato_operacao_tipo', title: 'Fonte' },
-                {
-                    data: 'data_criacao',
-                    title: 'Data e Hora',
-                    render: function (data) { return data || '—'; }
-                },
-                // Colunas de taxa — ocultas por padrão
-                {
-                    data: 'extrato_taxa',
-                    title: 'Taxa',
-                    visible: false,
-                    render: function (data) {
-                        if (data === null || data === undefined || data === '') return '—';
-                        return 'R$ ' + parseFloat(data).toFixed(2).replace('.', ',');
-                    }
-                },
-                {
-                    data: 'extrato_taxa_percentual',
-                    title: 'Taxa %',
-                    visible: false,
-                    render: function (data) {
-                        if (data === null || data === undefined || data === '') return '—';
-                        return parseFloat(data).toFixed(2).replace('.', ',') + '%';
-                    }
+            { data: 'local_nome', title: 'Local' },
+            { data: 'maquina_nome', title: 'Máquina' },
+            {
+                data: 'extrato_operacao',
+                title: 'Última Transação',
+                render: function (data, type, row) {
+                    var val = parseFloat(row.extrato_operacao_valor || 0).toFixed(2).replace('.', ',');
+                    return data === 'C' ? '+ R$ ' + val : '- R$ ' + val;
                 }
-            ],
-            order: [[4, 'desc']],
-            pageLength: 10,
-            lengthMenu: [10, 25, 50, 100],
-            ordering: true
-        });
-
-        // ── Corrigir alinhamento dos cabeçalhos ao exibir a tabela ──────
-        $(document).on('click', '.view-btn-table', function () {
-            setTimeout(function () { tabela.columns.adjust(); }, 50);
-        });
-
-        // ── Corrigir o contador de registros no badge do toggle bar ──────
-        tabela.on('draw.dt', function () {
-            var info  = tabela.page.info();
-            var count = (info && info.recordsDisplay !== undefined)
-                ? info.recordsDisplay
-                : tabela.rows({ search: 'applied' }).count();
-            var label = count + ' registro' + (count !== 1 ? 's' : '');
-            $('.view-toggle-bar .view-count-badge').text(label).attr('aria-label', label);
-        });
-
-    // ── Botão aplicar filtro ─────────────────────────────────────────
-    $('#btn-aplicar-filtro').on('click', function () {
-        tabela.page('first').ajax.reload(null, false);
+            },
+            { data: 'extrato_operacao_tipo', title: 'Fonte' },
+            {
+                data: 'data_criacao',
+                title: 'Data e Hora',
+                render: function (data) { return data || '—'; }
+            },
+            {
+                data: 'extrato_taxa',
+                title: 'Taxa',
+                className: 'col-taxa',
+                render: function (data) {
+                    if (data === null || data === undefined || data === '') return '—';
+                    return 'R$ ' + parseFloat(data).toFixed(2).replace('.', ',');
+                }
+            },
+            {
+                data: 'extrato_taxa_percentual',
+                title: 'Taxa %',
+                className: 'col-taxa',
+                render: function (data) {
+                    if (data === null || data === undefined || data === '') return '—';
+                    return parseFloat(data).toFixed(2).replace('.', ',') + '%';
+                }
+            }
+        ],
+        order: [[4, 'desc']],
+        pageLength: 10,
+        lengthMenu: [10, 25, 50, 100],
+        ordering: true
     });
 
-    // ── Botão toggle taxas ───────────────────────────────────────────
+    function ajustarColunasTabela() {
+        setTimeout(function () {
+            tabela.columns.adjust();
+            if (tabela.fixedColumns) {
+                tabela.fixedColumns().relayout();
+            }
+        }, 50);
+    }
+
+    $(document).on('click', '.view-btn-table', ajustarColunasTabela);
+
+    tabela.on('draw.dt', function () {
+        var info  = tabela.page.info();
+        var count = (info && info.recordsDisplay !== undefined)
+            ? info.recordsDisplay
+            : tabela.rows({ search: 'applied' }).count();
+        var label = count + ' registro' + (count !== 1 ? 's' : '');
+        $('.view-toggle-bar .view-count-badge').text(label).attr('aria-label', label);
+    });
+
+    function recarregarTabela() {
+        tabela.page('first').ajax.reload(null, false);
+    }
+
+    $('#btn-aplicar-filtro').on('click', recarregarTabela);
+
+    $('#btn-limpar-filtro').on('click', function () {
+        $('#filter-cliente').val('').trigger('change.select2');
+        $('#filter-local').val('').trigger('change.select2');
+        $('#filter-maquina').val('').trigger('change.select2');
+        atualizarOpcoesLocal();
+        atualizarOpcoesMaquina();
+        recarregarTabela();
+    });
+
     $('#btn-toggle-taxas').on('click', function () {
         taxasVisiveis = !taxasVisiveis;
-        tabela.columns([5, 6]).visible(taxasVisiveis);
-        tabela.columns.adjust();
+        tabela.columns('.col-taxa').visible(taxasVisiveis, false);
+        tabela.columns.adjust().draw(false);
 
         $(this).html(taxasVisiveis
             ? '<i class="fa-solid fa-eye-slash me-1"></i>Ocultar Taxas'
             : '<i class="fa-solid fa-eye me-1"></i>Mostrar Taxas');
+
+        ajustarColunasTabela();
     });
 
 });
