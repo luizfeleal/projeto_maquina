@@ -114,23 +114,18 @@ class MaquinasController extends Controller
 
     public function coletarTodasAsMaquinas(Request $request)
     {
-        $locais = LocaisService::coletar();
-        $maquinas = MaquinasService::coletar();
-        $maquinas_extrato = MaquinasService::coletarTodasAsMaquinasComUltimaTransacao();
+        return view('Admin.Maquinas.index');
+    }
 
-        // Indexando locais por id_local
-        $locais_indexados = [];
-        foreach ($locais as $local) {
-            $locais_indexados[$local['id_local']] = $local;
+    public function coletarTodasAsMaquinasDados(Request $request)
+    {
+        $maquinas = MaquinasService::coletarTodasAsMaquinasComUltimaTransacao();
+
+        if (!is_array($maquinas)) {
+            return response()->json([]);
         }
 
-        // Se você quiser um array com índices numéricos simples, pode utilizar array_values
-        $resultado = array_values($maquinas_extrato);
-
-
-
-        return view('Admin.Maquinas.index', compact('resultado'));
-        //return view('Admin.Maquinas.index');
+        return response()->json(array_values($maquinas));
     }
 
     public function transacaoMaquinas(Request $request)

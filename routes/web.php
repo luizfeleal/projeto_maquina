@@ -29,6 +29,7 @@ Route::get('/coletarCredencialDescriptografada', 'App\Http\Controllers\Credencia
 
 Route::prefix('maquinas')->middleware('permission')->group(function(){
     Route::get('/', 'App\Http\Controllers\MaquinasController@coletarTodasAsMaquinas')->name('maquinas');
+    Route::get('/dados', 'App\Http\Controllers\MaquinasController@coletarTodasAsMaquinasDados')->name('maquinas-dados');
     Route::get('/criar', 'App\Http\Controllers\MaquinasController@criarMaquinas')->name('maquinas-criar');
     Route::get('/editar', 'App\Http\Controllers\MaquinasController@editarMaquinas')->name('maquinas-editar');
     Route::get('/visualizar', 'App\Http\Controllers\MaquinasController@coletarMaquinaPorId')->name('maquinas-visualizar');
