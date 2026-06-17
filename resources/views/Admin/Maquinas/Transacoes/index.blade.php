@@ -106,9 +106,7 @@ $(document).ready(function () {
             url: '{{ route('maquinas-transacoes-dados') }}',
             type: 'GET',
             data: function (d) {
-                d.page         = (d.start / d.length) + 1;
-                d.per_page     = d.length;
-                d.search_value = d.search.value;
+                d.search = d.search.value;
 
                 var idCliente = $('#filter-cliente').val();
                 var idLocal   = $('#filter-local').val();

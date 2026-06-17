@@ -519,8 +519,8 @@ class MockRouter
             ));
         }
 
-        if (!empty($query['search_value'])) {
-            $search = strtolower($query['search_value']);
+        if (!empty($query['search_value']) || !empty($query['search'])) {
+            $search = strtolower($query['search_value'] ?? $query['search'] ?? '');
             $items = array_values(array_filter($items, function ($i) use ($search) {
                 return str_contains(strtolower($i['maquina_nome'] ?? ''), $search)
                     || str_contains(strtolower($i['local_nome'] ?? ''), $search)
@@ -529,9 +529,15 @@ class MockRouter
         }
 
         $total   = count($items);
-        $page    = max((int) ($query['page'] ?? 1), 1);
-        $perPage = max((int) ($query['per_page'] ?? 10), 1);
-        $offset  = ($page - 1) * $perPage;
+        $perPage = max((int) ($query['length'] ?? $query['per_page'] ?? 10), 1);
+        $start   = (int) ($query['start'] ?? 0);
+        if (isset($query['start']) || isset($query['length'])) {
+            $page   = (int) floor($start / $perPage) + 1;
+            $offset = $start;
+        } else {
+            $page   = max((int) ($query['page'] ?? 1), 1);
+            $offset = ($page - 1) * $perPage;
+        }
 
         return [
             'draw'            => (int) ($query['draw'] ?? 1),

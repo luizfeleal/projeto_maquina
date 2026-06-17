@@ -13,6 +13,7 @@ use App\Services\ClienteLocalService;
 use App\Services\AuthService;
 use App\Services\QrCodeService;
 use App\Services\ExtratoMaquinaService;
+use App\Support\ApiClient;
 
 class MaquinasController extends Controller
 {
@@ -144,36 +145,61 @@ class MaquinasController extends Controller
     {
         $length = max((int) $request->input('length', 10), 1);
         $start  = (int) $request->input('start', 0);
-        $page   = (int) floor($start / $length) + 1;
 
         $idCliente = $request->input('id_cliente');
         $idLocal   = $request->input('id_local');
         $idMaquina = $request->input('id_maquina');
-        $search    = $request->input('search.value') ?? $request->input('search_value');
 
         $filtraPorLocalOuCliente = !empty($idLocal) || !empty($idCliente);
 
-        $params = [
-            'page'     => $filtraPorLocalOuCliente ? 1 : $page,
-            'per_page' => $filtraPorLocalOuCliente ? 5000 : $length,
-        ];
+        $params = $this->buildExtratoMaquinaQueryParams($request);
 
-        if ($search) {
-            $params['search_value'] = $search;
-        }
-        if ($idMaquina) {
-            $params['id_maquina'] = $idMaquina;
-        }
-        if ($idCliente) {
-            $params['id_cliente'] = $idCliente;
-        }
-        if ($idLocal) {
-            $params['id_local'] = $idLocal;
+        if ($filtraPorLocalOuCliente && empty($idMaquina)) {
+            $params['start']  = 0;
+            $params['length'] = 5000;
         }
 
-        $response = ExtratoMaquinaService::coletarComPaginacao($params);
-        $rawData  = $response['data'] ?? (is_array($response) ? $response : []);
-        $data     = is_array($rawData) ? array_values(array_filter($rawData, fn($tx) => is_array($tx))) : [];
+        try {
+            $response = ApiClient::get('/extratoMaquina', $params);
+        } catch (\Throwable $e) {
+            \Log::error('[transacaoMaquinasDados] ' . $e->getMessage());
+
+            return response()->json([
+                'draw'            => (int) $request->input('draw', 1),
+                'recordsTotal'    => 0,
+                'recordsFiltered' => 0,
+                'data'            => [],
+            ]);
+        }
+
+        if (!$response->successful()) {
+            \Log::error('[transacaoMaquinasDados] API status ' . $response->status(), [
+                'body' => substr($response->body(), 0, 500),
+            ]);
+
+            return response()->json([
+                'draw'            => (int) $request->input('draw', 1),
+                'recordsTotal'    => 0,
+                'recordsFiltered' => 0,
+                'data'            => [],
+            ]);
+        }
+
+        $body = $response->json();
+        if (!is_array($body)) {
+            return response()->json([
+                'draw'            => (int) $request->input('draw', 1),
+                'recordsTotal'    => 0,
+                'recordsFiltered' => 0,
+                'data'            => [],
+            ]);
+        }
+
+        $data = $body['data'] ?? [];
+        if (!is_array($data)) {
+            $data = [];
+        }
+        $data = array_values(array_filter($data, fn($tx) => is_array($tx)));
 
         if ($filtraPorLocalOuCliente && empty($idMaquina)) {
             $maquinasPorId = collect(MaquinasService::coletar())->keyBy('id_maquina');
@@ -208,19 +234,45 @@ class MaquinasController extends Controller
 
             $total = count($data);
             $data  = array_slice($data, $start, $length);
-        } else {
-            $total = $response['total']
-                ?? $response['recordsTotal']
-                ?? $response['recordsFiltered']
-                ?? count($data);
+
+            return response()->json([
+                'draw'            => (int) $request->input('draw', 1),
+                'recordsTotal'    => $body['recordsTotal'] ?? $total,
+                'recordsFiltered' => $total,
+                'data'            => $data,
+            ]);
         }
 
         return response()->json([
             'draw'            => (int) $request->input('draw', 1),
-            'recordsTotal'    => $total,
-            'recordsFiltered' => $total,
-            'data'            => array_values($data),
+            'recordsTotal'    => $body['recordsTotal'] ?? count($data),
+            'recordsFiltered' => $body['recordsFiltered'] ?? count($data),
+            'data'            => $data,
         ]);
+    }
+
+    private function buildExtratoMaquinaQueryParams(Request $request): array
+    {
+        $params = [];
+
+        foreach ($request->query() as $key => $value) {
+            if ($key === 'search' && is_array($value)) {
+                $params['search'] = $value['value'] ?? '';
+                continue;
+            }
+
+            if (in_array($key, ['search_value', 'page', 'per_page'], true)) {
+                continue;
+            }
+
+            $params[$key] = $value;
+        }
+
+        if (!array_key_exists('search', $params)) {
+            $params['search'] = $request->input('search.value', '');
+        }
+
+        return $params;
     }
 
     public function resetParcial(Request $request)
