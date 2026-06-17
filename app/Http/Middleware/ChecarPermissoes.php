@@ -38,11 +38,16 @@ class ChecarPermissoes
                 return back()->with('error', 'Erro ao carregar permissões. Tente fazer login novamente.');
             }
 
-            $acesso = array_filter($acessos, function($item) use($request){
+            $routeName = $request->route()->getName();
+            if ($routeName === 'maquinas-transacoes-dados') {
+                $routeName = 'maquinas-transacoes';
+            }
+
+            $acesso = array_filter($acessos, function($item) use($request, $routeName){
                 return isset($item['id_grupo_acesso']) 
                     && isset($item['acesso_tela_viewname'])
                     && $item['id_grupo_acesso'] == session()->get('id_grupo_acesso') 
-                    && $item['acesso_tela_viewname'] == $request->route()->getName();
+                    && $item['acesso_tela_viewname'] == $routeName;
             });
 
             Log::info('Verificação de Acesso', [

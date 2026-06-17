@@ -96,48 +96,32 @@ $(document).ready(function () {
     // ── Select2 nos filtros ──────────────────────────────────────────────
     $('.select2-filter').select2({ theme: 'bootstrap-5', width: '100%' });
 
-    // ── Token ────────────────────────────────────────────────────────────
-    async function fetchToken() {
-        try {
-            let r = await fetch('https://www.swiftpaysolucoes.com/api/getToken');
-            let d = await r.json();
-            return d.token;
-        } catch (e) {
-            console.error('Erro ao obter token:', e);
-            return null;
-        }
-    }
+    var taxasVisiveis = false;
 
-    fetchToken().then(function (token) {
-        if (!token) return;
+    var tabela = $('#tabela_maquinas_transacao').DataTable({
+        processing: true,
+        serverSide: true,
+        scrollX: true,
+        ajax: {
+            url: '{{ route('maquinas-transacoes-dados') }}',
+            type: 'GET',
+            data: function (d) {
+                d.page         = (d.start / d.length) + 1;
+                d.per_page     = d.length;
+                d.search_value = d.search.value;
 
-        var taxasVisiveis = false;
-
-        var tabela = $('#tabela_maquinas_transacao').DataTable({
-            processing: true,
-            serverSide: true,
-            scrollX: true,
-            ajax: {
-                url: 'https://services.swiftpaysolucoes.com/api/extratoMaquina',
-                type: 'GET',
-                headers: { 'Authorization': 'Bearer ' + token },
-                data: function (d) {
-                    d.start  = d.start  || 0;
-                    d.length = d.length || 10;
-                    d.search = d.search.value;
-
-                    var idCliente = $('#filter-cliente').val();
-                    var idLocal   = $('#filter-local').val();
-                    var idMaquina = $('#filter-maquina').val();
-                    if (idCliente) d.id_cliente = idCliente;
-                    if (idLocal)   d.id_local   = idLocal;
-                    if (idMaquina) d.id_maquina = idMaquina;
-                }
-            },
-            language: {
-                url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json'
-            },
-            columns: [
+                var idCliente = $('#filter-cliente').val();
+                var idLocal   = $('#filter-local').val();
+                var idMaquina = $('#filter-maquina').val();
+                if (idCliente) d.id_cliente = idCliente;
+                if (idLocal)   d.id_local   = idLocal;
+                if (idMaquina) d.id_maquina = idMaquina;
+            }
+        },
+        language: {
+            url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json'
+        },
+        columns: [
                 { data: 'local_nome',  title: 'Local' },
                 { data: 'maquina_nome', title: 'Máquina' },
                 {
@@ -195,21 +179,20 @@ $(document).ready(function () {
             $('.view-toggle-bar .view-count-badge').text(label).attr('aria-label', label);
         });
 
-        // ── Botão aplicar filtro ─────────────────────────────────────────
-        $('#btn-aplicar-filtro').on('click', function () {
-            tabela.ajax.reload();
-        });
+    // ── Botão aplicar filtro ─────────────────────────────────────────
+    $('#btn-aplicar-filtro').on('click', function () {
+        tabela.page('first').ajax.reload(null, false);
+    });
 
-        // ── Botão toggle taxas ───────────────────────────────────────────
-        $('#btn-toggle-taxas').on('click', function () {
-            taxasVisiveis = !taxasVisiveis;
-            tabela.columns([5, 6]).visible(taxasVisiveis);
-            tabela.columns.adjust();
+    // ── Botão toggle taxas ───────────────────────────────────────────
+    $('#btn-toggle-taxas').on('click', function () {
+        taxasVisiveis = !taxasVisiveis;
+        tabela.columns([5, 6]).visible(taxasVisiveis);
+        tabela.columns.adjust();
 
-            $(this).html(taxasVisiveis
-                ? '<i class="fa-solid fa-eye-slash me-1"></i>Ocultar Taxas'
-                : '<i class="fa-solid fa-eye me-1"></i>Mostrar Taxas');
-        });
+        $(this).html(taxasVisiveis
+            ? '<i class="fa-solid fa-eye-slash me-1"></i>Ocultar Taxas'
+            : '<i class="fa-solid fa-eye me-1"></i>Mostrar Taxas');
     });
 
 });

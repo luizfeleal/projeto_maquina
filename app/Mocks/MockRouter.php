@@ -195,11 +195,7 @@ class MockRouter
                     $items = MockStore::collection($key);
 
                     if ($segment === 'extratoMaquina' && !empty($query)) {
-                        return self::json([
-                            'data' => $items,
-                            'current_page' => (int) ($query['page'] ?? 1),
-                            'last_page' => 1,
-                        ]);
+                        return self::json(self::buildExtratoMaquinaPaginated($query));
                     }
 
                     return self::json(array_values($items));
@@ -473,6 +469,79 @@ class MockRouter
             'message' => 'Reset parcial registrado com sucesso.',
             'data' => array_merge($novoReset, ['saldo_periodo' => 0.00]),
         ], 201);
+    }
+
+    private static function buildExtratoMaquinaPaginated(array $query): array
+    {
+        $maquinas = MockStore::collection('maquinas');
+        $maquinasById = [];
+        foreach ($maquinas as $m) {
+            $maquinasById[$m['id_maquina']] = $m;
+        }
+
+        $locaisByCliente = [];
+        foreach (MockStore::collection('clienteLocal') as $cl) {
+            $locaisByCliente[$cl['id_cliente']][] = $cl['id_local'];
+        }
+
+        $items = [];
+        foreach (MockStore::collection('extratoMaquina') as $item) {
+            $maq = $maquinasById[$item['id_maquina']] ?? null;
+            if (!$maq) {
+                continue;
+            }
+
+            $item['maquina_nome'] = $maq['maquina_nome'] ?? 'Desconhecida';
+            $item['local_nome']   = 'Local ' . ($maq['id_local'] ?? '-');
+            $item['id_local']     = $maq['id_local'] ?? null;
+            $items[] = $item;
+        }
+
+        if (!empty($query['id_maquina'])) {
+            $items = array_values(array_filter(
+                $items,
+                fn($i) => (string) $i['id_maquina'] === (string) $query['id_maquina']
+            ));
+        }
+
+        if (!empty($query['id_local'])) {
+            $items = array_values(array_filter(
+                $items,
+                fn($i) => (string) ($i['id_local'] ?? '') === (string) $query['id_local']
+            ));
+        }
+
+        if (!empty($query['id_cliente'])) {
+            $locaisCliente = $locaisByCliente[$query['id_cliente']] ?? [];
+            $items = array_values(array_filter(
+                $items,
+                fn($i) => in_array($i['id_local'], $locaisCliente)
+            ));
+        }
+
+        if (!empty($query['search_value'])) {
+            $search = strtolower($query['search_value']);
+            $items = array_values(array_filter($items, function ($i) use ($search) {
+                return str_contains(strtolower($i['maquina_nome'] ?? ''), $search)
+                    || str_contains(strtolower($i['local_nome'] ?? ''), $search)
+                    || str_contains(strtolower($i['extrato_operacao_tipo'] ?? ''), $search);
+            }));
+        }
+
+        $total   = count($items);
+        $page    = max((int) ($query['page'] ?? 1), 1);
+        $perPage = max((int) ($query['per_page'] ?? 10), 1);
+        $offset  = ($page - 1) * $perPage;
+
+        return [
+            'draw'            => (int) ($query['draw'] ?? 1),
+            'recordsTotal'    => $total,
+            'recordsFiltered' => $total,
+            'data'            => array_slice($items, $offset, $perPage),
+            'current_page'    => $page,
+            'last_page'       => max(1, (int) ceil($total / $perPage)),
+            'total'           => $total,
+        ];
     }
 
     private static function buildHistoricoResets(array $query): array

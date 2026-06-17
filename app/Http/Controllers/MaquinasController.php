@@ -140,6 +140,89 @@ class MaquinasController extends Controller
         return view('Admin.Maquinas.Transacoes.index', compact('clientes', 'locais', 'maquinas'));
     }
 
+    public function transacaoMaquinasDados(Request $request)
+    {
+        $length = max((int) $request->input('length', 10), 1);
+        $start  = (int) $request->input('start', 0);
+        $page   = (int) floor($start / $length) + 1;
+
+        $idCliente = $request->input('id_cliente');
+        $idLocal   = $request->input('id_local');
+        $idMaquina = $request->input('id_maquina');
+        $search    = $request->input('search.value') ?? $request->input('search_value');
+
+        $filtraPorLocalOuCliente = !empty($idLocal) || !empty($idCliente);
+
+        $params = [
+            'page'     => $filtraPorLocalOuCliente ? 1 : $page,
+            'per_page' => $filtraPorLocalOuCliente ? 5000 : $length,
+        ];
+
+        if ($search) {
+            $params['search_value'] = $search;
+        }
+        if ($idMaquina) {
+            $params['id_maquina'] = $idMaquina;
+        }
+        if ($idCliente) {
+            $params['id_cliente'] = $idCliente;
+        }
+        if ($idLocal) {
+            $params['id_local'] = $idLocal;
+        }
+
+        $response = ExtratoMaquinaService::coletarComPaginacao($params);
+        $rawData  = $response['data'] ?? (is_array($response) ? $response : []);
+        $data     = is_array($rawData) ? array_values(array_filter($rawData, fn($tx) => is_array($tx))) : [];
+
+        if ($filtraPorLocalOuCliente && empty($idMaquina)) {
+            $maquinasPorId = collect(MaquinasService::coletar())->keyBy('id_maquina');
+            $locaisCliente = [];
+
+            if ($idCliente) {
+                $locaisCliente = array_column(
+                    array_filter(
+                        ClienteLocalService::coletar(),
+                        fn($cl) => (string) ($cl['id_cliente'] ?? '') === (string) $idCliente
+                    ),
+                    'id_local'
+                );
+            }
+
+            $data = array_values(array_filter($data, function ($tx) use ($idLocal, $locaisCliente, $maquinasPorId) {
+                $maq = $maquinasPorId->get($tx['id_maquina'] ?? null);
+                if (!$maq) {
+                    return false;
+                }
+
+                if ($idLocal && (string) ($maq['id_local'] ?? '') !== (string) $idLocal) {
+                    return false;
+                }
+
+                if (!empty($locaisCliente) && !in_array($maq['id_local'], $locaisCliente)) {
+                    return false;
+                }
+
+                return true;
+            }));
+
+            $total = count($data);
+            $data  = array_slice($data, $start, $length);
+        } else {
+            $total = $response['total']
+                ?? $response['recordsTotal']
+                ?? $response['recordsFiltered']
+                ?? count($data);
+        }
+
+        return response()->json([
+            'draw'            => (int) $request->input('draw', 1),
+            'recordsTotal'    => $total,
+            'recordsFiltered' => $total,
+            'data'            => array_values($data),
+        ]);
+    }
+
     public function resetParcial(Request $request)
     {
         $request->validate(['id_maquina' => 'required']);

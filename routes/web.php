@@ -35,6 +35,7 @@ Route::prefix('maquinas')->middleware('permission')->group(function(){
     Route::get('/registrar', 'App\Http\Controllers\MaquinasController@registrarMaquinas')->name('maquinas-registrar');
     Route::get('/gerarIdPlaca', 'App\Http\Controllers\MaquinasController@gerarIdPlaca')->name('maquinas-gerar-id-placa');
     Route::get('/transacoes', 'App\Http\Controllers\MaquinasController@transacaoMaquinas')->name('maquinas-transacoes');
+    Route::get('/transacoes/dados', 'App\Http\Controllers\MaquinasController@transacaoMaquinasDados')->name('maquinas-transacoes-dados');
     Route::get('/acumulado', 'App\Http\Controllers\MaquinasController@acumuladoMaquinas')->name('maquinas-acumulado');
     Route::get('/maquinasCartao', 'App\Http\Controllers\MaquinasController@viewMaquinasCartao')->name('maquinas-cartao');
     Route::get('/maquinasCartao/criar', 'App\Http\Controllers\MaquinasController@viewMaquinasCartaoCriar')->name('maquinas-cartao-criar');
