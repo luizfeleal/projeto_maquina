@@ -145,18 +145,20 @@ class MaquinasController extends Controller
 
     public function transacaoMaquinasDados(Request $request)
     {
-        $length = max((int) $request->input('length', 10), 1);
-        $start  = (int) $request->input('start', 0);
+        $length      = max((int) $request->input('length', 10), 1);
+        $start       = (int) $request->input('start', 0);
+        $mostrarTaxas = $request->boolean('mostrar_taxas');
 
         $idCliente = $request->input('id_cliente');
         $idLocal   = $request->input('id_local');
         $idMaquina = $request->input('id_maquina');
 
         $hasFilter = !empty($idCliente) || !empty($idLocal) || !empty($idMaquina);
+        $needsLocalProcessing = $hasFilter || !$mostrarTaxas;
 
         $params = $this->buildExtratoMaquinaQueryParams($request);
 
-        if ($hasFilter) {
+        if ($needsLocalProcessing) {
             $params['start']  = 0;
             $params['length'] = 5000;
         }
@@ -203,6 +205,10 @@ class MaquinasController extends Controller
         }
         $data = array_values(array_filter($data, fn($tx) => is_array($tx)));
 
+        if (!$mostrarTaxas) {
+            $data = array_values(array_filter($data, fn($tx) => !$this->isTransacaoTaxa($tx)));
+        }
+
         if ($hasFilter) {
             $maquinasFiltradas = $this->resolveMaquinasFiltradas($idCliente, $idLocal, $idMaquina);
 
@@ -219,7 +225,9 @@ class MaquinasController extends Controller
                 $data,
                 fn($tx) => $this->transacaoCorrespondeMaquinas($tx, $maquinasFiltradas)
             ));
+        }
 
+        if ($needsLocalProcessing) {
             $total = count($data);
             $data  = array_slice($data, $start, $length);
 
@@ -237,6 +245,13 @@ class MaquinasController extends Controller
             'recordsFiltered' => $body['recordsFiltered'] ?? count($data),
             'data'            => $data,
         ]);
+    }
+
+    private function isTransacaoTaxa(array $tx): bool
+    {
+        $tipo = strtolower(trim((string) ($tx['extrato_operacao_tipo'] ?? '')));
+
+        return str_contains($tipo, 'taxa');
     }
 
     private function resolveMaquinasFiltradas(?string $idCliente, ?string $idLocal, ?string $idMaquina): array
@@ -309,7 +324,7 @@ class MaquinasController extends Controller
                 continue;
             }
 
-            if (in_array($key, ['search_value', 'page', 'per_page', 'id_cliente', 'id_local', 'id_maquina'], true)) {
+            if (in_array($key, ['search_value', 'page', 'per_page', 'id_cliente', 'id_local', 'id_maquina', 'mostrar_taxas'], true)) {
                 continue;
             }
 

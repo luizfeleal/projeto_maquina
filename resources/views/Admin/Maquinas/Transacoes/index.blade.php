@@ -69,8 +69,6 @@
                         <th>Última Transação</th>
                         <th>Fonte</th>
                         <th>Data e Hora</th>
-                        <th>Taxa</th>
-                        <th>Taxa %</th>
                     </tr>
                 </thead>
                 <tbody></tbody>
@@ -81,8 +79,6 @@
                         <th>Última Transação</th>
                         <th>Fonte</th>
                         <th>Data e Hora</th>
-                        <th>Taxa</th>
-                        <th>Taxa %</th>
                     </tr>
                 </tfoot>
             </table>
@@ -175,7 +171,7 @@ $(document).ready(function () {
         atualizarOpcoesMaquina();
     });
 
-    var taxasVisiveis = false;
+    var mostrarTaxas = false;
 
     var tabela = $('#tabela_maquinas_transacao').DataTable({
         processing: true,
@@ -186,6 +182,7 @@ $(document).ready(function () {
             type: 'GET',
             data: function (d) {
                 d.search = d.search.value;
+                d.mostrar_taxas = mostrarTaxas ? 1 : 0;
 
                 var idCliente = $('#filter-cliente').val();
                 var idLocal   = $('#filter-local').val();
@@ -198,9 +195,6 @@ $(document).ready(function () {
         language: {
             url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json'
         },
-        columnDefs: [
-            { targets: 'col-taxa', visible: false }
-        ],
         columns: [
             { data: 'local_nome', title: 'Local' },
             { data: 'maquina_nome', title: 'Máquina' },
@@ -217,24 +211,6 @@ $(document).ready(function () {
                 data: 'data_criacao',
                 title: 'Data e Hora',
                 render: function (data) { return data || '—'; }
-            },
-            {
-                data: 'extrato_taxa',
-                title: 'Taxa',
-                className: 'col-taxa',
-                render: function (data) {
-                    if (data === null || data === undefined || data === '') return '—';
-                    return 'R$ ' + parseFloat(data).toFixed(2).replace('.', ',');
-                }
-            },
-            {
-                data: 'extrato_taxa_percentual',
-                title: 'Taxa %',
-                className: 'col-taxa',
-                render: function (data) {
-                    if (data === null || data === undefined || data === '') return '—';
-                    return parseFloat(data).toFixed(2).replace('.', ',') + '%';
-                }
             }
         ],
         order: [[4, 'desc']],
@@ -279,15 +255,12 @@ $(document).ready(function () {
     });
 
     $('#btn-toggle-taxas').on('click', function () {
-        taxasVisiveis = !taxasVisiveis;
-        tabela.columns('.col-taxa').visible(taxasVisiveis, false);
-        tabela.columns.adjust().draw(false);
+        mostrarTaxas = !mostrarTaxas;
+        recarregarTabela();
 
-        $(this).html(taxasVisiveis
+        $(this).html(mostrarTaxas
             ? '<i class="fa-solid fa-eye-slash me-1"></i>Ocultar Taxas'
             : '<i class="fa-solid fa-eye me-1"></i>Mostrar Taxas');
-
-        ajustarColunasTabela();
     });
 
 });
