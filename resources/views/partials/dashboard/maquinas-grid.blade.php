@@ -126,13 +126,13 @@ $(function () {
     }
 
     function cardHtml(m) {
-        var ativo    = m.maquina_status == 1;
+        var ativo    = Number(m.maquina_status) === 1;
         var saldo    = m.saldo_periodo || 0;
         var saldoClr = saldo < 0 ? '#dc2626' : 'var(--sp-teal)';
         var qrLabel  = m.possui_qr ? 'QR Code' : 'Gerar QR';
         var statusIcon = ativo
-            ? '<i class="fa-solid fa-circle text-success" aria-label="Online"></i>'
-            : '<i class="fa-solid fa-circle text-danger" aria-label="Offline"></i>';
+            ? '<span class="maq-status-dot maq-status-dot--online" aria-label="Online"></span>'
+            : '<span class="maq-status-dot maq-status-dot--offline" aria-label="Offline"></span>';
 
         return '<article class="dash-card maq-card-item" role="listitem" style="display:flex; flex-direction:column;">' +
             '<div style="padding:14px 16px 10px; border-bottom:1px solid #f3f4f6; display:flex; align-items:flex-start; justify-content:space-between; gap:8px;">' +
@@ -143,13 +143,13 @@ $(function () {
                     '<div style="min-width:0;">' +
                         '<p style="margin:0 0 4px; font-size:.88rem; font-weight:700; color:#111827; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">' +
                             escapeHtml(m.maquina_nome) + '</p>' +
-                        '<p style="margin:0; font-size:.72rem; color:#9ca3af; display:flex; align-items:center; gap:4px;">' +
+                        '<p class="maq-card-meta">' +
                             '<iconify-icon icon="solar:map-point-bold-duotone" style="font-size:.8rem;"></iconify-icon>' +
-                            '<span>Local: <span style="font-weight:600; color:#6b7280;">' + escapeHtml(m.local_nome) + '</span></span>' +
+                            '<span>Local: <strong>' + escapeHtml(m.local_nome || '—') + '</strong></span>' +
                         '</p>' +
-                        '<p style="margin:3px 0 0; font-size:.72rem; color:#9ca3af; display:flex; align-items:center; gap:4px;">' +
+                        '<p class="maq-card-meta" style="margin-top:3px;">' +
                             '<iconify-icon icon="solar:cpu-bold-duotone" style="font-size:.8rem;"></iconify-icon>' +
-                            '<span>ID: <span style="font-weight:600; color:#6b7280;">' + escapeHtml(m.id_placa || m.id_maquina || '—') + '</span></span>' +
+                            '<span>ID: <strong>' + escapeHtml(m.id_placa || m.id_maquina || '—') + '</strong></span>' +
                         '</p>' +
                     '</div>' +
                 '</div>' +

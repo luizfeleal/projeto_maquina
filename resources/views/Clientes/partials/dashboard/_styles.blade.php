@@ -238,6 +238,34 @@
         margin-top: 4px;
     }
 
+    .maq-status-dot {
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        flex-shrink: 0;
+    }
+    .maq-status-dot--online {
+        background: #16a34a;
+        box-shadow: 0 0 0 2px #bbf7d0;
+    }
+    .maq-status-dot--offline {
+        background: #dc2626;
+    }
+    .maq-card-meta {
+        margin: 0;
+        font-size: .72rem;
+        color: #9ca3af;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        min-width: 0;
+    }
+    .maq-card-meta strong {
+        font-weight: 600;
+        color: #6b7280;
+    }
+
     @media (max-width: 991px) {
         .dash-page { padding: 16px 16px 24px; }
     }

@@ -99,13 +99,10 @@
                             </p>
                         </div>
                     </div>
-                    <span style="flex-shrink:0; font-size:1rem; line-height:1;"
+                    <span style="flex-shrink:0; display:flex; align-items:center; padding-top:2px;"
                           title="{{ $ativo ? 'Online' : 'Offline' }}">
-                        @if($ativo)
-                            <i class="fa-solid fa-circle text-success" aria-label="Online"></i>
-                        @else
-                            <i class="fa-solid fa-circle text-danger" aria-label="Offline"></i>
-                        @endif
+                        <span aria-label="{{ $ativo ? 'Online' : 'Offline' }}"
+                              style="display:inline-block;width:10px;height:10px;border-radius:50%;flex-shrink:0;background:{{ $ativo ? '#16a34a' : '#dc2626' }};{{ $ativo ? 'box-shadow:0 0 0 2px #bbf7d0;' : '' }}"></span>
                     </span>
                 </div>
 

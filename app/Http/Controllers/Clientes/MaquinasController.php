@@ -31,6 +31,11 @@ class MaquinasController extends Controller
         $idsLocais    = array_column(array_values($clienteLocal), 'id_local');
 
         $todasMaquinas = MaquinasService::coletar();
+        $locaisPorId = [];
+        foreach (LocaisService::coletar() as $local) {
+            $locaisPorId[$local['id_local']] = $local['local_nome'] ?? '—';
+        }
+
         $maquinasPorId = [];
         foreach ($todasMaquinas as $m) {
             if (in_array($m['id_local'], $idsLocais)) {
@@ -50,13 +55,22 @@ class MaquinasController extends Controller
 
         $listaBase = [];
         foreach ($maquinasPorId as $idMaq => $maq) {
+            $idLocal = $maq['id_local'] ?? null;
+            $localNome = trim((string) ($maq['local_nome'] ?? ''));
+            if ($localNome === '' && $idLocal !== null && isset($locaisPorId[$idLocal])) {
+                $localNome = (string) $locaisPorId[$idLocal];
+            }
+            if ($localNome === '') {
+                $localNome = '—';
+            }
+
             $listaBase[] = [
                 'id_maquina'     => $idMaq,
-                'id_local'       => $maq['id_local']       ?? null,
+                'id_local'       => $idLocal,
                 'id_placa'       => $maq['id_placa']       ?? '—',
                 'possui_qr'      => isset($qrPorMaquina[$idMaq]),
                 'maquina_nome'   => $maq['maquina_nome']   ?? '',
-                'local_nome'     => $maq['local_nome']     ?? '—',
+                'local_nome'     => $localNome,
                 'maquina_status' => $maq['maquina_status'] ?? 1,
             ];
         }

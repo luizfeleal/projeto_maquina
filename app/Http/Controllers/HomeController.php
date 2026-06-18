@@ -25,6 +25,11 @@ class HomeController extends Controller
         $locais     = LocaisService::coletar();
         $clientes   = ClientesService::coletar();
 
+        $locaisPorId = [];
+        foreach ($locais as $local) {
+            $locaisPorId[$local['id_local']] = $local['local_nome'] ?? '—';
+        }
+
         $maquinas         = array_values($maquinas);
         $maquinas_online  = array_values(array_filter($maquinas, fn($item) => $item['maquina_status'] == 1));
         $maquinas_offline = array_values(array_filter($maquinas, fn($item) => $item['maquina_status'] == 0));
@@ -49,14 +54,23 @@ class HomeController extends Controller
 
         $maquinasDashboard = [];
         foreach ($maquinas as $maq) {
-            $idMaq = (string) $maq['id_maquina'];
-            $fin   = $acumuladoPorId[$idMaq] ?? [];
+            $idMaq   = (string) $maq['id_maquina'];
+            $fin     = $acumuladoPorId[$idMaq] ?? [];
+            $idLocal = $maq['id_local'] ?? ($fin['id_local'] ?? null);
+            $localNome = trim((string) ($maq['local_nome'] ?? ($fin['local_nome'] ?? '')));
+            if ($localNome === '' && $idLocal !== null && isset($locaisPorId[$idLocal])) {
+                $localNome = (string) $locaisPorId[$idLocal];
+            }
+            if ($localNome === '') {
+                $localNome = '—';
+            }
+
             $maquinasDashboard[] = array_merge($fin, [
                 'id_maquina'        => $idMaq,
-                'id_local'          => $maq['id_local'] ?? ($fin['id_local'] ?? null),
+                'id_local'          => $idLocal,
                 'possui_qr'         => isset($qrPorMaquina[$idMaq]),
                 'maquina_nome'      => $maq['maquina_nome'] ?? ($fin['maquina_nome'] ?? ''),
-                'local_nome'        => $maq['local_nome'] ?? ($fin['local_nome'] ?? '—'),
+                'local_nome'        => $localNome,
                 'id_placa'          => $maq['id_placa'] ?? '—',
                 'maquina_status'    => $maq['maquina_status'] ?? 1,
                 'total_maquina'     => $fin['total_maquina'] ?? 0,
