@@ -89,25 +89,23 @@
                                       display:flex; align-items:center; gap:4px;">
                                 <iconify-icon icon="solar:map-point-bold-duotone"
                                               style="font-size:.85rem;"></iconify-icon>
-                                {{ $local }}
+                                Local: <span style="font-weight:600; color:#6b7280;">{{ $local }}</span>
                             </p>
                             <p style="margin:3px 0 0; font-size:.72rem; color:#9ca3af;
                                       display:flex; align-items:center; gap:4px;">
                                 <iconify-icon icon="solar:cpu-bold-duotone"
                                               style="font-size:.8rem;"></iconify-icon>
-                                ID placa: <span style="font-weight:600; color:#6b7280;">{{ $idPlaca }}</span>
+                                ID: <span style="font-weight:600; color:#6b7280;">{{ $idPlaca }}</span>
                             </p>
                         </div>
                     </div>
-                    {{-- Badge de status --}}
-                    <span style="flex-shrink:0; font-size:.7rem; font-weight:700; padding:3px 10px;
-                                 border-radius:20px; white-space:nowrap; display:flex; align-items:center; gap:5px;
-                                 background:{{ $ativo ? '#dcfce7' : '#fee2e2' }};
-                                 color:{{ $ativo ? '#16a34a' : '#dc2626' }};">
-                        <span style="width:6px; height:6px; border-radius:50%; flex-shrink:0;
-                                     background:{{ $ativo ? '#16a34a' : '#dc2626' }};
-                                     {{ $ativo ? 'box-shadow:0 0 0 2px #bbf7d0;' : '' }}"></span>
-                        {{ $ativo ? 'Online' : 'Offline' }}
+                    <span style="flex-shrink:0; font-size:1rem; line-height:1;"
+                          title="{{ $ativo ? 'Online' : 'Offline' }}">
+                        @if($ativo)
+                            <i class="fa-solid fa-circle text-success" aria-label="Online"></i>
+                        @else
+                            <i class="fa-solid fa-circle text-danger" aria-label="Offline"></i>
+                        @endif
                     </span>
                 </div>
 

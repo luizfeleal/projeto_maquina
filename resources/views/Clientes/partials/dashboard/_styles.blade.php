@@ -176,6 +176,68 @@
         min-width: 240px; cursor: pointer;
     }
 
+    .maq-toolbar {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-bottom: 14px;
+    }
+    .maq-search-wrap {
+        flex: 1;
+        min-width: 220px;
+        position: relative;
+    }
+    .maq-search-icon {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #9ca3af;
+        font-size: 1rem;
+        pointer-events: none;
+    }
+    .maq-search-input {
+        width: 100%;
+        border: 1px solid var(--sp-border);
+        border-radius: 10px;
+        padding: 10px 14px 10px 38px;
+        font-size: .85rem;
+        color: #374151;
+        background: #fff;
+        box-shadow: 0 1px 3px rgba(0,0,0,.05);
+    }
+    .maq-search-input:focus {
+        outline: none;
+        border-color: var(--sp-teal);
+        box-shadow: 0 0 0 3px rgba(44, 155, 165, 0.15);
+    }
+    .maq-count-badge {
+        font-size: .78rem;
+        font-weight: 600;
+        color: var(--sp-muted);
+        white-space: nowrap;
+    }
+    .maq-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 14px;
+    }
+    .maq-pagination {
+        margin-top: 16px;
+        padding-top: 4px;
+    }
+    .maq-pagination .page-link {
+        font-size: .8rem;
+        min-width: 36px;
+        text-align: center;
+    }
+    .maq-empty-filter {
+        padding: 40px 24px;
+        text-align: center;
+        margin-top: 4px;
+    }
+
     @media (max-width: 991px) {
         .dash-page { padding: 16px 16px 24px; }
     }

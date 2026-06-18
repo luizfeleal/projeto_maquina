@@ -65,6 +65,7 @@ class HomeController extends Controller
                 'possui_qr'         => isset($qrPorMaquina[$idMaq]),
                 'maquina_nome'      => $maq['maquina_nome'] ?? ($fin['maquina_nome'] ?? ''),
                 'local_nome'        => $maq['local_nome'] ?? ($fin['local_nome'] ?? '—'),
+                'id_placa'          => $maq['id_placa'] ?? '—',
                 'maquina_status'    => $maq['maquina_status'] ?? 1,
                 'total_maquina'     => $fin['total_maquina'] ?? 0,
                 'saldo_periodo'     => $fin['saldo_periodo'] ?? 0,

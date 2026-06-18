@@ -1,0 +1,253 @@
+@php
+    $dashboardTipo = $dashboardTipo ?? 'admin';
+    $isCliente     = $dashboardTipo === 'cliente';
+
+    $verTodasRoute = $isCliente ? 'clientes-maquinas' : 'maquinas';
+    $sectionTitle  = $isCliente ? 'Minhas máquinas' : 'Máquinas';
+
+    $maqItems = [];
+    foreach ($maquinasDashboard ?? [] as $maq) {
+        $idMaquina = $maq['id_maquina'];
+        $idLocal   = $maq['id_local'] ?? null;
+        $possuiQr  = $maq['possui_qr'] ?? false;
+
+        if ($isCliente) {
+            $qrHref = ($idLocal && $possuiQr)
+                ? route('cliente-qr', ['id_local' => $idLocal, 'id_maquina' => $idMaquina, 'abrir' => true])
+                : route('cliente-qr-criar');
+            $links = [
+                'transacoes' => route('clientes-maquinas-transacoes', ['id_maquina' => $idMaquina]),
+                'qr'         => $qrHref,
+                'jogada'     => route('view-clientes-maquinas-liberar-jogadas', ['id_maquina' => $idMaquina]),
+                'editar'     => route('clientes-maquinas-editar', ['id_maquina' => $idMaquina]),
+            ];
+        } else {
+            $qrHref = ($idLocal && $possuiQr)
+                ? route('qr', ['id_local' => $idLocal, 'id_maquina' => $idMaquina, 'abrir' => true])
+                : route('qr-criar');
+            $links = [
+                'transacoes' => route('maquinas-transacoes', ['id_maquina' => $idMaquina]),
+                'qr'         => $qrHref,
+                'jogada'     => route('view-liberar-jogadas', ['id_maquina' => $idMaquina]),
+                'editar'     => route('maquinas-editar', ['id_maquina' => $idMaquina]),
+            ];
+        }
+
+        $maqItems[] = [
+            'id_maquina'      => $idMaquina,
+            'maquina_nome'    => $maq['maquina_nome'] ?? 'Máquina',
+            'local_nome'      => $maq['local_nome'] ?? '—',
+            'id_placa'        => $maq['id_placa'] ?? '—',
+            'maquina_status'  => $maq['maquina_status'] ?? 1,
+            'saldo_periodo'   => (float) ($maq['saldo_periodo'] ?? 0),
+            'possui_qr'       => $possuiQr,
+            'links'           => $links,
+        ];
+    }
+@endphp
+
+<section id="maquinas" class="dash-section">
+
+    <div class="dash-section-header" style="display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:12px;">
+        <div>
+            <h2>
+                <iconify-icon icon="solar:devices-bold-duotone" style="color:var(--sp-teal);"></iconify-icon>
+                {{ $sectionTitle }}
+            </h2>
+            <p>Status, saldo e atalhos rápidos por máquina</p>
+        </div>
+        <a href="{{ route($verTodasRoute) }}" class="dash-btn-primary" style="font-size:.78rem; padding:8px 16px;">
+            <iconify-icon icon="solar:arrow-right-bold-duotone"></iconify-icon>
+            Ver todas
+        </a>
+    </div>
+
+    @if(empty($maqItems))
+        <div class="dash-card" style="padding:48px 24px; text-align:center; color:#9ca3af;">
+            <iconify-icon icon="solar:devices-bold-duotone" style="font-size:2.5rem; display:block; margin:0 auto 12px;"></iconify-icon>
+            <p style="margin:0; font-size:.9rem; font-weight:600;">Nenhuma máquina encontrada.</p>
+        </div>
+    @else
+        <div class="maq-toolbar">
+            <div class="maq-search-wrap">
+                <iconify-icon icon="solar:magnifer-linear" class="maq-search-icon" aria-hidden="true"></iconify-icon>
+                <input type="search" id="maq-dashboard-search" class="maq-search-input"
+                       placeholder="Pesquisar máquina, local ou ID..." autocomplete="off"
+                       aria-label="Pesquisar máquinas">
+            </div>
+            <span id="maq-dashboard-count" class="maq-count-badge" aria-live="polite"></span>
+        </div>
+
+        <div id="maq-dashboard-grid" class="maq-grid" role="list"></div>
+
+        <div id="maq-dashboard-empty-filter" class="dash-card maq-empty-filter" hidden>
+            <iconify-icon icon="solar:magnifer-linear" style="font-size:2rem; display:block; margin:0 auto 10px; color:#9ca3af;"></iconify-icon>
+            <p style="margin:0; font-size:.9rem; font-weight:600; color:#6b7280;">Nenhuma máquina corresponde à pesquisa.</p>
+        </div>
+
+        <nav id="maq-dashboard-pagination" class="maq-pagination" aria-label="Paginação de máquinas"></nav>
+    @endif
+</section>
+
+@if(!empty($maqItems))
+<script>
+(function () {
+    var maquinas = @json($maqItems);
+    var perPage  = 6;
+    var page     = 1;
+    var term     = '';
+
+    var $grid    = $('#maq-dashboard-grid');
+    var $pager   = $('#maq-dashboard-pagination');
+    var $count   = $('#maq-dashboard-count');
+    var $search  = $('#maq-dashboard-search');
+    var $empty   = $('#maq-dashboard-empty-filter');
+
+    function brl(val) {
+        return 'R$ ' + val.toFixed(2).replace('.', ',');
+    }
+
+    function escapeHtml(str) {
+        return $('<div>').text(str || '').html();
+    }
+
+    function filtered() {
+        if (!term) return maquinas;
+        var q = term.toLowerCase();
+        return maquinas.filter(function (m) {
+            return (m.maquina_nome || '').toLowerCase().indexOf(q) !== -1
+                || (m.local_nome || '').toLowerCase().indexOf(q) !== -1
+                || String(m.id_placa || '').toLowerCase().indexOf(q) !== -1
+                || String(m.id_maquina || '').toLowerCase().indexOf(q) !== -1;
+        });
+    }
+
+    function cardHtml(m) {
+        var ativo    = m.maquina_status == 1;
+        var saldo    = m.saldo_periodo || 0;
+        var saldoClr = saldo < 0 ? '#dc2626' : 'var(--sp-teal)';
+        var qrLabel  = m.possui_qr ? 'QR Code' : 'Gerar QR';
+        var statusIcon = ativo
+            ? '<i class="fa-solid fa-circle text-success" aria-label="Online"></i>'
+            : '<i class="fa-solid fa-circle text-danger" aria-label="Offline"></i>';
+
+        return '<article class="dash-card maq-card-item" role="listitem" style="display:flex; flex-direction:column;">' +
+            '<div style="padding:14px 16px 10px; border-bottom:1px solid #f3f4f6; display:flex; align-items:flex-start; justify-content:space-between; gap:8px;">' +
+                '<div style="display:flex; align-items:center; gap:10px; min-width:0;">' +
+                    '<div class="dash-icon dash-icon--teal" style="width:38px; height:38px;">' +
+                        '<iconify-icon icon="solar:monitor-bold-duotone" style="font-size:1.2rem;"></iconify-icon>' +
+                    '</div>' +
+                    '<div style="min-width:0;">' +
+                        '<p style="margin:0 0 4px; font-size:.88rem; font-weight:700; color:#111827; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">' +
+                            escapeHtml(m.maquina_nome) + '</p>' +
+                        '<p style="margin:0; font-size:.72rem; color:#9ca3af; display:flex; align-items:center; gap:4px;">' +
+                            '<iconify-icon icon="solar:map-point-bold-duotone" style="font-size:.8rem;"></iconify-icon>' +
+                            '<span>Local: <span style="font-weight:600; color:#6b7280;">' + escapeHtml(m.local_nome) + '</span></span>' +
+                        '</p>' +
+                        '<p style="margin:3px 0 0; font-size:.72rem; color:#9ca3af; display:flex; align-items:center; gap:4px;">' +
+                            '<iconify-icon icon="solar:cpu-bold-duotone" style="font-size:.8rem;"></iconify-icon>' +
+                            '<span>ID: <span style="font-weight:600; color:#6b7280;">' + escapeHtml(m.id_placa || m.id_maquina || '—') + '</span></span>' +
+                        '</p>' +
+                    '</div>' +
+                '</div>' +
+                '<span style="flex-shrink:0; font-size:1rem; line-height:1;" title="' + (ativo ? 'Online' : 'Offline') + '">' +
+                    statusIcon +
+                '</span>' +
+            '</div>' +
+            '<div style="padding:12px 16px; border-bottom:1px solid #f3f4f6;">' +
+                '<p style="margin:0 0 2px; font-size:.62rem; font-weight:600; text-transform:uppercase; letter-spacing:.05em; color:#9ca3af; text-align:center;">Saldo período</p>' +
+                '<p style="margin:0; font-size:.9rem; font-weight:700; text-align:center; color:' + saldoClr + ';">' + brl(saldo) + '</p>' +
+            '</div>' +
+            '<div style="padding:12px 16px; display:flex; flex-wrap:wrap; gap:6px; margin-top:auto;">' +
+                '<a href="' + m.links.transacoes + '" class="dash-action-btn">' +
+                    '<iconify-icon icon="solar:transfer-horizontal-bold-duotone" style="color:var(--sp-teal);"></iconify-icon> Transações</a>' +
+                '<a href="' + m.links.qr + '" class="dash-action-btn">' +
+                    '<iconify-icon icon="solar:qr-code-bold-duotone" style="color:var(--sp-navy);"></iconify-icon> ' + qrLabel + '</a>' +
+                '<a href="' + m.links.jogada + '" class="dash-action-btn">' +
+                    '<iconify-icon icon="solar:play-circle-bold-duotone" style="color:#ca8a04;"></iconify-icon> Jogada</a>' +
+                '<a href="' + m.links.editar + '" class="dash-action-btn">' +
+                    '<iconify-icon icon="solar:pen-bold-duotone" style="color:var(--sp-navy);"></iconify-icon> Editar</a>' +
+            '</div>' +
+        '</article>';
+    }
+
+    function renderPager(total, pages) {
+        if (pages <= 1) {
+            $pager.empty().hide();
+            return;
+        }
+        $pager.show();
+        var html = '<ul class="pagination justify-content-center flex-wrap mb-0">';
+        html += '<li class="page-item' + (page <= 1 ? ' disabled' : '') + '">' +
+            '<button type="button" class="page-link maq-page-btn" data-page="' + (page - 1) + '" aria-label="Anterior">' +
+            '<iconify-icon icon="solar:arrow-left-linear"></iconify-icon></button></li>';
+
+        var s = Math.max(1, page - 2);
+        var e = Math.min(pages, page + 2);
+        if (s > 1) {
+            html += '<li class="page-item"><button type="button" class="page-link maq-page-btn" data-page="1">1</button></li>';
+            if (s > 2) html += '<li class="page-item disabled"><span class="page-link">&hellip;</span></li>';
+        }
+        for (var p = s; p <= e; p++) {
+            html += '<li class="page-item' + (p === page ? ' active' : '') + '">' +
+                '<button type="button" class="page-link maq-page-btn" data-page="' + p + '">' + p + '</button></li>';
+        }
+        if (e < pages) {
+            if (e < pages - 1) html += '<li class="page-item disabled"><span class="page-link">&hellip;</span></li>';
+            html += '<li class="page-item"><button type="button" class="page-link maq-page-btn" data-page="' + pages + '">' + pages + '</button></li>';
+        }
+
+        html += '<li class="page-item' + (page >= pages ? ' disabled' : '') + '">' +
+            '<button type="button" class="page-link maq-page-btn" data-page="' + (page + 1) + '" aria-label="Próxima">' +
+            '<iconify-icon icon="solar:arrow-right-linear"></iconify-icon></button></li>';
+        html += '</ul>';
+        $pager.html(html);
+    }
+
+    function render() {
+        var list  = filtered();
+        var total = list.length;
+        var pages = Math.max(1, Math.ceil(total / perPage));
+
+        if (page > pages) page = pages;
+
+        $count.text(total + ' máquina' + (total !== 1 ? 's' : ''));
+
+        if (total === 0) {
+            $grid.empty().hide();
+            $empty.show();
+            $pager.empty().hide();
+            return;
+        }
+
+        $empty.hide();
+        $grid.show();
+
+        var start = (page - 1) * perPage;
+        var slice = list.slice(start, start + perPage);
+        $grid.html(slice.map(cardHtml).join(''));
+
+        renderPager(total, pages);
+    }
+
+    $search.on('input', function () {
+        term = $(this).val().trim().toLowerCase();
+        page = 1;
+        render();
+    });
+
+    $pager.on('click', '.maq-page-btn', function () {
+        if ($(this).parent().hasClass('disabled')) return;
+        var pg = parseInt($(this).data('page'), 10);
+        var pages = Math.max(1, Math.ceil(filtered().length / perPage));
+        if (pg >= 1 && pg <= pages) {
+            page = pg;
+            render();
+            document.getElementById('maquinas').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    });
+
+    render();
+})();
+</script>
+@endif
