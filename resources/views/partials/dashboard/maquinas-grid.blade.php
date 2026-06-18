@@ -90,8 +90,9 @@
 </section>
 
 @if(!empty($maqItems))
+@push('scriptTable')
 <script>
-(function () {
+$(function () {
     var maquinas = @json($maqItems);
     var perPage  = 6;
     var page     = 1;
@@ -104,7 +105,9 @@
     var $empty   = $('#maq-dashboard-empty-filter');
 
     function brl(val) {
-        return 'R$ ' + val.toFixed(2).replace('.', ',');
+        var n = Number(val);
+        if (isNaN(n)) n = 0;
+        return 'R$ ' + n.toFixed(2).replace('.', ',');
     }
 
     function escapeHtml(str) {
@@ -248,6 +251,7 @@
     });
 
     render();
-})();
+});
 </script>
+@endpush
 @endif

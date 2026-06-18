@@ -340,6 +340,7 @@
     </script>
 
     @yield('scriptTable')
+    @stack('scriptTable')
 
     @include('partials.alerts')
 
