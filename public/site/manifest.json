@@ -5,7 +5,7 @@
     "description": "Gestão de máquinas de pagamento SwiftPay Soluções",
     "lang": "pt-BR",
     "dir": "ltr",
-    "start_url": "/?source=pwa",
+    "start_url": "/login?source=pwa",
     "scope": "/",
     "display": "standalone",
     "display_override": ["standalone", "browser"],

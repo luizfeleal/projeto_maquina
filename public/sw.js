@@ -1,5 +1,5 @@
 /* SwiftPay PWA — Service Worker */
-const CACHE_VERSION = 'swiftpay-v1';
+const CACHE_VERSION = 'swiftpay-v2';
 const PRECACHE_URLS = [
     '/offline.html',
     '/site/manifest.json',

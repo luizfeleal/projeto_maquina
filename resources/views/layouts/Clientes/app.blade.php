@@ -29,6 +29,7 @@
 </head>
 
 <body>
+    @include('partials.app-splash')
 
     <div class="app-wrapper">
 
