@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>@yield('title') — SwiftPay Soluções</title>
 
     <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('site/img/favicon-32.png') }}">
@@ -30,6 +30,7 @@
 
 <body>
     @include('partials.app-splash')
+    @include('partials.bottom-bar-admin')
 
     <div class="app-wrapper">
 
@@ -490,8 +491,6 @@
             });
         })();
     </script>
-
-    @include('partials.bottom-bar-admin')
 
     @include('partials.pwa-install')
 

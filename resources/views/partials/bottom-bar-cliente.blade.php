@@ -2,7 +2,9 @@
     $r = Request::route()->getName();
 @endphp
 
-<nav class="bottom-nav" aria-label="Navegação principal">
+<script>document.body.classList.add('has-bottom-nav');</script>
+
+<nav class="bottom-nav" aria-label="Navegação principal" data-fixed-nav="true">
 
     {{-- Home --}}
     <a href="{{ route('cliente-home') }}"
@@ -50,32 +52,40 @@
 
 <script>
 (function () {
-    var btn     = document.getElementById('bottomNavMore');
-    var sidebar = document.getElementById('appSidebar');
-    var overlay = document.getElementById('sidebarOverlay');
-    if (!btn || !sidebar) return;
+    function initBottomNav() {
+        var btn     = document.getElementById('bottomNavMore');
+        var sidebar = document.getElementById('appSidebar');
+        var overlay = document.getElementById('sidebarOverlay');
+        if (!btn || !sidebar) return;
 
-    function openSidebar() {
-        sidebar.classList.add('sidebar-open');
-        if (overlay) overlay.classList.add('active');
-        document.body.style.overflow = 'hidden';
-        btn.setAttribute('aria-expanded', 'true');
-        btn.classList.add('active');
+        function openSidebar() {
+            sidebar.classList.add('sidebar-open');
+            if (overlay) overlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            btn.setAttribute('aria-expanded', 'true');
+            btn.classList.add('active');
+        }
+
+        function closeSidebar() {
+            sidebar.classList.remove('sidebar-open');
+            if (overlay) overlay.classList.remove('active');
+            document.body.style.overflow = '';
+            btn.setAttribute('aria-expanded', 'false');
+            btn.classList.remove('active');
+        }
+
+        btn.addEventListener('click', function () {
+            var isOpen = sidebar.classList.contains('sidebar-open');
+            isOpen ? closeSidebar() : openSidebar();
+        });
+
+        if (overlay) overlay.addEventListener('click', closeSidebar);
     }
 
-    function closeSidebar() {
-        sidebar.classList.remove('sidebar-open');
-        if (overlay) overlay.classList.remove('active');
-        document.body.style.overflow = '';
-        btn.setAttribute('aria-expanded', 'false');
-        btn.classList.remove('active');
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initBottomNav);
+    } else {
+        initBottomNav();
     }
-
-    btn.addEventListener('click', function () {
-        var isOpen = sidebar.classList.contains('sidebar-open');
-        isOpen ? closeSidebar() : openSidebar();
-    });
-
-    if (overlay) overlay.addEventListener('click', closeSidebar);
 }());
 </script>

@@ -77,4 +77,19 @@
             animation: none;
         }
     }
+
+    @media (max-width: 991px) {
+        .bottom-nav {
+            position: fixed !important;
+            top: auto !important;
+            right: 0 !important;
+            bottom: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            max-width: 100vw !important;
+            z-index: 1100 !important;
+            transform: translate3d(0, 0, 0);
+            -webkit-transform: translate3d(0, 0, 0);
+        }
+    }
 </style>
