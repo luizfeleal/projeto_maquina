@@ -9,7 +9,8 @@
     {{-- Home --}}
     <a href="{{ route('cliente-home') }}"
        class="bottom-nav-item {{ $r === 'cliente-home' ? 'active' : '' }}"
-       aria-label="Home">
+       aria-label="Home"
+       @if($r === 'cliente-home') aria-current="page" @endif>
         <iconify-icon icon="solar:home-2-bold-duotone" aria-hidden="true"></iconify-icon>
         <span>Home</span>
     </a>
@@ -17,7 +18,8 @@
     {{-- Máquinas --}}
     <a href="{{ route('clientes-maquinas') }}"
        class="bottom-nav-item {{ in_array($r, ['clientes-maquinas','clientes-maquinas-transacoes','clientes-maquinas-acumulado','cliente-maquinas-cartao']) ? 'active' : '' }}"
-       aria-label="Máquinas">
+       aria-label="Máquinas"
+       @if(in_array($r, ['clientes-maquinas','clientes-maquinas-transacoes','clientes-maquinas-acumulado','cliente-maquinas-cartao'])) aria-current="page" @endif>
         <iconify-icon icon="solar:monitor-bold-duotone" aria-hidden="true"></iconify-icon>
         <span>Máquinas</span>
     </a>
@@ -25,7 +27,8 @@
     {{-- Liberar Jogada --}}
     <a href="{{ route('view-clientes-maquinas-liberar-jogadas') }}"
        class="bottom-nav-item {{ $r === 'view-clientes-maquinas-liberar-jogadas' ? 'active' : '' }}"
-       aria-label="Liberar Jogada">
+       aria-label="Liberar Jogada"
+       @if($r === 'view-clientes-maquinas-liberar-jogadas') aria-current="page" @endif>
         <iconify-icon icon="solar:play-circle-bold-duotone" aria-hidden="true"></iconify-icon>
         <span>Jogada</span>
     </a>
@@ -33,7 +36,8 @@
     {{-- QR Code --}}
     <a href="{{ route('cliente-qr') }}"
        class="bottom-nav-item {{ in_array($r, ['cliente-qr','cliente-qr-criar']) ? 'active' : '' }}"
-       aria-label="QR Code">
+       aria-label="QR Code"
+       @if(in_array($r, ['cliente-qr','cliente-qr-criar'])) aria-current="page" @endif>
         <iconify-icon icon="solar:qr-code-bold-duotone" aria-hidden="true"></iconify-icon>
         <span>QR Code</span>
     </a>
@@ -50,42 +54,4 @@
 
 </nav>
 
-<script>
-(function () {
-    function initBottomNav() {
-        var btn     = document.getElementById('bottomNavMore');
-        var sidebar = document.getElementById('appSidebar');
-        var overlay = document.getElementById('sidebarOverlay');
-        if (!btn || !sidebar) return;
-
-        function openSidebar() {
-            sidebar.classList.add('sidebar-open');
-            if (overlay) overlay.classList.add('active');
-            document.body.style.overflow = 'hidden';
-            btn.setAttribute('aria-expanded', 'true');
-            btn.classList.add('active');
-        }
-
-        function closeSidebar() {
-            sidebar.classList.remove('sidebar-open');
-            if (overlay) overlay.classList.remove('active');
-            document.body.style.overflow = '';
-            btn.setAttribute('aria-expanded', 'false');
-            btn.classList.remove('active');
-        }
-
-        btn.addEventListener('click', function () {
-            var isOpen = sidebar.classList.contains('sidebar-open');
-            isOpen ? closeSidebar() : openSidebar();
-        });
-
-        if (overlay) overlay.addEventListener('click', closeSidebar);
-    }
-
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initBottomNav);
-    } else {
-        initBottomNav();
-    }
-}());
-</script>
+<script src="{{ asset('site/bottom-nav.js') }}?v=1"></script>

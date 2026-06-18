@@ -30,7 +30,6 @@
 
 <body>
     @include('partials.app-splash')
-    @include('partials.bottom-bar-admin')
 
     <div class="app-wrapper">
 
@@ -441,13 +440,13 @@
         function openSidebar() {
             sidebar.classList.add('sidebar-open');
             overlay.classList.add('active');
-            document.body.style.overflow = 'hidden';
+            document.body.classList.add('sidebar-drawer-open');
         }
 
         function closeSidebar() {
             sidebar.classList.remove('sidebar-open');
             overlay.classList.remove('active');
-            document.body.style.overflow = '';
+            document.body.classList.remove('sidebar-drawer-open');
         }
 
         if (toggleBtn) toggleBtn.addEventListener('click', openSidebar);
@@ -492,6 +491,7 @@
         })();
     </script>
 
+    @include('partials.bottom-bar-admin')
     @include('partials.pwa-install')
 
 </body>

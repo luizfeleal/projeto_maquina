@@ -119,15 +119,23 @@
   }
 }
 
+$mobile-nav-height: 56px;
+
 // ---- Responsive ----
 @media (max-width: 991px) {
   .top-navbar {
-    height: 56px;
-    padding: 0 14px;
+    position: relative;
+    top: auto;
+    flex-shrink: 0;
+    width: 100%;
+    height: calc(#{$mobile-nav-height} + env(safe-area-inset-top));
+    padding: env(safe-area-inset-top) 14px 0;
+    z-index: 1050;
+  }
 
-    // Hamburger and mobile logo replaced by bottom bar on mobile
+  body.has-bottom-nav .top-navbar {
     .navbar-mobile-toggle { display: none; }
-    .navbar-brand-mobile  { display: none; }
+    .navbar-brand-mobile  { display: block; }
 
     .user-info { display: none; }
 
