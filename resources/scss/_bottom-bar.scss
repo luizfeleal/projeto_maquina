@@ -126,8 +126,8 @@ $bottom-bar-idle:   #9ca3af;
     // inherits .bottom-nav-item styles
   }
 
-  // Reserve space for the fixed bottom bar inside the scroll area
-  .main-content {
-    padding-bottom: calc(#{$bottom-bar-height} + env(safe-area-inset-bottom));
+  // Reserve scroll space so content is not hidden under the fixed bar
+  body.has-bottom-nav .content-body {
+    padding-bottom: calc(12px + #{$bottom-bar-height} + env(safe-area-inset-bottom));
   }
 }

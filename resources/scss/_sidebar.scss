@@ -411,6 +411,10 @@ $mobile-nav-height: 56px;
     padding: 8px;
   }
 
+  body.has-bottom-nav .content-body {
+    padding-bottom: calc(8px + 60px + env(safe-area-inset-bottom));
+  }
+
   .page-header {
     padding: 14px 16px 10px;
 
