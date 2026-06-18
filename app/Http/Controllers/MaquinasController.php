@@ -125,7 +125,56 @@ class MaquinasController extends Controller
             return response()->json([]);
         }
 
-        return response()->json(array_values($maquinas));
+        $todasMaquinas = MaquinasService::coletar();
+        if (!is_array($todasMaquinas)) {
+            $todasMaquinas = [];
+        }
+
+        $maquinasPorId = [];
+        foreach ($todasMaquinas as $m) {
+            if (is_array($m) && isset($m['id_maquina'])) {
+                $maquinasPorId[(string) $m['id_maquina']] = $m;
+            }
+        }
+
+        $locaisPorId = [];
+        foreach (LocaisService::coletar() as $local) {
+            if (is_array($local) && isset($local['id_local'])) {
+                $locaisPorId[$local['id_local']] = $local['local_nome'] ?? '—';
+            }
+        }
+
+        $enriched = [];
+        foreach ($maquinas as $row) {
+            if (!is_array($row)) {
+                continue;
+            }
+
+            $idMaq   = (string) ($row['id_maquina'] ?? '');
+            $base    = $maquinasPorId[$idMaq] ?? [];
+            $idLocal = $base['id_local'] ?? ($row['id_local'] ?? null);
+
+            $localNome = trim((string) ($row['local_nome'] ?? ($base['local_nome'] ?? '')));
+            if ($localNome === '' && $idLocal !== null && isset($locaisPorId[$idLocal])) {
+                $localNome = (string) $locaisPorId[$idLocal];
+            }
+            if ($localNome === '') {
+                $localNome = '—';
+            }
+
+            $idPlaca = trim((string) ($row['id_placa'] ?? ($base['id_placa'] ?? '')));
+            if ($idPlaca === '') {
+                $idPlaca = '—';
+            }
+
+            $enriched[] = array_merge($row, [
+                'id_local'   => $idLocal,
+                'local_nome' => $localNome,
+                'id_placa'   => $idPlaca,
+            ]);
+        }
+
+        return response()->json(array_values($enriched));
     }
 
     public function transacaoMaquinas(Request $request)

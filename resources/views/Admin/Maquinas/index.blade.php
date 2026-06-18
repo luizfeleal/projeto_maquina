@@ -13,6 +13,8 @@
                 <thead>
                     <tr>
                         <th>Máquina</th>
+                        <th>Local</th>
+                        <th>ID Placa</th>
                         <th>Status</th>
                         <th>Última transação</th>
                         <th>Fonte</th>
@@ -52,6 +54,22 @@
 @endsection
 
 @section('scriptTable')
+<style>
+    .maq-status-dot {
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        flex-shrink: 0;
+    }
+    .maq-status-dot--online {
+        background: #16a34a;
+        box-shadow: 0 0 0 2px #bbf7d0;
+    }
+    .maq-status-dot--offline {
+        background: #dc2626;
+    }
+</style>
 <script>
 $(document).ready(function () {
 
@@ -67,6 +85,13 @@ $(document).ready(function () {
         var op  = row.extrato_operacao;
         if (op === 'C' || op === 'N/A') return '+ R$ ' + val;
         return '- R$ ' + val;
+    }
+
+    function statusDot(status) {
+        var online = Number(status) !== 0;
+        var label  = online ? 'Online' : 'Offline';
+        return '<span class="maq-status-dot ' + (online ? 'maq-status-dot--online' : 'maq-status-dot--offline') + '" ' +
+               'aria-label="' + label + '" title="' + label + '"></span>';
     }
 
     $('#tabela_maquinas').DataTable({
@@ -98,16 +123,17 @@ $(document).ready(function () {
         scrollX: true,
         pageLength: 25,
         lengthMenu: [10, 25, 50, 100],
-        order: [[4, 'desc']],
+        order: [[6, 'desc']],
         columns: [
             { data: 'maquina_nome', defaultContent: '—' },
+            { data: 'local_nome', defaultContent: '—' },
+            { data: 'id_placa', defaultContent: '—' },
             {
                 data: 'maquina_status',
                 orderable: false,
+                className: 'text-center',
                 render: function (data) {
-                    return data == 0
-                        ? '<i class="fa-solid fa-circle text-danger"></i>'
-                        : '<i class="fa-solid fa-circle text-success"></i>';
+                    return statusDot(data);
                 }
             },
             {

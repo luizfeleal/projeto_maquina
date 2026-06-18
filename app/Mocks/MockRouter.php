@@ -309,7 +309,10 @@ class MockRouter
                 }
             }
 
+            $local = MockStore::find('locais', $maquina['id_local'], 'id_local');
+
             $result[] = array_merge($maquina, [
+                'local_nome' => $local['local_nome'] ?? ('Local ' . ($maquina['id_local'] ?? '-')),
                 'extrato_operacao' => $ultimo['extrato_operacao'] ?? 'N/A',
                 'extrato_operacao_valor' => $ultimo['extrato_operacao_valor'] ?? 0,
                 'extrato_operacao_tipo' => $ultimo['extrato_operacao_tipo'] ?? 'N/A',
