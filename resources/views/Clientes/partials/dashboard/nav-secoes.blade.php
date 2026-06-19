@@ -9,7 +9,7 @@
     </a>
     <a href="#transacoes" class="dash-nav-link">
         <iconify-icon icon="solar:transfer-horizontal-bold-duotone"></iconify-icon>
-        Transações
+        Extrato
     </a>
     <a href="#maquinas" class="dash-nav-link">
         <iconify-icon icon="solar:devices-bold-duotone"></iconify-icon>

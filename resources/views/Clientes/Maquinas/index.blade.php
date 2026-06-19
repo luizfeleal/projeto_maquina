@@ -145,7 +145,7 @@
                               display:flex; align-items:center; justify-content:center; gap:5px;">
                         <iconify-icon icon="solar:transfer-horizontal-bold-duotone"
                                       style="font-size:.95rem; color:#2C9BA5;"></iconify-icon>
-                        Transações
+                        Extrato
                     </a>
 
 

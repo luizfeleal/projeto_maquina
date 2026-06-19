@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Relatórios > Total Transações')
+@section('title', 'Relatórios > Total extrato')
 
 @section('content')
     <div id="reports_maquinas_online_offline" class="relatorios div-center-column w-100"
@@ -52,7 +52,7 @@
                 </div>
                 <div class="row" style="display: flex; flex-direction: row; justify-content: center; width: 100%; margin-bottom: 28px;">
                     <div class="col-md-8">
-                        <h4 style="color: #1e2e5e;"><strong>Total Transações: </strong> R$
+                        <h4 style="color: #1e2e5e;"><strong>Total extrato: </strong> R$
                             <span id="valor_total_transacoes">{{number_format($totalTransacoes, 2, ',', '.')}}</span></h4>
                     </div>
                 </div>
@@ -64,7 +64,7 @@
                             <tr>
                                 <!--<th>Local</th>-->
                                 <th>Maquina</th>
-                                <th>Tipo Transação</th>
+                                <th>Tipo de extrato</th>
                                 <th>Valor</th>
                                 <th>Data e Hora</th>
                             </tr>
@@ -76,7 +76,7 @@
                             <tr>
                                 <!--<th>Local</th>-->
                                 <th>Maquina</th>
-                                <th>Tipo Transação</th>
+                                <th>Tipo de extrato</th>
                                 <th>Valor</th>
                                 <th>Data e Hora</th>
                             </tr>
@@ -134,7 +134,7 @@ $(document).ready(function () {
             { data: "maquina_nome", title: "Máquina" },
             // Coluna Tipo de Operação
             { data: "extrato_operacao_tipo", title: "Fonte" },
-            // Coluna Valor da Transação
+            // Coluna Valor do extrato
             {
                 data: "extrato_operacao_valor",
                 title: "Valor",

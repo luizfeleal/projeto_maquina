@@ -23,7 +23,7 @@ if (!function_exists('getRouteBreadcrumbs')) {
             'maquinas-criar'                        => [$home, $criar, ['label' => 'Nova Máquina']],
             'maquinas-editar'                       => [$home, $maquinas, ['label' => 'Editar Máquina']],
             'maquinas-show'                         => [$home, $maquinas, ['label' => 'Detalhes da Máquina']],
-            'maquinas-transacoes'                   => [$home, $maquinas, ['label' => 'Transações']],
+            'maquinas-transacoes'                   => [$home, $maquinas, ['label' => 'Extrato']],
             'maquinas-acumulado'                    => [$home, $maquinas, ['label' => 'Acumulado']],
             'maquinas-resets-historico'             => [$home, $maquinas, ['label' => 'Acumulado', 'route' => 'maquinas-acumulado'], ['label' => 'Histórico de Resets']],
             'maquinas-cartao'                       => [$home, $criar, ['label' => 'Máquina Cartão']],
@@ -52,7 +52,7 @@ if (!function_exists('getRouteBreadcrumbs')) {
             // Cliente
             'cliente-home'                          => [['label' => 'Home']],
             'clientes-maquinas'                     => [$home, $maquinas],
-            'clientes-maquinas-transacoes'          => [$home, $maquinas, ['label' => 'Transações']],
+            'clientes-maquinas-transacoes'          => [$home, $maquinas, ['label' => 'Extrato']],
             'clientes-maquinas-acumulado'           => [$home, $maquinas, ['label' => 'Acumulado']],
             'clientes-maquinas-resets-historico'    => [$home, $maquinas, ['label' => 'Acumulado', 'route' => 'clientes-maquinas-acumulado'], ['label' => 'Histórico de Resets']],
             'cliente-maquinas-cartao'               => [$home, $criar, ['label' => 'Máquina Cartão']],
@@ -109,7 +109,7 @@ if (!function_exists('getSidebar')) {
                     'active_routes' => ['maquinas', 'maquinas-transacoes', 'maquinas-acumulado', 'maquinas-resets-historico', 'relatorio-view', 'relatorio-criar', 'relatorio-exibir'],
                     'sub_menu'      => [
                         ['title' => 'Exibir máquinas', 'route' => 'maquinas'],
-                        ['title' => 'Transações',      'route' => 'maquinas-transacoes'],
+                        ['title' => 'Extrato',      'route' => 'maquinas-transacoes'],
                     ],
                 ],
                 [
@@ -176,7 +176,7 @@ if (!function_exists('getSidebar')) {
                     'active_routes' => ['clientes-maquinas', 'clientes-maquinas-transacoes', 'clientes-maquinas-acumulado', 'clientes-maquinas-resets-historico'],
                     'sub_menu'      => [
                         ['title' => 'Exibir máquinas', 'route' => 'clientes-maquinas'],
-                        ['title' => 'Transações',      'route' => 'clientes-maquinas-transacoes'],
+                        ['title' => 'Extrato',      'route' => 'clientes-maquinas-transacoes'],
                     ],
             ],
             [

@@ -8,7 +8,7 @@
         <div>
             <h2>
                 <iconify-icon icon="solar:transfer-horizontal-bold-duotone" style="color:var(--sp-teal);"></iconify-icon>
-                Transações recentes
+                Extrato recente
             </h2>
             <p>Últimas movimentações e totais por forma de pagamento</p>
         </div>
@@ -67,7 +67,7 @@
         @if(empty($ultimasTransacoes))
             <div style="padding:40px 24px; text-align:center; color:#9ca3af;">
                 <iconify-icon icon="solar:inbox-line-bold-duotone" style="font-size:2rem; display:block; margin:0 auto 10px;"></iconify-icon>
-                <p style="margin:0; font-size:.85rem;">Nenhuma transação encontrada.</p>
+                <p style="margin:0; font-size:.85rem;">Nenhum extrato encontrado.</p>
             </div>
         @else
             <div style="overflow-x:auto;">

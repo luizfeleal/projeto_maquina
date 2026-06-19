@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Máquinas → Transações')
+@section('title', 'Máquinas → Extrato')
 @section('content')
 
 <div id="guias" class="maquina w-100 div-center-column"
@@ -66,7 +66,7 @@
                     <tr>
                         <th>Local</th>
                         <th>Máquina</th>
-                        <th>Última Transação</th>
+                        <th>Último extrato</th>
                         <th>Fonte</th>
                         <th>Data e Hora</th>
                     </tr>
@@ -76,7 +76,7 @@
                     <tr>
                         <th>Local</th>
                         <th>Máquina</th>
-                        <th>Última Transação</th>
+                        <th>Último extrato</th>
                         <th>Fonte</th>
                         <th>Data e Hora</th>
                     </tr>
@@ -200,7 +200,7 @@ $(document).ready(function () {
             { data: 'maquina_nome', title: 'Máquina' },
             {
                 data: 'extrato_operacao',
-                title: 'Última Transação',
+                title: 'Último extrato',
                 render: function (data, type, row) {
                     var val = parseFloat(row.extrato_operacao_valor || 0).toFixed(2).replace('.', ',');
                     return data === 'C' ? '+ R$ ' + val : '- R$ ' + val;

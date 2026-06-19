@@ -16,7 +16,7 @@
                         <th>Local</th>
                         <th>ID Placa</th>
                         <th>Status</th>
-                        <th>Última transação</th>
+                        <th>Último extrato</th>
                         <th>Fonte</th>
                         <th>Data e Hora</th>
                         <th>Detalhar</th>

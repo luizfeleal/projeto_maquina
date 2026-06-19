@@ -1,5 +1,5 @@
 @extends('layouts.Clientes.app')
-@section('title', 'Minhas Máquinas -> Transações')
+@section('title', 'Minhas Máquinas -> Extrato')
 @section('content')
 
 @php
@@ -17,7 +17,7 @@
 <div style="display:flex; align-items:center; justify-content:space-between;
             flex-wrap:wrap; gap:12px; margin:16px 24px 20px;">
     <div>
-        <h1 style="margin:0; font-size:1.5rem; font-weight:700; color:#111827;">Transações</h1>
+        <h1 style="margin:0; font-size:1.5rem; font-weight:700; color:#111827;">Extrato</h1>
         <p style="margin:4px 0 0; color:#6b7280; font-size:.875rem;">
             Histórico completo de movimentações das suas máquinas
         </p>
@@ -199,7 +199,7 @@
         @endforeach
     </form>
 
-    {{-- ── Tabela de transações ────────────────────────────────────── --}}
+    {{-- ── Tabela de extrato ────────────────────────────────────── --}}
     <div style="background:#fff; border:1px solid #e8ecf0; border-radius:14px; padding:20px;
                 box-shadow:0 1px 4px rgba(0,0,0,.05);">
         <table id="tabela_maquinas_transacao" class="table table-striped" style="width:100%">

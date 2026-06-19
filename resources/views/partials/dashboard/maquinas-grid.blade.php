@@ -163,7 +163,7 @@ $(function () {
             '</div>' +
             '<div style="padding:12px 16px; display:flex; flex-wrap:wrap; gap:6px; margin-top:auto;">' +
                 '<a href="' + m.links.transacoes + '" class="dash-action-btn">' +
-                    '<iconify-icon icon="solar:transfer-horizontal-bold-duotone" style="color:var(--sp-teal);"></iconify-icon> Transações</a>' +
+                    '<iconify-icon icon="solar:transfer-horizontal-bold-duotone" style="color:var(--sp-teal);"></iconify-icon> Extrato</a>' +
                 '<a href="' + m.links.qr + '" class="dash-action-btn">' +
                     '<iconify-icon icon="solar:qr-code-bold-duotone" style="color:var(--sp-navy);"></iconify-icon> ' + qrLabel + '</a>' +
                 '<a href="' + m.links.jogada + '" class="dash-action-btn">' +

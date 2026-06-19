@@ -16,7 +16,7 @@
             <div class="dash-icon dash-icon--teal" style="width:44px; height:44px;">
                 <iconify-icon icon="solar:transfer-horizontal-bold-duotone" style="font-size:1.3rem;"></iconify-icon>
             </div>
-            <span style="font-size:.8rem; font-weight:700; color:#374151;">Transações</span>
+            <span style="font-size:.8rem; font-weight:700; color:#374151;">Extrato</span>
         </a>
 
         <a href="{{ route('view-liberar-jogadas') }}" class="dash-card"

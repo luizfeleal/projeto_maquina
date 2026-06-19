@@ -18,7 +18,7 @@
                            cursor:pointer; display:flex; align-items:center; justify-content:center; gap:5px;
                            border-bottom:2px solid transparent; margin-bottom:-1px;">
                 <iconify-icon icon="solar:transfer-horizontal-bold-duotone"></iconify-icon>
-                Transações
+                Extrato
             </button>
             <button type="button" class="rel-tab-btn" data-target="relatorios-taxasDesconto"
                     style="flex:1; min-width:130px; padding:10px 12px; border:none; background:transparent;
