@@ -95,7 +95,12 @@ class MaquinasController extends Controller
         $idsPagina = array_column($paginaBase, 'id_maquina');
         $acumuladoPorId = [];
         if (!empty($idsPagina)) {
-            $acumulado     = ExtratoMaquinaService::coletarAcumulado(['id_cliente' => $id_cliente]);
+            $acumulado = ExtratoMaquinaService::coletarAcumulado([
+                'id_cliente' => $id_cliente,
+                'length'     => 5000,
+                'start'      => 0,
+                'order'      => [['column' => 4, 'dir' => 'desc']],
+            ]);
             $acumuladoData = $acumulado['data'] ?? (is_array($acumulado) ? $acumulado : []);
             foreach ($acumuladoData as $item) {
                 $idMaq = (string) ($item['id_maquina'] ?? '');
@@ -144,7 +149,12 @@ class MaquinasController extends Controller
         );
 
         // Acumulado por máquina (usado para o resumo e lista de máquinas do filtro)
-        $acumulado     = ExtratoMaquinaService::coletarAcumulado(['id_cliente' => $id_cliente]);
+        $acumulado = ExtratoMaquinaService::coletarAcumulado([
+            'id_cliente' => $id_cliente,
+            'length'     => 5000,
+            'start'      => 0,
+            'order'      => [['column' => 4, 'dir' => 'desc']],
+        ]);
         $maquinasAcum  = $acumulado['data'] ?? (is_array($acumulado) ? $acumulado : []);
 
         // Lista de máquinas para o filtro (nome + local)

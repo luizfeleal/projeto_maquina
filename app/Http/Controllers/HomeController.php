@@ -35,7 +35,11 @@ class HomeController extends Controller
         $maquinas_offline = array_values(array_filter($maquinas, fn($item) => $item['maquina_status'] == 0));
         $maquinasRelatorio = $maquinas;
 
-        $acumulado     = ExtratoMaquinaService::coletarAcumulado([]);
+        $acumulado = ExtratoMaquinaService::coletarAcumulado([
+            'length' => 5000,
+            'start'  => 0,
+            'order'  => [['column' => 4, 'dir' => 'desc']],
+        ]);
         $acumuladoData = $acumulado['data'] ?? (is_array($acumulado) ? $acumulado : []);
         $acumuladoPorId = [];
         foreach ($acumuladoData as $item) {

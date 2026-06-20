@@ -209,8 +209,7 @@ $(function () {
                 '<button type="button" class="dash-action-btn maq-btn-reset-dash" ' +
                     'data-id="' + escapeHtml(String(m.id_maquina)) + '" ' +
                     'data-nome="' + escapeHtml(m.maquina_nome) + '" ' +
-                    'data-saldo="' + saldo + '" ' +
-                    'style="cursor:pointer; border:none; background:none;">' +
+                    'data-saldo="' + saldo + '">' +
                     '<iconify-icon icon="solar:restart-bold-duotone" style="color:#f59e0b;"></iconify-icon> Reset</button>' +
             '</div>' +
         '</article>';

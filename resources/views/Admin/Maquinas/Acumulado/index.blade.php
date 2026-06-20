@@ -74,6 +74,10 @@ $(document).ready(function () {
             text: '{{ session("success") }}',
             timer: 3000,
             showConfirmButton: false,
+        }).then(function () {
+            if (window.tabelaAcumulado) {
+                window.tabelaAcumulado.ajax.reload(null, false);
+            }
         });
     @endif
 
@@ -98,7 +102,7 @@ $(document).ready(function () {
     fetchToken().then(function (token) {
         if (!token) return;
 
-        var tabela = $('#tabela-acumulado').DataTable({
+        window.tabelaAcumulado = $('#tabela-acumulado').DataTable({
             processing: true,
             serverSide: true,
             scrollX: true,

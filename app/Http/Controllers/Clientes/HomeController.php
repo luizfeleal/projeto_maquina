@@ -42,7 +42,12 @@ class HomeController extends Controller
         $maquinasRelatorio = $maquinas;
 
         // Máquinas enriquecidas (status + financeiro + QR)
-        $acumulado     = ExtratoMaquinaService::coletarAcumulado(['id_cliente' => $id_cliente]);
+        $acumulado = ExtratoMaquinaService::coletarAcumulado([
+            'id_cliente' => $id_cliente,
+            'length'     => 5000,
+            'start'      => 0,
+            'order'      => [['column' => 4, 'dir' => 'desc']],
+        ]);
         $acumuladoData = $acumulado['data'] ?? (is_array($acumulado) ? $acumulado : []);
         $acumuladoPorId = [];
         foreach ($acumuladoData as $item) {

@@ -375,8 +375,9 @@ class MockRouter
 
     private static function buildAcumuladoComReset(array $query): array
     {
-        $maquinas = MockStore::collection('maquinas');
-        $resets   = MockStore::collection('resetsParciais');
+        $maquinas  = MockStore::collection('maquinas');
+        $resets    = MockStore::collection('resetsParciais');
+        $extratos  = MockStore::collection('extratoMaquina');
 
         $ultimoReset = [];
         foreach ($resets as $reset) {
@@ -388,39 +389,85 @@ class MockRouter
 
         $data = [];
         foreach ($maquinas as $maq) {
-            $idMaq      = (string) $maq['id_maquina'];
-            $totalMaq   = 15.50; // soma de todos os extratos mock
-            $reset      = $ultimoReset[$idMaq] ?? null;
+            if (!empty($maq['deleted_at'])) {
+                continue;
+            }
 
-            $ultimaColeta = $reset ? (float) $reset['valor_ultima_coleta'] : null;
-            $saldo        = $ultimaColeta !== null ? ($totalMaq - $ultimaColeta) : $totalMaq;
+            $idMaq = (string) $maq['id_maquina'];
+            $reset = $ultimoReset[$idMaq] ?? null;
+            $txMaquina = array_values(array_filter(
+                $extratos,
+                fn($tx) => (string) ($tx['id_maquina'] ?? '') === $idMaq
+            ));
+
+            $totalMaq = self::somarExtratoMock($txMaquina);
+            $desdeReset = $reset['created_at'] ?? null;
+            $saldo = self::somarExtratoMock($txMaquina, $desdeReset);
 
             $data[] = [
-                'id_maquina'       => $idMaq,
-                'maquina_nome'     => $maq['maquina_nome'],
-                'local_nome'       => 'Local Central Mock',
-                'total_maquina'    => $totalMaq,
-                'total_pix'        => 10.50,
-                'total_cartao'     => 5.00,
-                'total_dinheiro'   => 0.00,
-                'ultima_coleta'    => $ultimaColeta,
-                'saldo_periodo'    => round($saldo, 2),
-                'data_ultimo_reset' => $reset ? $reset['created_at'] : null,
-                'tem_reset'        => $reset !== null,
+                'id_maquina'        => $idMaq,
+                'maquina_nome'      => $maq['maquina_nome'],
+                'local_nome'        => 'Local Central Mock',
+                'total_maquina'     => $totalMaq,
+                'total_pix'         => self::somarExtratoMock($txMaquina, $desdeReset, 'PIX'),
+                'total_cartao'      => self::somarExtratoMock($txMaquina, $desdeReset, 'Cartão'),
+                'total_dinheiro'    => self::somarExtratoMock($txMaquina, $desdeReset, 'Dinheiro'),
+                'ultima_coleta'     => $reset ? (float) $reset['valor_ultima_coleta'] : null,
+                'saldo_periodo'     => round($saldo, 2),
+                'data_ultimo_reset' => $reset ? self::formatIso8601Mock($reset['created_at']) : null,
+                'tem_reset'         => $reset !== null,
             ];
         }
 
         $page    = (int) ($query['page'] ?? 1);
-        $perPage = (int) ($query['per_page'] ?? 10);
+        $perPage = (int) ($query['per_page'] ?? $query['length'] ?? 10);
+        $start   = (int) ($query['start'] ?? 0);
+        $length  = (int) ($query['length'] ?? $perPage);
+        $total   = count($data);
+
+        if (isset($query['start']) || isset($query['length'])) {
+            $data = array_slice($data, $start, $length > 0 ? $length : null);
+        }
 
         return [
             'draw'            => (int) ($query['draw'] ?? 1),
-            'recordsTotal'    => count($data),
-            'recordsFiltered' => count($data),
+            'recordsTotal'    => $total,
+            'recordsFiltered' => $total,
             'data'            => array_values($data),
             'current_page'    => $page,
             'last_page'       => 1,
         ];
+    }
+
+    private static function somarExtratoMock(array $transacoes, ?string $desde = null, ?string $tipo = null): float
+    {
+        $total = 0.0;
+
+        foreach ($transacoes as $tx) {
+            $dataTx = (string) ($tx['data_criacao'] ?? '');
+            if ($desde !== null && $desde !== '' && $dataTx !== '' && $dataTx <= $desde) {
+                continue;
+            }
+
+            if ($tipo !== null && ($tx['extrato_operacao_tipo'] ?? '') !== $tipo) {
+                continue;
+            }
+
+            $valor = (float) ($tx['extrato_operacao_valor'] ?? 0);
+            $op    = $tx['extrato_operacao'] ?? 'C';
+            $total += ($op === 'D') ? -$valor : $valor;
+        }
+
+        return round($total, 2);
+    }
+
+    private static function formatIso8601Mock(?string $value): ?string
+    {
+        if ($value === null || $value === '') {
+            return null;
+        }
+
+        return date('Y-m-d\TH:i:s.000000\Z', strtotime($value));
     }
 
     private static function buildAcumuladoClienteComReset($idCliente, array $query): array
@@ -450,7 +497,12 @@ class MockRouter
             return self::json(['message' => 'O campo realizado_por é obrigatório.', 'errors' => ['realizado_por' => ['Campo obrigatório']]], 422);
         }
 
-        $totalMaquina = 15.50;
+        $totalMaquina = self::somarExtratoMock(
+            array_values(array_filter(
+                MockStore::collection('extratoMaquina'),
+                fn($tx) => (string) ($tx['id_maquina'] ?? '') === $idMaquina
+            ))
+        );
         $now = now()->format('Y-m-d H:i:s');
 
         $novoReset = [
@@ -470,7 +522,11 @@ class MockRouter
 
         return self::json([
             'message' => 'Reset parcial registrado com sucesso.',
-            'data' => array_merge($novoReset, ['saldo_periodo' => 0.00]),
+            'data' => array_merge($novoReset, [
+                'saldo_periodo' => 0.00,
+                'data_ultimo_reset' => self::formatIso8601Mock($now),
+                'created_at' => self::formatIso8601Mock($now),
+            ]),
         ], 201);
     }
 
