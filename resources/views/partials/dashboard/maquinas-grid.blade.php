@@ -34,14 +34,16 @@
         }
 
         $maqItems[] = [
-            'id_maquina'      => $idMaquina,
-            'maquina_nome'    => $maq['maquina_nome'] ?? 'Máquina',
-            'local_nome'      => $maq['local_nome'] ?? '—',
-            'id_placa'        => $maq['id_placa'] ?? '—',
-            'maquina_status'  => $maq['maquina_status'] ?? 1,
-            'saldo_periodo'   => (float) ($maq['saldo_periodo'] ?? 0),
-            'possui_qr'       => $possuiQr,
-            'links'           => $links,
+            'id_maquina'        => $idMaquina,
+            'maquina_nome'      => $maq['maquina_nome'] ?? 'Máquina',
+            'local_nome'        => $maq['local_nome'] ?? '—',
+            'id_placa'          => $maq['id_placa'] ?? '—',
+            'maquina_status'    => $maq['maquina_status'] ?? 1,
+            'saldo_periodo'     => (float) ($maq['saldo_periodo'] ?? 0),
+            'total_maquina'     => (float) ($maq['total_maquina'] ?? 0),
+            'data_ultimo_reset' => $maq['data_ultimo_reset'] ?? null,
+            'possui_qr'         => $possuiQr,
+            'links'             => $links,
         ];
     }
 @endphp
@@ -61,6 +63,15 @@
             Ver todas
         </a>
     </div>
+
+    @php
+        $resetRoute = $isCliente ? 'clientes-maquinas-reset-parcial' : 'maquinas-reset-parcial';
+    @endphp
+
+    <form id="formResetParcialDash" method="POST" action="{{ route($resetRoute) }}" style="display:none">
+        @csrf
+        <input type="hidden" name="id_maquina" id="resetDashIdMaquina">
+    </form>
 
     @if(empty($maqItems))
         <div class="dash-card" style="padding:48px 24px; text-align:center; color:#9ca3af;">
@@ -125,14 +136,24 @@ $(function () {
         });
     }
 
+    function fmtDate(iso) {
+        if (!iso) return null;
+        try {
+            return new Date(iso).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+        } catch (e) { return null; }
+    }
+
     function cardHtml(m) {
-        var ativo    = Number(m.maquina_status) === 1;
-        var saldo    = m.saldo_periodo || 0;
-        var saldoClr = saldo < 0 ? '#dc2626' : 'var(--sp-teal)';
-        var qrLabel  = m.possui_qr ? 'QR Code' : 'Gerar QR';
+        var ativo      = Number(m.maquina_status) === 1;
+        var saldo      = m.saldo_periodo || 0;
+        var total      = m.total_maquina || 0;
+        var saldoClr   = saldo < 0 ? '#dc2626' : 'var(--sp-teal)';
+        var qrLabel    = m.possui_qr ? 'QR Code' : 'Gerar QR';
         var statusIcon = ativo
             ? '<span class="maq-status-dot maq-status-dot--online" aria-label="Online"></span>'
             : '<span class="maq-status-dot maq-status-dot--offline" aria-label="Offline"></span>';
+        var ultimoReset = fmtDate(m.data_ultimo_reset);
+        var resetLabel  = ultimoReset ? ultimoReset : 'Sem reset';
 
         return '<article class="dash-card maq-card-item" role="listitem" style="display:flex; flex-direction:column;">' +
             '<div style="padding:14px 16px 10px; border-bottom:1px solid #f3f4f6; display:flex; align-items:flex-start; justify-content:space-between; gap:8px;">' +
@@ -157,9 +178,24 @@ $(function () {
                     statusIcon +
                 '</span>' +
             '</div>' +
-            '<div style="padding:12px 16px; border-bottom:1px solid #f3f4f6;">' +
-                '<p style="margin:0 0 2px; font-size:.62rem; font-weight:600; text-transform:uppercase; letter-spacing:.05em; color:#9ca3af; text-align:center;">Saldo período</p>' +
-                '<p style="margin:0; font-size:.9rem; font-weight:700; text-align:center; color:' + saldoClr + ';">' + brl(saldo) + '</p>' +
+            '<div style="padding:10px 16px; border-bottom:1px solid #f3f4f6;">' +
+                '<div style="display:flex; gap:8px;">' +
+                    '<div style="flex:1; text-align:center;">' +
+                        '<p style="margin:0 0 2px; font-size:.58rem; font-weight:600; text-transform:uppercase; letter-spacing:.05em; color:#9ca3af;">Saldo período</p>' +
+                        '<p style="margin:0; font-size:.88rem; font-weight:700; color:' + saldoClr + ';">' + brl(saldo) + '</p>' +
+                    '</div>' +
+                    '<div style="width:1px; background:#f3f4f6;"></div>' +
+                    '<div style="flex:1; text-align:center;">' +
+                        '<p style="margin:0 0 2px; font-size:.58rem; font-weight:600; text-transform:uppercase; letter-spacing:.05em; color:#9ca3af;">Total máquina</p>' +
+                        '<p style="margin:0; font-size:.88rem; font-weight:700; color:#111827;">' + brl(total) + '</p>' +
+                    '</div>' +
+                '</div>' +
+                '<div style="margin-top:8px; text-align:center;">' +
+                    '<p style="margin:0; font-size:.65rem; color:#9ca3af;">' +
+                        '<iconify-icon icon="solar:clock-circle-bold-duotone" style="font-size:.7rem; vertical-align:middle;"></iconify-icon>' +
+                        ' Último reset: <strong style="color:' + (ultimoReset ? '#6b7280' : '#d1d5db') + ';">' + escapeHtml(resetLabel) + '</strong>' +
+                    '</p>' +
+                '</div>' +
             '</div>' +
             '<div style="padding:12px 16px; display:flex; flex-wrap:wrap; gap:6px; margin-top:auto;">' +
                 '<a href="' + m.links.transacoes + '" class="dash-action-btn">' +
@@ -170,6 +206,12 @@ $(function () {
                     '<iconify-icon icon="solar:play-circle-bold-duotone" style="color:#ca8a04;"></iconify-icon> Jogada</a>' +
                 '<a href="' + m.links.editar + '" class="dash-action-btn">' +
                     '<iconify-icon icon="solar:pen-bold-duotone" style="color:var(--sp-navy);"></iconify-icon> Editar</a>' +
+                '<button type="button" class="dash-action-btn maq-btn-reset-dash" ' +
+                    'data-id="' + escapeHtml(String(m.id_maquina)) + '" ' +
+                    'data-nome="' + escapeHtml(m.maquina_nome) + '" ' +
+                    'data-saldo="' + saldo + '" ' +
+                    'style="cursor:pointer; border:none; background:none;">' +
+                    '<iconify-icon icon="solar:restart-bold-duotone" style="color:#f59e0b;"></iconify-icon> Reset</button>' +
             '</div>' +
         '</article>';
     }
@@ -248,6 +290,31 @@ $(function () {
             render();
             document.getElementById('maquinas').scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
+    });
+
+    $grid.on('click', '.maq-btn-reset-dash', function () {
+        var id    = $(this).data('id');
+        var nome  = $(this).data('nome');
+        var saldo = $(this).data('saldo');
+
+        Swal.fire({
+            icon: 'warning',
+            title: 'Confirmar Reset Parcial?',
+            html:
+                '<p class="mb-1">Máquina: <strong>' + $('<div>').text(nome).html() + '</strong></p>' +
+                '<p class="mb-2">Saldo do período atual: <strong>' + brl(saldo) + '</strong></p>' +
+                '<p class="text-muted small">O total acumulado da máquina <strong>não será alterado</strong>.<br>Apenas o saldo do período será reiniciado.</p>',
+            showCancelButton: true,
+            confirmButtonText: '<iconify-icon icon="solar:restart-bold-duotone"></iconify-icon> Confirmar Reset',
+            cancelButtonText: 'Cancelar',
+            confirmButtonColor: '#f59e0b',
+            cancelButtonColor: '#6c757d',
+            reverseButtons: true,
+        }).then(function (result) {
+            if (!result.isConfirmed) return;
+            $('#resetDashIdMaquina').val(id);
+            $('#formResetParcialDash').submit();
+        });
     });
 
     render();
