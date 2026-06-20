@@ -10,6 +10,9 @@
     $totalCartao    = $resumo['total_cartao']    ?? 0;
     $totalDinheiro  = $resumo['total_dinheiro']  ?? 0;
     $totalDevolucao = $resumo['total_devolucao'] ?? 0;
+    $qtdMaquinas    = count($idsMaquinas);
+    $resetUnico     = $qtdMaquinas === 1;
+    $idMaquinaReset = $resetUnico ? ($idsMaquinas[0] ?? null) : null;
     $brl = fn($v) => 'R$ ' . number_format($v, 2, ',', '.');
 @endphp
 
@@ -23,9 +26,12 @@
         </p>
     </div>
     <button id="btn-reset-todas"
-            style="background:#fbbf24; border:none; border-radius:10px;
+            @if($qtdMaquinas === 0) disabled @endif
+            style="background:{{ $qtdMaquinas === 0 ? '#e5e7eb' : '#fbbf24' }}; border:none; border-radius:10px;
                    padding:12px 24px; font-weight:700; font-size:.9rem;
-                   color:#1a1a1a; cursor:pointer; display:flex; align-items:center; gap:8px;
+                   color:{{ $qtdMaquinas === 0 ? '#9ca3af' : '#1a1a1a' }};
+                   cursor:{{ $qtdMaquinas === 0 ? 'not-allowed' : 'pointer' }};
+                   display:flex; align-items:center; gap:8px;
                    box-shadow:0 1px 4px rgba(0,0,0,.12); white-space:nowrap;">
         <iconify-icon icon="solar:restart-bold-duotone" style="font-size:1.1rem;"></iconify-icon>
         Reset Parcial
@@ -190,7 +196,13 @@
 
     </div>{{-- /cards-detalhes --}}
 
-    {{-- Form oculto para reset --}}
+    {{-- Forms ocultos para reset --}}
+    <form id="formResetUnico" method="POST"
+          action="{{ route('clientes-maquinas-reset-parcial') }}" style="display:none">
+        @csrf
+        <input type="hidden" name="id_maquina" id="resetUnicoIdMaquina" value="{{ $idMaquinaReset }}">
+    </form>
+
     <form id="formResetTodas" method="POST"
           action="{{ route('clientes-maquinas-reset-parcial-todas') }}" style="display:none">
         @csrf
@@ -315,9 +327,15 @@ $(document).ready(function () {
     });
 
     $('#btn-reset-todas').on('click', function () {
-        var totalAcumulado = '{{ $brl($totalAcumulado) }}';
-        var totalSaldo     = '{{ $brl($totalSaldo) }}';
-        var qtdMaquinas    = {{ count($idsMaquinas) }};
+        if ($(this).prop('disabled')) {
+            return;
+        }
+
+        var totalAcumulado = @json($brl($totalAcumulado));
+        var totalSaldo     = @json($brl($totalSaldo));
+        var qtdMaquinas    = {{ $qtdMaquinas }};
+        var resetUnico     = {{ $resetUnico ? 'true' : 'false' }};
+        var maquinaNome    = @json($maquinaNomeSel ?? null);
 
         if (qtdMaquinas === 0) {
             Swal.fire({
@@ -328,23 +346,35 @@ $(document).ready(function () {
             return;
         }
 
+        var detalhesHtml = '';
+        if (resetUnico && maquinaNome) {
+            detalhesHtml =
+                '<p class="mb-1">Máquina: <strong>' + $('<div>').text(maquinaNome).html() + '</strong></p>';
+        } else {
+            detalhesHtml =
+                '<p class="mb-2">Máquinas afetadas: <strong>' + qtdMaquinas + '</strong></p>';
+        }
+
         Swal.fire({
             icon: 'warning',
             title: 'Confirmar Reset Parcial?',
             html:
+                detalhesHtml +
                 '<p class="mb-1">Total acumulado: <strong>' + totalAcumulado + '</strong></p>' +
                 '<p class="mb-2">Saldo do período: <strong>' + totalSaldo + '</strong></p>' +
-                '<p class="mb-2">Máquinas afetadas: <strong>' + qtdMaquinas + '</strong></p>' +
                 '<p class="text-muted small">O contador principal <strong>não será alterado</strong>.<br>' +
                 'Apenas o saldo do período será reiniciado.</p>',
             showCancelButton: true,
-            confirmButtonText: '<i class="fa-solid fa-rotate-right me-1"></i> Confirmar Reset',
+            confirmButtonText: 'Confirmar Reset',
             cancelButtonText: 'Cancelar',
             confirmButtonColor: '#fbbf24',
             cancelButtonColor: '#6c757d',
             reverseButtons: true,
         }).then(function (result) {
-            if (result.isConfirmed) {
+            if (!result.isConfirmed) return;
+            if (resetUnico) {
+                $('#formResetUnico').submit();
+            } else {
                 $('#formResetTodas').submit();
             }
         });

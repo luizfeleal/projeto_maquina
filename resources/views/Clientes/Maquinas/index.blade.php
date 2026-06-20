@@ -9,6 +9,12 @@
 
 <div class="content-body" style="padding-top:0;">
 
+    <form id="formResetParcialMaquinas" method="POST"
+          action="{{ route('clientes-maquinas-reset-parcial') }}" style="display:none">
+        @csrf
+        <input type="hidden" name="id_maquina" id="resetMaquinasIdMaquina">
+    </form>
+
     @if(!$temMaquinas)
         <div style="background:#fff; border:1px dashed #e8ecf0; border-radius:14px;
                     padding:60px 24px; text-align:center; color:#9ca3af;">
@@ -178,6 +184,21 @@
                                       style="font-size:.95rem; color:#6366f1;"></iconify-icon>
                         Editar
                     </a>
+
+                    <button type="button"
+                            class="btn-reset-maquina"
+                            data-id="{{ $idMaquina }}"
+                            data-nome="{{ $nome }}"
+                            data-saldo="{{ $saldo }}"
+                            style="flex:1; min-width:100px; text-align:center;
+                                   background:#fffbeb; border:1px solid #fde68a; border-radius:8px;
+                                   padding:8px 10px; font-size:.78rem; font-weight:600; color:#92400e;
+                                   display:flex; align-items:center; justify-content:center; gap:5px;
+                                   cursor:pointer;">
+                        <iconify-icon icon="solar:restart-bold-duotone"
+                                      style="font-size:.95rem; color:#f59e0b;"></iconify-icon>
+                        Reset
+                    </button>
                 </div>
 
             </div>
@@ -250,11 +271,61 @@ $(document).ready(function () {
     var $input = $form.find('.view-search-input');
     var timer;
 
+    function brl(val) {
+        var n = Number(val);
+        if (isNaN(n)) n = 0;
+        return 'R$ ' + n.toFixed(2).replace('.', ',');
+    }
+
     $input.on('input', function () {
         clearTimeout(timer);
         timer = setTimeout(function () {
             $form.submit();
         }, 400);
+    });
+
+    @if(session('success'))
+        Swal.fire({
+            icon: 'success',
+            title: 'Sucesso!',
+            text: @json(session('success')),
+            timer: 3000,
+            showConfirmButton: false,
+        });
+    @endif
+
+    @if(session('error'))
+        Swal.fire({
+            icon: 'error',
+            title: 'Erro',
+            text: @json(session('error')),
+        });
+    @endif
+
+    $(document).on('click', '.btn-reset-maquina', function () {
+        var id    = $(this).data('id');
+        var nome  = $(this).data('nome');
+        var saldo = $(this).data('saldo');
+
+        Swal.fire({
+            icon: 'warning',
+            title: 'Confirmar Reset Parcial?',
+            html:
+                '<p class="mb-1">Máquina: <strong>' + $('<div>').text(nome).html() + '</strong></p>' +
+                '<p class="mb-2">Saldo do período atual: <strong>' + brl(saldo) + '</strong></p>' +
+                '<p class="text-muted small">O total acumulado da máquina <strong>não será alterado</strong>.<br>' +
+                'Apenas o saldo do período será reiniciado.</p>',
+            showCancelButton: true,
+            confirmButtonText: 'Confirmar Reset',
+            cancelButtonText: 'Cancelar',
+            confirmButtonColor: '#f59e0b',
+            cancelButtonColor: '#6c757d',
+            reverseButtons: true,
+        }).then(function (result) {
+            if (!result.isConfirmed) return;
+            $('#resetMaquinasIdMaquina').val(id);
+            $('#formResetParcialMaquinas').submit();
+        });
     });
 });
 </script>

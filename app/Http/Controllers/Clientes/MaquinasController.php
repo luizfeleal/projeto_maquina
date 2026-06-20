@@ -142,6 +142,13 @@ class MaquinasController extends Controller
 
         $id_cliente    = session()->get('id_cliente');
         $idMaquinaSel  = $request->input('id_maquina');
+        $idsPermitidos = $this->coletarIdsMaquinasDoCliente($id_cliente);
+
+        if ($idMaquinaSel && !in_array((string) $idMaquinaSel, $idsPermitidos, true)) {
+            return redirect()
+                ->route('clientes-maquinas-transacoes')
+                ->with('error', 'Máquina inválida ou sem permissão para visualização.');
+        }
 
         // Todas as transações do cliente
         $todasTransacoes = array_values(
@@ -192,18 +199,37 @@ class MaquinasController extends Controller
             }
         }
 
+        $maquinaNomeSel = null;
+        if ($idMaquinaSel) {
+            foreach ($listaMaquinas as $maq) {
+                if ((string) ($maq['id_maquina'] ?? '') === (string) $idMaquinaSel) {
+                    $maquinaNomeSel = $maq['maquina_nome'] ?? null;
+                    break;
+                }
+            }
+        }
+
         $resumo = [
             'total_acumulado'  => array_sum(array_column($maquinasFiltradas, 'total_maquina')),
             'total_saldo'      => array_sum(array_column($maquinasFiltradas, 'saldo_periodo')),
             'tem_reset'        => !empty(array_filter(array_column($maquinasFiltradas, 'tem_reset'))),
-            'ids_maquinas'     => array_column($maquinasFiltradas, 'id_maquina'),
+            'ids_maquinas'     => array_values(array_filter(
+                array_column($maquinasFiltradas, 'id_maquina'),
+                fn($id) => in_array((string) $id, $idsPermitidos, true)
+            )),
             'total_pix'        => $totalPix,
             'total_cartao'     => $totalCartao,
             'total_dinheiro'   => $totalDinheiro,
             'total_devolucao'  => $totalDevolucao,
         ];
 
-        return view('Clientes.Maquinas.Transacoes.index', compact('resultado', 'resumo', 'listaMaquinas', 'idMaquinaSel'));
+        return view('Clientes.Maquinas.Transacoes.index', compact(
+            'resultado',
+            'resumo',
+            'listaMaquinas',
+            'idMaquinaSel',
+            'maquinaNomeSel'
+        ));
     }
 
     public function resetParcialTodas(Request $request)
@@ -211,10 +237,23 @@ class MaquinasController extends Controller
         $id_cliente   = session()->get('id_cliente');
         $realizadoPor = (string) (session('id_usuario') ?? session('usuario_id') ?? '1');
 
-        $ids = $request->input('ids_maquinas', []);
+        $ids = array_values(array_unique(array_filter(
+            (array) $request->input('ids_maquinas', []),
+            fn($id) => $id !== null && $id !== ''
+        )));
 
         if (empty($ids)) {
             return back()->with('error', 'Nenhuma máquina encontrada para resetar.');
+        }
+
+        $idsPermitidos = $this->coletarIdsMaquinasDoCliente($id_cliente);
+        $idsInvalidos  = array_values(array_filter(
+            $ids,
+            fn($id) => !in_array((string) $id, $idsPermitidos, true)
+        ));
+
+        if (!empty($idsInvalidos)) {
+            return back()->with('error', 'Uma ou mais máquinas selecionadas não pertencem ao seu cadastro.');
         }
 
         $erros   = [];
@@ -257,6 +296,13 @@ class MaquinasController extends Controller
 
         try {
             $idMaquina    = $request->input('id_maquina');
+            $id_cliente   = session()->get('id_cliente');
+            $idsPermitidos = $this->coletarIdsMaquinasDoCliente($id_cliente);
+
+            if (!in_array((string) $idMaquina, $idsPermitidos, true)) {
+                return back()->with('error', 'Você não tem permissão para resetar esta máquina.');
+            }
+
             $realizadoPor = session('id_usuario') ?? session('usuario_id') ?? auth()->id() ?? '1';
 
             $dados = [
@@ -551,5 +597,26 @@ class MaquinasController extends Controller
         } catch (\Throwable $e) {
             return back()->with('error', 'Erro ao excluir a máquina de cartão: ' . $e->getMessage());
         }
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function coletarIdsMaquinasDoCliente($id_cliente): array
+    {
+        $clienteLocal = array_filter(
+            ClienteLocalService::coletar(),
+            fn($item) => $item['id_cliente'] == $id_cliente
+        );
+        $idsLocais = array_column(array_values($clienteLocal), 'id_local');
+
+        $ids = [];
+        foreach (MaquinasService::coletar() as $m) {
+            if (in_array($m['id_local'] ?? null, $idsLocais, true)) {
+                $ids[] = (string) $m['id_maquina'];
+            }
+        }
+
+        return $ids;
     }
 }
