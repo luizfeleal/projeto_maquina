@@ -1,5 +1,27 @@
 <?php
 
+if (!function_exists('normalizeGrupoNome')) {
+    function normalizeGrupoNome(?string $grupoNome): string
+    {
+        return strtolower(trim($grupoNome ?? ''));
+    }
+}
+
+if (!function_exists('resolveHomeRouteForGrupo')) {
+    /**
+     * Rota inicial após login conforme o grupo de acesso.
+     * Mesma página de login para todos; o destino muda por perfil.
+     */
+    function resolveHomeRouteForGrupo(?string $grupoNome): string
+    {
+        return match (normalizeGrupoNome($grupoNome)) {
+            'admin'      => 'home',
+            'financeiro' => 'financeiro-home',
+            default      => 'cliente-home',
+        };
+    }
+}
+
 if (!function_exists('getRouteBreadcrumbs')) {
     /**
      * Returns the breadcrumb trail for a given route name.

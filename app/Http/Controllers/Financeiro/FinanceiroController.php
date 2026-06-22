@@ -26,8 +26,11 @@ class FinanceiroController extends Controller
             ->filter(fn($tx) => ($tx['extrato_operacao'] ?? 'C') === 'C')
             ->groupBy(fn($tx) => substr($tx['data_criacao'], 0, 7))
             ->map(fn($grupo) => round($grupo->sum(fn($tx) => (float)($tx['extrato_operacao_valor'] ?? 0)), 2))
-            ->sortKeys()
-            ->takeLast(12);
+            ->sortKeys();
+
+        if ($porMes->count() > 12) {
+            $porMes = $porMes->slice($porMes->count() - 12);
+        }
 
         $mesesLabels  = $porMes->keys()->map(fn($k) => $this->formatarMes($k))->values()->toArray();
         $mesesValores = $porMes->values()->toArray();

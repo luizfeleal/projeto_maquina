@@ -39,12 +39,17 @@ class LoginController extends Controller
                 return back()->with('error', 'Não foi encontrado um grupo de acesso para o usuário informado.');
             }
 
-             session(['id_usuario'=> $usuario[0]['id_usuario'], 'id_grupo_acesso'=>$usuario[0]['id_grupo_acesso'], 'usuario_nome'=>$usuario[0]['usuario_nome'], 'grupo_nome'=>$grupo_acesso['grupo_acesso_nome'], 'id_cliente'=>$usuario[0]['id_cliente']]);
-             if($grupo_acesso['grupo_acesso_nome'] == 'admin'){
-                return redirect()->route('home');
-            }else{
-                return redirect()->route('cliente-home');
-            }
+             $grupoNome = normalizeGrupoNome($grupo_acesso['grupo_acesso_nome'] ?? '');
+
+             session([
+                 'id_usuario' => $usuario[0]['id_usuario'],
+                 'id_grupo_acesso' => $usuario[0]['id_grupo_acesso'],
+                 'usuario_nome' => $usuario[0]['usuario_nome'],
+                 'grupo_nome' => $grupoNome,
+                 'id_cliente' => $usuario[0]['id_cliente'],
+             ]);
+
+             return redirect()->route(resolveHomeRouteForGrupo($grupoNome));
          }
       }
       return back()->with('error', 'Os dados de Usuário e Senha são obrigatórios para o login.');
@@ -57,11 +62,7 @@ class LoginController extends Controller
     }
     public function login(){
         if(session()->has('id_usuario') && session()->has('id_grupo_acesso')){
-            if(session('grupo_nome') === 'admin'){
-                return redirect()->route('home');
-            }
-
-            return redirect()->route('cliente-home');
+            return redirect()->route(resolveHomeRouteForGrupo(session('grupo_nome')));
         }
 
         return view('Login.Login');
