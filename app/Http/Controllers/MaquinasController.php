@@ -197,8 +197,15 @@ class MaquinasController extends Controller
         $idLocal   = $request->input('id_local');
         $idMaquina = $request->input('id_maquina');
 
+        $dataInicio   = $request->input('data_inicio');
+        $dataFim      = $request->input('data_fim');
+        $tipoOperacao = $request->input('tipo_operacao');
+
         $hasFilter = !empty($idCliente) || !empty($idLocal) || !empty($idMaquina);
-        $needsLocalProcessing = $hasFilter || !$mostrarTaxas;
+        $hasFiltroExtrato = $request->filled('data_inicio')
+            || $request->filled('data_fim')
+            || $request->filled('tipo_operacao');
+        $needsLocalProcessing = $hasFilter || !$mostrarTaxas || $hasFiltroExtrato;
 
         $params = $this->buildExtratoMaquinaQueryParams($request);
 
@@ -269,6 +276,14 @@ class MaquinasController extends Controller
                 $data,
                 fn($tx) => $this->transacaoCorrespondeMaquinas($tx, $maquinasFiltradas)
             ));
+        }
+
+        if ($request->filled('data_inicio') || $request->filled('data_fim')) {
+            $data = $this->filtrarTransacoesPorData($data, $dataInicio, $dataFim);
+        }
+
+        if ($request->filled('tipo_operacao')) {
+            $data = $this->filtrarTransacoesPorTipo($data, $tipoOperacao);
         }
 
         if ($needsLocalProcessing) {
@@ -379,7 +394,80 @@ class MaquinasController extends Controller
             $params['search'] = $request->input('search.value', '');
         }
 
+        foreach (['data_inicio', 'data_fim', 'tipo_operacao'] as $filtro) {
+            if ($request->filled($filtro)) {
+                $params[$filtro] = $request->input($filtro);
+            }
+        }
+
         return $params;
+    }
+
+    private function filtrarTransacoesPorTipo(array $transacoes, ?string $tipoOperacao): array
+    {
+        if (empty($tipoOperacao)) {
+            return $transacoes;
+        }
+
+        return array_values(array_filter(
+            $transacoes,
+            fn($tx) => $this->transacaoCorrespondeTipo($tx, $tipoOperacao)
+        ));
+    }
+
+    private function transacaoCorrespondeTipo(array $tx, string $tipoOperacao): bool
+    {
+        $tipo = strtolower($tx['extrato_operacao_tipo'] ?? '');
+
+        return match (strtolower($tipoOperacao)) {
+            'pix' => str_contains($tipo, 'pix'),
+            'cartao', 'cartão' => str_contains($tipo, 'cart'),
+            'dinheiro' => str_contains($tipo, 'dinheir')
+                || str_contains($tipo, 'físic')
+                || str_contains($tipo, 'fisic'),
+            default => $tipo === strtolower($tipoOperacao),
+        };
+    }
+
+    private function filtrarTransacoesPorData(array $transacoes, ?string $dataInicio, ?string $dataFim): array
+    {
+        if (empty($dataInicio) && empty($dataFim)) {
+            return $transacoes;
+        }
+
+        $inicioTs = $dataInicio ? strtotime($dataInicio . ' 00:00:00') : null;
+        $fimTs    = $dataFim ? strtotime($dataFim . ' 23:59:59') : null;
+
+        return array_values(array_filter($transacoes, function ($tx) use ($inicioTs, $fimTs) {
+            $ts = $this->parseDataCriacaoExtrato($tx['data_criacao'] ?? null);
+            if ($ts === null) {
+                return false;
+            }
+            if ($inicioTs !== null && $ts < $inicioTs) {
+                return false;
+            }
+            if ($fimTs !== null && $ts > $fimTs) {
+                return false;
+            }
+
+            return true;
+        }));
+    }
+
+    private function parseDataCriacaoExtrato(?string $value): ?int
+    {
+        if ($value === null || $value === '') {
+            return null;
+        }
+
+        $dt = \DateTime::createFromFormat('d/m/Y H:i', $value);
+        if ($dt !== false) {
+            return $dt->getTimestamp();
+        }
+
+        $ts = strtotime($value);
+
+        return $ts !== false ? $ts : null;
     }
 
     public function resetParcial(Request $request)

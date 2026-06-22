@@ -153,10 +153,17 @@ class MaquinasController extends Controller
                 ->with('error', 'Máquina inválida ou sem permissão para visualização.');
         }
 
-        // Todas as transações do cliente
-        $todasTransacoes = array_values(
-            ExtratoMaquinaService::coletarExtratoDasMaquinasDeUmCliente(['id_cliente' => $id_cliente])
-        );
+        // Extrato completo das máquinas do cliente (filtrado localmente por permissão)
+        $extratoResponse = ExtratoMaquinaService::coletarComPaginacao([
+            'length' => 5000,
+            'start'  => 0,
+            'order'  => [['column' => 4, 'dir' => 'desc']],
+        ]);
+        $todasTransacoes = array_values(array_filter(
+            $extratoResponse['data'] ?? [],
+            fn($tx) => is_array($tx)
+                && in_array((string) ($tx['id_maquina'] ?? ''), $idsPermitidos, true)
+        ));
 
         // Acumulado por máquina (usado para o resumo e lista de máquinas do filtro)
         $acumulado = ExtratoMaquinaService::coletarAcumulado([
@@ -247,6 +254,22 @@ class MaquinasController extends Controller
         ));
     }
 
+    private function parseDataCriacaoExtrato(?string $value): ?int
+    {
+        if ($value === null || $value === '') {
+            return null;
+        }
+
+        $dt = \DateTime::createFromFormat('d/m/Y H:i', $value);
+        if ($dt !== false) {
+            return $dt->getTimestamp();
+        }
+
+        $ts = strtotime($value);
+
+        return $ts !== false ? $ts : null;
+    }
+
     private function filtrarTransacoesPorTipo(array $transacoes, ?string $tipoOperacao): array
     {
         if (empty($tipoOperacao)) {
@@ -283,8 +306,8 @@ class MaquinasController extends Controller
         $fimTs    = $dataFim ? strtotime($dataFim . ' 23:59:59') : null;
 
         return array_values(array_filter($transacoes, function ($tx) use ($inicioTs, $fimTs) {
-            $ts = strtotime($tx['data_criacao'] ?? '');
-            if ($ts === false) {
+            $ts = $this->parseDataCriacaoExtrato($tx['data_criacao'] ?? null);
+            if ($ts === null) {
                 return false;
             }
             if ($inicioTs !== null && $ts < $inicioTs) {
