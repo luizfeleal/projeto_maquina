@@ -19,12 +19,13 @@ class FinanceiroController extends Controller
             'order'  => [['column' => 4, 'dir' => 'desc']],
         ]);
         $transacoes = collect($transacoesRaw['data'] ?? (is_array($transacoesRaw) ? $transacoesRaw : []))
-            ->filter(fn($tx) => is_array($tx) && isset($tx['data_criacao']));
+            ->filter(fn($tx) => is_array($tx) && !empty($tx['data_criacao']))
+            ->filter(fn($tx) => $this->parseDataTransacao($tx['data_criacao']) !== null);
 
         // Agrupa por mês (últimos 12 meses)
         $porMes = $transacoes
             ->filter(fn($tx) => ($tx['extrato_operacao'] ?? 'C') === 'C')
-            ->groupBy(fn($tx) => substr($tx['data_criacao'], 0, 7))
+            ->groupBy(fn($tx) => $this->parseDataTransacao($tx['data_criacao'])->format('Y-m'))
             ->map(fn($grupo) => round($grupo->sum(fn($tx) => (float)($tx['extrato_operacao_valor'] ?? 0)), 2))
             ->sortKeys();
 
@@ -69,14 +70,51 @@ class FinanceiroController extends Controller
     private function formatarMes(string $anoMes): string
     {
         $meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
-        [$ano, $mes] = explode('-', $anoMes);
-        return ($meses[(int)$mes - 1] ?? $mes) . '/' . substr($ano, 2);
+        $data  = $this->parseAnoMes($anoMes);
+
+        if ($data === null) {
+            return $anoMes;
+        }
+
+        return ($meses[$data->month - 1] ?? (string) $data->month) . '/' . $data->format('y');
     }
 
     private function mesParaTrimestre(string $anoMes): string
     {
-        [$ano, $mes] = explode('-', $anoMes);
-        $t = (int) ceil((int)$mes / 3);
-        return "{$ano}-T{$t}";
+        $data = $this->parseAnoMes($anoMes);
+
+        if ($data === null) {
+            return $anoMes;
+        }
+
+        $t = (int) ceil($data->month / 3);
+
+        return $data->format('Y') . '-T' . $t;
+    }
+
+    private function parseDataTransacao(?string $dataCriacao): ?Carbon
+    {
+        if ($dataCriacao === null || trim($dataCriacao) === '') {
+            return null;
+        }
+
+        try {
+            return Carbon::parse($dataCriacao);
+        } catch (\Throwable $e) {
+            return null;
+        }
+    }
+
+    private function parseAnoMes(string $anoMes): ?Carbon
+    {
+        if (preg_match('/^\d{4}-\d{2}$/', $anoMes)) {
+            try {
+                return Carbon::createFromFormat('Y-m', $anoMes)->startOfMonth();
+            } catch (\Throwable $e) {
+                return null;
+            }
+        }
+
+        return $this->parseDataTransacao($anoMes)?->startOfMonth();
     }
 }
