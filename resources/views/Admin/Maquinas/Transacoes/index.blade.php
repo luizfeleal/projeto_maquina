@@ -51,6 +51,16 @@
                         <label for="filter-data-fim" class="form-label fw-semibold">Data fim</label>
                         <input type="date" id="filter-data-fim" class="form-control">
                     </div>
+
+                    <div class="col-md-3">
+                        <label for="filter-tipo-operacao" class="form-label fw-semibold">Tipo de operação</label>
+                        <select id="filter-tipo-operacao" class="form-select">
+                            <option value="">Todos os tipos</option>
+                            <option value="pix">PIX</option>
+                            <option value="cartao">Cartão</option>
+                            <option value="dinheiro">Dinheiro</option>
+                        </select>
+                    </div>
                 </div>
 
                 <div class="d-flex justify-content-between align-items-center mt-3">
@@ -205,6 +215,9 @@ $(document).ready(function () {
                 var dataFim    = $('#filter-data-fim').val();
                 if (dataInicio) d.data_inicio = dataInicio;
                 if (dataFim)    d.data_fim    = dataFim;
+
+                var tipoOperacao = $('#filter-tipo-operacao').val();
+                if (tipoOperacao) d.tipo_operacao = tipoOperacao;
             }
         },
         language: {
@@ -266,6 +279,7 @@ $(document).ready(function () {
         $('#filter-maquina').val('').trigger('change.select2');
         $('#filter-data-inicio').val('');
         $('#filter-data-fim').val('');
+        $('#filter-tipo-operacao').val('');
         atualizarOpcoesLocal();
         atualizarOpcoesMaquina();
         recarregarTabela();

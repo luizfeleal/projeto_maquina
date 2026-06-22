@@ -603,6 +603,19 @@ class MockRouter
             }));
         }
 
+        if (!empty($query['tipo_operacao'])) {
+            $tipo = strtolower((string) $query['tipo_operacao']);
+            $items = array_values(array_filter($items, function ($i) use ($tipo) {
+                $tipoTx = strtolower($i['extrato_operacao_tipo'] ?? '');
+                return match ($tipo) {
+                    'pix' => str_contains($tipoTx, 'pix'),
+                    'cartao', 'cartão' => str_contains($tipoTx, 'cart'),
+                    'dinheiro' => str_contains($tipoTx, 'dinheir'),
+                    default => $tipoTx === $tipo,
+                };
+            }));
+        }
+
         $total   = count($items);
         $perPage = max((int) ($query['length'] ?? $query['per_page'] ?? 10), 1);
         $start   = (int) ($query['start'] ?? 0);

@@ -78,12 +78,24 @@
                    value="{{ $dataFim ?? '' }}">
         </div>
 
+        <div>
+            <label for="filtro-tipo-operacao" style="font-size:.825rem; font-weight:600; color:#374151; display:block; margin-bottom:4px;">
+                Tipo de operação
+            </label>
+            <select name="tipo_operacao" id="filtro-tipo-operacao" class="form-control">
+                <option value="">Todos os tipos</option>
+                <option value="pix" {{ ($tipoOperacao ?? '') === 'pix' ? 'selected' : '' }}>PIX</option>
+                <option value="cartao" {{ ($tipoOperacao ?? '') === 'cartao' ? 'selected' : '' }}>Cartão</option>
+                <option value="dinheiro" {{ ($tipoOperacao ?? '') === 'dinheiro' ? 'selected' : '' }}>Dinheiro</option>
+            </select>
+        </div>
+
         <div style="display:flex; gap:8px;">
             <button type="submit" class="btn btn-primary btn-sm">
                 <iconify-icon icon="solar:filter-bold-duotone"></iconify-icon>
                 Filtrar
             </button>
-            @if($idMaquinaSel || !empty($dataInicio) || !empty($dataFim))
+            @if($idMaquinaSel || !empty($dataInicio) || !empty($dataFim) || !empty($tipoOperacao))
                 <a href="{{ route('clientes-maquinas-transacoes') }}"
                    class="btn btn-outline-secondary btn-sm">
                     Limpar

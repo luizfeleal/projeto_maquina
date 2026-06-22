@@ -144,6 +144,7 @@ class MaquinasController extends Controller
         $idMaquinaSel  = $request->input('id_maquina');
         $dataInicio    = $request->input('data_inicio');
         $dataFim       = $request->input('data_fim');
+        $tipoOperacao  = $request->input('tipo_operacao');
         $idsPermitidos = $this->coletarIdsMaquinasDoCliente($id_cliente);
 
         if ($idMaquinaSel && !in_array((string) $idMaquinaSel, $idsPermitidos, true)) {
@@ -179,8 +180,9 @@ class MaquinasController extends Controller
             : $todasTransacoes;
 
         $resultado = $this->filtrarTransacoesPorData($resultado, $dataInicio, $dataFim);
+        $resultado = $this->filtrarTransacoesPorTipo($resultado, $tipoOperacao);
 
-        $hasDateFilter = !empty($dataInicio) || !empty($dataFim);
+        $hasActiveFilter = !empty($dataInicio) || !empty($dataFim) || !empty($tipoOperacao);
 
         // Acumulado filtrado para os cards de resumo
         $maquinasFiltradas = $idMaquinaSel
@@ -216,10 +218,10 @@ class MaquinasController extends Controller
         }
 
         $resumo = [
-            'total_acumulado'  => $hasDateFilter
+            'total_acumulado'  => $hasActiveFilter
                 ? $this->somarTransacoes($resultado)
                 : array_sum(array_column($maquinasFiltradas, 'total_maquina')),
-            'total_saldo'      => $hasDateFilter
+            'total_saldo'      => $hasActiveFilter
                 ? $this->somarTransacoes($resultado)
                 : array_sum(array_column($maquinasFiltradas, 'saldo_periodo')),
             'tem_reset'        => !empty(array_filter(array_column($maquinasFiltradas, 'tem_reset'))),
@@ -240,8 +242,35 @@ class MaquinasController extends Controller
             'idMaquinaSel',
             'maquinaNomeSel',
             'dataInicio',
-            'dataFim'
+            'dataFim',
+            'tipoOperacao'
         ));
+    }
+
+    private function filtrarTransacoesPorTipo(array $transacoes, ?string $tipoOperacao): array
+    {
+        if (empty($tipoOperacao)) {
+            return $transacoes;
+        }
+
+        return array_values(array_filter(
+            $transacoes,
+            fn($tx) => $this->transacaoCorrespondeTipo($tx, $tipoOperacao)
+        ));
+    }
+
+    private function transacaoCorrespondeTipo(array $tx, string $tipoOperacao): bool
+    {
+        $tipo = strtolower($tx['extrato_operacao_tipo'] ?? '');
+
+        return match (strtolower($tipoOperacao)) {
+            'pix' => str_contains($tipo, 'pix'),
+            'cartao', 'cartão' => str_contains($tipo, 'cart'),
+            'dinheiro' => str_contains($tipo, 'dinheir')
+                || str_contains($tipo, 'físic')
+                || str_contains($tipo, 'fisic'),
+            default => strtolower($tipo) === strtolower($tipoOperacao),
+        };
     }
 
     private function filtrarTransacoesPorData(array $transacoes, ?string $dataInicio, ?string $dataFim): array
