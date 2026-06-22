@@ -194,8 +194,6 @@
 
 @endsection
 
-@endsection
-
 @push('scriptTable')
 <script>
 (function () {
