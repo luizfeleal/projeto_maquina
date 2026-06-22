@@ -30,50 +30,9 @@
     {{-- ApexCharts --}}
     <script src="https://cdn.jsdelivr.net/npm/apexcharts@3.45.1/dist/apexcharts.min.js" defer></script>
 
-    <style>
-        :root {
-            --financeiro-primary:   #1a6b4a;
-            --financeiro-primary-light: #e8f5ee;
-            --financeiro-sidebar-bg: #0f4a33;
-            --financeiro-sidebar-text: #cde8db;
-            --financeiro-sidebar-active: #27ae60;
-        }
-
-        body.financeiro-layout .sidebar {
-            background-color: var(--financeiro-sidebar-bg);
-        }
-
-        body.financeiro-layout .sidebar .sidebar-logo {
-            border-bottom-color: rgba(255,255,255,.08);
-        }
-
-        body.financeiro-layout .sidebar .sidebar-menu a,
-        body.financeiro-layout .sidebar .sidebar-menu-group-title {
-            color: var(--financeiro-sidebar-text);
-        }
-
-        body.financeiro-layout .sidebar .sidebar-menu a:hover,
-        body.financeiro-layout .sidebar .sidebar-menu a.active-page {
-            background-color: var(--financeiro-sidebar-active);
-            color: #fff;
-        }
-
-        body.financeiro-layout .sidebar .sidebar-close-btn {
-            color: var(--financeiro-sidebar-text);
-        }
-
-        body.financeiro-layout .bottom-nav {
-            border-top-color: var(--financeiro-primary);
-        }
-
-        body.financeiro-layout .bottom-nav-item.active,
-        body.financeiro-layout .bottom-nav-item:hover {
-            color: var(--financeiro-primary);
-        }
-    </style>
 </head>
 
-<body class="financeiro-layout">
+<body>
     @include('partials.app-splash')
 
     <div class="app-wrapper">
@@ -408,7 +367,7 @@
                 text: text,
                 icon: isDelete ? 'warning' : 'question',
                 showCancelButton: true,
-                confirmButtonColor: isDelete ? '#ef4444' : '#1a6b4a',
+                confirmButtonColor: isDelete ? '#ef4444' : '#2C9BA5',
                 cancelButtonColor: '#6b7280',
                 confirmButtonText: submitBtn?.textContent?.trim() || 'Confirmar',
                 cancelButtonText: 'Cancelar',
