@@ -40,15 +40,15 @@
 
 <div class="content-body" style="padding-top:0;">
 
-    {{-- ── Filtro de máquina ──────────────────────────────────────── --}}
-    @if(count($listaMaquinas) > 1)
+    {{-- ── Filtros ──────────────────────────────────────────────────── --}}
     <form method="GET" action="{{ route('clientes-maquinas-transacoes') }}"
-          style="margin-bottom:16px; display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
-        <label style="font-size:.825rem; font-weight:600; color:#374151; white-space:nowrap;">
-            <iconify-icon icon="solar:filter-bold-duotone" style="vertical-align:middle; margin-right:4px;"></iconify-icon>
-            Filtrar máquina:
-        </label>
+          style="margin-bottom:16px; display:flex; align-items:flex-end; gap:10px; flex-wrap:wrap;">
+        @if(count($listaMaquinas) > 1)
         <div style="min-width:280px; max-width:400px; flex:1;">
+            <label style="font-size:.825rem; font-weight:600; color:#374151; display:block; margin-bottom:4px;">
+                <iconify-icon icon="solar:filter-bold-duotone" style="vertical-align:middle; margin-right:4px;"></iconify-icon>
+                Máquina
+            </label>
             <select name="id_maquina" id="filtro-maquina-transacoes"
                     class="select-filtro-maquina-transacoes form-control">
                 <option value="">Todas as máquinas</option>
@@ -60,14 +60,37 @@
                 @endforeach
             </select>
         </div>
-        @if($idMaquinaSel)
-            <a href="{{ route('clientes-maquinas-transacoes') }}"
-               style="font-size:.8rem; color:#6b7280; text-decoration:none;">
-                ✕ Limpar filtro
-            </a>
         @endif
+
+        <div>
+            <label for="filtro-data-inicio" style="font-size:.825rem; font-weight:600; color:#374151; display:block; margin-bottom:4px;">
+                Data início
+            </label>
+            <input type="date" name="data_inicio" id="filtro-data-inicio" class="form-control"
+                   value="{{ $dataInicio ?? '' }}">
+        </div>
+
+        <div>
+            <label for="filtro-data-fim" style="font-size:.825rem; font-weight:600; color:#374151; display:block; margin-bottom:4px;">
+                Data fim
+            </label>
+            <input type="date" name="data_fim" id="filtro-data-fim" class="form-control"
+                   value="{{ $dataFim ?? '' }}">
+        </div>
+
+        <div style="display:flex; gap:8px;">
+            <button type="submit" class="btn btn-primary btn-sm">
+                <iconify-icon icon="solar:filter-bold-duotone"></iconify-icon>
+                Filtrar
+            </button>
+            @if($idMaquinaSel || !empty($dataInicio) || !empty($dataFim))
+                <a href="{{ route('clientes-maquinas-transacoes') }}"
+                   class="btn btn-outline-secondary btn-sm">
+                    Limpar
+                </a>
+            @endif
+        </div>
     </form>
-    @endif
 
     {{-- ── Cards: Acumulado + Saldo ───────────────────────────────── --}}
     <div style="display:flex; gap:12px; flex-wrap:wrap; margin-bottom:12px;">
@@ -277,10 +300,6 @@ $(document).ready(function () {
                 noResults: function () { return 'Nenhuma máquina encontrada'; },
                 searching: function () { return 'Pesquisando...'; }
             }
-        });
-
-        $filtroMaquina.on('change', function () {
-            $(this).closest('form').submit();
         });
     }
 

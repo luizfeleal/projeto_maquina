@@ -142,6 +142,8 @@ class MaquinasController extends Controller
 
         $id_cliente    = session()->get('id_cliente');
         $idMaquinaSel  = $request->input('id_maquina');
+        $dataInicio    = $request->input('data_inicio');
+        $dataFim       = $request->input('data_fim');
         $idsPermitidos = $this->coletarIdsMaquinasDoCliente($id_cliente);
 
         if ($idMaquinaSel && !in_array((string) $idMaquinaSel, $idsPermitidos, true)) {
@@ -175,6 +177,10 @@ class MaquinasController extends Controller
         $resultado = $idMaquinaSel
             ? array_values(array_filter($todasTransacoes, fn($tx) => (string)($tx['id_maquina'] ?? '') === (string)$idMaquinaSel))
             : $todasTransacoes;
+
+        $resultado = $this->filtrarTransacoesPorData($resultado, $dataInicio, $dataFim);
+
+        $hasDateFilter = !empty($dataInicio) || !empty($dataFim);
 
         // Acumulado filtrado para os cards de resumo
         $maquinasFiltradas = $idMaquinaSel
@@ -210,8 +216,12 @@ class MaquinasController extends Controller
         }
 
         $resumo = [
-            'total_acumulado'  => array_sum(array_column($maquinasFiltradas, 'total_maquina')),
-            'total_saldo'      => array_sum(array_column($maquinasFiltradas, 'saldo_periodo')),
+            'total_acumulado'  => $hasDateFilter
+                ? $this->somarTransacoes($resultado)
+                : array_sum(array_column($maquinasFiltradas, 'total_maquina')),
+            'total_saldo'      => $hasDateFilter
+                ? $this->somarTransacoes($resultado)
+                : array_sum(array_column($maquinasFiltradas, 'saldo_periodo')),
             'tem_reset'        => !empty(array_filter(array_column($maquinasFiltradas, 'tem_reset'))),
             'ids_maquinas'     => array_values(array_filter(
                 array_column($maquinasFiltradas, 'id_maquina'),
@@ -228,8 +238,47 @@ class MaquinasController extends Controller
             'resumo',
             'listaMaquinas',
             'idMaquinaSel',
-            'maquinaNomeSel'
+            'maquinaNomeSel',
+            'dataInicio',
+            'dataFim'
         ));
+    }
+
+    private function filtrarTransacoesPorData(array $transacoes, ?string $dataInicio, ?string $dataFim): array
+    {
+        if (empty($dataInicio) && empty($dataFim)) {
+            return $transacoes;
+        }
+
+        $inicioTs = $dataInicio ? strtotime($dataInicio . ' 00:00:00') : null;
+        $fimTs    = $dataFim ? strtotime($dataFim . ' 23:59:59') : null;
+
+        return array_values(array_filter($transacoes, function ($tx) use ($inicioTs, $fimTs) {
+            $ts = strtotime($tx['data_criacao'] ?? '');
+            if ($ts === false) {
+                return false;
+            }
+            if ($inicioTs !== null && $ts < $inicioTs) {
+                return false;
+            }
+            if ($fimTs !== null && $ts > $fimTs) {
+                return false;
+            }
+
+            return true;
+        }));
+    }
+
+    private function somarTransacoes(array $transacoes): float
+    {
+        $total = 0.0;
+        foreach ($transacoes as $tx) {
+            $valor = (float) ($tx['extrato_operacao_valor'] ?? 0);
+            $op    = $tx['extrato_operacao'] ?? 'C';
+            $total += ($op === 'D') ? -$valor : $valor;
+        }
+
+        return round($total, 2);
     }
 
     public function resetParcialTodas(Request $request)

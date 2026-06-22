@@ -587,6 +587,22 @@ class MockRouter
             }));
         }
 
+        if (!empty($query['data_inicio'])) {
+            $inicioTs = strtotime($query['data_inicio'] . ' 00:00:00');
+            $items = array_values(array_filter($items, function ($i) use ($inicioTs) {
+                $ts = strtotime($i['data_criacao'] ?? '');
+                return $ts !== false && $ts >= $inicioTs;
+            }));
+        }
+
+        if (!empty($query['data_fim'])) {
+            $fimTs = strtotime($query['data_fim'] . ' 23:59:59');
+            $items = array_values(array_filter($items, function ($i) use ($fimTs) {
+                $ts = strtotime($i['data_criacao'] ?? '');
+                return $ts !== false && $ts <= $fimTs;
+            }));
+        }
+
         $total   = count($items);
         $perPage = max((int) ($query['length'] ?? $query['per_page'] ?? 10), 1);
         $start   = (int) ($query['start'] ?? 0);

@@ -41,6 +41,16 @@
                             @endforeach
                         </select>
                     </div>
+
+                    <div class="col-md-3">
+                        <label for="filter-data-inicio" class="form-label fw-semibold">Data início</label>
+                        <input type="date" id="filter-data-inicio" class="form-control">
+                    </div>
+
+                    <div class="col-md-3">
+                        <label for="filter-data-fim" class="form-label fw-semibold">Data fim</label>
+                        <input type="date" id="filter-data-fim" class="form-control">
+                    </div>
                 </div>
 
                 <div class="d-flex justify-content-between align-items-center mt-3">
@@ -190,6 +200,11 @@ $(document).ready(function () {
                 if (idCliente) d.id_cliente = idCliente;
                 if (idLocal)   d.id_local   = idLocal;
                 if (idMaquina) d.id_maquina = idMaquina;
+
+                var dataInicio = $('#filter-data-inicio').val();
+                var dataFim    = $('#filter-data-fim').val();
+                if (dataInicio) d.data_inicio = dataInicio;
+                if (dataFim)    d.data_fim    = dataFim;
             }
         },
         language: {
@@ -249,6 +264,8 @@ $(document).ready(function () {
         $('#filter-cliente').val('').trigger('change.select2');
         $('#filter-local').val('').trigger('change.select2');
         $('#filter-maquina').val('').trigger('change.select2');
+        $('#filter-data-inicio').val('');
+        $('#filter-data-fim').val('');
         atualizarOpcoesLocal();
         atualizarOpcoesMaquina();
         recarregarTabela();
