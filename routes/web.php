@@ -18,6 +18,8 @@ Route::get('/', function () {
     return redirect()->route('login-view');
 });
 
+Route::get('/vendas', 'App\Http\Controllers\VendasController@index')->name('vendas');
+
 Route::prefix('home')->middleware('permission')->group(function(){
     Route::get('/', 'App\Http\Controllers\HomeController@coletar')->name('home');
 });
@@ -55,8 +57,8 @@ Route::prefix('clientes-maquinas')->middleware('permission')->group(function(){
     Route::get('/', 'App\Http\Controllers\Clientes\MaquinasController@coletarTodasAsMaquinas')->name('clientes-maquinas');
     Route::get('/transacoes', 'App\Http\Controllers\Clientes\MaquinasController@transacaoMaquinas')->name('clientes-maquinas-transacoes');
     Route::get('/acumulado', 'App\Http\Controllers\Clientes\MaquinasController@acumuladoMaquinas')->name('clientes-maquinas-acumulado');
-    Route::get('/viewLiberarJogada', 'App\Http\Controllers\Clientes\MaquinasController@viewLiberarJogada')->name('view-clientes-maquinas-liberar-jogadas');
-    Route::post('/liberarJogada', 'App\Http\Controllers\Clientes\MaquinasController@liberarJogada')->name('clientes-maquinas-liberar-jogadas');
+    Route::get('/viewLiberarJogada', 'App\Http\Controllers\Clientes\MaquinasController@viewLiberarJogada')->name('view-clientes-maquinas-liberar-jogadas')->middleware('check.inadimplencia');
+    Route::post('/liberarJogada', 'App\Http\Controllers\Clientes\MaquinasController@liberarJogada')->name('clientes-maquinas-liberar-jogadas')->middleware('check.inadimplencia');
     Route::get('/maquinasCartao', 'App\Http\Controllers\Clientes\MaquinasController@viewMaquinasCartao')->name('cliente-maquinas-cartao');
     Route::get('/maquinasCartao/criar', 'App\Http\Controllers\Clientes\MaquinasController@viewMaquinasCartaoCriar')->name('cliente-maquinas-cartao-criar');
     Route::post('/maquinasCartao/registrar', 'App\Http\Controllers\Clientes\MaquinasController@registrarMaquinasCartao')->name('cliente-maquinas-cartao-registrar');
@@ -65,6 +67,7 @@ Route::prefix('clientes-maquinas')->middleware('permission')->group(function(){
     Route::get('/editar', 'App\Http\Controllers\Clientes\MaquinasController@editarMaquinas')->name('clientes-maquinas-editar');
     Route::post('/atualizar', 'App\Http\Controllers\Clientes\MaquinasController@atualizarMaquina')->name('clientes-maquinas-atualizar');
     Route::post('/reset-parcial', 'App\Http\Controllers\Clientes\MaquinasController@resetParcial')->name('clientes-maquinas-reset-parcial');
+    Route::post('/reset-parcial-ajax', 'App\Http\Controllers\Clientes\MaquinasController@resetParcialAjax')->name('clientes-maquinas-reset-parcial-ajax');
     Route::post('/reset-parcial-todas', 'App\Http\Controllers\Clientes\MaquinasController@resetParcialTodas')->name('clientes-maquinas-reset-parcial-todas');
     Route::get('/resets-historico', 'App\Http\Controllers\Clientes\MaquinasController@historicoResets')->name('clientes-maquinas-resets-historico');
 });
@@ -133,6 +136,24 @@ Route::prefix('credenciais')->middleware('permission')->group(function(){
     Route::get('/editar/pagbank/{id}', 'App\Http\Controllers\CredenciaisController@editarCredencialPagbank')->name('credencial-editar-pagbank');
     Route::put('/atualizar/{id}', 'App\Http\Controllers\CredenciaisController@atualizarCredencial')->name('credencial-atualizar');
     Route::delete('/excluir/{id}', 'App\Http\Controllers\CredenciaisController@excluirCredencial')->name('credencial-excluir');
+});
+
+Route::prefix('financeiro-home')->middleware('permission')->group(function () {
+    Route::get('/', 'App\Http\Controllers\Financeiro\FinanceiroController@index')->name('financeiro-home');
+});
+
+Route::prefix('financeiro-despesas')->middleware('permission')->group(function () {
+    Route::get('/', 'App\Http\Controllers\Financeiro\DespesasController@index')->name('financeiro-despesas');
+    Route::get('/criar', 'App\Http\Controllers\Financeiro\DespesasController@create')->name('financeiro-despesas-criar');
+    Route::post('/registrar', 'App\Http\Controllers\Financeiro\DespesasController@store')->name('financeiro-despesas-registrar');
+    Route::post('/excluir', 'App\Http\Controllers\Financeiro\DespesasController@destroy')->name('financeiro-despesas-excluir');
+});
+
+Route::prefix('financeiro-placas')->middleware('permission')->group(function () {
+    Route::get('/', 'App\Http\Controllers\Financeiro\PlacasController@index')->name('financeiro-placas');
+    Route::get('/criar', 'App\Http\Controllers\Financeiro\PlacasController@create')->name('financeiro-placas-criar');
+    Route::post('/registrar', 'App\Http\Controllers\Financeiro\PlacasController@store')->name('financeiro-placas-registrar');
+    Route::post('/excluir', 'App\Http\Controllers\Financeiro\PlacasController@destroy')->name('financeiro-placas-excluir');
 });
 
 Route::get('/login', 'App\Http\Controllers\LoginController@login')->name('login-view');

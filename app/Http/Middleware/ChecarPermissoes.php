@@ -70,7 +70,12 @@ class ChecarPermissoes
                 'rota' => $request->route()->getName(),
             ]);
 
-            $homeRoute = session('grupo_nome') === 'admin' ? 'home' : 'cliente-home';
+            $grupoNome = session('grupo_nome');
+            $homeRoute = match(true) {
+                $grupoNome === 'admin'      => 'home',
+                $grupoNome === 'financeiro' => 'financeiro-home',
+                default                    => 'cliente-home',
+            };
 
             if ($routeName === $homeRoute) {
                 session()->flush();

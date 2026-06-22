@@ -17,7 +17,7 @@
                 <div class="pwa-android-instructions">
                     <ul class="pwa-install-list">
                         <li>Acesso direto pela tela inicial</li>
-                        <li>Funciona como aplicativo nativo</li>
+                        <li>Experiência semelhante à de um aplicativo instalado</li>
                         <li>Recursos essenciais disponíveis offline</li>
                     </ul>
                 </div>

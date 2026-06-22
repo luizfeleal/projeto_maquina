@@ -63,6 +63,13 @@ if (!function_exists('getRouteBreadcrumbs')) {
             'cliente-qr-criar'                      => [$home, $qr, ['label' => 'Novo QR Code']],
             'cliente-relatorio-view'                => [$home, $relatorio],
             'view-clientes-maquinas-liberar-jogadas'=> [$home, ['label' => 'Liberar Jogada']],
+
+            // Financeiro
+            'financeiro-home'           => [['label' => 'Dashboard']],
+            'financeiro-despesas'       => [['label' => 'Dashboard', 'route' => 'financeiro-home'], ['label' => 'Despesas']],
+            'financeiro-despesas-criar' => [['label' => 'Dashboard', 'route' => 'financeiro-home'], ['label' => 'Despesas', 'route' => 'financeiro-despesas'], ['label' => 'Nova Despesa']],
+            'financeiro-placas'         => [['label' => 'Dashboard', 'route' => 'financeiro-home'], ['label' => 'Estoque de Placas']],
+            'financeiro-placas-criar'   => [['label' => 'Dashboard', 'route' => 'financeiro-home'], ['label' => 'Estoque de Placas', 'route' => 'financeiro-placas'], ['label' => 'Registrar Placa']],
         ];
 
         return $map[$routeName] ?? [$home];
@@ -132,6 +139,58 @@ if (!function_exists('getSidebar')) {
                     'icon'          => 'solar:play-circle-bold-duotone',
                     'route'         => 'view-liberar-jogadas',
                     'active_routes' => ['view-liberar-jogadas', 'maquinas-liberar-jogada'],
+                ],
+                [
+                    'title'         => 'Sair',
+                    'icon'          => 'solar:logout-3-bold-duotone',
+                    'route'         => 'logout',
+                    'active_routes' => [],
+                ],
+            ];
+        }
+
+        if ($role === 'financeiro') {
+            return [
+                [
+                    'title'         => 'Dashboard',
+                    'icon'          => 'solar:pie-chart-2-bold-duotone',
+                    'route'         => 'financeiro-home',
+                    'active_routes' => ['financeiro-home'],
+                ],
+                [
+                    'title' => 'Módulo Financeiro',
+                ],
+                [
+                    'title'         => 'Despesas',
+                    'icon'          => 'solar:bill-list-bold-duotone',
+                    'active_routes' => ['financeiro-despesas', 'financeiro-despesas-criar'],
+                    'sub_menu'      => [
+                        ['title' => 'Listar despesas', 'route' => 'financeiro-despesas'],
+                        ['title' => 'Nova despesa',    'route' => 'financeiro-despesas-criar'],
+                    ],
+                ],
+                [
+                    'title'         => 'Estoque de Placas',
+                    'icon'          => 'solar:cpu-bold-duotone',
+                    'active_routes' => ['financeiro-placas', 'financeiro-placas-criar'],
+                    'sub_menu'      => [
+                        ['title' => 'Listar placas',     'route' => 'financeiro-placas'],
+                        ['title' => 'Registrar placa',   'route' => 'financeiro-placas-criar'],
+                    ],
+                ],
+                [
+                    'title'         => 'Inadimplência',
+                    'icon'          => 'solar:danger-triangle-bold-duotone',
+                    'active_routes' => ['financeiro-inadimplencia'],
+                    'sub_menu'      => [
+                        ['title' => 'Listar inadimplentes', 'route' => 'financeiro-home'],
+                    ],
+                ],
+                [
+                    'title'         => 'Mensagens',
+                    'icon'          => 'solar:chat-round-dots-bold-duotone',
+                    'route'         => 'financeiro-home',
+                    'active_routes' => ['financeiro-mensagens'],
                 ],
                 [
                     'title'         => 'Sair',

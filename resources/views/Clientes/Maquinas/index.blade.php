@@ -69,7 +69,10 @@
                 $possuiQr   = $maq['possui_qr']        ?? false;
                 $nome       = $maq['maquina_nome']     ?? 'Máquina';
                 $local      = $maq['local_nome']       ?? '—';
-                $idPlaca    = $maq['id_placa']         ?? '—';
+                $idPlaca       = $maq['id_placa'] ?? '—';
+                $serialCurto   = ($idPlaca !== '—' && strlen($idPlaca) >= 4)
+                    ? substr($idPlaca, -4)
+                    : $idPlaca;
                 $qrHref     = ($idLocal && $possuiQr)
                     ? route('cliente-qr', ['id_local' => $idLocal, 'id_maquina' => $idMaquina, 'abrir' => true])
                     : route('cliente-qr-criar');
@@ -101,7 +104,7 @@
                                       display:flex; align-items:center; gap:4px;">
                                 <iconify-icon icon="solar:cpu-bold-duotone"
                                               style="font-size:.8rem;"></iconify-icon>
-                                ID: <span style="font-weight:600; color:#6b7280;">{{ $idPlaca }}</span>
+                                ID: <span style="font-weight:600; color:#6b7280;" title="Serial: {{ $idPlaca }}">...{{ $serialCurto }}</span>
                             </p>
                         </div>
                     </div>
@@ -125,7 +128,8 @@
                     <div style="flex:1; text-align:center;">
                         <p style="margin:0 0 2px; font-size:.65rem; font-weight:600; text-transform:uppercase;
                                    letter-spacing:.06em; color:#9ca3af;">Saldo do período</p>
-                        <p style="margin:0; font-size:1rem; font-weight:700;
+                        <p data-saldo-maquina="{{ $idMaquina }}"
+                           style="margin:0; font-size:1rem; font-weight:700;
                                   color:{{ $saldo < 0 ? '#dc2626' : '#16a34a' }};">
                             R$ {{ number_format($saldo, 2, ',', '.') }}
                         </p>
@@ -190,14 +194,14 @@
                             data-id="{{ $idMaquina }}"
                             data-nome="{{ $nome }}"
                             data-saldo="{{ $saldo }}"
-                            style="flex:1; min-width:100px; text-align:center;
+                            style="flex:1; min-width:130px; text-align:center;
                                    background:#fffbeb; border:1px solid #fde68a; border-radius:8px;
                                    padding:8px 10px; font-size:.78rem; font-weight:600; color:#92400e;
                                    display:flex; align-items:center; justify-content:center; gap:5px;
                                    cursor:pointer;">
                         <iconify-icon icon="solar:restart-bold-duotone"
                                       style="font-size:.95rem; color:#f59e0b;"></iconify-icon>
-                        Reset
+                        Resetar Aferição
                     </button>
                 </div>
 
@@ -302,14 +306,18 @@ $(document).ready(function () {
         });
     @endif
 
+    var RESET_URL = '{{ route('clientes-maquinas-reset-parcial-ajax') }}';
+    var CSRF      = '{{ csrf_token() }}';
+
     $(document).on('click', '.btn-reset-maquina', function () {
-        var id    = $(this).data('id');
-        var nome  = $(this).data('nome');
-        var saldo = $(this).data('saldo');
+        var $btn  = $(this);
+        var id    = $btn.data('id');
+        var nome  = $btn.data('nome');
+        var saldo = $btn.data('saldo');
 
         Swal.fire({
             icon: 'warning',
-            title: 'Confirmar Reset Parcial?',
+            title: 'Resetar Aferição?',
             html:
                 '<p class="mb-1">Máquina: <strong>' + $('<div>').text(nome).html() + '</strong></p>' +
                 '<p class="mb-2">Saldo do período atual: <strong>' + brl(saldo) + '</strong></p>' +
@@ -323,8 +331,43 @@ $(document).ready(function () {
             reverseButtons: true,
         }).then(function (result) {
             if (!result.isConfirmed) return;
-            $('#resetMaquinasIdMaquina').val(id);
-            $('#formResetParcialMaquinas').submit();
+
+            $btn.prop('disabled', true).css('opacity', '.6');
+
+            fetch(RESET_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': CSRF,
+                    'Accept': 'application/json',
+                },
+                body: JSON.stringify({ id_maquina: id }),
+            })
+            .then(function (resp) { return resp.json(); })
+            .then(function (data) {
+                if (data.success) {
+                    // Atualiza saldo do card em tempo real (sem reload)
+                    var $saldoEl = $('[data-saldo-maquina="' + id + '"]');
+                    $saldoEl.text('R$ 0,00').css('color', '#16a34a');
+                    $btn.data('saldo', 0);
+
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Aferição resetada!',
+                        text: data.message,
+                        timer: 2500,
+                        showConfirmButton: false,
+                    });
+                } else {
+                    Swal.fire({ icon: 'error', title: 'Erro', text: data.message });
+                }
+            })
+            .catch(function () {
+                Swal.fire({ icon: 'error', title: 'Erro', text: 'Falha na comunicação com o servidor.' });
+            })
+            .finally(function () {
+                $btn.prop('disabled', false).css('opacity', '1');
+            });
         });
     });
 });

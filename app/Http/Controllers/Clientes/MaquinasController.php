@@ -424,6 +424,45 @@ class MaquinasController extends Controller
         }
     }
 
+    public function resetParcialAjax(Request $request)
+    {
+        $request->validate(['id_maquina' => 'required']);
+
+        try {
+            $idMaquina     = $request->input('id_maquina');
+            $id_cliente    = session()->get('id_cliente');
+            $idsPermitidos = $this->coletarIdsMaquinasDoCliente($id_cliente);
+
+            if (!in_array((string) $idMaquina, $idsPermitidos, true)) {
+                return response()->json(['success' => false, 'message' => 'Sem permissão para resetar esta máquina.'], 403);
+            }
+
+            $dados = [
+                'realizado_por' => (string) (session('id_usuario') ?? '1'),
+                'observacao'    => $request->input('observacao'),
+            ];
+
+            $resultado = ExtratoMaquinaService::resetParcial($idMaquina, $dados);
+
+            if ($resultado['success'] ?? false) {
+                return response()->json([
+                    'success'      => true,
+                    'message'      => 'Aferição resetada com sucesso.',
+                    'novo_saldo'   => 0.00,
+                    'id_maquina'   => $idMaquina,
+                ]);
+            }
+
+            return response()->json([
+                'success' => false,
+                'message' => $resultado['message'] ?? 'Erro ao registrar o reset.',
+            ], 422);
+        } catch (\Throwable $e) {
+            \Log::error('[cliente.resetParcialAjax] Erro: ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Erro interno ao registrar o reset.'], 500);
+        }
+    }
+
     public function historicoResets(Request $request)
     {
         $id_cliente = session()->get('id_cliente');
