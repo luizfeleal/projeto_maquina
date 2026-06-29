@@ -17,7 +17,7 @@
                         <th>ID Placa</th>
                         <th>Status</th>
                         <th>Último extrato</th>
-                        <th>Fonte</th>
+                        <th>Forma de pagamento</th>
                         <th>Data e Hora</th>
                         <th>Detalhar</th>
                         <th>Excluir</th>

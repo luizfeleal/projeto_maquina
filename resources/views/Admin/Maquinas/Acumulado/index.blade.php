@@ -17,7 +17,7 @@
                         <th>Total máquina</th>
                         <th>Total PIX</th>
                         <th>Total cartão</th>
-                        <th>Total físico</th>
+                        <th>Total dinheiro</th>
                         <th>Última coleta</th>
                         <th>Saldo do período</th>
                         <th>Último reset</th>
@@ -32,7 +32,7 @@
                         <th>Total máquina</th>
                         <th>Total PIX</th>
                         <th>Total cartão</th>
-                        <th>Total físico</th>
+                        <th>Total dinheiro</th>
                         <th>Última coleta</th>
                         <th>Saldo do período</th>
                         <th>Último reset</th>
@@ -138,7 +138,7 @@ $(document).ready(function () {
                     render: function (data) { return formatBrl(data); }
                 },
                 {
-                    data: 'total_dinheiro', title: 'Total físico',
+                    data: 'total_dinheiro', title: 'Total dinheiro',
                     render: function (data) { return formatBrl(data); }
                 },
                 {

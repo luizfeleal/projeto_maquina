@@ -23,7 +23,7 @@
                                     <tr>
                                         <th>Local</th>
                                         <th>Maquina</th>
-                                        <th>Tipo de extrato</th>
+                                        <th>Forma de pagamento</th>
                                         <th>Valor</th>
                                         <th>Data e Hora</th>
                                     </tr>
@@ -48,7 +48,7 @@
                                     <tr>
                                         <th>Local</th>
                                         <th>Maquina</th>
-                                        <th>Tipo de extrato</th>
+                                        <th>Forma de pagamento</th>
                                         <th>Valor</th>
                                         <th>Data e Hora</th>
                                     </tr>

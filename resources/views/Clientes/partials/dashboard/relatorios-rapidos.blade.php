@@ -68,7 +68,7 @@
                         </select>
                     </div>
                     <div>
-                        <label class="form-label" style="font-size:.75rem; font-weight:600;">Tipo</label>
+                        <label class="form-label" style="font-size:.75rem; font-weight:600;">Forma de pagamento</label>
                         <select class="form-select" name="tipo_transacao">
                             <option value="" selected>Todos</option>
                             <option value="PIX">Pix</option>

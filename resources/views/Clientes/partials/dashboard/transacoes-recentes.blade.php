@@ -76,7 +76,7 @@
                         <tr>
                             <th>Data</th>
                             <th>Máquina</th>
-                            <th>Tipo</th>
+                            <th>Forma de pagamento</th>
                             <th>Valor</th>
                         </tr>
                     </thead>

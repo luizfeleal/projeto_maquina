@@ -38,13 +38,13 @@
                 <tbody>
                     @foreach($despesas as $d)
                     <tr>
-                        <td class="fw-semibold">{{ $d->descricao }}</td>
-                        <td>{{ $d->tipo ?? '—' }}</td>
-                        <td>{{ $d->data_despesa->format('d/m/Y') }}</td>
-                        <td class="fw-bold text-danger">R$ {{ number_format($d->valor, 2, ',', '.') }}</td>
+                        <td class="fw-semibold">{{ $d['descricao'] }}</td>
+                        <td>{{ $d['tipo'] ?? '—' }}</td>
+                        <td>{{ $d['data_despesa']?->format('d/m/Y') ?? '—' }}</td>
+                        <td class="fw-bold text-danger">R$ {{ number_format($d['valor'], 2, ',', '.') }}</td>
                         <td>
-                            @if($d->comprovante_path)
-                                <a href="{{ asset('storage/' . $d->comprovante_path) }}" target="_blank" class="btn btn-outline-secondary btn-sm">
+                            @if(!empty($d['comprovante_url']))
+                                <a href="{{ $d['comprovante_url'] }}" target="_blank" class="btn btn-outline-secondary btn-sm">
                                     <iconify-icon icon="solar:document-bold-duotone" inline></iconify-icon>
                                     Ver
                                 </a>
@@ -55,7 +55,7 @@
                         <td>
                             <form action="{{ route('financeiro-despesas-excluir') }}" method="POST" class="d-inline">
                                 @csrf
-                                <input type="hidden" name="id" value="{{ $d->id }}">
+                                <input type="hidden" name="id" value="{{ $d['id'] }}">
                                 <button type="submit" class="btn btn-outline-danger btn-sm"
                                         onclick="return confirm('Confirmar exclusão?')">
                                     <iconify-icon icon="solar:trash-bin-trash-bold-duotone" inline></iconify-icon>

@@ -37,16 +37,16 @@
                 <tbody>
                     @foreach($placas as $p)
                     <tr>
-                        <td class="font-monospace small text-muted">{{ $p->placa_serial }}</td>
+                        <td class="font-monospace small text-muted">{{ $p['placa_serial'] }}</td>
                         <td>
-                            <span class="badge bg-dark font-monospace fs-6">...{{ $p->serial_curto }}</span>
+                            <span class="badge bg-dark font-monospace fs-6">...{{ $p['serial_curto'] }}</span>
                         </td>
-                        <td>{{ $p->id_maquina ?? '—' }}</td>
-                        <td>{{ $p->created_at->format('d/m/Y H:i') }}</td>
+                        <td>{{ $p['id_maquina'] ?? '—' }}</td>
+                        <td>{{ $p['created_at']?->format('d/m/Y H:i') ?? '—' }}</td>
                         <td>
                             <form action="{{ route('financeiro-placas-excluir') }}" method="POST" class="d-inline">
                                 @csrf
-                                <input type="hidden" name="id" value="{{ $p->id }}">
+                                <input type="hidden" name="id" value="{{ $p['id'] }}">
                                 <button type="submit" class="btn btn-outline-danger btn-sm"
                                         onclick="return confirm('Confirmar exclusão?')">
                                     <iconify-icon icon="solar:trash-bin-trash-bold-duotone" inline></iconify-icon>

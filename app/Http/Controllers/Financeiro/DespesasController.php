@@ -4,17 +4,14 @@ namespace App\Http\Controllers\Financeiro;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Models\Despesa;
-use Illuminate\Support\Facades\Storage;
+use App\Services\Financeiro\DespesaService;
 
 class DespesasController extends Controller
 {
     public function index(Request $request)
     {
-        $idCliente = session('id_cliente');
-        $despesas  = Despesa::where('id_cliente', $idCliente)
-                            ->orderByDesc('data_despesa')
-                            ->get();
+        $despesas = collect(DespesaService::coletar())
+            ->map(fn (array $d) => DespesaService::normalizarParaView($d));
 
         return view('Financeiro.Despesas.index', compact('despesas'));
     }
@@ -34,38 +31,32 @@ class DespesasController extends Controller
             'comprovante'  => 'nullable|file|mimes:pdf,jpeg,jpg,png|max:5120',
         ]);
 
-        $comprovantePath = null;
+        $resultado = DespesaService::criar([
+            'titulo'    => $request->descricao,
+            'descricao' => $request->tipo,
+            'valor'     => $request->valor,
+            'data'      => $request->data_despesa,
+        ], $request->file('comprovante'));
 
-        if ($request->hasFile('comprovante')) {
-            $comprovantePath = $request->file('comprovante')
-                ->store('comprovantes_despesas', 'public');
+        if ($resultado['success'] ?? false) {
+            return redirect()->route('financeiro-despesas')
+                ->with('success', 'Despesa registrada com sucesso!');
         }
 
-        Despesa::create([
-            'id_cliente'       => session('id_cliente'),
-            'descricao'        => $request->descricao,
-            'valor'            => $request->valor,
-            'data_despesa'     => $request->data_despesa,
-            'tipo'             => $request->tipo,
-            'comprovante_path' => $comprovantePath,
-        ]);
-
-        return redirect()->route('financeiro-despesas')
-                         ->with('success', 'Despesa registrada com sucesso!');
+        $mensagem = $resultado['message'] ?? 'Houve um erro ao registrar a despesa.';
+        return back()->withInput()->with('error', $mensagem);
     }
 
     public function destroy(Request $request)
     {
-        $despesa = Despesa::where('id', $request->id)
-                          ->where('id_cliente', session('id_cliente'))
-                          ->firstOrFail();
+        $request->validate(['id' => 'required|integer']);
 
-        if ($despesa->comprovante_path) {
-            Storage::disk('public')->delete($despesa->comprovante_path);
+        $resultado = DespesaService::excluir((int) $request->id);
+
+        if ($resultado['success'] ?? false) {
+            return back()->with('success', 'Despesa removida com sucesso!');
         }
 
-        $despesa->delete();
-
-        return back()->with('success', 'Despesa removida com sucesso!');
+        return back()->with('error', $resultado['message'] ?? 'Houve um erro ao remover a despesa.');
     }
 }

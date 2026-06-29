@@ -64,7 +64,7 @@
                             <tr>
                                 <!--<th>Local</th>-->
                                 <th>Maquina</th>
-                                <th>Tipo de extrato</th>
+                                <th>Forma de pagamento</th>
                                 <th>Valor</th>
                                 <th>Data e Hora</th>
                             </tr>
@@ -76,7 +76,7 @@
                             <tr>
                                 <!--<th>Local</th>-->
                                 <th>Maquina</th>
-                                <th>Tipo de extrato</th>
+                                <th>Forma de pagamento</th>
                                 <th>Valor</th>
                                 <th>Data e Hora</th>
                             </tr>
@@ -129,7 +129,7 @@
         "columns": [
             //{ "data": "local_nome" },
             { "data": "maquina_nome" },
-            { "data": "extrato_operacao_tipo" },
+            { "data": "extrato_operacao_tipo", "title": "Forma de pagamento" },
             {
                 "data": "extrato_operacao_valor",
                 "orderable": true,

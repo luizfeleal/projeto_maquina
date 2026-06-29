@@ -53,7 +53,7 @@
                     </div>
 
                     <div class="col-md-3">
-                        <label for="filter-tipo-operacao" class="form-label fw-semibold">Tipo de operação</label>
+                        <label for="filter-tipo-operacao" class="form-label fw-semibold">Forma de pagamento</label>
                         <select id="filter-tipo-operacao" class="form-select">
                             <option value="">Todos os tipos</option>
                             <option value="pix">PIX</option>
@@ -87,7 +87,7 @@
                         <th>Local</th>
                         <th>Máquina</th>
                         <th>Último extrato</th>
-                        <th>Fonte</th>
+                        <th>Forma de pagamento</th>
                         <th>Data e Hora</th>
                     </tr>
                 </thead>
@@ -97,7 +97,7 @@
                         <th>Local</th>
                         <th>Máquina</th>
                         <th>Último extrato</th>
-                        <th>Fonte</th>
+                        <th>Forma de pagamento</th>
                         <th>Data e Hora</th>
                     </tr>
                 </tfoot>
@@ -234,7 +234,7 @@ $(document).ready(function () {
                     return data === 'C' ? '+ R$ ' + val : '- R$ ' + val;
                 }
             },
-            { data: 'extrato_operacao_tipo', title: 'Fonte' },
+            { data: 'extrato_operacao_tipo', title: 'Forma de pagamento' },
             {
                 data: 'data_criacao',
                 title: 'Data e Hora',

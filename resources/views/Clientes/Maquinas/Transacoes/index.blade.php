@@ -80,7 +80,7 @@
 
         <div>
             <label for="filtro-tipo-operacao" style="font-size:.825rem; font-weight:600; color:#374151; display:block; margin-bottom:4px;">
-                Tipo de operação
+                Forma de pagamento
             </label>
             <select name="tipo_operacao" id="filtro-tipo-operacao" class="form-control">
                 <option value="">Todos os tipos</option>
@@ -158,7 +158,7 @@
         </button>
     </div>
 
-    {{-- ── Cards: PIX / Cartão / Físico / Devolução ───────────────── --}}
+    {{-- ── Cards: PIX / Cartão / Dinheiro / Devolução ───────────────── --}}
     <div id="cards-detalhes" style="display:flex; gap:12px; flex-wrap:wrap; margin-bottom:20px;">
 
         <div style="flex:1; min-width:140px; background:#fff; border:1px solid #e8ecf0;
@@ -205,7 +205,7 @@
             </div>
             <div>
                 <p style="font-size:.68rem; font-weight:600; text-transform:uppercase;
-                           letter-spacing:.06em; color:#9ca3af; margin:0 0 3px;">Total físico</p>
+                           letter-spacing:.06em; color:#9ca3af; margin:0 0 3px;">Total dinheiro</p>
                 <p style="font-size:1rem; font-weight:700; color:#ca8a04; margin:0;">
                     {{ $brl($totalDinheiro) }}
                 </p>
@@ -255,7 +255,7 @@
                     <th>Local</th>
                     <th>Máquina</th>
                     <th>Valor</th>
-                    <th>Fonte</th>
+                    <th>Forma de pagamento</th>
                     <th>Data e Hora</th>
                 </tr>
             </thead>
@@ -285,7 +285,7 @@
                     <th>Local</th>
                     <th>Máquina</th>
                     <th>Valor</th>
-                    <th>Fonte</th>
+                    <th>Forma de pagamento</th>
                     <th>Data e Hora</th>
                 </tr>
             </tfoot>

@@ -81,7 +81,7 @@
 
                                     </div>-->
                                     <div class="col-md-8">
-                                        <label for="tipo_transacao" class="form-label">Tipo:</label>
+                                        <label for="tipo_transacao" class="form-label">Forma de pagamento:</label>
                                         <select class="form-select" name="tipo_transacao" id="tipo_transacao" aria-label="Default select example">
                                             <option value="" selected>Escolher...</option>
                                             <option value="PIX">Pix</option>

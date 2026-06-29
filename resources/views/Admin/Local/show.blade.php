@@ -52,7 +52,7 @@
                                     <th>Total máquina</th>
                                     <th>Total PIX</th>
                                     <th>Total cartão</th>
-                                    <th>Total físico</th>
+                                    <th>Total dinheiro</th>
         
         
                                 </tr>
@@ -72,7 +72,7 @@
                                     <th>Total máquina</th>
                                     <th>Total PIX</th>
                                     <th>Total cartão</th>
-                                    <th>Total físico</th>
+                                    <th>Total dinheiro</th>
                                 </tr>
                             </tfoot>
                         </table>
@@ -203,7 +203,7 @@
                             },
                             { 
                                 data: 'total_dinheiro', 
-                                title: 'Total físico', 
+                                title: 'Total dinheiro', 
                                 render: function(data) { 
                                     if (data === null || data === undefined) {
                                         return 'R$ 0,00';

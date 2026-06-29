@@ -64,7 +64,7 @@
                             <tr>
                                 <!--<th>Local</th>-->
                                 <th>Maquina</th>
-                                <th>Tipo de extrato</th>
+                                <th>Forma de pagamento</th>
                                 <th>Valor</th>
                                 <th>Data e Hora</th>
                             </tr>
@@ -76,7 +76,7 @@
                             <tr>
                                 <!--<th>Local</th>-->
                                 <th>Maquina</th>
-                                <th>Tipo de extrato</th>
+                                <th>Forma de pagamento</th>
                                 <th>Valor</th>
                                 <th>Data e Hora</th>
                             </tr>
@@ -132,8 +132,8 @@ $(document).ready(function () {
         columns: [
             // Coluna Nome da Máquina
             { data: "maquina_nome", title: "Máquina" },
-            // Coluna Tipo de Operação
-            { data: "extrato_operacao_tipo", title: "Fonte" },
+            // Coluna Forma de pagamento
+            { data: "extrato_operacao_tipo", title: "Forma de pagamento" },
             // Coluna Valor do extrato
             {
                 data: "extrato_operacao_valor",
