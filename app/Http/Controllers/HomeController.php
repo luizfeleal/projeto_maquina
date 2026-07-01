@@ -108,6 +108,34 @@ class HomeController extends Controller
         usort($transacoesFiltradas, fn($a, $b) => strtotime($b['data_criacao'] ?? 0) - strtotime($a['data_criacao'] ?? 0));
         $ultimasTransacoes = array_slice($transacoesFiltradas, 0, 15);
 
+        $dadosGrafico = [];
+        foreach ($todasTransacoes as $tx) {
+            $valor = (float)($tx['extrato_operacao_valor'] ?? 0);
+            $tipo  = strtolower($tx['extrato_operacao_tipo'] ?? '');
+            $op    = $tx['extrato_operacao'] ?? 'C';
+            $data  = $tx['data_criacao'] ?? null;
+            if (!$data) continue;
+            $ts = strtotime($data);
+            if (!$ts) continue;
+            $ano = (int) date('Y', $ts);
+            $mes = (int) date('n', $ts);
+            if (!isset($dadosGrafico[$ano])) {
+                for ($i = 1; $i <= 12; $i++) {
+                    $dadosGrafico[$ano][$i] = ['pix' => 0.0, 'cartao' => 0.0, 'dinheiro' => 0.0, 'estorno' => 0.0];
+                }
+            }
+            if ($op === 'D') {
+                $dadosGrafico[$ano][$mes]['estorno'] += $valor;
+            } elseif (str_contains($tipo, 'pix')) {
+                $dadosGrafico[$ano][$mes]['pix'] += $valor;
+            } elseif (str_contains($tipo, 'cart')) {
+                $dadosGrafico[$ano][$mes]['cartao'] += $valor;
+            } elseif (str_contains($tipo, 'dinheir') || str_contains($tipo, 'físic') || str_contains($tipo, 'fisic')) {
+                $dadosGrafico[$ano][$mes]['dinheiro'] += $valor;
+            }
+        }
+        krsort($dadosGrafico);
+
         $totalPix = $totalCartao = $totalDinheiro = $totalDevolucao = 0.0;
         foreach ($transacoesFiltradas as $tx) {
             $valor = (float)($tx['extrato_operacao_valor'] ?? 0);
@@ -142,7 +170,7 @@ class HomeController extends Controller
             'maquinas', 'maquinas_online', 'maquinas_offline',
             'saldo', 'devolucoes', 'locais', 'clientes', 'maquinasRelatorio',
             'maquinasDashboard', 'ultimasTransacoes', 'resumoFinanceiro',
-            'listaMaquinas', 'idMaquinaFiltro'
+            'listaMaquinas', 'idMaquinaFiltro', 'dadosGrafico'
         ));
     }
     public function registrarLocais(Request $request){

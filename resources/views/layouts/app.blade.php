@@ -379,6 +379,9 @@
     }(jQuery));
     </script>
 
+    {{-- ApexCharts — disponível para scripts em @yield/'scriptTable' --}}
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts@3.45.1/dist/apexcharts.min.js"></script>
+
     @yield('scriptTable')
     @stack('scriptTable')
 
