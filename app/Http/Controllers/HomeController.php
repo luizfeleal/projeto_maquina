@@ -108,25 +108,30 @@ class HomeController extends Controller
         usort($transacoesFiltradas, fn($a, $b) => strtotime($b['data_criacao'] ?? 0) - strtotime($a['data_criacao'] ?? 0));
         $ultimasTransacoes = array_slice($transacoesFiltradas, 0, 15);
 
+        // Busca todos os registros sem limite de paginação para o gráfico
+        $rawGrafico = ExtratoMaquinaService::coletar();
+        $todasTransacoesGrafico = array_values(array_filter(
+            is_array($rawGrafico) ? $rawGrafico : [],
+            fn($tx) => is_array($tx)
+        ));
+
         $dadosGrafico = [];
-        foreach ($todasTransacoes as $tx) {
+        foreach ($todasTransacoesGrafico as $tx) {
             $valor = (float)($tx['extrato_operacao_valor'] ?? 0);
             $tipo  = strtolower($tx['extrato_operacao_tipo'] ?? '');
             $op    = $tx['extrato_operacao'] ?? 'C';
             $data  = $tx['data_criacao'] ?? null;
-            if (!$data) continue;
+            if (!$data || $op === 'D') continue;
             $ts = strtotime($data);
             if (!$ts) continue;
             $ano = (int) date('Y', $ts);
             $mes = (int) date('n', $ts);
             if (!isset($dadosGrafico[$ano])) {
                 for ($i = 1; $i <= 12; $i++) {
-                    $dadosGrafico[$ano][$i] = ['pix' => 0.0, 'cartao' => 0.0, 'dinheiro' => 0.0, 'estorno' => 0.0];
+                    $dadosGrafico[$ano][$i] = ['pix' => 0.0, 'cartao' => 0.0, 'dinheiro' => 0.0];
                 }
             }
-            if ($op === 'D') {
-                $dadosGrafico[$ano][$mes]['estorno'] += $valor;
-            } elseif (str_contains($tipo, 'pix')) {
+            if (str_contains($tipo, 'pix')) {
                 $dadosGrafico[$ano][$mes]['pix'] += $valor;
             } elseif (str_contains($tipo, 'cart')) {
                 $dadosGrafico[$ano][$mes]['cartao'] += $valor;

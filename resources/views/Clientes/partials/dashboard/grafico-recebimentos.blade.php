@@ -65,19 +65,17 @@
 
     function buildSeries(ano) {
         var d = dadosGrafico[ano] || {};
-        var pix = [], cartao = [], dinheiro = [], estorno = [];
+        var pix = [], cartao = [], dinheiro = [];
         for (var m = 1; m <= 12; m++) {
             var md = d[m] || {};
             pix.push(parseFloat(md.pix || 0));
             cartao.push(parseFloat(md.cartao || 0));
             dinheiro.push(parseFloat(md.dinheiro || 0));
-            estorno.push(parseFloat(md.estorno || 0));
         }
         return [
             { name: 'PIX',      data: pix },
             { name: 'Cartão',   data: cartao },
             { name: 'Dinheiro', data: dinheiro },
-            { name: 'Estorno',  data: estorno },
         ];
     }
 
@@ -122,7 +120,7 @@
             tooltip: {
                 y: { formatter: function (v) { return formatBRL(v); } },
             },
-            colors: ['#2C9BA5', '#6366f1', '#f59e0b', '#ef4444'],
+            colors: ['#2C9BA5', '#6366f1', '#f59e0b'],
             legend: {
                 position: 'top',
                 horizontalAlign: 'left',
