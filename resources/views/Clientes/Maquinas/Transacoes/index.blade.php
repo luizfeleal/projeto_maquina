@@ -2,6 +2,40 @@
 @section('title', 'Minhas Máquinas -> Extrato')
 @section('content')
 
+<style>
+/* ── Extrato: CSS variables para dark mode ──────────────────────── */
+:root {
+    --ex-bg:          #fff;
+    --ex-border:      #e8ecf0;
+    --ex-shadow:      0 1px 4px rgba(0,0,0,.05);
+    --ex-text-h:      #111827;
+    --ex-text-sub:    #6b7280;
+    --ex-text-lbl:    #374151;
+    --ex-ic-blue:     #e0f2fe;
+    --ex-ic-saldo-p:  #dcfce7;
+    --ex-ic-saldo-n:  #fee2e2;
+    --ex-ic-pix:      #f0fdf4;
+    --ex-ic-cartao:   #eff6ff;
+    --ex-ic-dinheiro: #fefce8;
+    --ex-ic-dev:      #fef2f2;
+}
+[data-theme="dark"] {
+    --ex-bg:          #1e2844;
+    --ex-border:      #2a3349;
+    --ex-shadow:      0 1px 4px rgba(0,0,0,.3);
+    --ex-text-h:      #e8ecf0;
+    --ex-text-sub:    #94a3b8;
+    --ex-text-lbl:    #94a3b8;
+    --ex-ic-blue:     #0c2a3a;
+    --ex-ic-saldo-p:  #052e16;
+    --ex-ic-saldo-n:  #2d0a0a;
+    --ex-ic-pix:      #052e16;
+    --ex-ic-cartao:   #0f1f3d;
+    --ex-ic-dinheiro: #2d1f00;
+    --ex-ic-dev:      #2d0a0a;
+}
+</style>
+
 @php
     $totalAcumulado = $resumo['total_acumulado'] ?? 0;
     $totalSaldo     = $resumo['total_saldo']     ?? 0;
@@ -14,14 +48,16 @@
     $resetUnico     = $qtdMaquinas === 1;
     $idMaquinaReset = $resetUnico ? ($idsMaquinas[0] ?? null) : null;
     $brl = fn($v) => 'R$ ' . number_format($v, 2, ',', '.');
+    $saldoIcVar     = $totalSaldo < 0 ? 'var(--ex-ic-saldo-n)' : 'var(--ex-ic-saldo-p)';
+    $saldoColor     = $totalSaldo < 0 ? '#dc2626' : '#16a34a';
 @endphp
 
 {{-- ── Cabeçalho com título + botão de reset ─────────────────────── --}}
 <div style="display:flex; align-items:center; justify-content:space-between;
             flex-wrap:wrap; gap:12px; margin:16px 24px 20px;">
     <div>
-        <h1 style="margin:0; font-size:1.5rem; font-weight:700; color:#111827;">Extrato</h1>
-        <p style="margin:4px 0 0; color:#6b7280; font-size:.875rem;">
+        <h1 style="margin:0; font-size:1.5rem; font-weight:700; color:var(--ex-text-h, #111827);">Extrato</h1>
+        <p style="margin:4px 0 0; color:var(--ex-text-sub, #6b7280); font-size:.875rem;">
             Histórico completo de movimentações das suas máquinas
         </p>
     </div>
@@ -49,9 +85,9 @@
                    cursor:{{ $qtdMaquinas === 0 ? 'not-allowed' : 'pointer' }};
                    display:flex; align-items:center; gap:8px;
                    box-shadow:0 1px 4px rgba(0,0,0,.12); white-space:nowrap;">
-        <iconify-icon icon="solar:restart-bold-duotone" style="font-size:1.1rem;"></iconify-icon>
-        Reset Parcial
-    </button>
+            <iconify-icon icon="solar:restart-bold-duotone" style="font-size:1.1rem;"></iconify-icon>
+            Reset
+        </button>
     </div>
 </div>
 
@@ -62,7 +98,7 @@
           style="margin-bottom:16px; display:flex; align-items:flex-end; gap:10px; flex-wrap:wrap;">
         @if(count($listaMaquinas) > 1)
         <div style="min-width:280px; max-width:400px; flex:1;">
-            <label style="font-size:.825rem; font-weight:600; color:#374151; display:block; margin-bottom:4px;">
+            <label style="font-size:.825rem; font-weight:600; color:var(--ex-text-lbl, #374151); display:block; margin-bottom:4px;">
                 <iconify-icon icon="solar:filter-bold-duotone" style="vertical-align:middle; margin-right:4px;"></iconify-icon>
                 Máquina
             </label>
@@ -80,7 +116,7 @@
         @endif
 
         <div>
-            <label for="filtro-data-inicio" style="font-size:.825rem; font-weight:600; color:#374151; display:block; margin-bottom:4px;">
+            <label for="filtro-data-inicio" style="font-size:.825rem; font-weight:600; color:var(--ex-text-lbl, #374151); display:block; margin-bottom:4px;">
                 Data início
             </label>
             <input type="date" name="data_inicio" id="filtro-data-inicio" class="form-control"
@@ -88,7 +124,7 @@
         </div>
 
         <div>
-            <label for="filtro-data-fim" style="font-size:.825rem; font-weight:600; color:#374151; display:block; margin-bottom:4px;">
+            <label for="filtro-data-fim" style="font-size:.825rem; font-weight:600; color:var(--ex-text-lbl, #374151); display:block; margin-bottom:4px;">
                 Data fim
             </label>
             <input type="date" name="data_fim" id="filtro-data-fim" class="form-control"
@@ -96,7 +132,7 @@
         </div>
 
         <div>
-            <label for="filtro-tipo-operacao" style="font-size:.825rem; font-weight:600; color:#374151; display:block; margin-bottom:4px;">
+            <label for="filtro-tipo-operacao" style="font-size:.825rem; font-weight:600; color:var(--ex-text-lbl, #374151); display:block; margin-bottom:4px;">
                 Forma de pagamento
             </label>
             <select name="tipo_operacao" id="filtro-tipo-operacao" class="form-control">
@@ -136,37 +172,36 @@
     @if(empty($tipoOperacao))
     <div style="display:flex; gap:12px; flex-wrap:wrap; margin-bottom:12px;">
 
-        <div style="flex:1; min-width:200px; background:#fff; border:1px solid #e8ecf0;
+        <div style="flex:1; min-width:200px; background:var(--ex-bg, #fff); border:1px solid var(--ex-border, #e8ecf0);
                     border-radius:14px; padding:16px 20px;
-                    box-shadow:0 1px 4px rgba(0,0,0,.05); display:flex; align-items:center; gap:14px;">
+                    box-shadow:var(--ex-shadow); display:flex; align-items:center; gap:14px;">
             <div style="width:46px; height:46px; border-radius:12px; flex-shrink:0;
-                        background:#e0f2fe; display:flex; align-items:center; justify-content:center;">
+                        background:var(--ex-ic-blue, #e0f2fe); display:flex; align-items:center; justify-content:center;">
                 <iconify-icon icon="solar:wallet-money-bold-duotone"
                               style="font-size:1.4rem; color:#0284c7;"></iconify-icon>
             </div>
             <div>
                 <p style="font-size:.7rem; font-weight:600; text-transform:uppercase;
-                           letter-spacing:.06em; color:#111827; margin:0 0 4px;">Total acumulado</p>
+                           letter-spacing:.06em; color:var(--ex-text-h, #111827); margin:0 0 4px;">Total acumulado</p>
                 <p style="font-size:1.25rem; font-weight:700; color:#0284c7; margin:0;">
                     {{ $brl($totalAcumulado) }}
                 </p>
             </div>
         </div>
 
-        <div style="flex:1; min-width:200px; background:#fff; border:1px solid #e8ecf0;
+        <div style="flex:1; min-width:200px; background:var(--ex-bg, #fff); border:1px solid var(--ex-border, #e8ecf0);
                     border-radius:14px; padding:16px 20px;
-                    box-shadow:0 1px 4px rgba(0,0,0,.05); display:flex; align-items:center; gap:14px;">
+                    box-shadow:var(--ex-shadow); display:flex; align-items:center; gap:14px;">
             <div style="width:46px; height:46px; border-radius:12px; flex-shrink:0;
-                        background:{{ $totalSaldo < 0 ? '#fee2e2' : '#dcfce7' }};
+                        background:{{ $saldoIcVar }};
                         display:flex; align-items:center; justify-content:center;">
                 <iconify-icon icon="solar:chart-2-bold-duotone"
-                              style="font-size:1.4rem; color:{{ $totalSaldo < 0 ? '#dc2626' : '#16a34a' }};"></iconify-icon>
+                              style="font-size:1.4rem; color:{{ $saldoColor }};"></iconify-icon>
             </div>
             <div>
                 <p style="font-size:.7rem; font-weight:600; text-transform:uppercase;
-                           letter-spacing:.06em; color:#111827; margin:0 0 4px;">Saldo do período</p>
-                <p style="font-size:1.25rem; font-weight:700; margin:0;
-                          color:{{ $totalSaldo < 0 ? '#dc2626' : '#16a34a' }};">
+                           letter-spacing:.06em; color:var(--ex-text-h, #111827); margin:0 0 4px;">Saldo do período</p>
+                <p style="font-size:1.25rem; font-weight:700; margin:0; color:{{ $saldoColor }};">
                     {{ $brl($totalSaldo) }}
                 </p>
             </div>
@@ -177,10 +212,10 @@
     {{-- ── Botão expandir detalhes ────────────────────────────────── --}}
     <div style="margin-bottom:10px;">
         <button id="btn-detalhes" onclick="toggleDetalhes()"
-                style="background:none; border:1px solid #e8ecf0; border-radius:8px;
-                       padding:7px 16px; font-size:.825rem; font-weight:600; color:#6b7280;
+                style="background:var(--ex-bg, #fff); border:1px solid var(--ex-border, #e8ecf0); border-radius:8px;
+                       padding:7px 16px; font-size:.825rem; font-weight:600; color:var(--ex-text-sub, #6b7280);
                        cursor:pointer; display:inline-flex; align-items:center; gap:6px;
-                       background:#fff; box-shadow:0 1px 3px rgba(0,0,0,.05);">
+                       box-shadow:0 1px 3px rgba(0,0,0,.05);">
             <iconify-icon id="btn-detalhes-icon" icon="solar:alt-arrow-up-bold-duotone"
                           style="font-size:1rem; transition:transform .2s;"></iconify-icon>
             <span id="btn-detalhes-label">Ocultar detalhes</span>
@@ -190,69 +225,69 @@
     {{-- ── Cards: PIX / Cartão / Dinheiro / Devolução ───────────────── --}}
     <div id="cards-detalhes" style="display:flex; gap:12px; flex-wrap:wrap; margin-bottom:20px;">
 
-        <div style="flex:1; min-width:140px; background:#fff; border:1px solid #e8ecf0;
+        <div style="flex:1; min-width:140px; background:var(--ex-bg, #fff); border:1px solid var(--ex-border, #e8ecf0);
                     border-radius:14px; padding:14px 18px;
-                    box-shadow:0 1px 4px rgba(0,0,0,.05); display:flex; align-items:center; gap:12px;">
+                    box-shadow:var(--ex-shadow); display:flex; align-items:center; gap:12px;">
             <div style="width:40px; height:40px; border-radius:10px; flex-shrink:0;
-                        background:#f0fdf4; display:flex; align-items:center; justify-content:center;">
+                        background:var(--ex-ic-pix, #f0fdf4); display:flex; align-items:center; justify-content:center;">
                 <iconify-icon icon="solar:qr-code-bold-duotone"
                               style="font-size:1.2rem; color:#16a34a;"></iconify-icon>
             </div>
             <div>
                 <p style="font-size:.68rem; font-weight:600; text-transform:uppercase;
-                           letter-spacing:.06em; color:#111827; margin:0 0 3px;">Total PIX</p>
-                <p style="font-size:1rem; font-weight:700; color:#111827; margin:0;">
+                           letter-spacing:.06em; color:var(--ex-text-h, #111827); margin:0 0 3px;">Total PIX</p>
+                <p style="font-size:1rem; font-weight:700; color:var(--ex-text-h, #111827); margin:0;">
                     {{ $brl($totalPix) }}
                 </p>
             </div>
         </div>
 
-        <div style="flex:1; min-width:140px; background:#fff; border:1px solid #e8ecf0;
+        <div style="flex:1; min-width:140px; background:var(--ex-bg, #fff); border:1px solid var(--ex-border, #e8ecf0);
                     border-radius:14px; padding:14px 18px;
-                    box-shadow:0 1px 4px rgba(0,0,0,.05); display:flex; align-items:center; gap:12px;">
+                    box-shadow:var(--ex-shadow); display:flex; align-items:center; gap:12px;">
             <div style="width:40px; height:40px; border-radius:10px; flex-shrink:0;
-                        background:#eff6ff; display:flex; align-items:center; justify-content:center;">
+                        background:var(--ex-ic-cartao, #eff6ff); display:flex; align-items:center; justify-content:center;">
                 <iconify-icon icon="solar:card-bold-duotone"
                               style="font-size:1.2rem; color:#2563eb;"></iconify-icon>
             </div>
             <div>
                 <p style="font-size:.68rem; font-weight:600; text-transform:uppercase;
-                           letter-spacing:.06em; color:#111827; margin:0 0 3px;">Total cartão</p>
-                <p style="font-size:1rem; font-weight:700; color:#111827; margin:0;">
+                           letter-spacing:.06em; color:var(--ex-text-h, #111827); margin:0 0 3px;">Total cartão</p>
+                <p style="font-size:1rem; font-weight:700; color:var(--ex-text-h, #111827); margin:0;">
                     {{ $brl($totalCartao) }}
                 </p>
             </div>
         </div>
 
-        <div style="flex:1; min-width:140px; background:#fff; border:1px solid #e8ecf0;
+        <div style="flex:1; min-width:140px; background:var(--ex-bg, #fff); border:1px solid var(--ex-border, #e8ecf0);
                     border-radius:14px; padding:14px 18px;
-                    box-shadow:0 1px 4px rgba(0,0,0,.05); display:flex; align-items:center; gap:12px;">
+                    box-shadow:var(--ex-shadow); display:flex; align-items:center; gap:12px;">
             <div style="width:40px; height:40px; border-radius:10px; flex-shrink:0;
-                        background:#fefce8; display:flex; align-items:center; justify-content:center;">
+                        background:var(--ex-ic-dinheiro, #fefce8); display:flex; align-items:center; justify-content:center;">
                 <iconify-icon icon="solar:banknote-bold-duotone"
                               style="font-size:1.2rem; color:#ca8a04;"></iconify-icon>
             </div>
             <div>
                 <p style="font-size:.68rem; font-weight:600; text-transform:uppercase;
-                           letter-spacing:.06em; color:#111827; margin:0 0 3px;">Total dinheiro</p>
-                <p style="font-size:1rem; font-weight:700; color:#111827; margin:0;">
+                           letter-spacing:.06em; color:var(--ex-text-h, #111827); margin:0 0 3px;">Total dinheiro</p>
+                <p style="font-size:1rem; font-weight:700; color:var(--ex-text-h, #111827); margin:0;">
                     {{ $brl($totalDinheiro) }}
                 </p>
             </div>
         </div>
 
-        <div style="flex:1; min-width:140px; background:#fff; border:1px solid #e8ecf0;
+        <div style="flex:1; min-width:140px; background:var(--ex-bg, #fff); border:1px solid var(--ex-border, #e8ecf0);
                     border-radius:14px; padding:14px 18px;
-                    box-shadow:0 1px 4px rgba(0,0,0,.05); display:flex; align-items:center; gap:12px;">
+                    box-shadow:var(--ex-shadow); display:flex; align-items:center; gap:12px;">
             <div style="width:40px; height:40px; border-radius:10px; flex-shrink:0;
-                        background:#fef2f2; display:flex; align-items:center; justify-content:center;">
+                        background:var(--ex-ic-dev, #fef2f2); display:flex; align-items:center; justify-content:center;">
                 <iconify-icon icon="solar:arrow-left-down-bold-duotone"
                               style="font-size:1.2rem; color:#dc2626;"></iconify-icon>
             </div>
             <div>
                 <p style="font-size:.68rem; font-weight:600; text-transform:uppercase;
-                           letter-spacing:.06em; color:#111827; margin:0 0 3px;">Devoluções</p>
-                <p style="font-size:1rem; font-weight:700; color:#111827; margin:0;">
+                           letter-spacing:.06em; color:var(--ex-text-h, #111827); margin:0 0 3px;">Devoluções</p>
+                <p style="font-size:1rem; font-weight:700; color:var(--ex-text-h, #111827); margin:0;">
                     {{ $brl($totalDevolucao) }}
                 </p>
             </div>
@@ -263,52 +298,52 @@
     {{-- ── Card único para o tipo de pagamento filtrado ────────────── --}}
     <div style="display:flex; gap:12px; flex-wrap:wrap; margin-bottom:20px;">
         @if($tipoOperacao === 'pix')
-        <div style="flex:1; min-width:140px; background:#fff; border:1px solid #e8ecf0;
+        <div style="flex:1; min-width:140px; background:var(--ex-bg, #fff); border:1px solid var(--ex-border, #e8ecf0);
                     border-radius:14px; padding:14px 18px;
-                    box-shadow:0 1px 4px rgba(0,0,0,.05); display:flex; align-items:center; gap:12px;">
+                    box-shadow:var(--ex-shadow); display:flex; align-items:center; gap:12px;">
             <div style="width:40px; height:40px; border-radius:10px; flex-shrink:0;
-                        background:#f0fdf4; display:flex; align-items:center; justify-content:center;">
+                        background:var(--ex-ic-pix, #f0fdf4); display:flex; align-items:center; justify-content:center;">
                 <iconify-icon icon="solar:qr-code-bold-duotone"
                               style="font-size:1.2rem; color:#16a34a;"></iconify-icon>
             </div>
             <div>
                 <p style="font-size:.68rem; font-weight:600; text-transform:uppercase;
-                           letter-spacing:.06em; color:#111827; margin:0 0 3px;">Total PIX</p>
-                <p style="font-size:1rem; font-weight:700; color:#111827; margin:0;">
+                           letter-spacing:.06em; color:var(--ex-text-h, #111827); margin:0 0 3px;">Total PIX</p>
+                <p style="font-size:1rem; font-weight:700; color:var(--ex-text-h, #111827); margin:0;">
                     {{ $brl($totalPix) }}
                 </p>
             </div>
         </div>
         @elseif($tipoOperacao === 'cartao')
-        <div style="flex:1; min-width:140px; background:#fff; border:1px solid #e8ecf0;
+        <div style="flex:1; min-width:140px; background:var(--ex-bg, #fff); border:1px solid var(--ex-border, #e8ecf0);
                     border-radius:14px; padding:14px 18px;
-                    box-shadow:0 1px 4px rgba(0,0,0,.05); display:flex; align-items:center; gap:12px;">
+                    box-shadow:var(--ex-shadow); display:flex; align-items:center; gap:12px;">
             <div style="width:40px; height:40px; border-radius:10px; flex-shrink:0;
-                        background:#eff6ff; display:flex; align-items:center; justify-content:center;">
+                        background:var(--ex-ic-cartao, #eff6ff); display:flex; align-items:center; justify-content:center;">
                 <iconify-icon icon="solar:card-bold-duotone"
                               style="font-size:1.2rem; color:#2563eb;"></iconify-icon>
             </div>
             <div>
                 <p style="font-size:.68rem; font-weight:600; text-transform:uppercase;
-                           letter-spacing:.06em; color:#111827; margin:0 0 3px;">Total cartão</p>
-                <p style="font-size:1rem; font-weight:700; color:#111827; margin:0;">
+                           letter-spacing:.06em; color:var(--ex-text-h, #111827); margin:0 0 3px;">Total cartão</p>
+                <p style="font-size:1rem; font-weight:700; color:var(--ex-text-h, #111827); margin:0;">
                     {{ $brl($totalCartao) }}
                 </p>
             </div>
         </div>
         @elseif($tipoOperacao === 'dinheiro')
-        <div style="flex:1; min-width:140px; background:#fff; border:1px solid #e8ecf0;
+        <div style="flex:1; min-width:140px; background:var(--ex-bg, #fff); border:1px solid var(--ex-border, #e8ecf0);
                     border-radius:14px; padding:14px 18px;
-                    box-shadow:0 1px 4px rgba(0,0,0,.05); display:flex; align-items:center; gap:12px;">
+                    box-shadow:var(--ex-shadow); display:flex; align-items:center; gap:12px;">
             <div style="width:40px; height:40px; border-radius:10px; flex-shrink:0;
-                        background:#fefce8; display:flex; align-items:center; justify-content:center;">
+                        background:var(--ex-ic-dinheiro, #fefce8); display:flex; align-items:center; justify-content:center;">
                 <iconify-icon icon="solar:banknote-bold-duotone"
                               style="font-size:1.2rem; color:#ca8a04;"></iconify-icon>
             </div>
             <div>
                 <p style="font-size:.68rem; font-weight:600; text-transform:uppercase;
-                           letter-spacing:.06em; color:#111827; margin:0 0 3px;">Total dinheiro</p>
-                <p style="font-size:1rem; font-weight:700; color:#111827; margin:0;">
+                           letter-spacing:.06em; color:var(--ex-text-h, #111827); margin:0 0 3px;">Total dinheiro</p>
+                <p style="font-size:1rem; font-weight:700; color:var(--ex-text-h, #111827); margin:0;">
                     {{ $brl($totalDinheiro) }}
                 </p>
             </div>
@@ -333,8 +368,8 @@
     </form>
 
     {{-- ── Tabela de extrato ────────────────────────────────────── --}}
-    <div style="background:#fff; border:1px solid #e8ecf0; border-radius:14px; padding:20px;
-                box-shadow:0 1px 4px rgba(0,0,0,.05);">
+    <div style="background:var(--ex-bg, #fff); border:1px solid var(--ex-border, #e8ecf0); border-radius:14px; padding:20px;
+                box-shadow:var(--ex-shadow);">
         <table id="tabela_maquinas_transacao" class="table table-striped" style="width:100%">
             <thead>
                 <tr>
@@ -479,7 +514,7 @@ $(document).ready(function () {
 
         Swal.fire({
             icon: 'warning',
-            title: 'Confirmar Reset Parcial?',
+            title: 'Confirmar Reset?',
             html:
                 detalhesHtml +
                 '<p class="mb-1">Total acumulado: <strong>' + totalAcumulado + '</strong></p>' +
