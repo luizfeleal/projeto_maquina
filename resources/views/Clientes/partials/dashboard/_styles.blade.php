@@ -1,11 +1,41 @@
 <style>
     :root {
-        --sp-navy: #1E2E5E;
-        --sp-teal: #2C9BA5;
-        --sp-teal-light: #d5ebed;
-        --sp-border: #e8ecf0;
-        --sp-muted: #6b7280;
-        --sp-bg: #f8fafc;
+        --sp-navy:          #1E2E5E;
+        --sp-teal:          #2C9BA5;
+        --sp-teal-light:    #d5ebed;
+        --sp-border:        #e8ecf0;
+        --sp-muted:         #6b7280;
+        --sp-bg:            #f8fafc;
+        /* novos tokens de texto e superfície */
+        --sp-text:          #111827;
+        --sp-text-sub:      #374151;
+        --sp-text-faint:    #9ca3af;
+        --sp-card-bg:       #ffffff;
+        --sp-border-subtle: #f3f4f6;
+        --sp-row-sep:       #f9fafb;
+        --sp-progress-bg:   #fee2e2;
+        --sp-navy-light:    #e8ecf8;
+        --sp-warn-light:    #fef3c7;
+        --sp-danger-light:  #fee2e2;
+        --sp-ok-light:      #dcfce7;
+    }
+
+    [data-theme="dark"] {
+        --sp-text:          #e8ecf0;
+        --sp-text-sub:      #c4cdd8;
+        --sp-text-faint:    #64748b;
+        --sp-muted:         #64748b;
+        --sp-bg:            #1e2844;
+        --sp-card-bg:       #1a2035;
+        --sp-border:        #2a3349;
+        --sp-border-subtle: #2a3349;
+        --sp-row-sep:       #1e2844;
+        --sp-teal-light:    rgba(44, 155, 165, 0.15);
+        --sp-progress-bg:   rgba(220, 38, 38, 0.15);
+        --sp-navy-light:    rgba(30, 46, 94, 0.4);
+        --sp-warn-light:    rgba(202, 138, 4, 0.15);
+        --sp-danger-light:  rgba(239, 68, 68, 0.12);
+        --sp-ok-light:      rgba(22, 163, 74, 0.12);
     }
 
     .dash-page {
@@ -273,5 +303,84 @@
         .dash-page { padding: 12px 12px 20px; }
         .dash-section { margin-bottom: 22px; }
         .dash-nav { margin-bottom: 18px; }
+    }
+
+    /* =====================================================
+       Dark mode overrides — complemento das variáveis CSS
+       ===================================================== */
+    [data-theme="dark"] .dash-card {
+        background: var(--sp-card-bg);
+        border-color: var(--sp-border);
+    }
+    [data-theme="dark"] .dash-kpi {
+        background: var(--sp-card-bg);
+        border-color: var(--sp-border);
+    }
+    [data-theme="dark"] .dash-card-header {
+        border-bottom-color: var(--sp-border-subtle);
+    }
+    [data-theme="dark"] .dash-card-footer {
+        border-top-color: var(--sp-border-subtle);
+    }
+    [data-theme="dark"] .dash-section-header h2 { color: var(--sp-text); }
+    [data-theme="dark"] .dash-kpi-label  { color: var(--sp-text); }
+    [data-theme="dark"] .dash-kpi-value  { color: var(--sp-text); }
+    [data-theme="dark"] .dash-kpi-sub    { color: var(--sp-muted); }
+
+    [data-theme="dark"] .dash-nav {
+        background: rgba(26, 32, 53, 0.95);
+        border-color: var(--sp-border);
+    }
+    [data-theme="dark"] .dash-nav a,
+    [data-theme="dark"] .dash-nav-link {
+        color: var(--sp-muted);
+    }
+    [data-theme="dark"] .dash-nav a:hover,
+    [data-theme="dark"] .dash-nav-link:hover,
+    [data-theme="dark"] .dash-nav a.active,
+    [data-theme="dark"] .dash-nav-link.active {
+        background: var(--sp-teal-light);
+        color: var(--sp-teal);
+    }
+
+    [data-theme="dark"] .dash-row-line { border-bottom-color: var(--sp-row-sep); }
+
+    [data-theme="dark"] .dash-tx-table th {
+        color: var(--sp-text-faint);
+        border-bottom-color: var(--sp-border-subtle);
+    }
+    [data-theme="dark"] .dash-tx-table td {
+        color: var(--sp-text-sub);
+        border-bottom-color: var(--sp-row-sep);
+    }
+
+    [data-theme="dark"] .dash-filter-select {
+        background: var(--sp-card-bg);
+        border-color: var(--sp-border);
+        color: var(--sp-text);
+    }
+    [data-theme="dark"] .maq-search-input {
+        background: var(--sp-card-bg);
+        border-color: var(--sp-border);
+        color: var(--sp-text);
+    }
+    [data-theme="dark"] .maq-search-icon { color: var(--sp-text-faint); }
+    [data-theme="dark"] .maq-count-badge { color: var(--sp-muted); }
+    [data-theme="dark"] .maq-card-meta   { color: var(--sp-text-faint); }
+    [data-theme="dark"] .maq-card-meta strong { color: var(--sp-muted); }
+
+    [data-theme="dark"] .dash-btn-secondary {
+        background: var(--sp-bg);
+        border-color: var(--sp-border);
+        color: var(--sp-text-sub);
+    }
+    [data-theme="dark"] .dash-btn-secondary:hover {
+        background: var(--sp-border-subtle);
+        color: var(--sp-text);
+    }
+
+    [data-theme="dark"] .rel-tab-btn.active {
+        background: var(--sp-card-bg) !important;
+        color: var(--sp-teal) !important;
     }
 </style>

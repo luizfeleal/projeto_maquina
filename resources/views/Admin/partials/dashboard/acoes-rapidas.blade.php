@@ -16,7 +16,7 @@
             <div class="dash-icon dash-icon--teal" style="width:44px; height:44px;">
                 <iconify-icon icon="solar:transfer-horizontal-bold-duotone" style="font-size:1.3rem;"></iconify-icon>
             </div>
-            <span style="font-size:.8rem; font-weight:700; color:#374151;">Extrato</span>
+            <span style="font-size:.8rem; font-weight:700; color:var(--sp-text-sub);">Extrato</span>
         </a>
 
         <a href="{{ route('view-liberar-jogadas') }}" class="dash-card"
@@ -25,7 +25,7 @@
             <div class="dash-icon dash-icon--warn" style="width:44px; height:44px;">
                 <iconify-icon icon="solar:play-circle-bold-duotone" style="font-size:1.3rem;"></iconify-icon>
             </div>
-            <span style="font-size:.8rem; font-weight:700; color:#374151;">Liberar Jogada</span>
+            <span style="font-size:.8rem; font-weight:700; color:var(--sp-text-sub);">Liberar Jogada</span>
         </a>
 
         <a href="{{ route('qr-criar') }}" class="dash-card"
@@ -34,7 +34,7 @@
             <div class="dash-icon dash-icon--navy" style="width:44px; height:44px;">
                 <iconify-icon icon="solar:qr-code-bold-duotone" style="font-size:1.3rem;"></iconify-icon>
             </div>
-            <span style="font-size:.8rem; font-weight:700; color:#374151;">Gerar QR (Efí)</span>
+            <span style="font-size:.8rem; font-weight:700; color:var(--sp-text-sub);">Gerar QR (Efí)</span>
         </a>
 
         <a href="{{ route('maquinas') }}" class="dash-card"
@@ -43,7 +43,7 @@
             <div class="dash-icon dash-icon--teal" style="width:44px; height:44px;">
                 <iconify-icon icon="solar:devices-bold-duotone" style="font-size:1.3rem;"></iconify-icon>
             </div>
-            <span style="font-size:.8rem; font-weight:700; color:#374151;">Máquinas</span>
+            <span style="font-size:.8rem; font-weight:700; color:var(--sp-text-sub);">Máquinas</span>
         </a>
 
         <a href="{{ route('maquinas-cartao') }}" class="dash-card"
@@ -52,7 +52,7 @@
             <div class="dash-icon dash-icon--navy" style="width:44px; height:44px;">
                 <iconify-icon icon="solar:card-recive-bold-duotone" style="font-size:1.3rem;"></iconify-icon>
             </div>
-            <span style="font-size:.8rem; font-weight:700; color:#374151;">Máquina Cartão (Pagbank)</span>
+            <span style="font-size:.8rem; font-weight:700; color:var(--sp-text-sub);">Máquina Cartão (Pagbank)</span>
         </a>
 
         <a href="{{ route('credencial-listar') }}" class="dash-card"
@@ -61,7 +61,7 @@
             <div class="dash-icon dash-icon--teal" style="width:44px; height:44px;">
                 <iconify-icon icon="solar:key-bold-duotone" style="font-size:1.3rem;"></iconify-icon>
             </div>
-            <span style="font-size:.8rem; font-weight:700; color:#374151;">Credenciais</span>
+            <span style="font-size:.8rem; font-weight:700; color:var(--sp-text-sub);">Credenciais</span>
         </a>
 
     </div>

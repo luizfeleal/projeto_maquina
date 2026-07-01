@@ -10,7 +10,7 @@
 
     <div class="dash-card" style="overflow:hidden;">
 
-        <div style="display:flex; flex-wrap:wrap; gap:0; border-bottom:1px solid #f3f4f6;
+        <div style="display:flex; flex-wrap:wrap; gap:0; border-bottom:1px solid var(--sp-border-subtle);
                     background:var(--sp-bg); padding:8px 8px 0;">
             <button type="button" class="rel-tab-btn active" data-target="relatorios-totalTransacoes"
                     style="flex:1; min-width:130px; padding:10px 12px; border:none; background:transparent;

@@ -22,7 +22,7 @@
     @if(count($listaMaquinas) > 1)
     <form method="GET" action="{{ route('cliente-home') }}#transacoes"
           style="margin-bottom:16px; display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
-        <label style="font-size:.8rem; font-weight:600; color:#374151; white-space:nowrap;">
+        <label style="font-size:.8rem; font-weight:600; color:var(--sp-text-sub); white-space:nowrap;">
             <iconify-icon icon="solar:filter-bold-duotone" style="vertical-align:middle;"></iconify-icon>
             Filtrar máquina:
         </label>
@@ -65,7 +65,7 @@
     {{-- Tabela compacta (últimas 15) --}}
     <div class="dash-card">
         @if(empty($ultimasTransacoes))
-            <div style="padding:40px 24px; text-align:center; color:#9ca3af;">
+            <div style="padding:40px 24px; text-align:center; color:var(--sp-muted);">
                 <iconify-icon icon="solar:inbox-line-bold-duotone" style="font-size:2rem; display:block; margin:0 auto 10px;"></iconify-icon>
                 <p style="margin:0; font-size:.85rem;">Nenhum extrato encontrado.</p>
             </div>

@@ -22,10 +22,10 @@
             </div>
             <div class="dash-kpi-value">
                 {{ count($maquinas_online) }}
-                <span style="font-size:.8rem; font-weight:500; color:#9ca3af;">/ {{ $totalMaquinas }}</span>
+                <span style="font-size:.8rem; font-weight:500; color:var(--sp-text-faint);">/ {{ $totalMaquinas }}</span>
             </div>
             @if($totalMaquinas > 0)
-            <div style="margin-top:8px; height:4px; border-radius:99px; background:#fee2e2; overflow:hidden;">
+            <div style="margin-top:8px; height:4px; border-radius:99px; background:var(--sp-progress-bg); overflow:hidden;">
                 <div style="height:100%; width:{{ $percOnline }}%; background:#16a34a; border-radius:99px;"></div>
             </div>
             @endif
@@ -35,7 +35,7 @@
                 <iconify-icon icon="solar:danger-triangle-bold-duotone" style="color:#dc2626;"></iconify-icon>
                 Máquinas offline
             </div>
-            <div class="dash-kpi-value" style="color:{{ count($maquinas_offline) > 0 ? '#dc2626' : '#111827' }};">
+            <div class="dash-kpi-value" {{ count($maquinas_offline) > 0 ? 'style="color:#dc2626;"' : '' }}>
                 {{ count($maquinas_offline) }}
             </div>
             <div class="dash-kpi-sub">
@@ -53,7 +53,7 @@
                 </div>
                 <div>
                     <h3 style="margin:0; font-size:.92rem; font-weight:700;">Faturamento</h3>
-                    <p style="margin:0; font-size:.72rem; color:#9ca3af;">Receitas por período</p>
+                    <p style="margin:0; font-size:.72rem; color:var(--sp-text-faint);">Receitas por período</p>
                 </div>
             </div>
             <div class="dash-card-body">
@@ -67,7 +67,7 @@
                 </div>
                 <div class="dash-row-line">
                     <span style="font-size:.82rem; color:var(--sp-muted);">Mês passado</span>
-                    <span style="color:#9ca3af;">{{ $brl($saldo['mes_passado']) }}</span>
+                    <span style="color:var(--sp-text-faint);">{{ $brl($saldo['mes_passado']) }}</span>
                 </div>
             </div>
             <div class="dash-card-footer">
@@ -85,7 +85,7 @@
                 </div>
                 <div>
                     <h3 style="margin:0; font-size:.92rem; font-weight:700;">Devoluções</h3>
-                    <p style="margin:0; font-size:.72rem; color:#9ca3af;">Estornos por período</p>
+                    <p style="margin:0; font-size:.72rem; color:var(--sp-text-faint);">Estornos por período</p>
                 </div>
             </div>
             <div class="dash-card-body">
@@ -99,7 +99,7 @@
                 </div>
                 <div class="dash-row-line">
                     <span style="font-size:.82rem; color:var(--sp-muted);">Mês passado</span>
-                    <span style="color:#9ca3af;">{{ $brl($devolucoes['mes_passado']) }}</span>
+                    <span style="color:var(--sp-text-faint);">{{ $brl($devolucoes['mes_passado']) }}</span>
                 </div>
             </div>
             <div class="dash-card-footer">
@@ -117,7 +117,7 @@
                 </div>
                 <div>
                     <h3 style="margin:0; font-size:.92rem; font-weight:700;">Acumulado</h3>
-                    <p style="margin:0; font-size:.72rem; color:#9ca3af;">Totais do período atual</p>
+                    <p style="margin:0; font-size:.72rem; color:var(--sp-text-faint);">Totais do período atual</p>
                 </div>
             </div>
             <div class="dash-card-body">

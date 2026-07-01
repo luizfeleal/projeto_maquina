@@ -74,7 +74,7 @@
     </form>
 
     @if(empty($maqItems))
-        <div class="dash-card" style="padding:48px 24px; text-align:center; color:#9ca3af;">
+        <div class="dash-card" style="padding:48px 24px; text-align:center; color:var(--sp-muted);">
             <iconify-icon icon="solar:devices-bold-duotone" style="font-size:2.5rem; display:block; margin:0 auto 12px;"></iconify-icon>
             <p style="margin:0; font-size:.9rem; font-weight:600;">Nenhuma máquina encontrada.</p>
         </div>
@@ -92,8 +92,8 @@
         <div id="maq-dashboard-grid" class="maq-grid" role="list"></div>
 
         <div id="maq-dashboard-empty-filter" class="dash-card maq-empty-filter" hidden>
-            <iconify-icon icon="solar:magnifer-linear" style="font-size:2rem; display:block; margin:0 auto 10px; color:#9ca3af;"></iconify-icon>
-            <p style="margin:0; font-size:.9rem; font-weight:600; color:#6b7280;">Nenhuma máquina corresponde à pesquisa.</p>
+            <iconify-icon icon="solar:magnifer-linear" style="font-size:2rem; display:block; margin:0 auto 10px; color:var(--sp-muted);"></iconify-icon>
+            <p style="margin:0; font-size:.9rem; font-weight:600; color:var(--sp-text-faint);">Nenhuma máquina corresponde à pesquisa.</p>
         </div>
 
         <nav id="maq-dashboard-pagination" class="maq-pagination" aria-label="Paginação de máquinas"></nav>
@@ -156,13 +156,13 @@ $(function () {
         var resetLabel  = ultimoReset ? ultimoReset : 'Sem reset';
 
         return '<article class="dash-card maq-card-item" role="listitem" style="display:flex; flex-direction:column;">' +
-            '<div style="padding:14px 16px 10px; border-bottom:1px solid #f3f4f6; display:flex; align-items:flex-start; justify-content:space-between; gap:8px;">' +
+            '<div style="padding:14px 16px 10px; border-bottom:1px solid var(--sp-border-subtle); display:flex; align-items:flex-start; justify-content:space-between; gap:8px;">' +
                 '<div style="display:flex; align-items:center; gap:10px; min-width:0;">' +
                     '<div class="dash-icon dash-icon--teal" style="width:38px; height:38px;">' +
                         '<iconify-icon icon="solar:monitor-bold-duotone" style="font-size:1.2rem;"></iconify-icon>' +
                     '</div>' +
                     '<div style="min-width:0;">' +
-                        '<p style="margin:0 0 4px; font-size:.88rem; font-weight:700; color:#111827; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">' +
+                        '<p style="margin:0 0 4px; font-size:.88rem; font-weight:700; color:var(--sp-text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">' +
                             escapeHtml(m.maquina_nome) + '</p>' +
                         '<p class="maq-card-meta">' +
                             '<iconify-icon icon="solar:map-point-bold-duotone" style="font-size:.8rem;"></iconify-icon>' +
@@ -178,22 +178,22 @@ $(function () {
                     statusIcon +
                 '</span>' +
             '</div>' +
-            '<div style="padding:10px 16px; border-bottom:1px solid #f3f4f6;">' +
+            '<div style="padding:10px 16px; border-bottom:1px solid var(--sp-border-subtle);">' +
                 '<div style="display:flex; gap:8px;">' +
                     '<div style="flex:1; text-align:center;">' +
-                        '<p style="margin:0 0 2px; font-size:.58rem; font-weight:600; text-transform:uppercase; letter-spacing:.05em; color:#111827;">Saldo período</p>' +
+                        '<p style="margin:0 0 2px; font-size:.58rem; font-weight:600; text-transform:uppercase; letter-spacing:.05em; color:var(--sp-text);">Saldo período</p>' +
                         '<p style="margin:0; font-size:.88rem; font-weight:700; color:' + saldoClr + ';">' + brl(saldo) + '</p>' +
                     '</div>' +
-                    '<div style="width:1px; background:#f3f4f6;"></div>' +
+                    '<div style="width:1px; background:var(--sp-border-subtle);"></div>' +
                     '<div style="flex:1; text-align:center;">' +
-                        '<p style="margin:0 0 2px; font-size:.58rem; font-weight:600; text-transform:uppercase; letter-spacing:.05em; color:#111827;">Total máquina</p>' +
-                        '<p style="margin:0; font-size:.88rem; font-weight:700; color:#111827;">' + brl(total) + '</p>' +
+                        '<p style="margin:0 0 2px; font-size:.58rem; font-weight:600; text-transform:uppercase; letter-spacing:.05em; color:var(--sp-text);">Total máquina</p>' +
+                        '<p style="margin:0; font-size:.88rem; font-weight:700; color:var(--sp-text);">' + brl(total) + '</p>' +
                     '</div>' +
                 '</div>' +
                 '<div style="margin-top:8px; text-align:center;">' +
-                    '<p style="margin:0; font-size:.65rem; color:#9ca3af;">' +
+                    '<p style="margin:0; font-size:.65rem; color:var(--sp-text-faint);">' +
                         '<iconify-icon icon="solar:clock-circle-bold-duotone" style="font-size:.7rem; vertical-align:middle;"></iconify-icon>' +
-                        ' Último reset: <strong style="color:' + (ultimoReset ? '#6b7280' : '#d1d5db') + ';">' + escapeHtml(resetLabel) + '</strong>' +
+                        ' Último reset: <strong style="color:' + (ultimoReset ? 'var(--sp-muted)' : 'var(--sp-text-faint)') + ';">' + escapeHtml(resetLabel) + '</strong>' +
                     '</p>' +
                 '</div>' +
             '</div>' +
