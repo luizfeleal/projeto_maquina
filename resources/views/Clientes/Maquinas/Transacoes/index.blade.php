@@ -25,7 +25,23 @@
             Histórico completo de movimentações das suas máquinas
         </p>
     </div>
-    <button id="btn-reset-todas"
+    <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+        <form action="{{ route('cliente-relatorio-xlsx-download') }}" method="post" id="form-extrato-export" style="margin:0;">
+            @csrf
+            <input type="hidden" name="tipo_csv" value="extrato_filtrado">
+            <input type="hidden" name="data" value="{{ json_encode($resultado) }}">
+            <button type="submit" id="btn-exportar-extrato"
+                    @if(empty($resultado)) disabled @endif
+                    style="background:{{ empty($resultado) ? '#e5e7eb' : 'var(--bs-primary, #2C9BA5)' }};
+                           border:none; border-radius:10px; padding:12px 20px; font-weight:700;
+                           font-size:.9rem; color:{{ empty($resultado) ? '#9ca3af' : '#fff' }};
+                           cursor:{{ empty($resultado) ? 'not-allowed' : 'pointer' }};
+                           display:flex; align-items:center; gap:8px; white-space:nowrap;">
+                <iconify-icon icon="solar:file-download-bold-duotone" style="font-size:1.1rem;"></iconify-icon>
+                Gerar Arquivo
+            </button>
+        </form>
+        <button id="btn-reset-todas"
             @if($qtdMaquinas === 0) disabled @endif
             style="background:{{ $qtdMaquinas === 0 ? '#e5e7eb' : '#fbbf24' }}; border:none; border-radius:10px;
                    padding:12px 24px; font-weight:700; font-size:.9rem;
@@ -36,6 +52,7 @@
         <iconify-icon icon="solar:restart-bold-duotone" style="font-size:1.1rem;"></iconify-icon>
         Reset Parcial
     </button>
+    </div>
 </div>
 
 <div class="content-body" style="padding-top:0;">
@@ -172,7 +189,7 @@
             <div>
                 <p style="font-size:.68rem; font-weight:600; text-transform:uppercase;
                            letter-spacing:.06em; color:#9ca3af; margin:0 0 3px;">Total PIX</p>
-                <p style="font-size:1rem; font-weight:700; color:#16a34a; margin:0;">
+                <p style="font-size:1rem; font-weight:700; color:#111827; margin:0;">
                     {{ $brl($totalPix) }}
                 </p>
             </div>
@@ -189,7 +206,7 @@
             <div>
                 <p style="font-size:.68rem; font-weight:600; text-transform:uppercase;
                            letter-spacing:.06em; color:#9ca3af; margin:0 0 3px;">Total cartão</p>
-                <p style="font-size:1rem; font-weight:700; color:#2563eb; margin:0;">
+                <p style="font-size:1rem; font-weight:700; color:#111827; margin:0;">
                     {{ $brl($totalCartao) }}
                 </p>
             </div>

@@ -34,7 +34,7 @@
             <div class="dash-icon dash-icon--navy" style="width:44px; height:44px;">
                 <iconify-icon icon="solar:qr-code-bold-duotone" style="font-size:1.3rem;"></iconify-icon>
             </div>
-            <span style="font-size:.8rem; font-weight:700; color:#374151;">Gerar QR</span>
+            <span style="font-size:.8rem; font-weight:700; color:#374151;">Gerar QR (Efí)</span>
         </a>
 
         <a href="{{ route('maquinas') }}" class="dash-card"
@@ -52,7 +52,7 @@
             <div class="dash-icon dash-icon--navy" style="width:44px; height:44px;">
                 <iconify-icon icon="solar:card-recive-bold-duotone" style="font-size:1.3rem;"></iconify-icon>
             </div>
-            <span style="font-size:.8rem; font-weight:700; color:#374151;">Máquina de Cartão</span>
+            <span style="font-size:.8rem; font-weight:700; color:#374151;">Máquina Cartão (Pagbank)</span>
         </a>
 
         <a href="{{ route('credencial-listar') }}" class="dash-card"
