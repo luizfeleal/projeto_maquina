@@ -119,7 +119,7 @@
                 <div style="padding:14px 20px; display:flex; gap:16px; border-bottom:1px solid #f3f4f6;">
                     <div style="flex:1; text-align:center;">
                         <p style="margin:0 0 2px; font-size:.65rem; font-weight:600; text-transform:uppercase;
-                                   letter-spacing:.06em; color:#9ca3af;">Total acumulado</p>
+                                   letter-spacing:.06em; color:#111827;">Total acumulado</p>
                         <p style="margin:0; font-size:1rem; font-weight:700; color:#0284c7;">
                             R$ {{ number_format($total, 2, ',', '.') }}
                         </p>
@@ -127,7 +127,7 @@
                     <div style="width:1px; background:#f3f4f6;"></div>
                     <div style="flex:1; text-align:center;">
                         <p style="margin:0 0 2px; font-size:.65rem; font-weight:600; text-transform:uppercase;
-                                   letter-spacing:.06em; color:#9ca3af;">Saldo do período</p>
+                                   letter-spacing:.06em; color:#111827;">Saldo do período</p>
                         <p data-saldo-maquina="{{ $idMaquina }}"
                            style="margin:0; font-size:1rem; font-weight:700;
                                   color:{{ $saldo < 0 ? '#dc2626' : '#16a34a' }};">
@@ -138,7 +138,7 @@
                     <div style="width:1px; background:#f3f4f6;"></div>
                     <div style="flex:1; text-align:center;">
                         <p style="margin:0 0 2px; font-size:.65rem; font-weight:600; text-transform:uppercase;
-                                   letter-spacing:.06em; color:#9ca3af;">Último reset</p>
+                                   letter-spacing:.06em; color:#111827;">Último reset</p>
                         <p style="margin:0; font-size:.75rem; font-weight:600; color:#6b7280;">
                             {{ $maq['data_ultimo_reset'] ? date('d/m/Y', strtotime($maq['data_ultimo_reset'])) : '—' }}
                         </p>

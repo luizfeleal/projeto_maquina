@@ -33,7 +33,7 @@ if (!function_exists('getRouteBreadcrumbs')) {
         $home      = ['label' => 'Home', 'route' => $homeRoute];
 
         $criar     = ['label' => 'Criar',          'route' => null];
-        $maquinas  = ['label' => 'Máquinas',        'route' => $role === 'cliente' ? 'clientes-maquinas' : 'maquinas'];
+        $maquinas  = ['label' => $role === 'cliente' ? 'Minhas Máquinas' : 'Máquinas',        'route' => $role === 'cliente' ? 'clientes-maquinas' : 'maquinas'];
         $qr        = ['label' => 'QR Code',         'route' => $role === 'cliente' ? 'cliente-qr' : 'qr'];
         $relatorio = ['label' => 'Relatórios',      'route' => $role === 'cliente' ? 'cliente-home' : 'relatorio-view'];
         $cred      = ['label' => 'Credenciais',     'route' => $role === 'cliente' ? 'cliente-credencial-listar' : 'credencial-listar'];
@@ -121,7 +121,7 @@ if (!function_exists('getSidebar')) {
                         ['title' => 'Incluir usuários', 'route' => 'local-incluir-usuario'],
                         ['title' => 'Criar local',      'route' => 'local-criar'],
                         ['title' => 'Credenciais',      'route' => 'credencial-listar'],
-                        ['title' => 'Máquina Cartão',   'route' => 'maquinas-cartao'],
+                        ['title' => 'Máquina Cartão (Pagbank)',   'route' => 'maquinas-cartao'],
                     ],
                 ],
                 [
@@ -133,7 +133,7 @@ if (!function_exists('getSidebar')) {
                     ],
                 ],
                 [
-                    'title'         => 'Minhas máquinas',
+                    'title'         => 'Minhas Máquinas',
                     'icon'          => 'solar:monitor-bold-duotone',
                     'active_routes' => ['maquinas', 'maquinas-transacoes', 'maquinas-acumulado', 'maquinas-resets-historico', 'relatorio-view', 'relatorio-criar', 'relatorio-exibir'],
                     'sub_menu'      => [
@@ -142,7 +142,7 @@ if (!function_exists('getSidebar')) {
                     ],
                 ],
                 [
-                    'title'         => 'Gerar QR',
+                    'title'         => 'Gerar QR (Efí)',
                     'icon'          => 'solar:qr-code-bold-duotone',
                     'active_routes' => ['qr-criar', 'qr'],
                     'sub_menu'      => [
@@ -239,11 +239,11 @@ if (!function_exists('getSidebar')) {
                 'active_routes' => ['cliente-credencial-listar', 'cliente-credencial-criar-efi', 'cliente-credencial-criar-pagbank', 'cliente-credencial-editar-efi', 'cliente-credencial-editar-pagbank', 'cliente-maquinas-cartao'],
                 'sub_menu'      => [
                     ['title' => 'Credenciais',    'route' => 'cliente-credencial-listar'],
-                    ['title' => 'Máquina Cartão', 'route' => 'cliente-maquinas-cartao'],
+                    ['title' => 'Máquina Cartão (Pagbank)', 'route' => 'cliente-maquinas-cartao'],
                 ],
             ],
             [
-                'title'         => 'Gerar QR',
+                'title'         => 'Gerar QR (Efí)',
                 'icon'          => 'solar:qr-code-bold-duotone',
                 'active_routes' => ['cliente-qr-criar', 'cliente-qr'],
                 'sub_menu'      => [
@@ -252,7 +252,7 @@ if (!function_exists('getSidebar')) {
                 ],
             ],
             [
-                'title'         => 'Minhas máquinas',
+                'title'         => 'Minhas Máquinas',
                 'icon'          => 'solar:monitor-bold-duotone',
                     'active_routes' => ['clientes-maquinas', 'clientes-maquinas-transacoes', 'clientes-maquinas-acumulado', 'clientes-maquinas-resets-historico'],
                     'sub_menu'      => [

@@ -80,7 +80,7 @@
     .dash-kpi-label {
         font-size: .68rem; font-weight: 700;
         text-transform: uppercase; letter-spacing: .06em;
-        color: #9ca3af; margin-bottom: 8px;
+        color: #111827; margin-bottom: 8px;
         display: flex; align-items: center; gap: 6px;
     }
     .dash-kpi-value { font-size: 1.35rem; font-weight: 800; color: #111827; line-height: 1.1; }

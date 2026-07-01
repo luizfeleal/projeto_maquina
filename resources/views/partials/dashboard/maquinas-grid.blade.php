@@ -3,7 +3,7 @@
     $isCliente     = $dashboardTipo === 'cliente';
 
     $verTodasRoute = $isCliente ? 'clientes-maquinas' : 'maquinas';
-    $sectionTitle  = $isCliente ? 'Minhas máquinas' : 'Máquinas';
+    $sectionTitle  = $isCliente ? 'Minhas Máquinas' : 'Máquinas';
 
     $maqItems = [];
     foreach ($maquinasDashboard ?? [] as $maq) {
@@ -181,12 +181,12 @@ $(function () {
             '<div style="padding:10px 16px; border-bottom:1px solid #f3f4f6;">' +
                 '<div style="display:flex; gap:8px;">' +
                     '<div style="flex:1; text-align:center;">' +
-                        '<p style="margin:0 0 2px; font-size:.58rem; font-weight:600; text-transform:uppercase; letter-spacing:.05em; color:#9ca3af;">Saldo período</p>' +
+                        '<p style="margin:0 0 2px; font-size:.58rem; font-weight:600; text-transform:uppercase; letter-spacing:.05em; color:#111827;">Saldo período</p>' +
                         '<p style="margin:0; font-size:.88rem; font-weight:700; color:' + saldoClr + ';">' + brl(saldo) + '</p>' +
                     '</div>' +
                     '<div style="width:1px; background:#f3f4f6;"></div>' +
                     '<div style="flex:1; text-align:center;">' +
-                        '<p style="margin:0 0 2px; font-size:.58rem; font-weight:600; text-transform:uppercase; letter-spacing:.05em; color:#9ca3af;">Total máquina</p>' +
+                        '<p style="margin:0 0 2px; font-size:.58rem; font-weight:600; text-transform:uppercase; letter-spacing:.05em; color:#111827;">Total máquina</p>' +
                         '<p style="margin:0; font-size:.88rem; font-weight:700; color:#111827;">' + brl(total) + '</p>' +
                     '</div>' +
                 '</div>' +
