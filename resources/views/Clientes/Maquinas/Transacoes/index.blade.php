@@ -118,7 +118,11 @@
                     Limpar
                 </a>
             @endif
-            <button type="button" id="btn-toggle-taxas" class="btn btn-outline-secondary btn-sm">
+            <button type="button" id="btn-toggle-taxas" class="btn btn-sm"
+                    style="background:{{ ($mostrarTaxas ?? false) ? '#ea580c' : '#f97316' }};
+                           border:none; color:#fff; font-weight:700;
+                           box-shadow:0 2px 8px rgba(249,115,22,.35);
+                           display:inline-flex; align-items:center; gap:6px;">
                 @if($mostrarTaxas ?? false)
                     <iconify-icon icon="solar:eye-closed-bold-duotone"></iconify-icon>
                     Ocultar transações de taxa

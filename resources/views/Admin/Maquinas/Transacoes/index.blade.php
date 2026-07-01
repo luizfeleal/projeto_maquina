@@ -72,7 +72,9 @@
                             <i class="fa-solid fa-xmark me-1"></i>Limpar
                         </button>
                     </div>
-                    <button id="btn-toggle-taxas" class="btn btn-outline-secondary btn-sm">
+                    <button id="btn-toggle-taxas" class="btn btn-sm"
+                            style="background:#f97316; border:none; color:#fff; font-weight:700;
+                                   box-shadow:0 2px 8px rgba(249,115,22,.35);">
                         <i class="fa-solid fa-eye me-1"></i>Exibir transações de taxa
                     </button>
                 </div>
@@ -289,7 +291,12 @@ $(document).ready(function () {
         mostrarTaxas = !mostrarTaxas;
         recarregarTabela();
 
-        $(this).html(mostrarTaxas
+        $(this).css({
+            background: mostrarTaxas ? '#ea580c' : '#f97316',
+            boxShadow: mostrarTaxas
+                ? '0 2px 8px rgba(234,88,12,.35)'
+                : '0 2px 8px rgba(249,115,22,.35)'
+        }).html(mostrarTaxas
             ? '<i class="fa-solid fa-eye-slash me-1"></i>Ocultar transações de taxa'
             : '<i class="fa-solid fa-eye me-1"></i>Exibir transações de taxa');
     });
