@@ -132,7 +132,8 @@
                value="{{ ($mostrarTaxas ?? false) ? '1' : '0' }}">
     </form>
 
-    {{-- ── Cards: Acumulado + Saldo ───────────────────────────────── --}}
+    {{-- ── Cards: Acumulado + Saldo (só sem filtro de pagamento) ────── --}}
+    @if(empty($tipoOperacao))
     <div style="display:flex; gap:12px; flex-wrap:wrap; margin-bottom:12px;">
 
         <div style="flex:1; min-width:200px; background:#fff; border:1px solid #e8ecf0;
@@ -258,6 +259,63 @@
         </div>
 
     </div>{{-- /cards-detalhes --}}
+    @else
+    {{-- ── Card único para o tipo de pagamento filtrado ────────────── --}}
+    <div style="display:flex; gap:12px; flex-wrap:wrap; margin-bottom:20px;">
+        @if($tipoOperacao === 'pix')
+        <div style="flex:1; min-width:140px; background:#fff; border:1px solid #e8ecf0;
+                    border-radius:14px; padding:14px 18px;
+                    box-shadow:0 1px 4px rgba(0,0,0,.05); display:flex; align-items:center; gap:12px;">
+            <div style="width:40px; height:40px; border-radius:10px; flex-shrink:0;
+                        background:#f0fdf4; display:flex; align-items:center; justify-content:center;">
+                <iconify-icon icon="solar:qr-code-bold-duotone"
+                              style="font-size:1.2rem; color:#16a34a;"></iconify-icon>
+            </div>
+            <div>
+                <p style="font-size:.68rem; font-weight:600; text-transform:uppercase;
+                           letter-spacing:.06em; color:#111827; margin:0 0 3px;">Total PIX</p>
+                <p style="font-size:1rem; font-weight:700; color:#111827; margin:0;">
+                    {{ $brl($totalPix) }}
+                </p>
+            </div>
+        </div>
+        @elseif($tipoOperacao === 'cartao')
+        <div style="flex:1; min-width:140px; background:#fff; border:1px solid #e8ecf0;
+                    border-radius:14px; padding:14px 18px;
+                    box-shadow:0 1px 4px rgba(0,0,0,.05); display:flex; align-items:center; gap:12px;">
+            <div style="width:40px; height:40px; border-radius:10px; flex-shrink:0;
+                        background:#eff6ff; display:flex; align-items:center; justify-content:center;">
+                <iconify-icon icon="solar:card-bold-duotone"
+                              style="font-size:1.2rem; color:#2563eb;"></iconify-icon>
+            </div>
+            <div>
+                <p style="font-size:.68rem; font-weight:600; text-transform:uppercase;
+                           letter-spacing:.06em; color:#111827; margin:0 0 3px;">Total cartão</p>
+                <p style="font-size:1rem; font-weight:700; color:#111827; margin:0;">
+                    {{ $brl($totalCartao) }}
+                </p>
+            </div>
+        </div>
+        @elseif($tipoOperacao === 'dinheiro')
+        <div style="flex:1; min-width:140px; background:#fff; border:1px solid #e8ecf0;
+                    border-radius:14px; padding:14px 18px;
+                    box-shadow:0 1px 4px rgba(0,0,0,.05); display:flex; align-items:center; gap:12px;">
+            <div style="width:40px; height:40px; border-radius:10px; flex-shrink:0;
+                        background:#fefce8; display:flex; align-items:center; justify-content:center;">
+                <iconify-icon icon="solar:banknote-bold-duotone"
+                              style="font-size:1.2rem; color:#ca8a04;"></iconify-icon>
+            </div>
+            <div>
+                <p style="font-size:.68rem; font-weight:600; text-transform:uppercase;
+                           letter-spacing:.06em; color:#111827; margin:0 0 3px;">Total dinheiro</p>
+                <p style="font-size:1rem; font-weight:700; color:#111827; margin:0;">
+                    {{ $brl($totalDinheiro) }}
+                </p>
+            </div>
+        </div>
+        @endif
+    </div>
+    @endif
 
     {{-- Forms ocultos para reset --}}
     <form id="formResetUnico" method="POST"

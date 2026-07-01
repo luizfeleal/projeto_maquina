@@ -179,12 +179,121 @@ class MaquinasController extends Controller
 
     public function transacaoMaquinas(Request $request)
     {
+        $idMaquinaSel = $request->input('id_maquina');
+        $idClienteSel = $request->input('id_cliente');
+        $idLocalSel   = $request->input('id_local');
+        $dataInicio   = $request->input('data_inicio');
+        $dataFim      = $request->input('data_fim');
+        $tipoOperacao = $request->input('tipo_operacao');
+        $mostrarTaxas = $request->boolean('mostrar_taxas');
+
         $clientes     = ClientesService::coletar();
         $locais       = LocaisService::coletar();
         $maquinas     = MaquinasService::coletar();
         $clienteLocal = ClienteLocalService::coletar();
 
-        return view('Admin.Maquinas.Transacoes.index', compact('clientes', 'locais', 'maquinas', 'clienteLocal'));
+        try {
+            $extratoResponse = ExtratoMaquinaService::coletarComPaginacao([
+                'length' => 5000,
+                'start'  => 0,
+                'order'  => [['column' => 4, 'dir' => 'desc']],
+            ]);
+            $todasTransacoes = array_values(array_filter(
+                $extratoResponse['data'] ?? [],
+                fn($tx) => is_array($tx)
+            ));
+        } catch (\Throwable $e) {
+            $todasTransacoes = [];
+        }
+
+        $maquinasFiltradas = $this->resolveMaquinasFiltradas($idClienteSel, $idLocalSel, $idMaquinaSel);
+
+        $resultado = $todasTransacoes;
+        if ($idClienteSel || $idLocalSel || $idMaquinaSel) {
+            $resultado = array_values(array_filter(
+                $resultado,
+                fn($tx) => $this->transacaoCorrespondeMaquinas($tx, $maquinasFiltradas)
+            ));
+        }
+
+        $resultado = $this->filtrarTransacoesPorData($resultado, $dataInicio, $dataFim);
+        $resultado = $this->filtrarTransacoesPorTipo($resultado, $tipoOperacao);
+
+        if (!$mostrarTaxas) {
+            $resultado = array_values(array_filter(
+                $resultado,
+                fn($tx) => !$this->isTransacaoTaxa($tx)
+            ));
+        }
+
+        $totalPix = $totalCartao = $totalDinheiro = $totalDevolucao = 0.0;
+        foreach ($resultado as $tx) {
+            $valor = (float) ($tx['extrato_operacao_valor'] ?? 0);
+            $tipo  = strtolower($tx['extrato_operacao_tipo'] ?? '');
+            $op    = $tx['extrato_operacao'] ?? 'C';
+
+            if ($op === 'D') {
+                $totalDevolucao += $valor;
+            } elseif (str_contains($tipo, 'pix')) {
+                $totalPix += $valor;
+            } elseif (str_contains($tipo, 'cart')) {
+                $totalCartao += $valor;
+            } elseif (str_contains($tipo, 'dinheir') || str_contains($tipo, 'físic') || str_contains($tipo, 'fisic')) {
+                $totalDinheiro += $valor;
+            }
+        }
+
+        $totalAcumulado = $this->somarTransacoesAdmin($resultado);
+        $totalSaldo     = round($totalAcumulado - $totalDevolucao, 2);
+
+        $resumo = [
+            'total_acumulado' => $totalAcumulado,
+            'total_saldo'     => $totalSaldo,
+            'total_pix'       => $totalPix,
+            'total_cartao'    => $totalCartao,
+            'total_dinheiro'  => $totalDinheiro,
+            'total_devolucao' => $totalDevolucao,
+            'ids_maquinas'    => [],
+        ];
+
+        $maquinaNomeSel = null;
+        if ($idMaquinaSel && is_array($maquinas)) {
+            foreach ($maquinas as $maq) {
+                if ((string) ($maq['id_maquina'] ?? '') === (string) $idMaquinaSel) {
+                    $maquinaNomeSel = $maq['maquina_nome'] ?? null;
+                    break;
+                }
+            }
+        }
+
+        return view('Admin.Maquinas.Transacoes.index', compact(
+            'resultado',
+            'resumo',
+            'clientes',
+            'locais',
+            'maquinas',
+            'clienteLocal',
+            'idMaquinaSel',
+            'idClienteSel',
+            'idLocalSel',
+            'maquinaNomeSel',
+            'dataInicio',
+            'dataFim',
+            'tipoOperacao',
+            'mostrarTaxas'
+        ));
+    }
+
+    private function somarTransacoesAdmin(array $transacoes): float
+    {
+        $total = 0.0;
+        foreach ($transacoes as $tx) {
+            $valor  = (float) ($tx['extrato_operacao_valor'] ?? 0);
+            $op     = $tx['extrato_operacao'] ?? 'C';
+            $total += ($op === 'D') ? -$valor : $valor;
+        }
+
+        return round($total, 2);
     }
 
     public function transacaoMaquinasDados(Request $request)

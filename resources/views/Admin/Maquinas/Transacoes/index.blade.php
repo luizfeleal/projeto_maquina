@@ -2,126 +2,378 @@
 @section('title', 'Máquinas → Extrato')
 @section('content')
 
-<div id="guias" class="maquina w-100 div-center-column"
-        style="padding-top: 99px; padding-bottom: 100px;">
+@php
+    $totalAcumulado = $resumo['total_acumulado'] ?? 0;
+    $totalSaldo     = $resumo['total_saldo']     ?? 0;
+    $totalPix       = $resumo['total_pix']       ?? 0;
+    $totalCartao    = $resumo['total_cartao']    ?? 0;
+    $totalDinheiro  = $resumo['total_dinheiro']  ?? 0;
+    $totalDevolucao = $resumo['total_devolucao'] ?? 0;
+    $brl = fn($v) => 'R$ ' . number_format($v, 2, ',', '.');
+@endphp
 
-    <div class="container section container-platform div-center-column"
-        style="margin-top: 15px; height: 100%;">
+{{-- ── Cabeçalho ──────────────────────────────────────────────────── --}}
+<div style="display:flex; align-items:center; justify-content:space-between;
+            flex-wrap:wrap; gap:12px; margin:16px 24px 20px;">
+    <div>
+        <h1 style="margin:0; font-size:1.5rem; font-weight:700; color:#111827;">Extrato</h1>
+        <p style="margin:4px 0 0; color:#6b7280; font-size:.875rem;">
+            Histórico completo de movimentações das máquinas
+        </p>
+    </div>
+    <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+        <form action="{{ route('relatorio-xlsx-download') }}" method="post" id="form-extrato-export" style="margin:0;">
+            @csrf
+            <input type="hidden" name="tipo_csv" value="extrato_filtrado">
+            <input type="hidden" name="data" value="{{ json_encode($resultado) }}">
+            <button type="submit" id="btn-exportar-extrato"
+                    @if(empty($resultado)) disabled @endif
+                    style="background:{{ empty($resultado) ? '#e5e7eb' : 'var(--bs-primary, #2C9BA5)' }};
+                           border:none; border-radius:10px; padding:12px 20px; font-weight:700;
+                           font-size:.9rem; color:{{ empty($resultado) ? '#9ca3af' : '#fff' }};
+                           cursor:{{ empty($resultado) ? 'not-allowed' : 'pointer' }};
+                           display:flex; align-items:center; gap:8px; white-space:nowrap;">
+                <iconify-icon icon="solar:file-download-bold-duotone" style="font-size:1.1rem;"></iconify-icon>
+                Gerar Arquivo
+            </button>
+        </form>
+    </div>
+</div>
 
-        {{-- ── Filtros ────────────────────────────────────────────────────── --}}
-        <div class="card mb-3 w-100">
-            <div class="card-body">
-                <div class="row g-3 align-items-end">
-                    <div class="col-md-4">
-                        <label for="filter-cliente" class="form-label fw-semibold">Cliente</label>
-                        <select id="filter-cliente" class="form-select select2-filter">
-                            <option value="">Todos os clientes</option>
-                            @foreach($clientes as $cliente)
-                                <option value="{{ $cliente['id_cliente'] }}">{{ $cliente['cliente_nome'] }}</option>
-                            @endforeach
-                        </select>
-                    </div>
+<div class="content-body" style="padding-top:0;">
 
-                    <div class="col-md-4">
-                        <label for="filter-local" class="form-label fw-semibold">Local</label>
-                        <select id="filter-local" class="form-select select2-filter">
-                            <option value="">Todos os locais</option>
-                            @foreach($locais as $local)
-                                <option value="{{ $local['id_local'] }}">{{ $local['local_nome'] }}</option>
-                            @endforeach
-                        </select>
-                    </div>
+    {{-- ── Filtros ──────────────────────────────────────────────────── --}}
+    <form method="GET" action="{{ route('maquinas-transacoes') }}"
+          style="margin-bottom:16px; display:flex; align-items:flex-end; gap:10px; flex-wrap:wrap;">
 
-                    <div class="col-md-4">
-                        <label for="filter-maquina" class="form-label fw-semibold">Máquina</label>
-                        <select id="filter-maquina" class="form-select select2-filter">
-                            <option value="">Todas as máquinas</option>
-                            @foreach($maquinas as $maquina)
-                                <option value="{{ $maquina['id_maquina'] }}">{{ $maquina['maquina_nome'] }}</option>
-                            @endforeach
-                        </select>
-                    </div>
+        <div style="min-width:200px; max-width:320px; flex:1;">
+            <label style="font-size:.825rem; font-weight:600; color:#374151; display:block; margin-bottom:4px;">
+                <iconify-icon icon="solar:filter-bold-duotone" style="vertical-align:middle; margin-right:4px;"></iconify-icon>
+                Cliente
+            </label>
+            <select name="id_cliente" id="filtro-cliente" class="select-filtro-cliente form-control">
+                <option value="">Todos os clientes</option>
+                @foreach($clientes as $cliente)
+                    <option value="{{ $cliente['id_cliente'] }}"
+                        {{ (string)($idClienteSel ?? '') === (string)$cliente['id_cliente'] ? 'selected' : '' }}>
+                        {{ $cliente['cliente_nome'] }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
 
-                    <div class="col-md-3">
-                        <label for="filter-data-inicio" class="form-label fw-semibold">Data início</label>
-                        <input type="date" id="filter-data-inicio" class="form-control">
-                    </div>
+        <div style="min-width:200px; max-width:320px; flex:1;">
+            <label style="font-size:.825rem; font-weight:600; color:#374151; display:block; margin-bottom:4px;">
+                Local
+            </label>
+            <select name="id_local" id="filtro-local" class="select-filtro-local form-control">
+                <option value="">Todos os locais</option>
+                @foreach($locais as $local)
+                    <option value="{{ $local['id_local'] }}"
+                        {{ (string)($idLocalSel ?? '') === (string)$local['id_local'] ? 'selected' : '' }}>
+                        {{ $local['local_nome'] }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
 
-                    <div class="col-md-3">
-                        <label for="filter-data-fim" class="form-label fw-semibold">Data fim</label>
-                        <input type="date" id="filter-data-fim" class="form-control">
-                    </div>
+        <div style="min-width:200px; max-width:320px; flex:1;">
+            <label style="font-size:.825rem; font-weight:600; color:#374151; display:block; margin-bottom:4px;">
+                Máquina
+            </label>
+            <select name="id_maquina" id="filtro-maquina" class="select-filtro-maquina form-control">
+                <option value="">Todas as máquinas</option>
+                @foreach($maquinas as $maq)
+                    <option value="{{ $maq['id_maquina'] }}"
+                        {{ (string)($idMaquinaSel ?? '') === (string)$maq['id_maquina'] ? 'selected' : '' }}>
+                        {{ $maq['maquina_nome'] }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
 
-                    <div class="col-md-3">
-                        <label for="filter-tipo-operacao" class="form-label fw-semibold">Forma de pagamento</label>
-                        <select id="filter-tipo-operacao" class="form-select">
-                            <option value="">Todos os tipos</option>
-                            <option value="pix">PIX</option>
-                            <option value="cartao">Cartão</option>
-                            <option value="dinheiro">Dinheiro</option>
-                        </select>
-                    </div>
-                </div>
+        <div>
+            <label for="filtro-data-inicio" style="font-size:.825rem; font-weight:600; color:#374151; display:block; margin-bottom:4px;">
+                Data início
+            </label>
+            <input type="date" name="data_inicio" id="filtro-data-inicio" class="form-control"
+                   value="{{ $dataInicio ?? '' }}">
+        </div>
 
-                <div class="d-flex justify-content-between align-items-center mt-3 flex-wrap gap-2">
-                    <div class="d-flex gap-2 flex-wrap align-items-center">
-                        <button id="btn-aplicar-filtro" class="btn btn-primary btn-sm">
-                            <i class="fa-solid fa-filter me-1"></i>Aplicar filtro
-                        </button>
-                        <button id="btn-limpar-filtro" class="btn btn-outline-secondary btn-sm">
-                            <i class="fa-solid fa-xmark me-1"></i>Limpar
-                        </button>
-                        <label class="taxa-toggle-label mb-0 ms-2" title="Incluir transações de taxa no extrato">
-                            <span class="taxa-toggle-track">
-                                <input type="checkbox" class="taxa-toggle-input" id="toggle-taxas-cb">
-                                <span class="taxa-toggle-thumb"></span>
-                            </span>
-                            <span>Exibir taxa</span>
-                        </label>
-                    </div>
-                    <button id="btn-gerar-relatorio" class="btn btn-sm"
-                            style="background:var(--bs-primary,#2C9BA5); border:none; color:#fff;
-                                   font-weight:700; display:inline-flex; align-items:center; gap:6px;">
-                        <i class="fa-solid fa-file-arrow-down"></i>
-                        Gerar Relatório
-                    </button>
-                </div>
+        <div>
+            <label for="filtro-data-fim" style="font-size:.825rem; font-weight:600; color:#374151; display:block; margin-bottom:4px;">
+                Data fim
+            </label>
+            <input type="date" name="data_fim" id="filtro-data-fim" class="form-control"
+                   value="{{ $dataFim ?? '' }}">
+        </div>
 
-                {{-- Formulário oculto para exportação --}}
-                <form id="form-relatorio-export" action="{{ route('relatorio-xlsx-download') }}" method="post" style="display:none">
-                    @csrf
-                    <input type="hidden" name="tipo_csv" value="extrato_filtrado">
-                    <input type="hidden" name="data" id="input-relatorio-data" value="">
-                </form>
+        <div>
+            <label for="filtro-tipo-operacao" style="font-size:.825rem; font-weight:600; color:#374151; display:block; margin-bottom:4px;">
+                Forma de pagamento
+            </label>
+            <select name="tipo_operacao" id="filtro-tipo-operacao" class="form-control">
+                <option value="">Todos os tipos</option>
+                <option value="pix" {{ ($tipoOperacao ?? '') === 'pix' ? 'selected' : '' }}>PIX</option>
+                <option value="cartao" {{ ($tipoOperacao ?? '') === 'cartao' ? 'selected' : '' }}>Cartão</option>
+                <option value="dinheiro" {{ ($tipoOperacao ?? '') === 'dinheiro' ? 'selected' : '' }}>Dinheiro</option>
+            </select>
+        </div>
+
+        <div style="display:flex; gap:8px; align-items:flex-end; flex-wrap:wrap;">
+            <button type="submit" class="btn btn-primary btn-sm">
+                <iconify-icon icon="solar:filter-bold-duotone"></iconify-icon>
+                Filtrar
+            </button>
+            @if($idMaquinaSel || $idClienteSel || $idLocalSel || !empty($dataInicio) || !empty($dataFim) || !empty($tipoOperacao))
+                <a href="{{ route('maquinas-transacoes') }}"
+                   class="btn btn-outline-secondary btn-sm">
+                    Limpar
+                </a>
+            @endif
+            <label class="taxa-toggle-label mb-0" title="Incluir transações de taxa no extrato">
+                <span class="taxa-toggle-track">
+                    <input type="checkbox" class="taxa-toggle-input" id="toggle-taxas-cb"
+                           name="mostrar_taxas" value="1"
+                           {{ ($mostrarTaxas ?? false) ? 'checked' : '' }}>
+                    <span class="taxa-toggle-thumb"></span>
+                </span>
+                <span>Exibir taxa</span>
+            </label>
+        </div>
+    </form>
+
+    {{-- ── Cards: Acumulado + Saldo (só sem filtro de pagamento) ────── --}}
+    @if(empty($tipoOperacao))
+    <div style="display:flex; gap:12px; flex-wrap:wrap; margin-bottom:12px;">
+
+        <div style="flex:1; min-width:200px; background:#fff; border:1px solid #e8ecf0;
+                    border-radius:14px; padding:16px 20px;
+                    box-shadow:0 1px 4px rgba(0,0,0,.05); display:flex; align-items:center; gap:14px;">
+            <div style="width:46px; height:46px; border-radius:12px; flex-shrink:0;
+                        background:#e0f2fe; display:flex; align-items:center; justify-content:center;">
+                <iconify-icon icon="solar:wallet-money-bold-duotone"
+                              style="font-size:1.4rem; color:#0284c7;"></iconify-icon>
+            </div>
+            <div>
+                <p style="font-size:.7rem; font-weight:600; text-transform:uppercase;
+                           letter-spacing:.06em; color:#111827; margin:0 0 4px;">Total acumulado</p>
+                <p style="font-size:1.25rem; font-weight:700; color:#0284c7; margin:0;">
+                    {{ $brl($totalAcumulado) }}
+                </p>
             </div>
         </div>
 
-        {{-- ── Tabela ─────────────────────────────────────────────────────── --}}
-        <div class="tabela_responsiva w-100">
-            <table id="tabela_maquinas_transacao" class="display table-striped" style="width:100%">
-                <thead>
-                    <tr>
-                        <th>Local</th>
-                        <th>Máquina</th>
-                        <th>Último extrato</th>
-                        <th>Forma de pagamento</th>
-                        <th>Data e Hora</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-                <tfoot>
-                    <tr>
-                        <th>Local</th>
-                        <th>Máquina</th>
-                        <th>Último extrato</th>
-                        <th>Forma de pagamento</th>
-                        <th>Data e Hora</th>
-                    </tr>
-                </tfoot>
-            </table>
+        <div style="flex:1; min-width:200px; background:#fff; border:1px solid #e8ecf0;
+                    border-radius:14px; padding:16px 20px;
+                    box-shadow:0 1px 4px rgba(0,0,0,.05); display:flex; align-items:center; gap:14px;">
+            <div style="width:46px; height:46px; border-radius:12px; flex-shrink:0;
+                        background:{{ $totalSaldo < 0 ? '#fee2e2' : '#dcfce7' }};
+                        display:flex; align-items:center; justify-content:center;">
+                <iconify-icon icon="solar:chart-2-bold-duotone"
+                              style="font-size:1.4rem; color:{{ $totalSaldo < 0 ? '#dc2626' : '#16a34a' }};"></iconify-icon>
+            </div>
+            <div>
+                <p style="font-size:.7rem; font-weight:600; text-transform:uppercase;
+                           letter-spacing:.06em; color:#111827; margin:0 0 4px;">Saldo do período</p>
+                <p style="font-size:1.25rem; font-weight:700; margin:0;
+                          color:{{ $totalSaldo < 0 ? '#dc2626' : '#16a34a' }};">
+                    {{ $brl($totalSaldo) }}
+                </p>
+            </div>
         </div>
 
     </div>
+
+    {{-- ── Botão expandir detalhes ────────────────────────────────── --}}
+    <div style="margin-bottom:10px;">
+        <button id="btn-detalhes" onclick="toggleDetalhes()"
+                style="background:#fff; border:1px solid #e8ecf0; border-radius:8px;
+                       padding:7px 16px; font-size:.825rem; font-weight:600; color:#6b7280;
+                       cursor:pointer; display:inline-flex; align-items:center; gap:6px;
+                       box-shadow:0 1px 3px rgba(0,0,0,.05);">
+            <iconify-icon id="btn-detalhes-icon" icon="solar:alt-arrow-up-bold-duotone"
+                          style="font-size:1rem; transition:transform .2s;"></iconify-icon>
+            <span id="btn-detalhes-label">Ocultar detalhes</span>
+        </button>
+    </div>
+
+    {{-- ── Cards: PIX / Cartão / Dinheiro / Devolução ───────────────── --}}
+    <div id="cards-detalhes" style="display:flex; gap:12px; flex-wrap:wrap; margin-bottom:20px;">
+
+        <div style="flex:1; min-width:140px; background:#fff; border:1px solid #e8ecf0;
+                    border-radius:14px; padding:14px 18px;
+                    box-shadow:0 1px 4px rgba(0,0,0,.05); display:flex; align-items:center; gap:12px;">
+            <div style="width:40px; height:40px; border-radius:10px; flex-shrink:0;
+                        background:#f0fdf4; display:flex; align-items:center; justify-content:center;">
+                <iconify-icon icon="solar:qr-code-bold-duotone"
+                              style="font-size:1.2rem; color:#16a34a;"></iconify-icon>
+            </div>
+            <div>
+                <p style="font-size:.68rem; font-weight:600; text-transform:uppercase;
+                           letter-spacing:.06em; color:#111827; margin:0 0 3px;">Total PIX</p>
+                <p style="font-size:1rem; font-weight:700; color:#111827; margin:0;">
+                    {{ $brl($totalPix) }}
+                </p>
+            </div>
+        </div>
+
+        <div style="flex:1; min-width:140px; background:#fff; border:1px solid #e8ecf0;
+                    border-radius:14px; padding:14px 18px;
+                    box-shadow:0 1px 4px rgba(0,0,0,.05); display:flex; align-items:center; gap:12px;">
+            <div style="width:40px; height:40px; border-radius:10px; flex-shrink:0;
+                        background:#eff6ff; display:flex; align-items:center; justify-content:center;">
+                <iconify-icon icon="solar:card-bold-duotone"
+                              style="font-size:1.2rem; color:#2563eb;"></iconify-icon>
+            </div>
+            <div>
+                <p style="font-size:.68rem; font-weight:600; text-transform:uppercase;
+                           letter-spacing:.06em; color:#111827; margin:0 0 3px;">Total cartão</p>
+                <p style="font-size:1rem; font-weight:700; color:#111827; margin:0;">
+                    {{ $brl($totalCartao) }}
+                </p>
+            </div>
+        </div>
+
+        <div style="flex:1; min-width:140px; background:#fff; border:1px solid #e8ecf0;
+                    border-radius:14px; padding:14px 18px;
+                    box-shadow:0 1px 4px rgba(0,0,0,.05); display:flex; align-items:center; gap:12px;">
+            <div style="width:40px; height:40px; border-radius:10px; flex-shrink:0;
+                        background:#fefce8; display:flex; align-items:center; justify-content:center;">
+                <iconify-icon icon="solar:banknote-bold-duotone"
+                              style="font-size:1.2rem; color:#ca8a04;"></iconify-icon>
+            </div>
+            <div>
+                <p style="font-size:.68rem; font-weight:600; text-transform:uppercase;
+                           letter-spacing:.06em; color:#111827; margin:0 0 3px;">Total dinheiro</p>
+                <p style="font-size:1rem; font-weight:700; color:#111827; margin:0;">
+                    {{ $brl($totalDinheiro) }}
+                </p>
+            </div>
+        </div>
+
+        <div style="flex:1; min-width:140px; background:#fff; border:1px solid #e8ecf0;
+                    border-radius:14px; padding:14px 18px;
+                    box-shadow:0 1px 4px rgba(0,0,0,.05); display:flex; align-items:center; gap:12px;">
+            <div style="width:40px; height:40px; border-radius:10px; flex-shrink:0;
+                        background:#fef2f2; display:flex; align-items:center; justify-content:center;">
+                <iconify-icon icon="solar:arrow-left-down-bold-duotone"
+                              style="font-size:1.2rem; color:#dc2626;"></iconify-icon>
+            </div>
+            <div>
+                <p style="font-size:.68rem; font-weight:600; text-transform:uppercase;
+                           letter-spacing:.06em; color:#111827; margin:0 0 3px;">Devoluções</p>
+                <p style="font-size:1rem; font-weight:700; color:#111827; margin:0;">
+                    {{ $brl($totalDevolucao) }}
+                </p>
+            </div>
+        </div>
+
+    </div>{{-- /cards-detalhes --}}
+    @else
+    {{-- ── Card único para o tipo de pagamento filtrado ────────────── --}}
+    <div style="display:flex; gap:12px; flex-wrap:wrap; margin-bottom:20px;">
+        @if($tipoOperacao === 'pix')
+        <div style="flex:1; min-width:140px; background:#fff; border:1px solid #e8ecf0;
+                    border-radius:14px; padding:14px 18px;
+                    box-shadow:0 1px 4px rgba(0,0,0,.05); display:flex; align-items:center; gap:12px;">
+            <div style="width:40px; height:40px; border-radius:10px; flex-shrink:0;
+                        background:#f0fdf4; display:flex; align-items:center; justify-content:center;">
+                <iconify-icon icon="solar:qr-code-bold-duotone"
+                              style="font-size:1.2rem; color:#16a34a;"></iconify-icon>
+            </div>
+            <div>
+                <p style="font-size:.68rem; font-weight:600; text-transform:uppercase;
+                           letter-spacing:.06em; color:#111827; margin:0 0 3px;">Total PIX</p>
+                <p style="font-size:1rem; font-weight:700; color:#111827; margin:0;">
+                    {{ $brl($totalPix) }}
+                </p>
+            </div>
+        </div>
+        @elseif($tipoOperacao === 'cartao')
+        <div style="flex:1; min-width:140px; background:#fff; border:1px solid #e8ecf0;
+                    border-radius:14px; padding:14px 18px;
+                    box-shadow:0 1px 4px rgba(0,0,0,.05); display:flex; align-items:center; gap:12px;">
+            <div style="width:40px; height:40px; border-radius:10px; flex-shrink:0;
+                        background:#eff6ff; display:flex; align-items:center; justify-content:center;">
+                <iconify-icon icon="solar:card-bold-duotone"
+                              style="font-size:1.2rem; color:#2563eb;"></iconify-icon>
+            </div>
+            <div>
+                <p style="font-size:.68rem; font-weight:600; text-transform:uppercase;
+                           letter-spacing:.06em; color:#111827; margin:0 0 3px;">Total cartão</p>
+                <p style="font-size:1rem; font-weight:700; color:#111827; margin:0;">
+                    {{ $brl($totalCartao) }}
+                </p>
+            </div>
+        </div>
+        @elseif($tipoOperacao === 'dinheiro')
+        <div style="flex:1; min-width:140px; background:#fff; border:1px solid #e8ecf0;
+                    border-radius:14px; padding:14px 18px;
+                    box-shadow:0 1px 4px rgba(0,0,0,.05); display:flex; align-items:center; gap:12px;">
+            <div style="width:40px; height:40px; border-radius:10px; flex-shrink:0;
+                        background:#fefce8; display:flex; align-items:center; justify-content:center;">
+                <iconify-icon icon="solar:banknote-bold-duotone"
+                              style="font-size:1.2rem; color:#ca8a04;"></iconify-icon>
+            </div>
+            <div>
+                <p style="font-size:.68rem; font-weight:600; text-transform:uppercase;
+                           letter-spacing:.06em; color:#111827; margin:0 0 3px;">Total dinheiro</p>
+                <p style="font-size:1rem; font-weight:700; color:#111827; margin:0;">
+                    {{ $brl($totalDinheiro) }}
+                </p>
+            </div>
+        </div>
+        @endif
+    </div>
+    @endif
+
+    {{-- ── Tabela de extrato ────────────────────────────────────────── --}}
+    <div style="background:#fff; border:1px solid #e8ecf0; border-radius:14px; padding:20px;
+                box-shadow:0 1px 4px rgba(0,0,0,.05);">
+        <table id="tabela_maquinas_transacao" class="table table-striped" style="width:100%">
+            <thead>
+                <tr>
+                    <th>Local</th>
+                    <th>Máquina</th>
+                    <th>Valor</th>
+                    <th>Forma de pagamento</th>
+                    <th>Data e Hora</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($resultado as $tx)
+                    @php
+                        $isCredito = ($tx['extrato_operacao'] ?? 'C') === 'C';
+                        $valor     = $tx['extrato_operacao_valor'] ?? 0;
+                    @endphp
+                    <tr>
+                        <td>{{ $tx['local_nome'] ?? '—' }}</td>
+                        <td>{{ $tx['maquina_nome'] ?? '—' }}</td>
+                        <td>
+                            <span style="font-weight:700;
+                                         color:{{ $isCredito ? '#16a34a' : '#ef4444' }};
+                                         white-space:nowrap;">
+                                {{ $isCredito ? '+' : '−' }} R$ {{ number_format($valor, 2, ',', '.') }}
+                            </span>
+                        </td>
+                        <td>{{ $tx['extrato_operacao_tipo'] ?? '—' }}</td>
+                        <td>{{ $tx['data_criacao'] ?? '—' }}</td>
+                    </tr>
+                @endforeach
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th>Local</th>
+                    <th>Máquina</th>
+                    <th>Valor</th>
+                    <th>Forma de pagamento</th>
+                    <th>Data e Hora</th>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+
 </div>
 
 @endsection
@@ -130,219 +382,51 @@
 <script>
 $(document).ready(function () {
 
-    var locaisData      = @json($locais);
-    var maquinasData    = @json($maquinas);
-    var clienteLocalData = @json($clienteLocal);
-
-    $('.select2-filter').select2({ theme: 'bootstrap-5', width: '100%' });
-
-    function locaisDoCliente(idCliente) {
-        if (!idCliente) return locaisData;
-        var ids = clienteLocalData
-            .filter(function (cl) { return String(cl.id_cliente) === String(idCliente); })
-            .map(function (cl) { return String(cl.id_local); });
-        return locaisData.filter(function (l) { return ids.indexOf(String(l.id_local)) !== -1; });
-    }
-
-    function maquinasDoFiltro(idCliente, idLocal) {
-        var lista = maquinasData;
-        if (idCliente) {
-            var locaisIds = locaisDoCliente(idCliente).map(function (l) { return String(l.id_local); });
-            lista = lista.filter(function (m) { return locaisIds.indexOf(String(m.id_local)) !== -1; });
-        }
-        if (idLocal) {
-            lista = lista.filter(function (m) { return String(m.id_local) === String(idLocal); });
-        }
-        return lista;
-    }
-
-    function repopularSelect($select, placeholder, items, valueKey, labelKey, selected) {
-        var html = '<option value="">' + placeholder + '</option>';
-        items.forEach(function (item) {
-            var val = item[valueKey];
-            var sel = selected && String(selected) === String(val) ? ' selected' : '';
-            html += '<option value="' + val + '"' + sel + '>' + item[labelKey] + '</option>';
-        });
-        $select.html(html).trigger('change.select2');
-    }
-
-    function atualizarOpcoesLocal() {
-        var idCliente = $('#filter-cliente').val();
-        var idLocal   = $('#filter-local').val();
-        repopularSelect(
-            $('#filter-local'),
-            'Todos os locais',
-            locaisDoCliente(idCliente),
-            'id_local',
-            'local_nome',
-            idLocal
-        );
-        if (idLocal && !$('#filter-local').val()) {
-            $('#filter-local').val('').trigger('change.select2');
-        }
-    }
-
-    function atualizarOpcoesMaquina() {
-        var idCliente = $('#filter-cliente').val();
-        var idLocal   = $('#filter-local').val();
-        var idMaquina = $('#filter-maquina').val();
-        repopularSelect(
-            $('#filter-maquina'),
-            'Todas as máquinas',
-            maquinasDoFiltro(idCliente, idLocal),
-            'id_maquina',
-            'maquina_nome',
-            idMaquina
-        );
-        if (idMaquina && !$('#filter-maquina').val()) {
-            $('#filter-maquina').val('').trigger('change.select2');
-        }
-    }
-
-    $('#filter-cliente').on('change', function () {
-        atualizarOpcoesLocal();
-        atualizarOpcoesMaquina();
+    $('.select-filtro-cliente').select2({
+        theme: 'bootstrap-5',
+        width: '100%',
+        placeholder: 'Todos os clientes',
+        allowClear: true,
+    });
+    $('.select-filtro-local').select2({
+        theme: 'bootstrap-5',
+        width: '100%',
+        placeholder: 'Todos os locais',
+        allowClear: true,
+    });
+    $('.select-filtro-maquina').select2({
+        theme: 'bootstrap-5',
+        width: '100%',
+        placeholder: 'Todas as máquinas',
+        allowClear: true,
     });
 
-    $('#filter-local').on('change', function () {
-        atualizarOpcoesMaquina();
+    window.toggleDetalhes = function () {
+        var $cards  = $('#cards-detalhes');
+        var $icon   = $('#btn-detalhes-icon');
+        var $label  = $('#btn-detalhes-label');
+        var aberto  = $cards.is(':visible');
+
+        if (aberto) {
+            $cards.hide();
+            $icon.attr('icon', 'solar:alt-arrow-down-bold-duotone');
+            $label.text('Ver mais informações');
+        } else {
+            $cards.css('display', 'flex');
+            $icon.attr('icon', 'solar:alt-arrow-up-bold-duotone');
+            $label.text('Ocultar detalhes');
+        }
+    };
+
+    $('#toggle-taxas-cb').on('change', function () {
+        $(this).closest('form').submit();
     });
 
-    var mostrarTaxas = false;
-    var $toggleCb = $('#toggle-taxas-cb');
-
-    var tabela = $('#tabela_maquinas_transacao').DataTable({
-        processing: true,
-        serverSide: true,
-        scrollX: true,
-        ajax: {
-            url: '{{ route('maquinas-transacoes-dados') }}',
-            type: 'GET',
-            data: function (d) {
-                d.search = d.search.value;
-                d.mostrar_taxas = mostrarTaxas ? 1 : 0;
-
-                var idCliente = $('#filter-cliente').val();
-                var idLocal   = $('#filter-local').val();
-                var idMaquina = $('#filter-maquina').val();
-                if (idCliente) d.id_cliente = idCliente;
-                if (idLocal)   d.id_local   = idLocal;
-                if (idMaquina) d.id_maquina = idMaquina;
-
-                var dataInicio = $('#filter-data-inicio').val();
-                var dataFim    = $('#filter-data-fim').val();
-                if (dataInicio) d.data_inicio = dataInicio;
-                if (dataFim)    d.data_fim    = dataFim;
-
-                var tipoOperacao = $('#filter-tipo-operacao').val();
-                if (tipoOperacao) d.tipo_operacao = tipoOperacao;
-            }
-        },
-        language: {
-            url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json'
-        },
-        columns: [
-            { data: 'local_nome', title: 'Local' },
-            { data: 'maquina_nome', title: 'Máquina' },
-            {
-                data: 'extrato_operacao',
-                title: 'Último extrato',
-                render: function (data, type, row) {
-                    var val = parseFloat(row.extrato_operacao_valor || 0).toFixed(2).replace('.', ',');
-                    return data === 'C' ? '+ R$ ' + val : '- R$ ' + val;
-                }
-            },
-            { data: 'extrato_operacao_tipo', title: 'Forma de pagamento' },
-            {
-                data: 'data_criacao',
-                title: 'Data e Hora',
-                render: function (data) { return data || '—'; }
-            }
-        ],
+    $('#tabela_maquinas_transacao').DataTable({
+        language: { url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json' },
         order: [[4, 'desc']],
-        pageLength: 10,
-        lengthMenu: [10, 25, 50, 100],
-        ordering: true
-    });
-
-    function ajustarColunasTabela() {
-        setTimeout(function () {
-            tabela.columns.adjust();
-            if (tabela.fixedColumns) {
-                tabela.fixedColumns().relayout();
-            }
-        }, 50);
-    }
-
-    $(document).on('click', '.view-btn-table', ajustarColunasTabela);
-
-    tabela.on('draw.dt', function () {
-        var info  = tabela.page.info();
-        var count = (info && info.recordsDisplay !== undefined)
-            ? info.recordsDisplay
-            : tabela.rows({ search: 'applied' }).count();
-        var label = count + ' registro' + (count !== 1 ? 's' : '');
-        $('.view-toggle-bar .view-count-badge').text(label).attr('aria-label', label);
-    });
-
-    function recarregarTabela() {
-        tabela.page('first').ajax.reload(null, false);
-    }
-
-    $('#btn-aplicar-filtro').on('click', recarregarTabela);
-
-    $('#btn-limpar-filtro').on('click', function () {
-        $('#filter-cliente').val('').trigger('change.select2');
-        $('#filter-local').val('').trigger('change.select2');
-        $('#filter-maquina').val('').trigger('change.select2');
-        $('#filter-data-inicio').val('');
-        $('#filter-data-fim').val('');
-        $('#filter-tipo-operacao').val('');
-        atualizarOpcoesLocal();
-        atualizarOpcoesMaquina();
-        recarregarTabela();
-    });
-
-    $toggleCb.on('change', function () {
-        mostrarTaxas = this.checked;
-        recarregarTabela();
-    });
-
-    $('#btn-gerar-relatorio').on('click', function () {
-        var $btn = $(this);
-        $btn.prop('disabled', true).html('<i class="fa-solid fa-spinner fa-spin me-1"></i>Gerando...');
-
-        $.ajax({
-            url: '{{ route("maquinas-transacoes-dados") }}',
-            type: 'GET',
-            data: {
-                draw: 1, start: 0, length: 9999,
-                mostrar_taxas: mostrarTaxas ? 1 : 0,
-                id_cliente:    $('#filter-cliente').val()      || undefined,
-                id_local:      $('#filter-local').val()        || undefined,
-                id_maquina:    $('#filter-maquina').val()      || undefined,
-                data_inicio:   $('#filter-data-inicio').val()  || undefined,
-                data_fim:      $('#filter-data-fim').val()     || undefined,
-                tipo_operacao: $('#filter-tipo-operacao').val()|| undefined,
-            },
-            success: function (res) {
-                var dados = res.data || [];
-                if (!dados.length) {
-                    $btn.prop('disabled', false).html('<i class="fa-solid fa-file-arrow-down me-1"></i>Gerar Relatório');
-                    Swal.fire({ icon: 'info', title: 'Sem dados', text: 'Nenhum registro encontrado com os filtros aplicados.' });
-                    return;
-                }
-                $('#input-relatorio-data').val(JSON.stringify(dados));
-                $('#form-relatorio-export').submit();
-                setTimeout(function () {
-                    $btn.prop('disabled', false).html('<i class="fa-solid fa-file-arrow-down me-1"></i>Gerar Relatório');
-                }, 2500);
-            },
-            error: function () {
-                $btn.prop('disabled', false).html('<i class="fa-solid fa-file-arrow-down me-1"></i>Gerar Relatório');
-                Swal.fire({ icon: 'error', title: 'Erro', text: 'Não foi possível buscar os dados para exportação.' });
-            }
-        });
+        pageLength: 25,
+        lengthMenu: [10, 25, 50, 100]
     });
 
 });
