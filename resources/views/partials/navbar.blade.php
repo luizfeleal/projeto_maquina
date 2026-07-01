@@ -21,6 +21,7 @@
 
     <button type="button" class="navbar-pwa-install d-none" id="navbarPwaInstallBtn" title="Instalar app" aria-label="Instalar app SwiftPay">
         <iconify-icon icon="solar:download-minimalistic-bold-duotone"></iconify-icon>
+        <span class="navbar-pwa-label">Instalar APP</span>
     </button>
 
     <button type="button" class="navbar-theme-toggle" id="themeToggleBtn" title="Alternar tema" aria-label="Alternar tema claro/escuro">

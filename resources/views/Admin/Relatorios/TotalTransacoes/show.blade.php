@@ -15,8 +15,9 @@
                 <input type="hidden" name="data" value="{{json_encode($bodyReq)}}">
 
                 <div class="row" style="display: flex; flex-direction: row; justify-content: center; width: 100%; margin-bottom: 24px;">
+                    @if(empty($tipo_transacao) || $tipo_transacao == 'PIX')
                     <div class="col-md-2">
-                        <p><strong>Pix: </strong> R$ 
+                        <p><strong>Pix: </strong> R$
 
                         @foreach($total as $item)
                             @if($item['tipo'] == "Pix")
@@ -25,14 +26,18 @@
                         @endforeach
                          </p>
                     </div>
+                    @endif
+                    @if(empty($tipo_transacao) || $tipo_transacao == 'Cartão')
                     <div class="col-md-2">
-                        <p><strong>Cartão: </strong> R$ 
+                        <p><strong>Cartão: </strong> R$
                         @foreach($total as $item)
                             @if($item['tipo'] == "Cartão")
                             <span id="valor_total_cartao">{{number_format($item['total'], 2, ',', '.')}}</span>
                             @endif
                         @endforeach </p>
                     </div>
+                    @endif
+                    @if(empty($tipo_transacao) || $tipo_transacao == 'Dinheiro')
                     <div class="col-md-2">
                         <p><strong>Dinheiro: </strong> R$
                         @foreach($total as $item)
@@ -41,21 +46,26 @@
                             @endif
                         @endforeach </p>
                     </div>
+                    @endif
+                    @if(empty($tipo_transacao) || $tipo_transacao == 'Estorno')
                     <div class="col-md-2">
-                        <p><strong>Estorno: </strong> R$ 
+                        <p><strong>Estorno: </strong> R$
                         @foreach($total as $item)
                             @if($item['tipo'] == "Estorno")
                             <span id="valor_total_estorno">{{number_format($item['total'], 2, ',', '.')}}</span>
                             @endif
                         @endforeach </p>
                     </div>
+                    @endif
                 </div>
+                @if(empty($tipo_transacao))
                 <div class="row" style="display: flex; flex-direction: row; justify-content: center; width: 100%; margin-bottom: 28px;">
                     <div class="col-md-8">
                         <h4 style="color: #1e2e5e;"><strong>Total extrato: </strong> R$
                             <span id="valor_total_transacoes">{{number_format($totalTransacoes, 2, ',', '.')}}</span></h4>
                     </div>
                 </div>
+                @endif
 
                 <div class="tabela_responsiva">
 
