@@ -379,6 +379,12 @@
     }
   }
 
+  // ---- Logos: invert para branco ----
+  .sidebar-logo img,
+  .navbar-brand-mobile img {
+    filter: brightness(0) invert(1);
+  }
+
   // ---- Card/Table view toggle ----
   .view-search-input {
     background: #1e2844;
@@ -444,14 +450,137 @@
   .card-label { color: #3d4f6a; }
   .card-value { color: #c4cdd8; }
 
-  .card-action-btn {
-    &.card-action-view   { background: rgba(44, 155, 165, 0.15); color: #2C9BA5; border-color: rgba(44, 155, 165, 0.3); }
-    &.card-action-edit   { background: rgba(34, 197, 94, 0.12);  color: #4ade80; border-color: rgba(34, 197, 94, 0.3);  }
-    &.card-action-delete { background: rgba(239, 68, 68, 0.12);  color: #f87171; border-color: rgba(239, 68, 68, 0.3);  }
+  .card-actions {
+    border-top-color: #2a3349;
+  }
+
+  // card-action-btn usa !important no _cards.scss, então precisamos igualar
+  a.card-action-btn,
+  button.card-action-btn {
+    background: #1e2844 !important;
+    color: #94a3b8 !important;
+    border-color: #2a3349 !important;
+
+    &:hover {
+      background: #2a3349 !important;
+      color: #e8ecf0 !important;
+    }
+
+    &.card-action-view {
+      background: rgba(44, 155, 165, 0.12) !important;
+      color: #2C9BA5 !important;
+      border-color: rgba(44, 155, 165, 0.25) !important;
+      &:hover { background: rgba(44, 155, 165, 0.2) !important; color: #2C9BA5 !important; }
+    }
+
+    &.card-action-edit {
+      background: rgba(34, 197, 94, 0.1) !important;
+      color: #4ade80 !important;
+      border-color: rgba(34, 197, 94, 0.25) !important;
+      &:hover { background: rgba(34, 197, 94, 0.18) !important; color: #4ade80 !important; }
+    }
+
+    &.card-action-delete,
+    &[style*='red'],
+    &.btn-danger,
+    &.btn-excluir-maquina-cartao {
+      background: rgba(239, 68, 68, 0.1) !important;
+      color: #f87171 !important;
+      border-color: rgba(239, 68, 68, 0.25) !important;
+      &:hover { background: rgba(239, 68, 68, 0.18) !important; color: #f87171 !important; }
+    }
   }
 
   .card-empty-state {
+    background: #1e2844;
+    border-color: #2a3349;
     color: #3d4f6a;
+
+    iconify-icon { color: #2a3349; }
+  }
+
+  // ---- Detail page — profile card + section cards ----
+  .detail-profile-card {
+    background: #1a2035;
+    border-color: #2a3349;
+
+    .detail-profile-actions {
+      border-top-color: #2a3349;
+    }
+  }
+
+  .detail-name { color: #e8ecf0; }
+
+  .detail-meta {
+    color: #64748b;
+
+    .meta-item iconify-icon { color: #3d4f6a; }
+  }
+
+  .detail-section-card {
+    background: #1a2035;
+    border-color: #2a3349;
+  }
+
+  .detail-section-header {
+    background: #1e2844;
+    border-bottom-color: #2a3349;
+
+    h3 { color: #94a3b8; }
+
+    .detail-count-badge {
+      background: #2a3349;
+      color: #64748b;
+    }
+  }
+
+  // ---- Credentials ----
+  .credential-item + .credential-item {
+    border-top-color: #2a3349;
+  }
+
+  .credential-name        { color: #e8ecf0; }
+  .credential-field-label { color: #3d4f6a; }
+  .credential-field-value { color: #94a3b8; }
+
+  .credential-status {
+    &.status-ok      { background: rgba(34, 197, 94, 0.12); color: #4ade80; }
+    &.status-missing { background: rgba(239, 68, 68, 0.1);  color: #f87171; }
+  }
+
+  // ---- Location list ----
+  .location-item {
+    background: #1e2844;
+    border-color: #2a3349;
+    color: #c4cdd8;
+
+    &:hover { background: #222d48; }
+  }
+
+  .detail-empty {
+    color: #64748b;
+    iconify-icon { color: #3d4f6a; }
+  }
+
+  // ---- Card pager pagination ----
+  .card-pager .pagination {
+    .page-item .page-link {
+      background: #1e2844;
+      border-color: #2a3349;
+      color: #94a3b8;
+    }
+
+    .page-item.active .page-link {
+      background: #2C9BA5;
+      border-color: #2C9BA5;
+      color: #fff;
+    }
+
+    .page-item:not(.disabled):not(.active) .page-link:hover {
+      background: rgba(44, 155, 165, 0.15);
+      border-color: #2C9BA5;
+      color: #2C9BA5;
+    }
   }
 
   // ---- Pagination ----
