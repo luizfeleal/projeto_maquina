@@ -5,6 +5,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>@yield('title') — SwiftPay Soluções</title>
+    {{-- Apply saved color theme before first paint to prevent flash --}}
+    <script>
+        (function () {
+            var saved = localStorage.getItem('pm_color_theme');
+            var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            var theme = saved || (prefersDark ? 'dark' : 'light');
+            document.documentElement.setAttribute('data-theme', theme);
+        })();
+    </script>
 
     <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('site/img/favicon-32.png') }}">
     <link rel="apple-touch-icon" href="{{ asset('site/img/apple-touch-icon.png') }}">
@@ -487,6 +496,19 @@
                     }
                     form.classList.add('was-validated');
                 }, false);
+            });
+        })();
+
+        // ---- Dark / Light mode toggle ----
+        (function () {
+            var btn = document.getElementById('themeToggleBtn');
+            if (!btn) return;
+            btn.addEventListener('click', function () {
+                var html    = document.documentElement;
+                var current = html.getAttribute('data-theme') || 'light';
+                var next    = current === 'dark' ? 'light' : 'dark';
+                html.setAttribute('data-theme', next);
+                localStorage.setItem('pm_color_theme', next);
             });
         })();
     </script>

@@ -23,6 +23,11 @@
         <iconify-icon icon="solar:download-minimalistic-bold-duotone"></iconify-icon>
     </button>
 
+    <button type="button" class="navbar-theme-toggle" id="themeToggleBtn" title="Alternar tema" aria-label="Alternar tema claro/escuro">
+        <iconify-icon icon="solar:moon-bold-duotone" class="theme-icon-light"></iconify-icon>
+        <iconify-icon icon="solar:sun-bold-duotone"  class="theme-icon-dark"></iconify-icon>
+    </button>
+
     <div class="navbar-user">
         <div class="user-info">
             <span class="user-name">{{ $userName }}</span>
