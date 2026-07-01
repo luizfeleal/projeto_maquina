@@ -145,6 +145,7 @@ class MaquinasController extends Controller
         $dataInicio    = $request->input('data_inicio');
         $dataFim       = $request->input('data_fim');
         $tipoOperacao  = $request->input('tipo_operacao');
+        $mostrarTaxas  = $request->boolean('mostrar_taxas');
         $idsPermitidos = $this->coletarIdsMaquinasDoCliente($id_cliente);
 
         if ($idMaquinaSel && !in_array((string) $idMaquinaSel, $idsPermitidos, true)) {
@@ -188,6 +189,13 @@ class MaquinasController extends Controller
 
         $resultado = $this->filtrarTransacoesPorData($resultado, $dataInicio, $dataFim);
         $resultado = $this->filtrarTransacoesPorTipo($resultado, $tipoOperacao);
+
+        if (!$mostrarTaxas) {
+            $resultado = array_values(array_filter(
+                $resultado,
+                fn($tx) => !$this->isTransacaoTaxa($tx)
+            ));
+        }
 
         $hasActiveFilter = !empty($dataInicio) || !empty($dataFim) || !empty($tipoOperacao);
 
@@ -250,8 +258,16 @@ class MaquinasController extends Controller
             'maquinaNomeSel',
             'dataInicio',
             'dataFim',
-            'tipoOperacao'
+            'tipoOperacao',
+            'mostrarTaxas'
         ));
+    }
+
+    private function isTransacaoTaxa(array $tx): bool
+    {
+        $tipo = strtolower(trim((string) ($tx['extrato_operacao_tipo'] ?? '')));
+
+        return str_contains($tipo, 'taxa');
     }
 
     private function parseDataCriacaoExtrato(?string $value): ?int

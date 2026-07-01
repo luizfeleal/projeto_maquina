@@ -107,7 +107,7 @@
             </select>
         </div>
 
-        <div style="display:flex; gap:8px;">
+        <div style="display:flex; gap:8px; align-items:flex-end; flex-wrap:wrap;">
             <button type="submit" class="btn btn-primary btn-sm">
                 <iconify-icon icon="solar:filter-bold-duotone"></iconify-icon>
                 Filtrar
@@ -118,7 +118,19 @@
                     Limpar
                 </a>
             @endif
+            <button type="button" id="btn-toggle-taxas" class="btn btn-outline-secondary btn-sm">
+                @if($mostrarTaxas ?? false)
+                    <iconify-icon icon="solar:eye-closed-bold-duotone"></iconify-icon>
+                    Ocultar transações de taxa
+                @else
+                    <iconify-icon icon="solar:eye-bold-duotone"></iconify-icon>
+                    Exibir transações de taxa
+                @endif
+            </button>
         </div>
+
+        <input type="hidden" name="mostrar_taxas" id="input-mostrar-taxas"
+               value="{{ ($mostrarTaxas ?? false) ? '1' : '0' }}">
     </form>
 
     {{-- ── Cards: Acumulado + Saldo ───────────────────────────────── --}}
@@ -366,6 +378,13 @@ $(document).ready(function () {
             $label.text('Ocultar detalhes');
         }
     };
+
+    $('#btn-toggle-taxas').on('click', function () {
+        var $input = $('#input-mostrar-taxas');
+        var mostrar = $input.val() === '1';
+        $input.val(mostrar ? '0' : '1');
+        $(this).closest('form').submit();
+    });
 
     $('#tabela_maquinas_transacao').DataTable({
         language: { url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json' },

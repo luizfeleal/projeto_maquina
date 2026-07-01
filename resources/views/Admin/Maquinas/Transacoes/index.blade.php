@@ -73,7 +73,7 @@
                         </button>
                     </div>
                     <button id="btn-toggle-taxas" class="btn btn-outline-secondary btn-sm">
-                        <i class="fa-solid fa-eye me-1"></i>Mostrar Taxas
+                        <i class="fa-solid fa-eye me-1"></i>Exibir transações de taxa
                     </button>
                 </div>
             </div>
@@ -290,8 +290,8 @@ $(document).ready(function () {
         recarregarTabela();
 
         $(this).html(mostrarTaxas
-            ? '<i class="fa-solid fa-eye-slash me-1"></i>Ocultar Taxas'
-            : '<i class="fa-solid fa-eye me-1"></i>Mostrar Taxas');
+            ? '<i class="fa-solid fa-eye-slash me-1"></i>Ocultar transações de taxa'
+            : '<i class="fa-solid fa-eye me-1"></i>Exibir transações de taxa');
     });
 
 });
