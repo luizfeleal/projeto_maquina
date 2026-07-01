@@ -118,19 +118,14 @@
                     Limpar
                 </a>
             @endif
-            <button type="button" id="btn-toggle-taxas" class="btn btn-sm"
-                    style="background:{{ ($mostrarTaxas ?? false) ? '#ea580c' : '#f97316' }};
-                           border:none; color:#fff; font-weight:700;
-                           box-shadow:0 2px 8px rgba(249,115,22,.35);
-                           display:inline-flex; align-items:center; gap:6px;">
-                @if($mostrarTaxas ?? false)
-                    <iconify-icon icon="solar:eye-closed-bold-duotone"></iconify-icon>
-                    Ocultar transações de taxa
-                @else
-                    <iconify-icon icon="solar:eye-bold-duotone"></iconify-icon>
-                    Exibir transações de taxa
-                @endif
-            </button>
+            <label class="taxa-toggle-label mb-0" title="Incluir transações de taxa no extrato">
+                <span class="taxa-toggle-track">
+                    <input type="checkbox" class="taxa-toggle-input" id="toggle-taxas-cb"
+                           {{ ($mostrarTaxas ?? false) ? 'checked' : '' }}>
+                    <span class="taxa-toggle-thumb"></span>
+                </span>
+                <span>Exibir taxa</span>
+            </label>
         </div>
 
         <input type="hidden" name="mostrar_taxas" id="input-mostrar-taxas"
@@ -383,10 +378,8 @@ $(document).ready(function () {
         }
     };
 
-    $('#btn-toggle-taxas').on('click', function () {
-        var $input = $('#input-mostrar-taxas');
-        var mostrar = $input.val() === '1';
-        $input.val(mostrar ? '0' : '1');
+    $('#toggle-taxas-cb').on('change', function () {
+        $('#input-mostrar-taxas').val(this.checked ? '1' : '0');
         $(this).closest('form').submit();
     });
 

@@ -12,11 +12,20 @@
             </h2>
             <p>Últimas movimentações e totais por forma de pagamento</p>
         </div>
-        <a href="{{ route('clientes-maquinas-transacoes', $idMaquinaFiltro ? ['id_maquina' => $idMaquinaFiltro] : []) }}"
-           class="dash-btn-primary" style="font-size:.78rem; padding:8px 16px;">
-            <iconify-icon icon="solar:arrow-right-bold-duotone"></iconify-icon>
-            Ver todas
-        </a>
+        <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
+            <label class="taxa-toggle-label" id="taxa-toggle-home-cliente" title="Mostrar/ocultar transações de taxa">
+                <span class="taxa-toggle-track">
+                    <input type="checkbox" class="taxa-toggle-input" id="toggle-taxas-home-cb">
+                    <span class="taxa-toggle-thumb"></span>
+                </span>
+                <span>Exibir taxa</span>
+            </label>
+            <a href="{{ route('clientes-maquinas-transacoes', $idMaquinaFiltro ? ['id_maquina' => $idMaquinaFiltro] : []) }}"
+               class="dash-btn-primary" style="font-size:.78rem; padding:8px 16px;">
+                <iconify-icon icon="solar:arrow-right-bold-duotone"></iconify-icon>
+                Ver todas
+            </a>
+        </div>
     </div>
 
     @if(count($listaMaquinas) > 1)
@@ -85,8 +94,9 @@
                         @php
                             $isCredito = ($tx['extrato_operacao'] ?? 'C') === 'C';
                             $valor     = $tx['extrato_operacao_valor'] ?? 0;
+                            $tipoLower = strtolower($tx['extrato_operacao_tipo'] ?? '');
                         @endphp
-                        <tr>
+                        <tr data-tipo="{{ $tipoLower }}">
                             <td style="white-space:nowrap;">{{ date('d/m/Y H:i', strtotime($tx['data_criacao'])) }}</td>
                             <td>{{ $tx['maquina_nome'] ?? '—' }}</td>
                             <td>{{ $tx['extrato_operacao_tipo'] ?? '—' }}</td>
@@ -110,3 +120,31 @@
         @endif
     </div>
 </section>
+
+@push('scriptTable')
+<script>
+(function () {
+    var LS_KEY = 'pm_show_taxa_dash';
+    var $cb    = $('#toggle-taxas-home-cb');
+    var ativo  = localStorage.getItem(LS_KEY) === '1';
+
+    $cb.prop('checked', ativo);
+    filtrarTaxas(ativo);
+
+    $cb.on('change', function () {
+        ativo = this.checked;
+        localStorage.setItem(LS_KEY, ativo ? '1' : '0');
+        filtrarTaxas(ativo);
+    });
+
+    function filtrarTaxas(mostrar) {
+        $('#transacoes .dash-tx-table tbody tr').each(function () {
+            var tipo = ($(this).data('tipo') || '').toLowerCase();
+            if (tipo.indexOf('taxa') !== -1) {
+                $(this).toggle(mostrar);
+            }
+        });
+    }
+})();
+</script>
+@endpush

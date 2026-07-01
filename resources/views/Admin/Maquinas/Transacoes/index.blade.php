@@ -63,21 +63,36 @@
                     </div>
                 </div>
 
-                <div class="d-flex justify-content-between align-items-center mt-3">
-                    <div class="d-flex gap-2">
+                <div class="d-flex justify-content-between align-items-center mt-3 flex-wrap gap-2">
+                    <div class="d-flex gap-2 flex-wrap align-items-center">
                         <button id="btn-aplicar-filtro" class="btn btn-primary btn-sm">
                             <i class="fa-solid fa-filter me-1"></i>Aplicar filtro
                         </button>
                         <button id="btn-limpar-filtro" class="btn btn-outline-secondary btn-sm">
                             <i class="fa-solid fa-xmark me-1"></i>Limpar
                         </button>
+                        <label class="taxa-toggle-label mb-0 ms-2" title="Incluir transações de taxa no extrato">
+                            <span class="taxa-toggle-track">
+                                <input type="checkbox" class="taxa-toggle-input" id="toggle-taxas-cb">
+                                <span class="taxa-toggle-thumb"></span>
+                            </span>
+                            <span>Exibir taxa</span>
+                        </label>
                     </div>
-                    <button id="btn-toggle-taxas" class="btn btn-sm"
-                            style="background:#f97316; border:none; color:#fff; font-weight:700;
-                                   box-shadow:0 2px 8px rgba(249,115,22,.35);">
-                        <i class="fa-solid fa-eye me-1"></i>Exibir transações de taxa
+                    <button id="btn-gerar-relatorio" class="btn btn-sm"
+                            style="background:var(--bs-primary,#2C9BA5); border:none; color:#fff;
+                                   font-weight:700; display:inline-flex; align-items:center; gap:6px;">
+                        <i class="fa-solid fa-file-arrow-down"></i>
+                        Gerar Relatório
                     </button>
                 </div>
+
+                {{-- Formulário oculto para exportação --}}
+                <form id="form-relatorio-export" action="{{ route('relatorio-xlsx-download') }}" method="post" style="display:none">
+                    @csrf
+                    <input type="hidden" name="tipo_csv" value="extrato_filtrado">
+                    <input type="hidden" name="data" id="input-relatorio-data" value="">
+                </form>
             </div>
         </div>
 
@@ -194,6 +209,7 @@ $(document).ready(function () {
     });
 
     var mostrarTaxas = false;
+    var $toggleCb = $('#toggle-taxas-cb');
 
     var tabela = $('#tabela_maquinas_transacao').DataTable({
         processing: true,
@@ -287,18 +303,46 @@ $(document).ready(function () {
         recarregarTabela();
     });
 
-    $('#btn-toggle-taxas').on('click', function () {
-        mostrarTaxas = !mostrarTaxas;
+    $toggleCb.on('change', function () {
+        mostrarTaxas = this.checked;
         recarregarTabela();
+    });
 
-        $(this).css({
-            background: mostrarTaxas ? '#ea580c' : '#f97316',
-            boxShadow: mostrarTaxas
-                ? '0 2px 8px rgba(234,88,12,.35)'
-                : '0 2px 8px rgba(249,115,22,.35)'
-        }).html(mostrarTaxas
-            ? '<i class="fa-solid fa-eye-slash me-1"></i>Ocultar transações de taxa'
-            : '<i class="fa-solid fa-eye me-1"></i>Exibir transações de taxa');
+    $('#btn-gerar-relatorio').on('click', function () {
+        var $btn = $(this);
+        $btn.prop('disabled', true).html('<i class="fa-solid fa-spinner fa-spin me-1"></i>Gerando...');
+
+        $.ajax({
+            url: '{{ route("maquinas-transacoes-dados") }}',
+            type: 'GET',
+            data: {
+                draw: 1, start: 0, length: 9999,
+                mostrar_taxas: mostrarTaxas ? 1 : 0,
+                id_cliente:    $('#filter-cliente').val()      || undefined,
+                id_local:      $('#filter-local').val()        || undefined,
+                id_maquina:    $('#filter-maquina').val()      || undefined,
+                data_inicio:   $('#filter-data-inicio').val()  || undefined,
+                data_fim:      $('#filter-data-fim').val()     || undefined,
+                tipo_operacao: $('#filter-tipo-operacao').val()|| undefined,
+            },
+            success: function (res) {
+                var dados = res.data || [];
+                if (!dados.length) {
+                    $btn.prop('disabled', false).html('<i class="fa-solid fa-file-arrow-down me-1"></i>Gerar Relatório');
+                    Swal.fire({ icon: 'info', title: 'Sem dados', text: 'Nenhum registro encontrado com os filtros aplicados.' });
+                    return;
+                }
+                $('#input-relatorio-data').val(JSON.stringify(dados));
+                $('#form-relatorio-export').submit();
+                setTimeout(function () {
+                    $btn.prop('disabled', false).html('<i class="fa-solid fa-file-arrow-down me-1"></i>Gerar Relatório');
+                }, 2500);
+            },
+            error: function () {
+                $btn.prop('disabled', false).html('<i class="fa-solid fa-file-arrow-down me-1"></i>Gerar Relatório');
+                Swal.fire({ icon: 'error', title: 'Erro', text: 'Não foi possível buscar os dados para exportação.' });
+            }
+        });
     });
 
 });
