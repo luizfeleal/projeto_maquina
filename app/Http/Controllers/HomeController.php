@@ -108,15 +108,8 @@ class HomeController extends Controller
         usort($transacoesFiltradas, fn($a, $b) => strtotime($b['data_criacao'] ?? 0) - strtotime($a['data_criacao'] ?? 0));
         $ultimasTransacoes = array_slice($transacoesFiltradas, 0, 15);
 
-        // Busca todos os registros sem limite de paginação para o gráfico
-        $rawGrafico = ExtratoMaquinaService::coletar();
-        $todasTransacoesGrafico = array_values(array_filter(
-            is_array($rawGrafico) ? $rawGrafico : [],
-            fn($tx) => is_array($tx)
-        ));
-
         $dadosGrafico = [];
-        foreach ($todasTransacoesGrafico as $tx) {
+        foreach ($todasTransacoes as $tx) {
             $valor = (float)($tx['extrato_operacao_valor'] ?? 0);
             $tipo  = strtolower($tx['extrato_operacao_tipo'] ?? '');
             $op    = $tx['extrato_operacao'] ?? 'C';
