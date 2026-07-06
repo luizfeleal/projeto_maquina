@@ -120,7 +120,7 @@
                     <div style="flex:1; text-align:center;">
                         <p style="margin:0 0 2px; font-size:.65rem; font-weight:600; text-transform:uppercase;
                                    letter-spacing:.06em; color:#111827;">Total acumulado</p>
-                        <p style="margin:0; font-size:1rem; font-weight:700; color:#0284c7;">
+                        <p style="margin:0; font-size:1rem; font-weight:700; color:#16a34a;">
                             R$ {{ number_format($total, 2, ',', '.') }}
                         </p>
                     </div>

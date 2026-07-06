@@ -55,19 +55,19 @@
     <div style="display:flex; gap:12px; flex-wrap:wrap; margin-bottom:16px;">
         <div class="dash-kpi" style="flex:1; min-width:130px; margin:0;">
             <div class="dash-kpi-label">PIX</div>
-            <div class="dash-kpi-value" style="font-size:1rem;">{{ $brl($resumoFinanceiro['total_pix']) }}</div>
+            <div class="dash-kpi-value" style="font-size:1rem; color:#16a34a;">{{ $brl($resumoFinanceiro['total_pix']) }}</div>
         </div>
         <div class="dash-kpi" style="flex:1; min-width:130px; margin:0;">
             <div class="dash-kpi-label">Cartão</div>
-            <div class="dash-kpi-value" style="font-size:1rem;">{{ $brl($resumoFinanceiro['total_cartao']) }}</div>
+            <div class="dash-kpi-value" style="font-size:1rem; color:#2563eb;">{{ $brl($resumoFinanceiro['total_cartao']) }}</div>
         </div>
         <div class="dash-kpi" style="flex:1; min-width:130px; margin:0;">
             <div class="dash-kpi-label">Dinheiro</div>
-            <div class="dash-kpi-value" style="font-size:1rem;">{{ $brl($resumoFinanceiro['total_dinheiro']) }}</div>
+            <div class="dash-kpi-value" style="font-size:1rem; color:#ca8a04;">{{ $brl($resumoFinanceiro['total_dinheiro']) }}</div>
         </div>
         <div class="dash-kpi" style="flex:1; min-width:130px; margin:0;">
             <div class="dash-kpi-label">Devoluções</div>
-            <div class="dash-kpi-value" style="font-size:1rem;">{{ $brl($resumoFinanceiro['total_devolucao']) }}</div>
+            <div class="dash-kpi-value" style="font-size:1rem; color:#dc2626;">{{ $brl($resumoFinanceiro['total_devolucao']) }}</div>
         </div>
     </div>
 

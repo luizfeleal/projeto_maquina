@@ -194,7 +194,7 @@
             <div>
                 <p style="font-size:.7rem; font-weight:600; text-transform:uppercase;
                            letter-spacing:.06em; color:var(--ex-text-h, #111827); margin:0 0 4px;">Total acumulado</p>
-                <p style="font-size:1.25rem; font-weight:700; color:#0284c7; margin:0;">
+                <p style="font-size:1.25rem; font-weight:700; color:#16a34a; margin:0;">
                     {{ $brl($totalAcumulado) }}
                 </p>
             </div>
@@ -247,7 +247,7 @@
             <div>
                 <p style="font-size:.68rem; font-weight:600; text-transform:uppercase;
                            letter-spacing:.06em; color:var(--ex-text-h, #111827); margin:0 0 3px;">Total PIX</p>
-                <p style="font-size:1rem; font-weight:700; color:var(--ex-text-h, #111827); margin:0;">
+                <p style="font-size:1.1rem; font-weight:700; color:#16a34a; margin:0;">
                     {{ $brl($totalPix) }}
                 </p>
             </div>
@@ -264,7 +264,7 @@
             <div>
                 <p style="font-size:.68rem; font-weight:600; text-transform:uppercase;
                            letter-spacing:.06em; color:var(--ex-text-h, #111827); margin:0 0 3px;">Total cartão</p>
-                <p style="font-size:1rem; font-weight:700; color:var(--ex-text-h, #111827); margin:0;">
+                <p style="font-size:1.1rem; font-weight:700; color:#2563eb; margin:0;">
                     {{ $brl($totalCartao) }}
                 </p>
             </div>
@@ -281,7 +281,7 @@
             <div>
                 <p style="font-size:.68rem; font-weight:600; text-transform:uppercase;
                            letter-spacing:.06em; color:var(--ex-text-h, #111827); margin:0 0 3px;">Total dinheiro</p>
-                <p style="font-size:1rem; font-weight:700; color:var(--ex-text-h, #111827); margin:0;">
+                <p style="font-size:1.1rem; font-weight:700; color:#ca8a04; margin:0;">
                     {{ $brl($totalDinheiro) }}
                 </p>
             </div>
@@ -298,7 +298,7 @@
             <div>
                 <p style="font-size:.68rem; font-weight:600; text-transform:uppercase;
                            letter-spacing:.06em; color:var(--ex-text-h, #111827); margin:0 0 3px;">Devoluções</p>
-                <p style="font-size:1rem; font-weight:700; color:var(--ex-text-h, #111827); margin:0;">
+                <p style="font-size:1.1rem; font-weight:700; color:#dc2626; margin:0;">
                     {{ $brl($totalDevolucao) }}
                 </p>
             </div>
@@ -320,7 +320,7 @@
             <div>
                 <p style="font-size:.68rem; font-weight:600; text-transform:uppercase;
                            letter-spacing:.06em; color:var(--ex-text-h, #111827); margin:0 0 3px;">Total PIX</p>
-                <p style="font-size:1rem; font-weight:700; color:var(--ex-text-h, #111827); margin:0;">
+                <p style="font-size:1.1rem; font-weight:700; color:#16a34a; margin:0;">
                     {{ $brl($totalPix) }}
                 </p>
             </div>
@@ -337,7 +337,7 @@
             <div>
                 <p style="font-size:.68rem; font-weight:600; text-transform:uppercase;
                            letter-spacing:.06em; color:var(--ex-text-h, #111827); margin:0 0 3px;">Total cartão</p>
-                <p style="font-size:1rem; font-weight:700; color:var(--ex-text-h, #111827); margin:0;">
+                <p style="font-size:1.1rem; font-weight:700; color:#2563eb; margin:0;">
                     {{ $brl($totalCartao) }}
                 </p>
             </div>
@@ -354,7 +354,7 @@
             <div>
                 <p style="font-size:.68rem; font-weight:600; text-transform:uppercase;
                            letter-spacing:.06em; color:var(--ex-text-h, #111827); margin:0 0 3px;">Total dinheiro</p>
-                <p style="font-size:1rem; font-weight:700; color:var(--ex-text-h, #111827); margin:0;">
+                <p style="font-size:1.1rem; font-weight:700; color:#ca8a04; margin:0;">
                     {{ $brl($totalDinheiro) }}
                 </p>
             </div>

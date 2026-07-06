@@ -187,7 +187,7 @@ $(function () {
                     '<div style="width:1px; background:var(--sp-border-subtle);"></div>' +
                     '<div style="flex:1; text-align:center;">' +
                         '<p style="margin:0 0 2px; font-size:.58rem; font-weight:600; text-transform:uppercase; letter-spacing:.05em; color:var(--sp-text);">Total máquina</p>' +
-                        '<p style="margin:0; font-size:.88rem; font-weight:700; color:var(--sp-text);">' + brl(total) + '</p>' +
+                        '<p style="margin:0; font-size:.88rem; font-weight:700; color:#16a34a;">' + brl(total) + '</p>' +
                     '</div>' +
                 '</div>' +
                 '<div style="margin-top:8px; text-align:center;">' +
