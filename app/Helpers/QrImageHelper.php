@@ -158,7 +158,8 @@ class QrImageHelper
         $white = imagecolorallocate($img, ...self::C_WHITE);
 
         if ($fontPath && is_file($fontPath)) {
-            $fontSize = 60;
+            // ~44px native ≈ 14pt when the card is previewed at its usual 350px width on screen.
+            $fontSize = 44;
             $angle    = 0;
             $bbox     = imagettfbbox($fontSize, $angle, $fontPath, $text);
             $minX     = min($bbox[0], $bbox[2], $bbox[4], $bbox[6]);

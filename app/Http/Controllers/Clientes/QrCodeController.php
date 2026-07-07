@@ -30,7 +30,7 @@ class QrCodeController extends Controller
             }
 
             $rawBase64 = preg_replace('#^data:image/\w+;base64,#i', '', $qrCode[0]['qr_image']);
-            $fontPath  = public_path('site/fonts/DejaVuSans.ttf');
+            $fontPath  = public_path('site/fonts/Roboto-Bold.ttf');
             $qrImagem  = QrImageHelper::buildQrImage($rawBase64, $maquina['id_placa'], $fontPath);
 
             if ($request->has('abrir')) {
@@ -173,7 +173,7 @@ class QrCodeController extends Controller
         }
 
         $rawBase64 = preg_replace('#^data:image/\w+;base64,#i', '', $qrCode[0]['qr_image']);
-        $fontPath  = public_path('site/fonts/DejaVuSans.ttf');
+        $fontPath  = public_path('site/fonts/Roboto-Bold.ttf');
         $qrImagem  = QrImageHelper::buildQrImage($rawBase64, $maquina['id_placa'], $fontPath);
 
         $imageData  = base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $qrImagem));
