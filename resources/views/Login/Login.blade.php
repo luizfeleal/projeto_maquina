@@ -62,12 +62,37 @@
                     <a href="{{ route('login-redefinir-view') }}" class="login-forgot">Esqueci minha senha</a>
                 </div>
 
-                <button type="submit" class="btn-login">Acessar</button>
+                <button type="submit" class="btn-login" id="btnLogin">
+                    <span class="btn-login-spinner" aria-hidden="true"></span>
+                    <span class="btn-login-text">Acessar</span>
+                </button>
 
             </form>
         </div>
     </div>
 
 </div>
+
+<script>
+    (function () {
+        var form = document.getElementById('form_login');
+        var btn  = document.getElementById('btnLogin');
+        var text = btn ? btn.querySelector('.btn-login-text') : null;
+        if (!form || !btn) return;
+
+        form.addEventListener('submit', function (e) {
+            if (!form.checkValidity()) {
+                e.preventDefault();
+                e.stopPropagation();
+                form.classList.add('was-validated');
+                return;
+            }
+
+            btn.classList.add('is-loading');
+            btn.setAttribute('disabled', 'disabled');
+            if (text) text.textContent = 'Acessando...';
+        }, false);
+    })();
+</script>
 
 @endsection
