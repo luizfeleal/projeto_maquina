@@ -23,10 +23,11 @@ class DespesaService
     public static function criar(array $dados, ?UploadedFile $arquivo = null): array
     {
         $payload = [
-            'titulo'    => $dados['titulo'],
-            'descricao' => $dados['descricao'] ?? null,
-            'valor'     => $dados['valor'],
-            'data'      => $dados['data'],
+            'titulo'     => $dados['titulo'],
+            'descricao'  => $dados['descricao'] ?? null,
+            'valor'      => $dados['valor'],
+            'data'       => $dados['data'],
+            'id_maquina' => $dados['id_maquina'] ?? null,
         ];
 
         if ($arquivo) {

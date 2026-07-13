@@ -3,11 +3,26 @@
 namespace App\Http\Controllers\Financeiro;
 
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use App\Http\Controllers\Controller;
 use App\Services\Financeiro\DespesaService;
+use App\Services\MaquinasService;
 
 class DespesasController extends Controller
 {
+    private const CATEGORIAS = [
+        'Manutenção de máquinas',
+        'Compra de estoque/produtos',
+        'Aluguel de ponto',
+        'Impostos e taxas',
+        'Salários e comissões',
+        'Combustível e transporte',
+        'Marketing',
+        'Equipamentos e hardware',
+        'Serviços de TI',
+        'Outros',
+    ];
+
     public function index(Request $request)
     {
         $despesas = collect(DespesaService::coletar())
@@ -18,24 +33,37 @@ class DespesasController extends Controller
 
     public function create()
     {
-        return view('Financeiro.Despesas.create');
+        $maquinas = collect(MaquinasService::coletar())
+            ->map(fn ($m) => [
+                'id_maquina'   => $m['id_maquina'] ?? null,
+                'maquina_nome' => $m['maquina_nome'] ?? '—',
+                'local_nome'   => $m['local_nome'] ?? null,
+            ])
+            ->filter(fn ($m) => $m['id_maquina'])
+            ->values();
+
+        $categorias = self::CATEGORIAS;
+
+        return view('Financeiro.Despesas.create', compact('maquinas', 'categorias'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'descricao'    => 'required|string|max:255',
+            'descricao'    => 'nullable|string|max:255',
             'valor'        => 'required|numeric|min:0.01',
             'data_despesa' => 'required|date',
-            'tipo'         => 'nullable|string|max:100',
+            'tipo'         => ['nullable', 'string', Rule::in(self::CATEGORIAS)],
+            'id_maquina'   => 'nullable|integer',
             'comprovante'  => 'nullable|file|mimes:pdf,jpeg,jpg,png|max:5120',
         ]);
 
         $resultado = DespesaService::criar([
-            'titulo'    => $request->descricao,
-            'descricao' => $request->tipo,
-            'valor'     => $request->valor,
-            'data'      => $request->data_despesa,
+            'titulo'     => $request->descricao ?: ($request->tipo ?? 'Despesa'),
+            'descricao'  => $request->tipo,
+            'valor'      => $request->valor,
+            'data'       => $request->data_despesa,
+            'id_maquina' => $request->id_maquina,
         ], $request->file('comprovante'));
 
         if ($resultado['success'] ?? false) {
