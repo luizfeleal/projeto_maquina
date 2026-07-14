@@ -10,10 +10,6 @@ $color-mid:     #16526D;
 // Teal is the action color — used for all buttons, links, highlights
 $primary: $color-teal;
 
-$theme-colors: (
-  "primary": $primary
-);
-
 :root {
   --bs-btn-color: #FFF;
 }
@@ -21,6 +17,16 @@ $theme-colors: (
 // =========================================================
 // Bootstrap (imported first so our overrides take effect)
 // =========================================================
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+
+// Merge into Bootstrap's default map instead of replacing it —
+// replacing it previously wiped out success/danger/warning/secondary/etc,
+// leaving .btn-success, .btn-outline-secondary and friends with no styles at all.
+$theme-colors: map-merge($theme-colors, (
+  "primary": $primary
+));
+
 @import "~bootstrap/scss/bootstrap";
 
 // =========================================================
