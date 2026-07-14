@@ -23,6 +23,18 @@ class DespesasController extends Controller
         'Outros',
     ];
 
+    private const CATEGORIA_COMPRA = 'Compra de estoque/produtos';
+
+    private const FORMAS_PAGAMENTO = [
+        'Dinheiro',
+        'Pix',
+        'Cartão de crédito',
+        'Cartão de débito',
+        'Boleto',
+        'Transferência bancária',
+        'Outro',
+    ];
+
     public function index(Request $request)
     {
         $despesas = collect(DespesaService::coletar())
@@ -43,8 +55,9 @@ class DespesasController extends Controller
             ->values();
 
         $categorias = self::CATEGORIAS;
+        $formasPagamento = self::FORMAS_PAGAMENTO;
 
-        return view('Financeiro.Despesas.create', compact('maquinas', 'categorias'));
+        return view('Financeiro.Despesas.create', compact('maquinas', 'categorias', 'formasPagamento'));
     }
 
     public function show($id)
@@ -78,15 +91,20 @@ class DespesasController extends Controller
             'data_despesa' => 'required|date',
             'tipo'         => ['nullable', 'string', Rule::in(self::CATEGORIAS)],
             'id_maquina'   => 'nullable|integer',
+            'forma_pagamento' => ['nullable', 'string', Rule::in(self::FORMAS_PAGAMENTO)],
             'comprovante'  => 'nullable|file|mimes:pdf,jpeg,jpg,png|max:5120',
         ]);
 
+        $realizadoPor = session('id_usuario') ?? session('usuario_id') ?? auth()->id() ?? '1';
+
         $resultado = DespesaService::criar([
-            'titulo'     => $request->descricao ?: ($request->tipo ?? 'Despesa'),
-            'descricao'  => $request->tipo,
-            'valor'      => $request->valor,
-            'data'       => $request->data_despesa,
-            'id_maquina' => $request->id_maquina,
+            'titulo'        => $request->descricao ?: ($request->tipo ?? 'Despesa'),
+            'descricao'     => $request->tipo,
+            'valor'         => $request->valor,
+            'data'          => $request->data_despesa,
+            'id_maquina'      => $request->id_maquina,
+            'realizado_por'   => (string) $realizadoPor,
+            'forma_pagamento' => $request->forma_pagamento,
         ], $request->file('comprovante'));
 
         if ($resultado['success'] ?? false) {

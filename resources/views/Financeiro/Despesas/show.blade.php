@@ -38,6 +38,13 @@
                                 {{ $despesa['data_despesa']?->format('d/m/Y') ?? '—' }}
                             </dd>
 
+                            @if($despesa['forma_pagamento'])
+                                <dt class="col-5 col-sm-4 text-muted fw-normal">Forma de pagamento</dt>
+                                <dd class="col-7 col-sm-8">
+                                    {{ $despesa['forma_pagamento'] }}
+                                </dd>
+                            @endif
+
                             <dt class="col-5 col-sm-4 text-muted fw-normal">Máquina</dt>
                             <dd class="col-7 col-sm-8">
                                 @if($despesa['maquina_nome'])
@@ -47,6 +54,11 @@
                                 @else
                                     <span class="text-muted">Nenhuma máquina associada</span>
                                 @endif
+                            </dd>
+
+                            <dt class="col-5 col-sm-4 text-muted fw-normal">Registrado por</dt>
+                            <dd class="col-7 col-sm-8">
+                                {{ $despesa['usuario_nome'] ?? '—' }}
                             </dd>
                         </dl>
 

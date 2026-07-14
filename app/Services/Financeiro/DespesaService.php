@@ -35,11 +35,13 @@ class DespesaService
     public static function criar(array $dados, ?UploadedFile $arquivo = null): array
     {
         $payload = [
-            'titulo'     => $dados['titulo'],
-            'descricao'  => $dados['descricao'] ?? null,
-            'valor'      => $dados['valor'],
-            'data'       => $dados['data'],
-            'id_maquina' => $dados['id_maquina'] ?? null,
+            'titulo'          => $dados['titulo'],
+            'descricao'       => $dados['descricao'] ?? null,
+            'valor'           => $dados['valor'],
+            'data'            => $dados['data'],
+            'id_maquina'      => $dados['id_maquina'] ?? null,
+            'realizado_por'   => $dados['realizado_por'] ?? null,
+            'forma_pagamento' => $dados['forma_pagamento'] ?? null,
         ];
 
         if ($arquivo) {
@@ -97,6 +99,8 @@ class DespesaService
             'comprovante_path'    => $anexo,
             'comprovante_url'     => $comprovanteUrl,
             'comprovante_e_imagem'=> (bool) ($anexo && preg_match('/\.(jpe?g|png|gif|webp)$/i', $anexo)),
+            'usuario_nome'        => $despesa['realizado_por_nome'] ?? $despesa['realizado_por'] ?? null,
+            'forma_pagamento'     => $despesa['forma_pagamento'] ?? null,
         ];
     }
 }

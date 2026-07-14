@@ -31,7 +31,7 @@
                         <th>Tipo</th>
                         <th>Data</th>
                         <th>Valor</th>
-                        <th>Comprovante</th>
+                        <th>Registrado por</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -42,16 +42,7 @@
                         <td>{{ $d['tipo'] ?? '—' }}</td>
                         <td>{{ $d['data_despesa']?->format('d/m/Y') ?? '—' }}</td>
                         <td class="fw-bold text-danger">R$ {{ number_format($d['valor'], 2, ',', '.') }}</td>
-                        <td>
-                            @if(!empty($d['comprovante_url']))
-                                <a href="{{ $d['comprovante_url'] }}" target="_blank" class="btn btn-outline-secondary btn-sm">
-                                    <iconify-icon icon="solar:document-bold-duotone" inline></iconify-icon>
-                                    Ver
-                                </a>
-                            @else
-                                <span class="text-muted small">—</span>
-                            @endif
-                        </td>
+                        <td>{{ $d['usuario_nome'] ?? '—' }}</td>
                         <td>
                             <div class="d-flex gap-2">
                                 <a href="{{ route('financeiro-despesas-detalhar', $d['id']) }}"

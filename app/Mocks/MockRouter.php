@@ -219,6 +219,22 @@ class MockRouter
                 $record = MockStore::create($key, array_merge($payload, ['data_criacao' => $now]), $idField);
                 return self::json(['response' => $record]);
 
+            case 'financeiro/despesas':
+                $usuario = null;
+                foreach (MockStore::collection('usuarios') as $u) {
+                    if (isset($payload['realizado_por']) && (string) ($u['id_usuario'] ?? '') === (string) $payload['realizado_por']) {
+                        $usuario = $u;
+                        break;
+                    }
+                }
+
+                $record = MockStore::create($key, array_merge($payload, [
+                    'realizado_por_nome' => $usuario['usuario_nome'] ?? null,
+                    'data_criacao' => $now,
+                ]), $idField);
+
+                return self::json(['response' => $record]);
+
             case 'usuarios':
                 $record = MockStore::create($key, array_merge($payload, [
                     'ativo' => $payload['ativo'] ?? 1,

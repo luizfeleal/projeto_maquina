@@ -103,20 +103,42 @@
                         @enderror
                     </div>
 
-                    <div class="mb-4">
-                        <label class="form-label fw-semibold" for="comprovante">
-                            <iconify-icon icon="solar:document-bold-duotone" style="font-size:1rem;"></iconify-icon>
-                            Nota fiscal / Comprovante
-                        </label>
-                        <input type="file"
-                               id="comprovante"
-                               name="comprovante"
-                               class="form-control @error('comprovante') is-invalid @enderror"
-                               accept=".pdf,.jpg,.jpeg,.png">
-                        <div class="form-text text-muted">Formatos aceitos: PDF, JPG, JPEG, PNG. Máximo 5 MB.</div>
-                        @error('comprovante')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
+                    <div id="bloco-compra" class="mb-4 p-3 rounded" style="background:#f8fafc; border:1px solid #e5e7eb; display:none;">
+                        <p class="text-muted small fw-semibold text-uppercase mb-3">Dados da compra</p>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold" for="forma_pagamento">
+                                Forma de pagamento <span class="text-muted fw-normal">(opcional)</span>
+                            </label>
+                            <select id="forma_pagamento"
+                                    name="forma_pagamento"
+                                    data-placeholder="Selecione a forma de pagamento"
+                                    class="form-select js-select2 @error('forma_pagamento') is-invalid @enderror">
+                                <option value=""></option>
+                                @foreach($formasPagamento as $forma)
+                                    <option value="{{ $forma }}" {{ old('forma_pagamento') === $forma ? 'selected' : '' }}>{{ $forma }}</option>
+                                @endforeach
+                            </select>
+                            @error('forma_pagamento')
+                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="mb-0">
+                            <label class="form-label fw-semibold" for="comprovante">
+                                <iconify-icon icon="solar:document-bold-duotone" style="font-size:1rem;"></iconify-icon>
+                                Comprovante do pagamento <span class="text-muted fw-normal">(opcional)</span>
+                            </label>
+                            <input type="file"
+                                   id="comprovante"
+                                   name="comprovante"
+                                   class="form-control @error('comprovante') is-invalid @enderror"
+                                   accept=".pdf,.jpg,.jpeg,.png">
+                            <div class="form-text text-muted">Formatos aceitos: PDF, JPG, JPEG, PNG. Máximo 5 MB.</div>
+                            @error('comprovante')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
                     </div>
 
                     <div class="d-flex gap-2 justify-content-end despesa-form-actions">
@@ -199,6 +221,16 @@ $(document).ready(function () {
             return $(this).data('placeholder');
         }
     });
+
+    var CATEGORIA_COMPRA = 'Compra de estoque/produtos';
+
+    function toggleBlocoCompra() {
+        var isCompra = $('#tipo').val() === CATEGORIA_COMPRA;
+        $('#bloco-compra').toggle(isCompra);
+    }
+
+    $('#tipo').on('change', toggleBlocoCompra);
+    toggleBlocoCompra();
 
     $('#valor_display').mask('#.##0,00', { reverse: true });
 
