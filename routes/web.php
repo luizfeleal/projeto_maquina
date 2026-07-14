@@ -147,6 +147,7 @@ Route::prefix('financeiro-despesas')->middleware('permission')->group(function (
     Route::get('/criar', 'App\Http\Controllers\Financeiro\DespesasController@create')->name('financeiro-despesas-criar');
     Route::post('/registrar', 'App\Http\Controllers\Financeiro\DespesasController@store')->name('financeiro-despesas-registrar');
     Route::post('/excluir', 'App\Http\Controllers\Financeiro\DespesasController@destroy')->name('financeiro-despesas-excluir');
+    Route::get('/{id}', 'App\Http\Controllers\Financeiro\DespesasController@show')->where('id', '[0-9]+')->name('financeiro-despesas-detalhar');
 });
 
 Route::prefix('financeiro-placas')->middleware('permission')->group(function () {

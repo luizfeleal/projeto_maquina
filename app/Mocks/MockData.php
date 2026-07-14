@@ -290,6 +290,9 @@ class MockData
             'qr-registrar', 'qr-download', 'qr-excluir', 'relatorio-view', 'relatorio-criar', 'relatorio-xlsx-download',
             'credencial-listar', 'credencial-criar-efi', 'credencial-criar-pagbank', 'credencial-registrar',
             'credencial-editar-efi', 'credencial-editar-pagbank', 'credencial-atualizar', 'credencial-excluir',
+            'financeiro-home', 'financeiro-despesas', 'financeiro-despesas-criar', 'financeiro-despesas-registrar',
+            'financeiro-despesas-excluir', 'financeiro-despesas-detalhar', 'financeiro-placas', 'financeiro-placas-criar',
+            'financeiro-placas-registrar', 'financeiro-placas-excluir',
         ];
 
         $clienteRoutes = [

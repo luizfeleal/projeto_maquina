@@ -320,6 +320,19 @@ $sidebar-group-color: #9ca3af;
   }
 }
 
+// Content wrapper for the Financeiro layout — gives lists, search bars and
+// cards breathing room from the page-container's edges (breadcrumb already
+// has its own padding above).
+.page-content {
+  padding: 24px 28px;
+}
+
+@media (max-width: 576px) {
+  .page-content {
+    padding: 16px;
+  }
+}
+
 // Legacy view wrappers — remove old navbar offset; card handles spacing
 .qr, .maquina, .local, .usuarios, .relatorios, .login {
   padding-left: 0 !important;

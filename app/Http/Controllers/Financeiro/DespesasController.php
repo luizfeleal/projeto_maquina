@@ -47,6 +47,29 @@ class DespesasController extends Controller
         return view('Financeiro.Despesas.create', compact('maquinas', 'categorias'));
     }
 
+    public function show($id)
+    {
+        $despesaBruta = DespesaService::buscar((int) $id);
+
+        if (!$despesaBruta) {
+            abort(404);
+        }
+
+        $despesa = DespesaService::normalizarParaView($despesaBruta);
+        $despesa['maquina_nome'] = null;
+
+        if ($despesa['id_maquina']) {
+            try {
+                $maquina = MaquinasService::coletar((string) $despesa['id_maquina']);
+                $despesa['maquina_nome'] = $maquina['maquina_nome'] ?? null;
+            } catch (\Throwable $e) {
+                $despesa['maquina_nome'] = null;
+            }
+        }
+
+        return view('Financeiro.Despesas.show', compact('despesa'));
+    }
+
     public function store(Request $request)
     {
         $request->validate([
@@ -82,7 +105,8 @@ class DespesasController extends Controller
         $resultado = DespesaService::excluir((int) $request->id);
 
         if ($resultado['success'] ?? false) {
-            return back()->with('success', 'Despesa removida com sucesso!');
+            return redirect()->route('financeiro-despesas')
+                ->with('success', 'Despesa removida com sucesso!');
         }
 
         return back()->with('error', $resultado['message'] ?? 'Houve um erro ao remover a despesa.');

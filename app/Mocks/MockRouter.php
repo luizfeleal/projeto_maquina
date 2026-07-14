@@ -23,6 +23,7 @@ class MockRouter
         'logs' => ['key' => 'logs', 'id' => 'id'],
         'extratoMaquina' => ['key' => 'extratoMaquina', 'id' => 'id_extrato_maquina'],
         'extratoCliente' => ['key' => 'extratoCliente', 'id' => 'id_extrato_cliente'],
+        'financeiro/despesas' => ['key' => 'despesas', 'id' => 'id'],
     ];
 
     public static function handle(string $method, string $path, $data = [], array $query = [], array $options = []): Response

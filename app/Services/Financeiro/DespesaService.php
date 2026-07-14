@@ -20,6 +20,18 @@ class DespesaService
         return is_array($data) ? $data : [];
     }
 
+    public static function buscar(int $id): ?array
+    {
+        $response = ApiClient::get("/financeiro/despesas/{$id}");
+
+        if (!$response->successful()) {
+            return null;
+        }
+
+        $data = $response->json();
+        return is_array($data) ? $data : null;
+    }
+
     public static function criar(array $dados, ?UploadedFile $arquivo = null): array
     {
         $payload = [
@@ -73,15 +85,18 @@ class DespesaService
     {
         $anexo = $despesa['anexo_path'] ?? null;
         $baseUrl = rtrim(str_replace('/api', '', env('APP_URL_API', '')), '/');
+        $comprovanteUrl = $anexo ? $baseUrl . '/storage/' . ltrim($anexo, '/') : null;
 
         return [
-            'id'               => $despesa['id'],
-            'descricao'        => $despesa['titulo'] ?? $despesa['descricao'] ?? '—',
-            'tipo'             => $despesa['descricao'] ?? null,
-            'data_despesa'     => isset($despesa['data']) ? Carbon::parse($despesa['data']) : null,
-            'valor'            => (float) ($despesa['valor'] ?? 0),
-            'comprovante_path' => $anexo,
-            'comprovante_url'  => $anexo ? $baseUrl . '/storage/' . ltrim($anexo, '/') : null,
+            'id'                  => $despesa['id'],
+            'descricao'           => $despesa['titulo'] ?? $despesa['descricao'] ?? '—',
+            'tipo'                => $despesa['descricao'] ?? null,
+            'id_maquina'          => $despesa['id_maquina'] ?? null,
+            'data_despesa'        => isset($despesa['data']) ? Carbon::parse($despesa['data']) : null,
+            'valor'               => (float) ($despesa['valor'] ?? 0),
+            'comprovante_path'    => $anexo,
+            'comprovante_url'     => $comprovanteUrl,
+            'comprovante_e_imagem'=> (bool) ($anexo && preg_match('/\.(jpe?g|png|gif|webp)$/i', $anexo)),
         ];
     }
 }

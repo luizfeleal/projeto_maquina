@@ -57,7 +57,9 @@
             <div class="content-body">
                 <div class="page-container">
                     @include('partials.breadcrumb')
-                    @yield('content')
+                    <div class="page-content">
+                        @yield('content')
+                    </div>
                 </div>
             </div>
 

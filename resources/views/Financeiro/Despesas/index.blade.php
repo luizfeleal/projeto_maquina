@@ -53,14 +53,20 @@
                             @endif
                         </td>
                         <td>
-                            <form action="{{ route('financeiro-despesas-excluir') }}" method="POST" class="d-inline">
-                                @csrf
-                                <input type="hidden" name="id" value="{{ $d['id'] }}">
-                                <button type="submit" class="btn btn-outline-danger btn-sm"
-                                        onclick="return confirm('Confirmar exclusão?')">
-                                    <iconify-icon icon="solar:trash-bin-trash-bold-duotone" inline></iconify-icon>
-                                </button>
-                            </form>
+                            <div class="d-flex gap-2">
+                                <a href="{{ route('financeiro-despesas-detalhar', $d['id']) }}"
+                                   class="btn btn-outline-primary btn-sm" title="Ver detalhes" aria-label="Ver detalhes">
+                                    <iconify-icon icon="solar:eye-bold-duotone" inline></iconify-icon>
+                                </a>
+                                <form action="{{ route('financeiro-despesas-excluir') }}" method="POST" class="d-inline btn-excluir-despesa-form">
+                                    @csrf
+                                    <input type="hidden" name="id" value="{{ $d['id'] }}">
+                                    <button type="button" class="btn btn-outline-danger btn-sm btn-excluir-despesa"
+                                            title="Excluir" aria-label="Excluir">
+                                        <iconify-icon icon="solar:trash-bin-trash-bold-duotone" inline></iconify-icon>
+                                    </button>
+                                </form>
+                            </div>
                         </td>
                     </tr>
                     @endforeach
@@ -78,6 +84,25 @@ $(document).ready(function () {
         language: { url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json' },
         order: [[2, 'desc']],
         pageLength: 25,
+    });
+
+    $(document).on('click', '.btn-excluir-despesa', function () {
+        var $form = $(this).closest('form');
+        Swal.fire({
+            title: 'Excluir despesa?',
+            text: 'Essa ação não pode ser desfeita.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Excluir',
+            cancelButtonText: 'Cancelar',
+            confirmButtonColor: '#dc3545',
+            cancelButtonColor: '#6b7280',
+            reverseButtons: true,
+        }).then(function (result) {
+            if (result.isConfirmed) {
+                $form.trigger('submit');
+            }
+        });
     });
 });
 </script>
