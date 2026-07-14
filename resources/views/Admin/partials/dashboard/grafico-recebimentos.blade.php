@@ -24,6 +24,29 @@
 
     <div class="dash-card" style="padding:24px;">
 
+        @if(count($listaMaquinas) > 1)
+        <form method="GET" action="{{ route('home') }}#grafico"
+              style="margin-bottom:16px; display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+            <label style="font-size:.8rem; font-weight:600; color:var(--sp-text-sub); white-space:nowrap;">
+                <iconify-icon icon="solar:filter-bold-duotone" style="vertical-align:middle;"></iconify-icon>
+                Filtrar máquina:
+            </label>
+            <select name="id_maquina" class="dash-filter-select" onchange="this.form.submit()">
+                <option value="">Todas as máquinas</option>
+                @foreach($listaMaquinas as $maq)
+                    <option value="{{ $maq['id_maquina'] }}"
+                        {{ (string)$idMaquinaFiltro === (string)$maq['id_maquina'] ? 'selected' : '' }}>
+                        {{ $maq['maquina_nome'] }} — {{ $maq['local_nome'] }}
+                    </option>
+                @endforeach
+            </select>
+            @if($idMaquinaFiltro)
+                <a href="{{ route('home') }}#grafico"
+                   style="font-size:.78rem; color:var(--sp-muted); text-decoration:none;">✕ Limpar</a>
+            @endif
+        </form>
+        @endif
+
         <div style="display:flex; align-items:center; gap:16px; margin-bottom:20px;
                     flex-wrap:wrap; justify-content:space-between;">
             <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">

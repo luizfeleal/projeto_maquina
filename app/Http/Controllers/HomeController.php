@@ -109,7 +109,7 @@ class HomeController extends Controller
         $ultimasTransacoes = array_slice($transacoesFiltradas, 0, 15);
 
         $dadosGrafico = [];
-        foreach ($todasTransacoes as $tx) {
+        foreach ($transacoesFiltradas as $tx) {
             $valor = (float)($tx['extrato_operacao_valor'] ?? 0);
             $tipo  = strtolower($tx['extrato_operacao_tipo'] ?? '');
             $op    = $tx['extrato_operacao'] ?? 'C';
