@@ -292,7 +292,8 @@ class MockData
             'credencial-editar-efi', 'credencial-editar-pagbank', 'credencial-atualizar', 'credencial-excluir',
             'financeiro-home', 'financeiro-despesas', 'financeiro-despesas-criar', 'financeiro-despesas-registrar',
             'financeiro-despesas-excluir', 'financeiro-despesas-detalhar', 'financeiro-estoque', 'financeiro-estoque-criar',
-            'financeiro-estoque-registrar', 'financeiro-estoque-excluir',
+            'financeiro-estoque-registrar', 'financeiro-estoque-excluir', 'financeiro-estoque-detalhar', 'financeiro-estoque-editar',
+            'financeiro-estoque-atualizar',
         ];
 
         $clienteRoutes = [

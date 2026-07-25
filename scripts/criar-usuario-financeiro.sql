@@ -39,4 +39,7 @@ VALUES
     (9, 'financeiro-estoque',            'Financeiro - Estoque',           1),
     (9, 'financeiro-estoque-criar',      'Financeiro - Criar produto',     1),
     (9, 'financeiro-estoque-registrar',  'Financeiro - Registrar produto', 1),
-    (9, 'financeiro-estoque-excluir',    'Financeiro - Excluir produto',   1);
+    (9, 'financeiro-estoque-excluir',    'Financeiro - Excluir produto',   1),
+    (9, 'financeiro-estoque-detalhar',   'Financeiro - Detalhar produto',  1),
+    (9, 'financeiro-estoque-editar',     'Financeiro - Editar produto',    1),
+    (9, 'financeiro-estoque-atualizar',  'Financeiro - Atualizar produto', 1);

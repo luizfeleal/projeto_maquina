@@ -155,6 +155,9 @@ Route::prefix('financeiro-estoque')->middleware('permission')->group(function ()
     Route::get('/criar', 'App\Http\Controllers\Financeiro\EstoqueController@create')->name('financeiro-estoque-criar');
     Route::post('/registrar', 'App\Http\Controllers\Financeiro\EstoqueController@store')->name('financeiro-estoque-registrar');
     Route::post('/excluir', 'App\Http\Controllers\Financeiro\EstoqueController@destroy')->name('financeiro-estoque-excluir');
+    Route::get('/{id}/editar', 'App\Http\Controllers\Financeiro\EstoqueController@edit')->where('id', '[0-9]+')->name('financeiro-estoque-editar');
+    Route::post('/{id}/atualizar', 'App\Http\Controllers\Financeiro\EstoqueController@update')->where('id', '[0-9]+')->name('financeiro-estoque-atualizar');
+    Route::get('/{id}', 'App\Http\Controllers\Financeiro\EstoqueController@show')->where('id', '[0-9]+')->name('financeiro-estoque-detalhar');
 });
 
 Route::get('/login', 'App\Http\Controllers\LoginController@login')->name('login-view');

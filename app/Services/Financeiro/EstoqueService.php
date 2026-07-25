@@ -34,6 +34,32 @@ class EstoqueService
         ];
     }
 
+    public static function buscar(int $id): ?array
+    {
+        $response = ApiClient::get("/financeiro/estoqueProdutos/{$id}");
+
+        if (!$response->successful()) {
+            return null;
+        }
+
+        return $response->json();
+    }
+
+    public static function atualizar(int $id, array $dados): array
+    {
+        $response = ApiClient::put("/financeiro/estoqueProdutos/{$id}", $dados);
+
+        if ($response->successful()) {
+            return ['success' => true, 'data' => $response->json()];
+        }
+
+        return [
+            'success' => false,
+            'message' => $response->json('message') ?? 'Erro ao atualizar o produto.',
+            'errors'  => $response->json('errors') ?? [],
+        ];
+    }
+
     public static function excluir(int $id): array
     {
         $response = ApiClient::delete("/financeiro/estoqueProdutos/{$id}");

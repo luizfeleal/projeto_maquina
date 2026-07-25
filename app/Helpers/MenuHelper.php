@@ -90,8 +90,10 @@ if (!function_exists('getRouteBreadcrumbs')) {
             'financeiro-home'           => [['label' => 'Dashboard']],
             'financeiro-despesas'       => [['label' => 'Dashboard', 'route' => 'financeiro-home'], ['label' => 'Despesas']],
             'financeiro-despesas-criar' => [['label' => 'Dashboard', 'route' => 'financeiro-home'], ['label' => 'Despesas', 'route' => 'financeiro-despesas'], ['label' => 'Nova Despesa']],
-            'financeiro-estoque'        => [['label' => 'Dashboard', 'route' => 'financeiro-home'], ['label' => 'Estoque']],
-            'financeiro-estoque-criar'  => [['label' => 'Dashboard', 'route' => 'financeiro-home'], ['label' => 'Estoque', 'route' => 'financeiro-estoque'], ['label' => 'Registrar Produto']],
+            'financeiro-estoque'          => [['label' => 'Dashboard', 'route' => 'financeiro-home'], ['label' => 'Estoque']],
+            'financeiro-estoque-criar'    => [['label' => 'Dashboard', 'route' => 'financeiro-home'], ['label' => 'Estoque', 'route' => 'financeiro-estoque'], ['label' => 'Registrar Produto']],
+            'financeiro-estoque-detalhar' => [['label' => 'Dashboard', 'route' => 'financeiro-home'], ['label' => 'Estoque', 'route' => 'financeiro-estoque'], ['label' => 'Detalhes do Produto']],
+            'financeiro-estoque-editar'   => [['label' => 'Dashboard', 'route' => 'financeiro-home'], ['label' => 'Estoque', 'route' => 'financeiro-estoque'], ['label' => 'Editar Produto']],
         ];
 
         return $map[$routeName] ?? [$home];
@@ -194,7 +196,7 @@ if (!function_exists('getSidebar')) {
                 [
                     'title'         => 'Estoque',
                     'icon'          => 'solar:box-bold-duotone',
-                    'active_routes' => ['financeiro-estoque', 'financeiro-estoque-criar'],
+                    'active_routes' => ['financeiro-estoque', 'financeiro-estoque-criar', 'financeiro-estoque-detalhar', 'financeiro-estoque-editar'],
                     'sub_menu'      => [
                         ['title' => 'Listar produtos',   'route' => 'financeiro-estoque'],
                         ['title' => 'Registrar produto', 'route' => 'financeiro-estoque-criar'],

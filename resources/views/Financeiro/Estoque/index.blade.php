@@ -57,14 +57,24 @@
                         </td>
                         <td>{{ $p['created_at']?->format('d/m/Y H:i') ?? '—' }}</td>
                         <td>
-                            <form action="{{ route('financeiro-estoque-excluir') }}" method="POST" class="d-inline">
-                                @csrf
-                                <input type="hidden" name="id" value="{{ $p['id'] }}">
-                                <button type="submit" class="btn btn-outline-danger btn-sm"
-                                        onclick="return confirm('Confirmar exclusão?')">
-                                    <iconify-icon icon="solar:trash-bin-trash-bold-duotone" inline></iconify-icon>
-                                </button>
-                            </form>
+                            <div class="d-flex gap-2">
+                                <a href="{{ route('financeiro-estoque-detalhar', $p['id']) }}"
+                                   class="btn btn-outline-primary btn-sm" title="Ver detalhes" aria-label="Ver detalhes">
+                                    <iconify-icon icon="solar:eye-bold-duotone" inline></iconify-icon>
+                                </a>
+                                <a href="{{ route('financeiro-estoque-editar', $p['id']) }}"
+                                   class="btn btn-outline-warning btn-sm" title="Editar" aria-label="Editar">
+                                    <iconify-icon icon="solar:pen-bold-duotone" inline></iconify-icon>
+                                </a>
+                                <form action="{{ route('financeiro-estoque-excluir') }}" method="POST" class="d-inline">
+                                    @csrf
+                                    <input type="hidden" name="id" value="{{ $p['id'] }}">
+                                    <button type="submit" class="btn btn-outline-danger btn-sm" title="Excluir" aria-label="Excluir"
+                                            onclick="return confirm('Confirmar exclusão?')">
+                                        <iconify-icon icon="solar:trash-bin-trash-bold-duotone" inline></iconify-icon>
+                                    </button>
+                                </form>
+                            </div>
                         </td>
                     </tr>
                     @endforeach
