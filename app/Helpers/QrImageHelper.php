@@ -7,11 +7,11 @@ namespace App\Helpers;
  *
  * Layout (829 × 1115 px):
  *  ┌──────────────────────────────┐
- *  │   white header  (~270 px)    │  ← SwiftPay logo
+ *  │   solid blue header (~270px) │  ← SwiftPay logo (Logo-RGB-02-JPG)
  *  ├──────────────────────────────┤
  *  │   teal accent bar (8 px)     │
  *  ├──────────────────────────────┤
- *  │   dark gradient body         │  ← QR overlay + plate text
+ *  │   solid blue body            │  ← QR overlay + plate text
  *  └──────────────────────────────┘
  */
 class QrImageHelper
@@ -21,13 +21,12 @@ class QrImageHelper
     private const H = 1115;
 
     // Brand colours (RGB)
-    private const C_DEEP  = [15,  26,  59];   // #0F1A3B
-    private const C_DARK  = [30,  46,  94];   // #1E2E5E
+    private const C_DEEP  = [15,  26,  59];   // #0F1A3B (matches Logo-RGB-02-JPG background)
     private const C_TEAL  = [44, 155, 165];   // #2C9BA5
     private const C_WHITE = [255, 255, 255];
 
     // Layout heights
-    private const HEADER_H = 270;   // white logo area
+    private const HEADER_H = 270;   // logo area
     private const ACCENT_H = 8;     // teal stripe
 
     /**
@@ -87,20 +86,9 @@ class QrImageHelper
         imagealphablending($img, true);
         imagesavealpha($img, true);
 
-        // ── Gradient body (full canvas, top → bottom) ───────────────────────────
-        // from C_DARK at top to C_DEEP at bottom
-        for ($y = 0; $y < self::H; $y++) {
-            $t   = $y / (self::H - 1);
-            $r   = (int) (self::C_DARK[0] + ($t * (self::C_DEEP[0] - self::C_DARK[0])));
-            $g   = (int) (self::C_DARK[1] + ($t * (self::C_DEEP[1] - self::C_DARK[1])));
-            $b   = (int) (self::C_DARK[2] + ($t * (self::C_DEEP[2] - self::C_DARK[2])));
-            $col = imagecolorallocate($img, $r, $g, $b);
-            imageline($img, 0, $y, self::W - 1, $y, $col);
-        }
-
-        // ── White header ─────────────────────────────────────────────────────────
-        $white = imagecolorallocate($img, ...self::C_WHITE);
-        imagefilledrectangle($img, 0, 0, self::W - 1, self::HEADER_H - 1, $white);
+        // ── Solid blue background (full canvas) ─────────────────────────────────
+        $deep = imagecolorallocate($img, ...self::C_DEEP);
+        imagefilledrectangle($img, 0, 0, self::W - 1, self::H - 1, $deep);
 
         // ── Teal accent bar ───────────────────────────────────────────────────────
         $teal = imagecolorallocate($img, ...self::C_TEAL);
@@ -113,13 +101,15 @@ class QrImageHelper
             $teal
         );
 
-        // ── SwiftPay logo (coloured, on white header) ────────────────────────────
-        $logoPath = public_path('site/img/swift_pay_solucoes_png.png');
+        // ── SwiftPay logo (white/teal artwork, already on brand-blue background) ──
+        $logoPath = public_path('site/img/Logo-RGB-02-JPG.jpg');
         if (is_file($logoPath)) {
-            $logo = imagecreatefrompng($logoPath);
+            $logo = imagecreatefromjpeg($logoPath);
             if ($logo) {
-                $lOrigW = imagesx($logo);
-                $lOrigH = imagesy($logo);
+                // Trim a few px off each edge to drop the JPEG edge-bleed border
+                $crop   = 6;
+                $lOrigW = imagesx($logo) - ($crop * 2);
+                $lOrigH = imagesy($logo) - ($crop * 2);
 
                 // Scale to fit 580 px wide inside the header
                 $targetW = 580;
@@ -133,9 +123,7 @@ class QrImageHelper
                 }
 
                 $scaledLogo = imagecreatetruecolor($targetW, $targetH);
-                imagealphablending($scaledLogo, false);
-                imagesavealpha($scaledLogo, true);
-                imagecopyresampled($scaledLogo, $logo, 0, 0, 0, 0, $targetW, $targetH, $lOrigW, $lOrigH);
+                imagecopyresampled($scaledLogo, $logo, 0, 0, $crop, $crop, $targetW, $targetH, $lOrigW, $lOrigH);
 
                 // Centre in header
                 $lx = (int) ((self::W - $targetW) / 2);
