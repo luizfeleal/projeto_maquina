@@ -28,6 +28,7 @@
                 <thead class="table-light">
                     <tr>
                         <th>Produto</th>
+                        <th>Descrição</th>
                         <th>Lote</th>
                         <th>Quantidade</th>
                         <th>Valor</th>
@@ -39,12 +40,8 @@
                 <tbody>
                     @foreach($produtos as $p)
                     <tr>
-                        <td>
-                            <div class="fw-semibold">{{ $p['nome_produto'] }}</div>
-                            @if($p['descricao'])
-                                <div class="small text-muted">{{ $p['descricao'] }}</div>
-                            @endif
-                        </td>
+                        <td class="fw-semibold">{{ $p['nome_produto'] }}</td>
+                        <td class="text-muted">{{ $p['descricao'] ?? '—' }}</td>
                         <td>{{ $p['lote'] ?? '—' }}</td>
                         <td>{{ $p['quantidade'] }}</td>
                         <td>R$ {{ number_format($p['valor'], 2, ',', '.') }}</td>
@@ -90,7 +87,7 @@
 $(document).ready(function () {
     $('#tbl-estoque').DataTable({
         language: { url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json' },
-        order: [[5, 'desc']],
+        order: [[6, 'desc']],
         pageLength: 25,
     });
 });
