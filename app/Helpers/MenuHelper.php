@@ -94,6 +94,9 @@ if (!function_exists('getRouteBreadcrumbs')) {
             'financeiro-estoque-criar'    => [['label' => 'Dashboard', 'route' => 'financeiro-home'], ['label' => 'Estoque', 'route' => 'financeiro-estoque'], ['label' => 'Registrar Produto']],
             'financeiro-estoque-detalhar' => [['label' => 'Dashboard', 'route' => 'financeiro-home'], ['label' => 'Estoque', 'route' => 'financeiro-estoque'], ['label' => 'Detalhes do Produto']],
             'financeiro-estoque-editar'   => [['label' => 'Dashboard', 'route' => 'financeiro-home'], ['label' => 'Estoque', 'route' => 'financeiro-estoque'], ['label' => 'Editar Produto']],
+            'financeiro-mensalidades'          => [['label' => 'Dashboard', 'route' => 'financeiro-home'], ['label' => 'Mensalidades']],
+            'financeiro-mensalidades-criar'    => [['label' => 'Dashboard', 'route' => 'financeiro-home'], ['label' => 'Mensalidades', 'route' => 'financeiro-mensalidades'], ['label' => 'Nova Mensalidade']],
+            'financeiro-mensalidades-detalhar' => [['label' => 'Dashboard', 'route' => 'financeiro-home'], ['label' => 'Mensalidades', 'route' => 'financeiro-mensalidades'], ['label' => 'Detalhes da Mensalidade']],
         ];
 
         return $map[$routeName] ?? [$home];
@@ -200,6 +203,15 @@ if (!function_exists('getSidebar')) {
                     'sub_menu'      => [
                         ['title' => 'Listar produtos',   'route' => 'financeiro-estoque'],
                         ['title' => 'Registrar produto', 'route' => 'financeiro-estoque-criar'],
+                    ],
+                ],
+                [
+                    'title'         => 'Mensalidades',
+                    'icon'          => 'solar:wallet-money-bold-duotone',
+                    'active_routes' => ['financeiro-mensalidades', 'financeiro-mensalidades-criar', 'financeiro-mensalidades-detalhar'],
+                    'sub_menu'      => [
+                        ['title' => 'Listar mensalidades', 'route' => 'financeiro-mensalidades'],
+                        ['title' => 'Nova mensalidade',    'route' => 'financeiro-mensalidades-criar'],
                     ],
                 ],
                 [

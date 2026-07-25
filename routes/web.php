@@ -154,6 +154,18 @@ Route::prefix('financeiro-despesas')->middleware('permission')->group(function (
     Route::get('/{id}', 'App\Http\Controllers\Financeiro\DespesasController@show')->where('id', '[0-9]+')->name('financeiro-despesas-detalhar');
 });
 
+Route::prefix('financeiro-mensalidades')->middleware('permission')->group(function () {
+    Route::get('/', 'App\Http\Controllers\Financeiro\MensalidadesController@index')->name('financeiro-mensalidades');
+    Route::get('/criar', 'App\Http\Controllers\Financeiro\MensalidadesController@create')->name('financeiro-mensalidades-criar');
+    Route::post('/registrar', 'App\Http\Controllers\Financeiro\MensalidadesController@store')->name('financeiro-mensalidades-registrar');
+    Route::post('/excluir', 'App\Http\Controllers\Financeiro\MensalidadesController@destroy')->name('financeiro-mensalidades-excluir');
+    Route::post('/{id}/atualizar', 'App\Http\Controllers\Financeiro\MensalidadesController@update')->where('id', '[0-9]+')->name('financeiro-mensalidades-atualizar');
+    Route::post('/{id}/boleto/gerar', 'App\Http\Controllers\Financeiro\MensalidadesController@gerarBoleto')->where('id', '[0-9]+')->name('financeiro-mensalidades-boleto-gerar');
+    Route::post('/{id}/boleto/cancelar', 'App\Http\Controllers\Financeiro\MensalidadesController@cancelarBoleto')->where('id', '[0-9]+')->name('financeiro-mensalidades-boleto-cancelar');
+    Route::post('/{id}/boleto/reenviar', 'App\Http\Controllers\Financeiro\MensalidadesController@reenviarBoleto')->where('id', '[0-9]+')->name('financeiro-mensalidades-boleto-reenviar');
+    Route::get('/{id}', 'App\Http\Controllers\Financeiro\MensalidadesController@show')->where('id', '[0-9]+')->name('financeiro-mensalidades-detalhar');
+});
+
 Route::prefix('financeiro-estoque')->middleware('permission')->group(function () {
     Route::get('/', 'App\Http\Controllers\Financeiro\EstoqueController@index')->name('financeiro-estoque');
     Route::get('/criar', 'App\Http\Controllers\Financeiro\EstoqueController@create')->name('financeiro-estoque-criar');
