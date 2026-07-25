@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Services\ExtratoMaquinaService;
 use App\Services\MaquinasService;
+use App\Services\MensalidadeService;
 use Carbon\Carbon;
 
 class FinanceiroController extends Controller
@@ -48,6 +49,7 @@ class FinanceiroController extends Controller
         // Totais do dashboard
         $totalReceitas  = round($transacoes->where('extrato_operacao', 'C')->sum(fn($tx) => (float)($tx['extrato_operacao_valor'] ?? 0)), 2);
         $totalDespesas  = round($transacoes->where('extrato_operacao', 'D')->sum(fn($tx) => (float)($tx['extrato_operacao_valor'] ?? 0)), 2);
+        $totalInadimplencia = MensalidadeService::totalInadimplencia((int) env('INADIMPLENCIA_DIAS', 5));
 
         // Máquinas com status_comunicacao
         $maquinas = collect(MaquinasService::coletar())->map(fn($m) => [
@@ -62,9 +64,17 @@ class FinanceiroController extends Controller
         return view('Financeiro.home', compact(
             'mesesLabels', 'mesesValores',
             'trimestresLabels', 'trimestresValores',
-            'totalReceitas', 'totalDespesas',
+            'totalReceitas', 'totalDespesas', 'totalInadimplencia',
             'maquinas'
         ));
+    }
+
+    public function inadimplencia(Request $request)
+    {
+        $diasTolerancia = (int) env('INADIMPLENCIA_DIAS', 5);
+        $inadimplentes  = MensalidadeService::listarInadimplentes($diasTolerancia);
+
+        return view('Financeiro.Inadimplencia.index', compact('inadimplentes', 'diasTolerancia'));
     }
 
     private function formatarMes(string $anoMes): string

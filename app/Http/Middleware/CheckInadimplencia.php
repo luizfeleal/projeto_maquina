@@ -4,9 +4,8 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use App\Models\Mensalidade;
-use Illuminate\Database\QueryException;
-use Illuminate\Support\Facades\Log;
+use App\Services\MensalidadeService;
+use Carbon\Carbon;
 
 class CheckInadimplencia
 {
@@ -22,20 +21,15 @@ class CheckInadimplencia
             return $next($request);
         }
 
-        try {
-            $diasTolerancia = (int) env('INADIMPLENCIA_DIAS', 5);
+        $diasTolerancia  = (int) env('INADIMPLENCIA_DIAS', 5);
+        $limiteVencimento = Carbon::today()->subDays($diasTolerancia)->toDateString();
 
-            $inadimplente = Mensalidade::where('id_cliente', $idCliente)
-                ->inadimplentes($diasTolerancia)
-                ->exists();
-        } catch (QueryException $e) {
-            Log::warning('[CheckInadimplencia] Banco indisponível; verificação de mensalidades ignorada.', [
-                'id_cliente' => $idCliente,
-                'erro'       => $e->getMessage(),
-            ]);
+        $mensalidades = MensalidadeService::coletar([
+            'id_cliente'        => $idCliente,
+            'vencimento_fim'    => $limiteVencimento,
+        ]);
 
-            return $next($request);
-        }
+        $inadimplente = collect($mensalidades)->contains(fn ($m) => ($m['status'] ?? null) !== 'pago');
 
         if ($inadimplente) {
             $mensagem = 'Sua conta possui mensalidades em atraso. A liberação de jogadas está bloqueada até a regularização.';

@@ -207,7 +207,7 @@ if (!function_exists('getSidebar')) {
                     'icon'          => 'solar:danger-triangle-bold-duotone',
                     'active_routes' => ['financeiro-inadimplencia'],
                     'sub_menu'      => [
-                        ['title' => 'Listar inadimplentes', 'route' => 'financeiro-home'],
+                        ['title' => 'Listar inadimplentes', 'route' => 'financeiro-inadimplencia'],
                     ],
                 ],
                 [

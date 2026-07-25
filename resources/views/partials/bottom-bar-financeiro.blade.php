@@ -24,7 +24,7 @@
     </a>
 
     {{-- Inadimplência --}}
-    <a href="#"
+    <a href="{{ route('financeiro-inadimplencia') }}"
        class="bottom-nav-item {{ in_array($r, ['financeiro-inadimplencia']) ? 'active' : '' }}"
        aria-label="Inadimplência">
         <iconify-icon icon="solar:danger-triangle-bold-duotone" aria-hidden="true"></iconify-icon>

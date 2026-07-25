@@ -142,6 +142,10 @@ Route::prefix('financeiro-home')->middleware('permission')->group(function () {
     Route::get('/', 'App\Http\Controllers\Financeiro\FinanceiroController@index')->name('financeiro-home');
 });
 
+Route::prefix('financeiro-inadimplencia')->middleware('permission')->group(function () {
+    Route::get('/', 'App\Http\Controllers\Financeiro\FinanceiroController@inadimplencia')->name('financeiro-inadimplencia');
+});
+
 Route::prefix('financeiro-despesas')->middleware('permission')->group(function () {
     Route::get('/', 'App\Http\Controllers\Financeiro\DespesasController@index')->name('financeiro-despesas');
     Route::get('/criar', 'App\Http\Controllers\Financeiro\DespesasController@create')->name('financeiro-despesas-criar');

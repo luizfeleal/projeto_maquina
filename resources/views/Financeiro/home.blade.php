@@ -49,18 +49,22 @@
         </div>
     </div>
     <div class="col-6 col-xl-3">
-        <div class="card border-0 shadow-sm h-100">
-            <div class="card-body d-flex align-items-center gap-3 p-3">
-                <div class="rounded-3 p-2 flex-shrink-0" style="background:#fffbeb;">
-                    <iconify-icon icon="solar:danger-triangle-bold-duotone"
-                                  style="font-size:1.6rem;color:#f59e0b;display:block;"></iconify-icon>
-                </div>
-                <div class="min-w-0">
-                    <div class="text-muted" style="font-size:.7rem; text-transform:uppercase; letter-spacing:.06em; font-weight:600;">Inadimplência</div>
-                    <div class="fw-bold" style="font-size:1.05rem; color:#f59e0b;">R$ —</div>
+        <a href="{{ route('financeiro-inadimplencia') }}" class="text-decoration-none">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body d-flex align-items-center gap-3 p-3">
+                    <div class="rounded-3 p-2 flex-shrink-0" style="background:#fffbeb;">
+                        <iconify-icon icon="solar:danger-triangle-bold-duotone"
+                                      style="font-size:1.6rem;color:#f59e0b;display:block;"></iconify-icon>
+                    </div>
+                    <div class="min-w-0">
+                        <div class="text-muted" style="font-size:.7rem; text-transform:uppercase; letter-spacing:.06em; font-weight:600;">Inadimplência</div>
+                        <div class="fw-bold" style="font-size:1.05rem; color:#f59e0b;">
+                            R$ {{ number_format($totalInadimplencia, 2, ',', '.') }}
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
+        </a>
     </div>
     <div class="col-6 col-xl-3">
         <div class="card border-0 shadow-sm h-100">
