@@ -291,8 +291,8 @@ class MockData
             'credencial-listar', 'credencial-criar-efi', 'credencial-criar-pagbank', 'credencial-registrar',
             'credencial-editar-efi', 'credencial-editar-pagbank', 'credencial-atualizar', 'credencial-excluir',
             'financeiro-home', 'financeiro-despesas', 'financeiro-despesas-criar', 'financeiro-despesas-registrar',
-            'financeiro-despesas-excluir', 'financeiro-despesas-detalhar', 'financeiro-placas', 'financeiro-placas-criar',
-            'financeiro-placas-registrar', 'financeiro-placas-excluir',
+            'financeiro-despesas-excluir', 'financeiro-despesas-detalhar', 'financeiro-estoque', 'financeiro-estoque-criar',
+            'financeiro-estoque-registrar', 'financeiro-estoque-excluir',
         ];
 
         $clienteRoutes = [

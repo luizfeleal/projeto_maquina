@@ -150,11 +150,11 @@ Route::prefix('financeiro-despesas')->middleware('permission')->group(function (
     Route::get('/{id}', 'App\Http\Controllers\Financeiro\DespesasController@show')->where('id', '[0-9]+')->name('financeiro-despesas-detalhar');
 });
 
-Route::prefix('financeiro-placas')->middleware('permission')->group(function () {
-    Route::get('/', 'App\Http\Controllers\Financeiro\PlacasController@index')->name('financeiro-placas');
-    Route::get('/criar', 'App\Http\Controllers\Financeiro\PlacasController@create')->name('financeiro-placas-criar');
-    Route::post('/registrar', 'App\Http\Controllers\Financeiro\PlacasController@store')->name('financeiro-placas-registrar');
-    Route::post('/excluir', 'App\Http\Controllers\Financeiro\PlacasController@destroy')->name('financeiro-placas-excluir');
+Route::prefix('financeiro-estoque')->middleware('permission')->group(function () {
+    Route::get('/', 'App\Http\Controllers\Financeiro\EstoqueController@index')->name('financeiro-estoque');
+    Route::get('/criar', 'App\Http\Controllers\Financeiro\EstoqueController@create')->name('financeiro-estoque-criar');
+    Route::post('/registrar', 'App\Http\Controllers\Financeiro\EstoqueController@store')->name('financeiro-estoque-registrar');
+    Route::post('/excluir', 'App\Http\Controllers\Financeiro\EstoqueController@destroy')->name('financeiro-estoque-excluir');
 });
 
 Route::get('/login', 'App\Http\Controllers\LoginController@login')->name('login-view');

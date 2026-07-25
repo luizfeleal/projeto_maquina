@@ -90,8 +90,8 @@ if (!function_exists('getRouteBreadcrumbs')) {
             'financeiro-home'           => [['label' => 'Dashboard']],
             'financeiro-despesas'       => [['label' => 'Dashboard', 'route' => 'financeiro-home'], ['label' => 'Despesas']],
             'financeiro-despesas-criar' => [['label' => 'Dashboard', 'route' => 'financeiro-home'], ['label' => 'Despesas', 'route' => 'financeiro-despesas'], ['label' => 'Nova Despesa']],
-            'financeiro-placas'         => [['label' => 'Dashboard', 'route' => 'financeiro-home'], ['label' => 'Estoque de Placas']],
-            'financeiro-placas-criar'   => [['label' => 'Dashboard', 'route' => 'financeiro-home'], ['label' => 'Estoque de Placas', 'route' => 'financeiro-placas'], ['label' => 'Registrar Placa']],
+            'financeiro-estoque'        => [['label' => 'Dashboard', 'route' => 'financeiro-home'], ['label' => 'Estoque']],
+            'financeiro-estoque-criar'  => [['label' => 'Dashboard', 'route' => 'financeiro-home'], ['label' => 'Estoque', 'route' => 'financeiro-estoque'], ['label' => 'Registrar Produto']],
         ];
 
         return $map[$routeName] ?? [$home];
@@ -192,12 +192,12 @@ if (!function_exists('getSidebar')) {
                     ],
                 ],
                 [
-                    'title'         => 'Estoque de Placas',
-                    'icon'          => 'solar:cpu-bold-duotone',
-                    'active_routes' => ['financeiro-placas', 'financeiro-placas-criar'],
+                    'title'         => 'Estoque',
+                    'icon'          => 'solar:box-bold-duotone',
+                    'active_routes' => ['financeiro-estoque', 'financeiro-estoque-criar'],
                     'sub_menu'      => [
-                        ['title' => 'Listar placas',     'route' => 'financeiro-placas'],
-                        ['title' => 'Registrar placa',   'route' => 'financeiro-placas-criar'],
+                        ['title' => 'Listar produtos',   'route' => 'financeiro-estoque'],
+                        ['title' => 'Registrar produto', 'route' => 'financeiro-estoque-criar'],
                     ],
                 ],
                 [
