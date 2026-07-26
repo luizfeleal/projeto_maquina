@@ -97,6 +97,8 @@ if (!function_exists('getRouteBreadcrumbs')) {
             'financeiro-mensalidades'          => [['label' => 'Dashboard', 'route' => 'financeiro-home'], ['label' => 'Mensalidades']],
             'financeiro-mensalidades-criar'    => [['label' => 'Dashboard', 'route' => 'financeiro-home'], ['label' => 'Mensalidades', 'route' => 'financeiro-mensalidades'], ['label' => 'Nova Mensalidade']],
             'financeiro-mensalidades-detalhar' => [['label' => 'Dashboard', 'route' => 'financeiro-home'], ['label' => 'Mensalidades', 'route' => 'financeiro-mensalidades'], ['label' => 'Detalhes da Mensalidade']],
+            'financeiro-clientes'       => [['label' => 'Dashboard', 'route' => 'financeiro-home'], ['label' => 'Clientes']],
+            'financeiro-clientes-criar' => [['label' => 'Dashboard', 'route' => 'financeiro-home'], ['label' => 'Clientes', 'route' => 'financeiro-clientes'], ['label' => 'Novo Cliente']],
         ];
 
         return $map[$routeName] ?? [$home];
@@ -186,6 +188,15 @@ if (!function_exists('getSidebar')) {
                 ],
                 [
                     'title' => 'Módulo Financeiro',
+                ],
+                [
+                    'title'         => 'Clientes',
+                    'icon'          => 'solar:users-group-rounded-bold-duotone',
+                    'active_routes' => ['financeiro-clientes', 'financeiro-clientes-criar'],
+                    'sub_menu'      => [
+                        ['title' => 'Listar clientes', 'route' => 'financeiro-clientes'],
+                        ['title' => 'Novo cliente',    'route' => 'financeiro-clientes-criar'],
+                    ],
                 ],
                 [
                     'title'         => 'Despesas',

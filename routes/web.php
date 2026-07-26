@@ -142,6 +142,12 @@ Route::prefix('financeiro-home')->middleware('permission')->group(function () {
     Route::get('/', 'App\Http\Controllers\Financeiro\FinanceiroController@index')->name('financeiro-home');
 });
 
+Route::prefix('financeiro-clientes')->middleware('permission')->group(function () {
+    Route::get('/', 'App\Http\Controllers\Financeiro\ClientesController@index')->name('financeiro-clientes');
+    Route::get('/criar', 'App\Http\Controllers\Financeiro\ClientesController@create')->name('financeiro-clientes-criar');
+    Route::post('/registrar', 'App\Http\Controllers\Financeiro\ClientesController@store')->name('financeiro-clientes-registrar');
+});
+
 Route::prefix('financeiro-inadimplencia')->middleware('permission')->group(function () {
     Route::get('/', 'App\Http\Controllers\Financeiro\FinanceiroController@inadimplencia')->name('financeiro-inadimplencia');
 });
