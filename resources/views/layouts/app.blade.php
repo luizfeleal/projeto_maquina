@@ -3,297 +3,521 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title')</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>@yield('title') — SwiftPay Soluções</title>
+    {{-- Apply saved color theme before first paint to prevent flash --}}
+    <script>
+        (function () {
+            var saved = localStorage.getItem('pm_color_theme');
+            var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            var theme = saved || (prefersDark ? 'dark' : 'light');
+            document.documentElement.setAttribute('data-theme', theme);
+        })();
+    </script>
 
-    <link rel="icon" href="{{ asset('site/img/favico.ico') }}" sizes="32x32">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('site/img/favicon-32.png') }}">
+    <link rel="apple-touch-icon" href="{{ asset('site/img/apple-touch-icon.png') }}">
+    @include('partials.pwa-head')
 
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    {{-- DataTables --}}
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
     <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.4.1/css/responsive.dataTables.min.css">
-    <!-- Or for RTL support -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.rtl.min.css" />
-    <link rel="stylesheet" href="{{ asset('site/style.css')}}?v={{ time() }}">
 
+    {{-- Select2 --}}
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css">
 
+    {{-- Font Awesome --}}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 
+    {{-- App styles (Bootstrap + custom SCSS compiled) --}}
+    <link rel="stylesheet" href="{{ asset('site/style.css') }}?v={{ time() }}">
+
+    {{-- Iconify web component --}}
+    <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js" defer></script>
 </head>
 
 <body>
+    @include('partials.app-splash')
 
-    @php
-    $currentRoute = Request::route()->getName();
-    @endphp
+    <div class="app-wrapper">
 
+        @include('partials.sidebar-admin')
 
-    <nav class="navbar navbar-expand-lg  fixed-top" style="background-color:#242a74;">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="{{route('home')}}" style="cursor: default;"><img src="{{ asset('site/img/swift_pay_solucoes_png.png') }}" width="250" height="63" alt="Swift Pay Soluções"></a>
-            <!--<h1>LOGO</h1>-->
-            <button class="navbar-toggler" type="button" style="background-color: #FFF !important;" data-bs-toggle="offcanvas" data-bs-target="#offcanvasScrolling" aria-controls="offcanvasScrolling">
-                <span class="navbar-toggler-icon"></span>
-            </button>
+        {{-- Overlay for mobile --}}
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-        </div>
-    </nav>
-    <div class="offcanvas offcanvas-start" data-bs-scroll="true" data-bs-backdrop="false" tabindex="-1" id="offcanvasScrolling" aria-labelledby="offcanvasScrollingLabel">
-        <div class="flex-shrink-0 p-3 bg-body-tertiary" style="width: 280px; height: 100vh;display: flex;flex-direction: column;justify-content: space-around; position:fixed;min-height: 800px;">
-            <div>
+        <div class="main-content">
 
-                <p class="d-flex align-items-center pb-3 mb-3 link-body-emphasis text-decoration-none" style=" padding-left: 12px;">
-                <div class="d-flex" style="flex-direction: column;">
-                    <span class="fs-5 fw-semibold" id="username">{{session()->get('usuario_nome')}}</span>
-                    <span class="fs-10" id="user_function">{{session()->get('grupo_nome')}}</span>
+            @include('partials.navbar')
+
+            <div class="content-body">
+                <div class="page-container">
+                    @include('partials.breadcrumb')
+                    @yield('content')
                 </div>
-                </p>
-
-
-
-                <ul class="list-unstyled ps-0">
-
-                <li class="mb-1">
-                        <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0">
-                            <a href="{{route('home')}}" class="text-decoration-none" style="{{ $currentRoute === 'usuarios' || $currentRoute === 'usuario-criar' ?  'color:grey !important;' : ' ' }}">
-                                <i class="fa-solid fa-house" style=" font-size: 25px;padding-right:5px;"></i>Home
-                            </a>
-                        </button>
-
-
-                    </li>
-
-                    <li class="mb-1">
-                        <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed" data-bs-toggle="collapse" data-bs-target="#maquinas-collapse" aria-expanded="false">
-                            <a href="/" class="text-decoration-none">
-                                <i class="fa-solid fa-desktop"></i> Criar
-                            </a>
-                        </button>
-                        <div class="collapse {{$currentRoute === 'local-criar' || $currentRoute === 'local-incluir-usuario' ||$currentRoute === 'maquinas-criar' || $currentRoute === 'credencial-criar-pagbank' || $currentRoute === 'credencial-criar-efi' || $currentRoute === 'credencial-listar' || $currentRoute === 'maquinas-cartao' ? 'show' : '' }}" id="maquinas-collapse">
-                            <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                                <li><a href="{{route('maquinas-criar')}}" class="d-inline-flex text-decoration-none rounded" style="{{ $currentRoute === 'maquinas-criar' ? 'color:grey !important;' : ' ' }}">Criar nova máquina</a></li>
-                                <li><a href="{{route('local-incluir-usuario')}}" class=" d-inline-flex text-decoration-none rounded" style="{{  $currentRoute === 'local-incluir-usuario' ? 'color:grey !important;': ' ' }}">Incluir usuários</a></li>
-                                <li><a href="{{route('local-criar')}}" class=" d-inline-flex text-decoration-none rounded" style="{{  $currentRoute === 'local-criar' ? 'color:grey !important;': ' ' }}">Criar local</a></li>
-                                <li><a href="{{route('credencial-criar-efi')}}" class=" d-inline-flex text-decoration-none rounded" style="{{  $currentRoute === 'credencial-criar-efi' ? 'color:grey !important;': ' ' }}">Criar credencial EFI</a></li>
-                                <li><a href="{{route('credencial-criar-pagbank')}}" class=" d-inline-flex text-decoration-none rounded" style="{{  $currentRoute === 'credencial-criar-pagbank' ? 'color:grey !important;': ' ' }}">Criar credencial Pagbank</a></li>
-                                <li><a href="{{route('credencial-listar')}}" class=" d-inline-flex text-decoration-none rounded" style="{{  $currentRoute === 'credencial-listar' ? 'color:grey !important;': ' ' }}">Editar credenciais</a></li>
-                                <li><a href="{{route('maquinas-cartao')}}" class=" d-inline-flex text-decoration-none rounded" style="{{  $currentRoute === 'maquinas-cartao' ? 'color:grey !important;': ' ' }}">Incluir Máquina Cartão</a></li>
-                            </ul>
-                        </div>
-                    </li>
-                    <li class="mb-1">
-                        <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed" data-bs-toggle="collapse" data-bs-target="#local-collapse" aria-expanded="false">
-                            <a href="/" class="text-decoration-none">
-                                <i class="fa-solid fa-location-dot icon-sidebar" style=" font-size: 25px;padding-right:5px;"></i>Local
-                            </a>
-                        </button>
-                        <div class="collapse {{  $currentRoute === 'local'  ? 'show' : '' }}" id="local-collapse">
-                            <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                                <li><a href="{{route('local')}}" class=" d-inline-flex text-decoration-none rounded" style="{{  $currentRoute === 'local' ? 'color:grey !important;': ' ' }}">Exibir locais</a></li>
-
-                            </ul>
-                        </div>
-                    </li>
-
-                    <li class="mb-1">
-                        <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed" data-bs-toggle="collapse" data-bs-target="#termo-collapse" aria-expanded="false">
-                            <a href="#" class="text-decoration-none" style="{{ $currentRoute === 'maquinas' ?  'color:grey !important;' : ' ' }}">
-                                <i class="fa-solid fa-gear icon-sidebar" style=" font-size: 25px;padding-right:5px;"></i>Minhas máquinas
-                            </a>
-                        </button>
-                        <div class="collapse {{ $currentRoute === 'maquinas-transacoes' || $currentRoute === 'maquinas-acumulado' || $currentRoute === 'maquinas' || $currentRoute === 'relatorio-view' || $currentRoute ===  'relatorio-criar' || $currentRoute === 'relatorio-exibir'  ? 'show' : '' }}" id="termo-collapse">
-                            <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                                <li><a href="{{route('maquinas')}}" class=" d-inline-flex text-decoration-none rounded" style="{{ $currentRoute === 'maquinas' ?  'color:grey !important;' : ' ' }}">Exibir Máquinas</a></li>
-                                <li><a href="{{route('maquinas-transacoes')}}" class=" d-inline-flex text-decoration-none rounded" style="{{ $currentRoute === 'maquinas-transacoes' ?  'color:grey !important;' : ' ' }}">Transações</a></li>
-                                <li><a href="{{route('maquinas-acumulado')}}" class=" d-inline-flex text-decoration-none rounded" style="{{ $currentRoute === 'maquinas-acumulado' ?  'color:grey !important;' : ' ' }}">Acumulado</a></li>
-                                <li><a href="{{route('relatorio-view')}}" class=" d-inline-flex text-decoration-none rounded" style="{{ $currentRoute === 'relatorio-view' || $currentRoute ===  'relatorio-criar' || $currentRoute === 'relatorio-exibir' ?  'color:grey !important;' : ' ' }}">Relatórios</a></li>
-                            </ul>
-                        </div>
-                    </li>
-                    <li class="mb-1">
-                        <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed" data-bs-toggle="collapse" data-bs-target="#qr-collapse" aria-expanded="false">
-                            <a href="/" class="text-decoration-none">
-                                <i class="fa-solid fa-qrcode icon-sidebar" style=" font-size: 25px;padding-right:5px;"></i>Gerar QR
-                            </a>
-                        </button>
-                        <div class="collapse {{ $currentRoute === 'qr-criar' || $currentRoute === 'qr'  ? 'show' : '' }}" id="qr-collapse">
-                            <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                                <li><a href="{{route('qr-criar')}}" class=" d-inline-flex text-decoration-none rounded" style="{{ $currentRoute === 'qr-criar' ?  'color:grey !important;' : ' ' }}">Novo Qr</a></li>
-                                <li><a href="{{route('qr')}}" class=" d-inline-flex text-decoration-none rounded" style="{{ $currentRoute === 'qr' ?  'color:grey !important;' : ' ' }}">Qr</a></li>
-                            </ul>
-                        </div>
-                    </li>
-
-                    <li class="mb-1">
-                        <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0">
-                            <a href="{{route('usuarios')}}" class="text-decoration-none" style="{{ $currentRoute === 'usuarios' || $currentRoute === 'usuario-criar' ?  'color:grey !important;' : ' ' }}">
-                                <i class="fa-solid fa-user-plus icon-sidebar" style=" font-size: 25px;padding-right:5px;"></i>Usuários
-                            </a>
-                        </button>
-
-
-                    </li>
-
-                    <li class="mb-1">
-                        <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0">
-                            <a href="{{ route('view-liberar-jogadas') }}" class="text-decoration-none"
-                                style="{{ $currentRoute === 'maquinas-liberar-jogada' ? 'color:grey !important;' : '' }}">
-                                <i class="fa-solid fa-play icon-sidebar" style="font-size: 25px; padding-right: 5px;"></i>
-                                Liberar Jogada
-                            </a>
-                        </button>
-
-                    </li>
-
-                    <li class=" my-5"></li>
-
-                </ul>
-
-                <ul class="list-unstyled ps-0">
-                    <li class="mb-1">
-                        <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed">
-                            <a href="{{route('logout')}}" class="text-decoration-none">
-                                <i class="fa-solid fa-right-from-bracket icon-sidebar" style=" font-size: 25px;padding-right:5px;"></i>Sair
-                            </a>
-                        </button>
-                    </li>
-                </ul>
             </div>
+
         </div>
+
     </div>
-    <div class="d-flex d-flex-container" style="min-height: 100vh;">
 
-        @yield('content')
-
-
-        <div id="loader" class="loader" style="display: block !important;">
-            <div class="spinner-border spinner-load" style="width: 3rem; height: 3rem;" role="status">
-                <span class="visually-hidden">Loading...</span>
-            </div>
+    {{-- Page loader --}}
+    <div id="loader" class="loader">
+        <div class="spinner-border spinner-load" style="width: 3rem; height: 3rem;" role="status">
+            <span class="visually-hidden">Loading...</span>
         </div>
     </div>
 
-
-
+    {{-- Scripts --}}
     <script src="{{ asset('site/jquery.js') }}"></script>
-    <script src="{{ asset('site/functions.js') }}"></script>
     <script src="{{ asset('site/bootstrap.js') }}"></script>
+    <script src="{{ asset('site/functions.js') }}"></script>
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.4.1/js/dataTables.responsive.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"
         integrity="sha512-pHVGpX7F/27yZ0ISY+VVjyULApbDlD0/X0rgGbTqCE7WFW5MezNTWG/dnhtbBuICzsd0WQPgpE4REBLv+UqChw=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-    <script src="https://cdn.datatables.net/responsive/2.4.1/js/dataTables.responsive.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-
-
-
-    @yield('scriptTable')
-
-
-
+    {{-- ================================================================
+         Card / Table View Toggle — deve vir ANTES do @yield('scriptTable')
+         para que o handler init.dt seja registrado antes da inicialização
+         do DataTable de cada página.
+    ================================================================ --}}
     <script>
-        const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
-        const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+    ;(function ($) {
+        'use strict';
 
+        var STORAGE_KEY   = 'pm_view_mode';
+        var ACTION_HDRS   = ['detalhar','excluir','editar','ações','acao','acoes','ação','action','actions',''];
 
-
-        function toggleOffcanvas() {
-            const offcanvasElement = document.getElementById("offcanvasScrolling");
-            if (window.innerWidth < 768) {
-                // Fecha o offcanvas em telas menores (modo mobile)
-                offcanvasElement.classList.remove("show");
-            } else {
-                // Mantém o offcanvas aberto em telas maiores
-                offcanvasElement.classList.add("show");
-            }
+        function isActionHeader(h) {
+            return ACTION_HDRS.indexOf(h.toLowerCase().trim()) !== -1;
         }
 
-        window.addEventListener("load", function() {
-            const loader = document.getElementById("loader");
-            loader.style.display = "none"; // Esconde o loader quando a página termina de carregar
+        function getHeaders($table) {
+            var h = [];
+            $table.find('thead tr:first-child th').each(function () {
+                h.push($(this).text().trim());
+            });
+            return h;
+        }
+
+        // Semantic class map: column header keyword → CSS variant class
+        var ACTION_CLASS_MAP = {
+            'detalhar':   'card-action-view',
+            'visualizar': 'card-action-view',
+            'editar':     'card-action-edit',
+            'excluir':    'card-action-delete',
+        };
+
+        function enrichActionCell(html, header) {
+            var $tmp = $('<div>').append($.parseHTML(html));
+            var hKey = header.toLowerCase().trim();
+            var colVariant = ACTION_CLASS_MAP[hKey] || '';
+
+            $tmp.find('a, button').each(function () {
+                var $el  = $(this);
+                var text = $el.text().trim().toLowerCase();
+
+                // Resolve variant: prefer column header, fallback to button text
+                var variant = colVariant;
+                if (!variant) {
+                    for (var keyword in ACTION_CLASS_MAP) {
+                        if (text.indexOf(keyword) !== -1) {
+                            variant = ACTION_CLASS_MAP[keyword];
+                            break;
+                        }
+                    }
+                }
+                // Also check btn-* class as last resort
+                if (!variant) {
+                    if ($el.hasClass('btn-danger'))  variant = 'card-action-delete';
+                    else if ($el.hasClass('btn-success')) variant = 'card-action-edit';
+                }
+
+                var hasText = $el.text().trim().length > 0;
+
+                // Apply pill class
+                $el.addClass('card-action-btn');
+                if (variant) $el.addClass(variant);
+
+                // Improve aria-label
+                if (!$el.attr('aria-label') && text) {
+                    $el.attr('aria-label', text || header);
+                }
+
+                // Inject visible text label when element is icon-only
+                if (!hasText && header) {
+                    $el.append(
+                        '<span class="card-action-text">' +
+                        $('<span>').text(header).html() +
+                        '</span>'
+                    );
+                }
+            });
+
+            return $tmp.contents();
+        }
+
+        function buildCard(rowEl, headers) {
+            var $row      = $(rowEl);
+            var $card     = $('<article class="data-card" tabindex="0" role="article"></article>');
+            var $fields   = $('<div class="card-fields"></div>');
+            var $actions  = $('<div class="card-actions" aria-label="Ações"></div>');
+            var titleDone = false;
+
+            $row.find('td').each(function (i) {
+                var $cell  = $(this);
+                var header = headers[i] !== undefined ? headers[i] : '';
+                var html   = ($cell.html() || '').trim();
+                var text   = ($cell.text() || '').trim();
+
+                if (isActionHeader(header)) {
+                    if (html) $actions.append(enrichActionCell(html, header));
+                    return;
+                }
+
+                if (!titleDone && text) {
+                    var $tmp = $('<div>').text(text);
+                    $card.prepend('<h3 class="card-title">' + $tmp.html() + '</h3>');
+                    titleDone = true;
+                    return;
+                }
+
+                if (text || html) {
+                    var labelHtml = header
+                        ? '<span class="card-label">' + $('<div>').text(header).html() + '</span>'
+                        : '';
+                    $fields.append(
+                        '<div class="card-field">' + labelHtml +
+                        '<span class="card-value">' + html + '</span></div>'
+                    );
+                }
+            });
+
+            if ($fields.children().length) $card.append($fields);
+            if ($actions.children().length) $card.append($actions);
+            return $card;
+        }
+
+        function renderCards($grid, dt, headers) {
+            $grid.empty();
+            var total = dt.rows({ search: 'applied' }).count();
+
+            if (total === 0) {
+                $grid.append(
+                    '<div class="card-empty-state" role="status">' +
+                    '<iconify-icon icon="solar:inbox-line-duotone" aria-hidden="true"></iconify-icon>' +
+                    '<p>Nenhum registro encontrado.</p>' +
+                    '</div>'
+                );
+                return 0;
+            }
+
+            var nodes = dt.rows({ page: 'current' }).nodes();
+            $(nodes).each(function () { $grid.append(buildCard(this, headers)); });
+            return total;
+        }
+
+        function setup($table, dt) {
+            var headers    = getHeaders($table);
+            var $wrapper   = $table.closest('.dataTables_wrapper');
+            var $responsive = $wrapper.closest('.tabela_responsiva');
+            var $target    = $responsive.length ? $responsive : ($wrapper.length ? $wrapper : $table);
+            var initMode   = localStorage.getItem(STORAGE_KEY) || 'card';
+
+            // ---- Toggle bar ----
+            var $bar = $(
+                '<div class="view-toggle-bar" role="toolbar" aria-label="Controles de visualização">' +
+                  '<div class="view-search-wrap">' +
+                    '<span class="view-search-icon" aria-hidden="true">' +
+                      '<iconify-icon icon="solar:magnifer-linear"></iconify-icon>' +
+                    '</span>' +
+                    '<input type="search" class="view-search-input" placeholder="Pesquisar..." ' +
+                           'aria-label="Pesquisar registros" autocomplete="off">' +
+                  '</div>' +
+                  '<div class="view-btn-group" role="group" aria-label="Modo de visualização">' +
+                    '<button type="button" class="view-btn view-btn-card" ' +
+                            'title="Visualizar em cards" aria-label="Visualizar em cards" aria-pressed="false">' +
+                      '<iconify-icon icon="solar:widget-bold-duotone"></iconify-icon>' +
+                    '</button>' +
+                    '<button type="button" class="view-btn view-btn-table" ' +
+                            'title="Visualizar em tabela" aria-label="Visualizar em tabela" aria-pressed="false">' +
+                      '<iconify-icon icon="solar:list-bold-duotone"></iconify-icon>' +
+                    '</button>' +
+                  '</div>' +
+                  '<span class="view-count-badge" aria-live="polite" aria-atomic="true"></span>' +
+                '</div>'
+            );
+
+            // ---- Card grid and pager containers ----
+            var $grid = $('<div class="card-grid" role="region" aria-label="Registros em cards"></div>');
+            var $cardPager = $('<div class="card-pager" style="display:none; padding:12px 0 4px;"></div>');
+
+            // ---- Insert into DOM ----
+            $target.before($bar);
+            $target.after($grid);
+            $grid.after($cardPager);
+
+            // Hide DataTables' own search box (replaced by our bar)
+            $wrapper.find('.dataTables_filter').hide();
+
+            // ---- Card pagination renderer ----
+            function updateCardPager() {
+                var info = dt.page.info();
+                if (!info || info.pages <= 1) {
+                    $cardPager.empty().hide();
+                    return;
+                }
+                $cardPager.show();
+
+                var cur   = info.page;
+                var total = info.pages;
+                var html  = '<nav aria-label="Paginação"><ul class="pagination justify-content-center flex-wrap mb-0">';
+
+                html += '<li class="page-item' + (cur === 0 ? ' disabled' : '') + '">' +
+                        '<button type="button" class="page-link card-page-btn" data-page="' + (cur - 1) + '" aria-label="Anterior">' +
+                        '<iconify-icon icon="solar:arrow-left-linear" aria-hidden="true"></iconify-icon></button></li>';
+
+                var s = Math.max(0, cur - 2);
+                var e = Math.min(total - 1, cur + 2);
+
+                if (s > 0) {
+                    html += '<li class="page-item"><button type="button" class="page-link card-page-btn" data-page="0">1</button></li>';
+                    if (s > 1) html += '<li class="page-item disabled"><span class="page-link">&hellip;</span></li>';
+                }
+                for (var p = s; p <= e; p++) {
+                    html += '<li class="page-item' + (p === cur ? ' active' : '') + '">' +
+                            '<button type="button" class="page-link card-page-btn" data-page="' + p + '">' + (p + 1) + '</button></li>';
+                }
+                if (e < total - 1) {
+                    if (e < total - 2) html += '<li class="page-item disabled"><span class="page-link">&hellip;</span></li>';
+                    html += '<li class="page-item"><button type="button" class="page-link card-page-btn" data-page="' + (total - 1) + '">' + total + '</button></li>';
+                }
+
+                html += '<li class="page-item' + (cur >= total - 1 ? ' disabled' : '') + '">' +
+                        '<button type="button" class="page-link card-page-btn" data-page="' + (cur + 1) + '" aria-label="Próxima">' +
+                        '<iconify-icon icon="solar:arrow-right-linear" aria-hidden="true"></iconify-icon></button></li>';
+
+                html += '</ul></nav>';
+                $cardPager.html(html);
+
+                $cardPager.find('.card-page-btn').on('click', function () {
+                    var pg = parseInt($(this).data('page'));
+                    if (pg >= 0 && pg < total) { dt.page(pg).draw('page'); }
+                });
+            }
+
+            // ---- Refresh helper ----
+            function refresh() {
+                var count = renderCards($grid, dt, headers);
+                var label = count + ' registro' + (count !== 1 ? 's' : '');
+                $bar.find('.view-count-badge').text(label).attr('aria-label', label);
+                updateCardPager();
+            }
+
+            refresh();
+
+            // ---- Apply mode ----
+            function applyMode(mode, persist) {
+                if (persist !== false) localStorage.setItem(STORAGE_KEY, mode);
+
+                var $cardBtn  = $bar.find('.view-btn-card');
+                var $tableBtn = $bar.find('.view-btn-table');
+
+                if (mode === 'card') {
+                    $target.hide();
+                    $grid.show();
+                    $cardPager.show();
+                    updateCardPager();
+                    $cardBtn.addClass('active').attr('aria-pressed', 'true');
+                    $tableBtn.removeClass('active').attr('aria-pressed', 'false');
+                } else {
+                    $target.show();
+                    $grid.hide();
+                    $cardPager.hide();
+                    $tableBtn.addClass('active').attr('aria-pressed', 'true');
+                    $cardBtn.removeClass('active').attr('aria-pressed', 'false');
+                }
+            }
+
+            applyMode(initMode, false);
+
+            // ---- Search ----
+            $bar.find('.view-search-input').on('input', function () {
+                dt.search($(this).val()).draw();
+            });
+
+            // ---- Keyboard: Enter on cards ----
+            $grid.on('keydown', '.data-card', function (e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    var $firstAction = $(this).find('.card-actions a, .card-actions button').first();
+                    if ($firstAction.length) { e.preventDefault(); $firstAction.trigger('click'); }
+                }
+            });
+
+            // ---- Re-render on DataTable draw ----
+            $table.on('draw.dt', function () { refresh(); });
+
+            // ---- Toggle buttons ----
+            $bar.find('.view-btn-card').on('click',  function () { applyMode('card');  });
+            $bar.find('.view-btn-table').on('click', function () { applyMode('table'); });
+        }
+
+        // Auto-attach to every DataTable on page
+        $(document).on('init.dt', function (e, settings) {
+            var $table = $(settings.nTable);
+            // Skip tables opted out with class .no-card-view
+            if (!$table.attr('id') || $table.hasClass('no-card-view')) return;
+            setup($table, $table.DataTable());
         });
 
-        // Adiciona um ouvinte de evento para redimensionamento da janela
-        window.addEventListener("resize", toggleOffcanvas);
+    }(jQuery));
+    </script>
 
-        // Chama a função inicialmente para configurar o estado do offcanvas
-        toggleOffcanvas();
+    {{-- ApexCharts — disponível para scripts em @yield/'scriptTable' --}}
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts@3.45.1/dist/apexcharts.min.js"></script>
 
-        (() => {
-            'use strict'
+    @yield('scriptTable')
+    @stack('scriptTable')
 
-            // Fetch all the forms we want to apply custom Bootstrap validation styles to
-            const forms = document.querySelectorAll('.needs-validation')
+    @include('partials.alerts')
 
-            // Loop over them and prevent submission
-            Array.from(forms).forEach(form => {
-                form.addEventListener('submit', event => {
-                    if (!form.checkValidity()) {
-                        event.preventDefault()
-                        event.stopPropagation()
-                    }
+    <script>
+        // =========================================================
+        // SweetAlert2 — interceptor via show.bs.modal
+        //
+        // Usa o evento nativo do Bootstrap 5 "show.bs.modal" para
+        // interceptar qualquer modal #ModalCenter* ANTES de ele abrir.
+        // Não remove data-bs-toggle, então funciona tanto na tabela
+        // quanto nos cards (que copiam o HTML com o atributo intacto).
+        //
+        // Fluxo: click → onclick inline roda → Bootstrap dispara
+        //        show.bs.modal → e.preventDefault() → SweetAlert2.
+        // =========================================================
+        document.addEventListener('show.bs.modal', function (e) {
+            const modal = e.target;
+            if (!modal || !modal.id || !modal.id.startsWith('ModalCenter')) return;
 
-                    form.classList.add('was-validated')
-                }, false)
-            })
-        })()
+            // Impede o Bootstrap de abrir o modal
+            e.preventDefault();
 
-        $(document).ready(function() {
-            // Obtenha a URL atual
-            var currentURL = window.location.pathname;
+            // Neste ponto os handlers onclick inline E delegados jQuery
+            // já rodaram (eles disparam antes do show.bs.modal ser emitido).
+            const title     = modal.querySelector('.modal-title')?.textContent?.trim() || 'Confirmar';
+            const text      = modal.querySelector('.modal-body p')?.textContent?.trim() || 'Tem certeza?';
+            const submitBtn = modal.querySelector('.modal-footer [type="submit"]');
+            const confirmFn = submitBtn?.getAttribute('onclick') || '';
+            const isDelete  = modal.id.toLowerCase().includes('excluir');
 
-            // Encontre os itens de menu que correspondem à URL atual
-            $('.btn-toggle').each(function() {
-                var menuURL = $(this).find('a').attr('href');
-
-                if (currentURL === menuURL) {
-                    // Adicione a classe "active" ao botão de menu
-                    $(this).addClass('active');
-
-                    // Se o botão de menu estiver em um submenu, também abra o submenu
-                    var submenu = $(this).next('.collapse');
-                    if (submenu.length > 0) {
-                        submenu.addClass('show');
+            Swal.fire({
+                title: title,
+                text: text,
+                icon: isDelete ? 'warning' : 'question',
+                showCancelButton: true,
+                confirmButtonColor: isDelete ? '#ef4444' : '#2C9BA5',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: submitBtn?.textContent?.trim() || 'Confirmar',
+                cancelButtonText: 'Cancelar',
+                reverseButtons: true,
+            }).then(function (result) {
+                if (result.isConfirmed) {
+                    if (confirmFn) {
+                        try { eval(confirmFn); } catch (_) {}
+                    } else if (submitBtn) {
+                        submitBtn.closest('form')?.submit();
                     }
                 }
             });
         });
+        // ---- Loader ----
+        window.addEventListener('load', function () {
+            document.getElementById('loader').style.display = 'none';
+        });
 
+        // ---- Bootstrap tooltips ----
+        const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+        [...tooltipTriggerList].forEach(el => new bootstrap.Tooltip(el));
 
+        // ---- Sidebar toggle (mobile) ----
+        const sidebar        = document.getElementById('appSidebar');
+        const overlay        = document.getElementById('sidebarOverlay');
+        const toggleBtn      = document.getElementById('sidebarToggleBtn');
+        const closeBtn       = document.getElementById('sidebarCloseBtn');
 
-        /*$("#plano_margem").mask('##0,00%', {reverse: true});
-        $("#plano_taxa_adm").mask('##0,00%', {reverse: true});
-        $("#plano_taxa_recarga").mask('##0,00%', {reverse: true});*/
+        function openSidebar() {
+            sidebar.classList.add('sidebar-open');
+            overlay.classList.add('active');
+            document.body.classList.add('sidebar-drawer-open');
+        }
 
-        const buttons = document.querySelectorAll('[data-bs-toggle="collapse"]');
+        function closeSidebar() {
+            sidebar.classList.remove('sidebar-open');
+            overlay.classList.remove('active');
+            document.body.classList.remove('sidebar-drawer-open');
+        }
 
-        buttons.forEach(function(button) {
-            button.addEventListener('click', function() {
-                console.log(button);
-                buttons.forEach(function(otherButton) {
-                    if (otherButton !== button) {
-                        otherButton.classList.remove('botao-acionado');
-                    }
+        if (toggleBtn) toggleBtn.addEventListener('click', openSidebar);
+        if (closeBtn)  closeBtn.addEventListener('click', closeSidebar);
+        if (overlay)   overlay.addEventListener('click', closeSidebar);
+
+        // ---- Sidebar accordion (submenu toggle) ----
+        document.querySelectorAll('.sidebar-menu .dropdown > a').forEach(function (link) {
+            link.addEventListener('click', function (e) {
+                e.preventDefault();
+                const parentLi  = this.closest('.dropdown');
+                const submenu   = parentLi.querySelector('.sidebar-submenu');
+                const isOpen    = submenu.classList.contains('open');
+
+                // Close all open submenus
+                document.querySelectorAll('.sidebar-menu .dropdown').forEach(function (li) {
+                    li.querySelector('a').classList.remove('open');
+                    const sub = li.querySelector('.sidebar-submenu');
+                    if (sub) sub.classList.remove('open');
                 });
 
-                if (button.parentNode.tagName.toLowerCase() != 'li') {
-
-                    button.classList.toggle('botao-acionado');
-                }
-
-                for (elemento of document.querySelectorAll('.show')) {
-
-                    if (elemento.id != "offcanvasScrolling") {
-                        elemento.classList.remove('show')
-                    }
+                // Re-open if it was closed
+                if (!isOpen) {
+                    this.classList.add('open');
+                    if (submenu) submenu.classList.add('open');
                 }
             });
         });
-    </script>
-</body>
 
+        // ---- Bootstrap form validation ----
+        (function () {
+            'use strict';
+            document.querySelectorAll('.needs-validation').forEach(function (form) {
+                form.addEventListener('submit', function (e) {
+                    if (!form.checkValidity()) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        })();
+
+        // ---- Dark / Light mode toggle ----
+        (function () {
+            var btn = document.getElementById('themeToggleBtn');
+            if (!btn) return;
+            btn.addEventListener('click', function () {
+                var html    = document.documentElement;
+                var current = html.getAttribute('data-theme') || 'light';
+                var next    = current === 'dark' ? 'light' : 'dark';
+                html.setAttribute('data-theme', next);
+                localStorage.setItem('pm_color_theme', next);
+            });
+        })();
+    </script>
+
+    @include('partials.bottom-bar-admin')
+    @include('partials.pwa-install')
+
+</body>
 </html>

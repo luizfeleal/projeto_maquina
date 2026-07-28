@@ -1,134 +1,73 @@
 <?php
 
 namespace App\Services;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Mail;
-use Carbon\Carbon;
-use App\Services\LogsService;
-use Illuminate\Support\Facades\Http;
 
-
+use App\Support\ApiClient;
 
 class ClienteLocalService
 {
+    public static function criar($dados)
+    {
+        $response = ApiClient::post('/clienteLocal', $dados);
 
-
-    public static function criar($dados){
-        $url = env('APP_URL_API') . "/clienteLocal";
-
-        $token = AuthService::getToken();
-        $response = Http::withHeaders([
-            'Authorization' => 'Bearer ' . $token
-        ])->post($url, $dados);
-
-        // Verifica se a requisição foi bem-sucedida
         if ($response->successful()) {
             return [
                 'success' => true,
-                'data' => $response->json()
-            ];
-        }else {
-            return [
-                'success' => false,
-                'status' => $response->status(),
-                'error' => $response->json()
+                'data' => $response->json(),
             ];
         }
+
+        return [
+            'success' => false,
+            'status' => $response->status(),
+            'error' => $response->json(),
+        ];
     }
 
-    public static function coletar(string $id = Null)
+    public static function coletar(string $id = null)
     {
-        if(is_null($id)){
-            $url = env('APP_URL_API') . "/clienteLocal";
-        }else{
-            $url = env('APP_URL_API') . "/clienteLocal/$id";
-        }
-        $token = AuthService::getToken();
-        $response = Http::withHeaders([
-            'Authorization' => 'Bearer ' . $token
-        ])->get($url);
-
-        $clientes = $response->json();
-
-        return $clientes;
+        $path = is_null($id) ? '/clienteLocal' : "/clienteLocal/{$id}";
+        return ApiClient::get($path)->json();
     }
 
     public static function coletarComFiltro($filtros, $tipo)
     {
-        // Realize a chamada à API para obter os clientes
-        $url = env('APP_URL_API') . "/clienteLocal";
-        $token = AuthService::getToken();
-        $response = Http::withHeaders([
-            'Authorization' => 'Bearer ' . $token
-        ])->get($url);
+        $response = ApiClient::get('/clienteLocal');
 
-        // Verifique se a chamada à API foi bem-sucedida
-        if ($response->successful()) {
-            // Obtenha os clientes da resposta JSON
-            $clientes = $response->json();
-
-            // Filtrar os clientes com base nos filtros fornecidos
-            foreach ($filtros as $chave => $valor) {
-                // Verifique se a chave existe e se o valor não está vazio
-                if (isset($clientes[$chave]) && $valor !== null) {
-                    // Filtrar os clientes com base no valor do filtro
-                    $clientes = array_filter($clientes, function ($cliente) use ($chave, $valor) {
-                        return $cliente[$chave] === $valor;
-                    });
-                }
-            }
-
-            // Retorna os clientes filtrados
-            return $clientes;
-        } else {
-            // Em caso de falha na chamada à API, retorne um array vazio ou uma mensagem de erro
+        if (!$response->successful()) {
             return [];
         }
-    }
-
-    public function atualizar($dados, $id){
-        $url = env('APP_URL_API') . "/clienteLocal/$id";
-
-        $token = AuthService::getToken();
-        $response = Http::withHeaders([
-            'Authorization' => 'Bearer ' . $token
-        ])->post($url, $dados);
 
         $clientes = $response->json();
+
+        foreach ($filtros as $chave => $valor) {
+            if ($valor !== null) {
+                $clientes = array_filter($clientes, function ($cliente) use ($chave, $valor) {
+                    return isset($cliente[$chave]) && $cliente[$chave] == $valor;
+                });
+            }
+        }
 
         return $clientes;
     }
 
-    public static function deletar($id)
+    public function atualizar($dados, $id)
     {
-        $url = env('APP_URL_API') . "/clienteLocal/$id";
-        $token = AuthService::getToken();
-    
-        $ch = curl_init($url);
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true); // Seguir redirecionamentos
-        curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            'Authorization: Bearer ' . $token,
-            'Accept: application/json',
-        ]);
-    
-        $response = curl_exec($ch);
-        $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        $error = curl_error($ch);
-        curl_close($ch);
-
-    
-        if ($status == 200 && $response !== false) {
-            return json_decode($response, true);
-        } else {
-            return response()->json([
-                'error' => 'Failed to delete the resource.',
-                'status' => $status,
-                'message' => $response,
-                'curl_error' => $error,
-            ], $status);
-        }
+        return ApiClient::post("/clienteLocal/{$id}", $dados)->json();
     }
 
+    public static function deletar($id)
+    {
+        $response = ApiClient::delete("/clienteLocal/{$id}");
+
+        if ($response->successful()) {
+            return $response->json();
+        }
+
+        return response()->json([
+            'error' => 'Failed to delete the resource.',
+            'status' => $response->status(),
+            'message' => $response->body(),
+        ], $response->status());
+    }
 }

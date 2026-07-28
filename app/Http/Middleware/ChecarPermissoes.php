@@ -21,46 +21,66 @@ class ChecarPermissoes
      */
     public function handle(Request $request, Closure $next)
     {
-        
         Log::info('Middleware ChecarPermissoes está sendo executado.');
 
-        if(empty(session()->has('id_usuario'))){
+        if (!session()->has('id_usuario')) {
             return redirect()->route('login-view');
-        }else{
-            $acessos = AcessosTelaService::coletar();
+        }
 
-            // Verificar se acessos é válido
-            if(!is_array($acessos)){
-                Log::error('AcessosTelaService retornou null ou não é array', [
-                    'tipo' => gettype($acessos),
-                    'valor' => $acessos
-                ]);
-                return back()->with('error', 'Erro ao carregar permissões. Tente fazer login novamente.');
-            }
+        $acessos = AcessosTelaService::coletar();
 
-            $acesso = array_filter($acessos, function($item) use($request){
-                return isset($item['id_grupo_acesso']) 
-                    && isset($item['acesso_tela_viewname'])
-                    && $item['id_grupo_acesso'] == session()->get('id_grupo_acesso') 
-                    && $item['acesso_tela_viewname'] == $request->route()->getName();
-            });
-
-            Log::info('Verificação de Acesso', [
-                'rota' => $request->route()->getName(),
-                'grupo' => session()->get('id_grupo_acesso'),
-                'total_acessos' => count($acessos),
-                'encontrou' => !empty($acesso)
+        if (!is_array($acessos) || empty($acessos)) {
+            Log::error('AcessosTelaService retornou vazio ou inválido', [
+                'tipo' => gettype($acessos),
+                'total' => is_array($acessos) ? count($acessos) : null,
             ]);
-            
-            if(empty($acesso)){
-                Log::warning('Acesso negado', [
-                    'usuario' => session()->get('usuario_nome'),
-                    'grupo' => session()->get('id_grupo_acesso'),
-                    'rota' => $request->route()->getName()
-                ]);
-                return back()->with('error', 'O usuário não possui permissão de acesso.');
+
+            session()->flush();
+
+            return redirect()->route('login-view')
+                ->with('error', 'Erro ao carregar permissões. Tente fazer login novamente.');
+        }
+
+        $routeName = $request->route()->getName();
+        if ($routeName === 'maquinas-transacoes-dados') {
+            $routeName = 'maquinas-transacoes';
+        }
+        if ($routeName === 'maquinas-dados') {
+            $routeName = 'maquinas';
+        }
+
+        $acesso = array_filter($acessos, function ($item) use ($routeName) {
+            return isset($item['id_grupo_acesso'])
+                && isset($item['acesso_tela_viewname'])
+                && $item['id_grupo_acesso'] == session()->get('id_grupo_acesso')
+                && $item['acesso_tela_viewname'] == $routeName;
+        });
+
+        Log::info('Verificação de Acesso', [
+            'rota' => $request->route()->getName(),
+            'grupo' => session()->get('id_grupo_acesso'),
+            'total_acessos' => count($acessos),
+            'encontrou' => !empty($acesso),
+        ]);
+
+        if (empty($acesso)) {
+            Log::warning('Acesso negado', [
+                'usuario' => session()->get('usuario_nome'),
+                'grupo' => session()->get('id_grupo_acesso'),
+                'rota' => $request->route()->getName(),
+            ]);
+
+            $homeRoute = resolveHomeRouteForGrupo(session('grupo_nome'));
+
+            if ($routeName === $homeRoute) {
+                session()->flush();
+
+                return redirect()->route('login-view')
+                    ->with('error', 'O usuário não possui permissão de acesso.');
             }
-            
+
+            return redirect()->route($homeRoute)
+                ->with('error', 'O usuário não possui permissão de acesso.');
         }
 
         return $next($request);

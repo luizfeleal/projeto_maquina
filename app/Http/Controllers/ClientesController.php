@@ -10,9 +10,7 @@ use App\Services\ExtratoMaquinaService;
 use App\Services\ClientesService;
 use App\Services\UsuariosService;
 use App\Services\CredApiPixService;
-use App\Services\GruposAcessoService;
-use App\Services\AuthService;
-use Exception;
+use App\Services\ClienteRegistroService;
 use Illuminate\Support\Facades\Log;
 
 class ClientesController extends Controller
@@ -50,72 +48,21 @@ class ClientesController extends Controller
     }
 
     public function criarCliente(Request $request){
-        $grupos = GruposAcessoService::coletar();
-        $clientes = ClientesService::coletar();
-
-        return view('Admin.Usuarios.create', compact('grupos', 'clientes'));
+        return view('Admin.Usuarios.create', ClienteRegistroService::dadosFormulario());
     }
+
     public function registrarCliente(Request $request){
+        $resultado = ClienteRegistroService::registrar($request);
 
-        try{
-            $dados = $request->all();
-
-            $permissaoPagbank = false;
-            $permissaoEfi = false;
-        
-            $dadosCliente = $request->except(['cliente_senha', 'cliente_confirmar_senha', 'cliente_id', 'cliente_secret', 'cliente_certificado', 'checkbox_pagbank', 'checkbox_efi']);
-            if (array_key_exists('checkbox_pagbank', $dados)) {
-                $permissaoPagbank = true;
-                $dadosCliente['checkbox_pagbank'] = 1;
-            }else{
-                $dadosCliente['checkbox_pagbank'] = 0;
-            }
-            
-            if (array_key_exists('checkbox_efi', $dados)) {
-                $permissaoEfi = true;
-                $dadosCliente['checkbox_efi'] = 1;
-            }else{
-                $dadosCliente['checkbox_efi'] = 0;
-            }
-    
-            if($permissaoEfi && $permissaoPagbank){
-                $id_grupo_acesso = 2;
-            }else if($permissaoEfi){
-                $id_grupo_acesso = 3;
-            }else if($permissaoPagbank){
-                $id_grupo_acesso = 4;
-            }else{
-                $id_grupo_acesso = 5;
-            }
-    
-            $cliente = ClientesService::criar($dadosCliente);
-            if($cliente['success']){
-                
-                
-                //Cadastrar credenciais
-                $id_cliente = $cliente['data']['response']['id_cliente'];
-                
-                //Criar acesso a plataforma
-                $dadoUsuarioAcesso = [
-                    "id_cliente" => $id_cliente,
-                    "id_grupo_acesso" => $id_grupo_acesso,
-                    "usuario_nome" => $request['cliente_nome'],
-                    "usuario_email" => $request['cliente_email'],
-                    "usuario_login" => $request['cliente_email'],
-                    "usuario_senha" => $request['cliente_senha'],
-                    "ativo" => 1
-                ];
-    
-                UsuariosService::criar($dadoUsuarioAcesso);
-                return back()->with('success', 'Cliente cadastrado com sucesso!');
-            }
-            return back()->with('error', 'Houve um erro ao tentar cadastrar o cliente com os dados prechidos!');
-        } catch(Exception $e){
-            Log::error($e);
-            return back()->with('error', 'Houve um erro ao tentar cadastrar o cliente com os dados prechidos!');
+        if (!($resultado['success'] ?? false)) {
+            return back()->with('error', $resultado['message'] ?? 'Houve um erro ao tentar cadastrar o cliente com os dados prechidos!');
         }
-        
 
+        if (!empty($resultado['warning'])) {
+            return back()->with('warning', $resultado['warning']);
+        }
+
+        return back()->with('success', 'Cliente cadastrado com sucesso!');
     }
 
     public function editarCliente($id){
@@ -166,9 +113,15 @@ class ClientesController extends Controller
         });
         
         $usuarios = array_values($usuarios);
-        UsuariosService::atualizar(['id_grupo_acesso' => $id_grupo_acesso, 'usuario_email' => $dados['cliente_email'], 'usuario_login' => $dados['cliente_email'],'usuario_nome' => $dados['cliente_nome']], $usuarios[0]['id_usuario']);
+        UsuariosService::atualizar([
+            'id_grupo_acesso' => $id_grupo_acesso,
+            'usuario_email'   => $dados['cliente_email'],
+            'usuario_nome'    => $dados['cliente_nome'],
+        ], $usuarios[0]['id_usuario']);
 
-        return back()->with('success', "Usuário atualizado com sucesso!");
+        return back()
+            ->with('success', 'Usuário atualizado com sucesso!')
+            ->with('redirect_after_success', route('usuario-detalhar', $id_cliente));
     }
 
     public function gerarIdPlaca(){

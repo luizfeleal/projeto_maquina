@@ -1,0 +1,1792 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="SwiftPay Soluções — Plaquinha inteligente e gestão completa de pagamentos para máquinas de entretenimento e venda automática.">
+  <title>SwiftPay Soluções — Tecnologia para suas máquinas</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --navy-deep:  #080F25;
+      --navy:       #0F1E45;
+      --navy-mid:   #1A2D5C;
+      --teal:       #00C4D4;
+      --teal-dark:  #007F8C;
+      --teal-light: #00D9E8;
+      --ice:        #EDF9FA;
+      --white:      #FFFFFF;
+      --muted:      #7A90AE;
+      --wa-green:   #25D366;
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--white);
+      color: var(--navy);
+      overflow-x: hidden;
+    }
+
+    /* ── NAV ────────────────────────────────────────── */
+    #nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 1.1rem 2.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: background 0.4s, box-shadow 0.4s;
+    }
+    #nav.scrolled {
+      background: rgba(8, 15, 37, 0.96);
+      backdrop-filter: blur(14px);
+      box-shadow: 0 1px 0 rgba(0,196,212,0.12);
+    }
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+    }
+    .nav-brand img { height: 38px; }
+    .nav-links {
+      display: flex;
+      gap: 2.25rem;
+      list-style: none;
+    }
+    .nav-links a {
+      color: rgba(255,255,255,0.72);
+      text-decoration: none;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 600;
+      font-size: 0.95rem;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--teal); }
+    .nav-cta {
+      background: var(--teal);
+      color: var(--navy-deep);
+      padding: 0.6rem 1.5rem;
+      border-radius: 4px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 800;
+      font-size: 0.9rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      text-decoration: none;
+      transition: background 0.2s, transform 0.2s;
+    }
+    .nav-cta:hover { background: var(--teal-light); transform: translateY(-1px); }
+
+    /* ── HERO ───────────────────────────────────────── */
+    #hero {
+      min-height: 100vh;
+      background: var(--navy-deep);
+      position: relative;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    /* Animated speed dashes — the logo's DNA as ambient motion */
+    .speed-canvas {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    .dash {
+      position: absolute;
+      border-radius: 100px;
+      background: linear-gradient(90deg, transparent, var(--teal), transparent);
+      animation: dashFly var(--d, 5s) var(--delay, 0s) infinite linear;
+      opacity: 0;
+    }
+    @keyframes dashFly {
+      0%   { opacity: 0; transform: translateX(-60px); }
+      10%  { opacity: var(--op, 0.07); }
+      85%  { opacity: var(--op, 0.07); }
+      100% { opacity: 0; transform: translateX(110vw); }
+    }
+
+    .hero-inner {
+      position: relative;
+      z-index: 1;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 9rem 2.5rem 5rem;
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 3rem;
+      align-items: center;
+      width: 100%;
+    }
+
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 0.8rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--teal);
+      margin-bottom: 1.4rem;
+    }
+    .hero-eyebrow::before {
+      content: '';
+      display: block;
+      width: 28px;
+      height: 2px;
+      background: var(--teal);
+      border-radius: 2px;
+    }
+
+    .hero-headline {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 900;
+      font-size: clamp(3.2rem, 5.5vw, 5.8rem);
+      line-height: 0.93;
+      color: var(--white);
+      text-transform: uppercase;
+      margin-bottom: 1.6rem;
+      letter-spacing: -0.01em;
+    }
+    .hero-headline em {
+      font-style: normal;
+      color: var(--teal);
+    }
+
+    .hero-sub {
+      font-size: 1.05rem;
+      line-height: 1.75;
+      color: rgba(255,255,255,0.58);
+      max-width: 460px;
+      margin-bottom: 2.5rem;
+    }
+
+    .hero-btns {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .btn-fill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.95rem 2rem;
+      border-radius: 5px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 800;
+      font-size: 1rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      text-decoration: none;
+      transition: all 0.25s;
+    }
+    .btn-fill.teal {
+      background: var(--teal);
+      color: var(--navy-deep);
+    }
+    .btn-fill.teal:hover {
+      background: var(--teal-light);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(0,196,212,0.32);
+    }
+    .btn-fill.outline {
+      background: transparent;
+      color: var(--white);
+      border: 1.5px solid rgba(255,255,255,0.22);
+    }
+    .btn-fill.outline:hover {
+      border-color: var(--teal);
+      color: var(--teal);
+    }
+
+    .hero-visual {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
+    .hero-halo {
+      position: absolute;
+      width: 420px;
+      height: 420px;
+      background: radial-gradient(circle, rgba(0,196,212,0.14) 0%, rgba(0,196,212,0.04) 50%, transparent 70%);
+      border-radius: 50%;
+      animation: haloPulse 5s ease-in-out infinite;
+    }
+    @keyframes haloPulse {
+      0%, 100% { transform: scale(1); opacity: 0.9; }
+      50%       { transform: scale(1.12); opacity: 1; }
+    }
+    .hero-logo {
+      width: clamp(260px, 28vw, 360px);
+      position: relative;
+      z-index: 1;
+      animation: logoFloat 7s ease-in-out infinite;
+      filter: drop-shadow(0 0 32px rgba(0,196,212,0.28)) drop-shadow(0 0 80px rgba(0,196,212,0.12));
+    }
+    @keyframes logoFloat {
+      0%, 100% { transform: translateY(0px); }
+      50%       { transform: translateY(-14px); }
+    }
+
+    /* ── HERO SLIDER ─────────────────────────────────── */
+    .hero-slider {
+      position: relative;
+      z-index: 1;
+      width: clamp(260px, 28vw, 380px);
+      aspect-ratio: 1 / 1.15;
+      animation: logoFloat 7s ease-in-out infinite;
+    }
+    .hero-slide {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transform: translateX(28px) scale(0.96);
+      transition: opacity 0.85s cubic-bezier(0.4, 0, 0.2, 1),
+                  transform 0.85s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .hero-slide.active {
+      opacity: 1;
+      transform: translateX(0) scale(1);
+    }
+    .hero-slide.exiting {
+      opacity: 0;
+      transform: translateX(-28px) scale(0.96);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .hero-slide img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      filter: drop-shadow(0 0 32px rgba(0,196,212,0.28)) drop-shadow(0 0 80px rgba(0,196,212,0.12));
+    }
+    .hero-slider-dots {
+      position: absolute;
+      bottom: -30px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 8px;
+    }
+    .hero-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      border: none;
+      background: rgba(255,255,255,0.22);
+      cursor: pointer;
+      padding: 0;
+      transition: background 0.3s, transform 0.3s;
+    }
+    .hero-dot.active { background: var(--teal); transform: scale(1.5); }
+    .hero-dot:focus-visible { outline: 2px solid var(--teal); outline-offset: 3px; }
+
+    /* ── TEAL BAND ──────────────────────────────────── */
+    .teal-band {
+      background: linear-gradient(135deg, var(--teal-dark) 0%, var(--teal) 60%, var(--teal-light) 100%);
+      padding: 3rem 2.5rem;
+    }
+    .teal-band-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      text-align: center;
+    }
+    .band-stat-value {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 900;
+      font-size: 2.6rem;
+      color: var(--navy-deep);
+      line-height: 1;
+      margin-bottom: 0.35rem;
+    }
+    .band-stat-label {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 600;
+      font-size: 0.78rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(8,15,37,0.65);
+    }
+    .band-stat-value { opacity: 0; }
+    .band-stat-label { opacity: 0; }
+    @keyframes statPop {
+      0%   { transform: scale(0.2);  opacity: 0; }
+      55%  { transform: scale(1.22); opacity: 1; }
+      78%  { transform: scale(0.94); }
+      100% { transform: scale(1);    opacity: 1; }
+    }
+    @keyframes statLabelIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0);   }
+    }
+    .band-stat-value.band-pop  { animation: statPop     0.68s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+    .band-stat-label.band-slide { animation: statLabelIn 0.42s ease forwards; }
+
+    /* ── SHARED SECTION STRUCTURE ───────────────────── */
+    section { padding: 6.5rem 2.5rem; }
+    .sec { max-width: 1100px; margin: 0 auto; }
+    .sec-tag {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 0.75rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--teal-dark);
+      margin-bottom: 0.6rem;
+    }
+    .sec-tag.light { color: var(--teal); }
+    .sec-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 900;
+      font-size: clamp(2rem, 3.8vw, 3.4rem);
+      text-transform: uppercase;
+      line-height: 1.02;
+      color: var(--navy);
+    }
+    .sec-title.light { color: var(--white); }
+    .sec-sub {
+      font-size: 1rem;
+      line-height: 1.72;
+      color: var(--muted);
+      max-width: 520px;
+      margin-top: 0.9rem;
+    }
+    .sec-sub.light { color: rgba(255,255,255,0.55); }
+
+    /* Speed-dash section divider */
+    .sweep-divider {
+      height: 3px;
+      background: linear-gradient(90deg, var(--teal) 0%, var(--teal-dark) 60%, transparent 100%);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .sweep-divider.vis { transform: scaleX(1); }
+
+    /* ── COMO FUNCIONA ──────────────────────────────── */
+    #funciona { background: var(--ice); }
+    .steps-row {
+      margin-top: 4rem;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      position: relative;
+    }
+    .steps-row::before {
+      content: '';
+      position: absolute;
+      top: 44px;
+      left: calc(50% / 3 + 44px);
+      right: calc(50% / 3 + 44px);
+      height: 2px;
+      background: linear-gradient(90deg, var(--teal), var(--teal-dark));
+      pointer-events: none;
+    }
+    .step {
+      text-align: center;
+      padding: 0 2.5rem;
+    }
+    .step-circle-wrap {
+      position: relative;
+      width: 88px;
+      height: 88px;
+      margin: 0 auto 1.75rem;
+    }
+    .step-ring {
+      position: absolute;
+      inset: -9px;
+      width: calc(100% + 18px);
+      height: calc(100% + 18px);
+      transform: rotate(-90deg);
+      overflow: visible;
+    }
+    .step-ring-track {
+      fill: none;
+      stroke: rgba(0, 196, 212, 0.12);
+      stroke-width: 3;
+    }
+    .step-ring-fill {
+      fill: none;
+      stroke: var(--teal);
+      stroke-width: 3;
+      stroke-linecap: round;
+      stroke-dasharray: 276.5;
+      stroke-dashoffset: 276.5;
+      transition: stroke-dashoffset 1.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .step:nth-child(2) .step-ring-fill { stroke: var(--teal-dark); }
+    .step:nth-child(3) .step-ring-fill { stroke: var(--teal-light); }
+    .step-circle {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      z-index: 1;
+    }
+    .step:nth-child(1) .step-circle { background: var(--teal); }
+    .step:nth-child(2) .step-circle { background: var(--teal-dark); }
+    .step:nth-child(3) .step-circle { background: var(--navy); }
+
+    @keyframes confettiBurst {
+      0%   { transform: translate(0, 0) rotate(0deg) scale(1); opacity: 1; }
+      60%  { opacity: 1; }
+      100% { transform: translate(var(--dx), calc(var(--dy) + 50px)) rotate(var(--rot)) scale(0.5); opacity: 0; }
+    }
+    .step-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 800;
+      font-size: 1.2rem;
+      text-transform: uppercase;
+      color: var(--navy);
+      margin-bottom: 0.75rem;
+      letter-spacing: 0.03em;
+    }
+    .step-body {
+      font-size: 0.92rem;
+      line-height: 1.68;
+      color: var(--muted);
+    }
+
+    /* ── MÁQUINAS ───────────────────────────────────── */
+    #maquinas { background: var(--navy); }
+    .machines {
+      margin-top: 3.5rem;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 1rem;
+    }
+    .machine-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(0,196,212,0.1);
+      border-radius: 10px;
+      padding: 2rem 1rem 1.75rem;
+      text-align: center;
+      cursor: default;
+      transition: background 0.3s, border-color 0.3s, transform 0.3s;
+    }
+    .machine-card:hover {
+      background: rgba(0,196,212,0.07);
+      border-color: rgba(0,196,212,0.3);
+      transform: translateY(-5px);
+    }
+    .machine-emoji { font-size: 2.4rem; display: block; margin-bottom: 1rem; }
+    .machine-label {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 0.9rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.78);
+    }
+
+    /* ── SISTEMA ────────────────────────────────────── */
+    #sistema { background: var(--white); }
+    .sistema-layout {
+      margin-top: 4rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5rem;
+      align-items: center;
+    }
+    .mockup-frame {
+      background: linear-gradient(145deg, var(--navy) 0%, var(--navy-mid) 100%);
+      border-radius: 16px;
+      aspect-ratio: 4/3;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      border: 1px solid rgba(0,196,212,0.18);
+      position: relative;
+      overflow: hidden;
+    }
+    .mockup-frame::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--teal), var(--teal-dark), transparent);
+    }
+    .mockup-glow {
+      position: absolute;
+      width: 280px;
+      height: 280px;
+      background: radial-gradient(circle, rgba(0,196,212,0.1) 0%, transparent 70%);
+      border-radius: 50%;
+      top: -60px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+    .mockup-icon { font-size: 3rem; position: relative; z-index: 1; }
+    .mockup-hint {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 600;
+      font-size: 0.75rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.28);
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      max-width: 200px;
+      line-height: 1.6;
+    }
+    .features {
+      display: flex;
+      flex-direction: column;
+      gap: 1.75rem;
+    }
+    .feat {
+      display: flex;
+      gap: 1.25rem;
+      align-items: flex-start;
+    }
+    .feat-icon {
+      width: 46px;
+      height: 46px;
+      border-radius: 9px;
+      background: linear-gradient(135deg, var(--teal-dark), var(--teal));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      flex-shrink: 0;
+    }
+    .feat-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 800;
+      font-size: 1.05rem;
+      text-transform: uppercase;
+      color: var(--navy);
+      margin-bottom: 0.3rem;
+      letter-spacing: 0.03em;
+    }
+    .feat-body {
+      font-size: 0.88rem;
+      line-height: 1.65;
+      color: var(--muted);
+    }
+
+    /* ── MÍDIA ──────────────────────────────────────── */
+    #midia { background: var(--ice); }
+    .media-grid {
+      margin-top: 3rem;
+      display: grid;
+      grid-template-columns: 1.3fr 1fr 1fr;
+      grid-template-rows: 210px 210px;
+      gap: 1rem;
+    }
+    .media-item {
+      border-radius: 10px;
+      border: 2px dashed rgba(0,127,140,0.22);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+      background: rgba(0,127,140,0.04);
+      cursor: pointer;
+      transition: border-color 0.25s, background 0.25s;
+      overflow: hidden;
+      position: relative;
+    }
+    .media-item:first-child { grid-row: 1 / 3; }
+    .media-item:hover { border-color: var(--teal); background: rgba(0,196,212,0.06); }
+    .media-item img { width: 100%; height: 100%; object-fit: cover; border-radius: 8px; }
+    .media-ph-icon { font-size: 2rem; color: rgba(0,127,140,0.4); }
+    .media-ph-text {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 0.75rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(0,127,140,0.45);
+    }
+
+    /* ── POR QUÊ ────────────────────────────────────── */
+    #porque { background: var(--navy-deep); }
+    .porque-cards {
+      margin-top: 3.5rem;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem;
+    }
+    .pc {
+      background: rgba(255,255,255,0.025);
+      border: 1px solid rgba(0,196,212,0.09);
+      border-radius: 12px;
+      padding: 2.5rem 2rem;
+      transition: background 0.3s, border-color 0.3s;
+    }
+    .pc:hover {
+      background: rgba(0,196,212,0.05);
+      border-color: rgba(0,196,212,0.22);
+    }
+    .pc-bar {
+      width: 44px;
+      height: 3px;
+      background: linear-gradient(90deg, var(--teal), transparent);
+      border-radius: 2px;
+      margin-bottom: 1.6rem;
+    }
+    .pc-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 900;
+      font-size: 1.55rem;
+      text-transform: uppercase;
+      color: var(--white);
+      margin-bottom: 0.8rem;
+      line-height: 1.1;
+    }
+    .pc-body {
+      font-size: 0.92rem;
+      line-height: 1.72;
+      color: rgba(255,255,255,0.48);
+    }
+
+    /* ── CONTATO ────────────────────────────────────── */
+    #contato { background: var(--navy); }
+    .contato-layout {
+      margin-top: 3.5rem;
+      display: grid;
+      grid-template-columns: 1fr 1.5fr;
+      gap: 4.5rem;
+      align-items: start;
+    }
+    .info-block { margin-top: 1.5rem; }
+    .info-item {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      margin-bottom: 1.8rem;
+    }
+    .info-icon { font-size: 1.2rem; color: var(--teal); margin-top: 2px; flex-shrink: 0; }
+    .info-tag {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 0.72rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--teal);
+      margin-bottom: 0.2rem;
+    }
+    .info-val {
+      font-size: 0.92rem;
+      line-height: 1.55;
+      color: rgba(255,255,255,0.62);
+    }
+    .wa-cta {
+      margin-top: 2rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      background: var(--wa-green);
+      color: var(--white);
+      padding: 0.9rem 1.75rem;
+      border-radius: 5px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 800;
+      font-size: 1rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      text-decoration: none;
+      transition: all 0.25s;
+    }
+    .wa-cta:hover { filter: brightness(1.08); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(37,211,102,0.3); }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 1.1rem;
+    }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.1rem; }
+    .fg { display: flex; flex-direction: column; gap: 0.4rem; }
+    .fg label {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 0.72rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.42);
+    }
+    .fg input,
+    .fg select,
+    .fg textarea {
+      background: rgba(255,255,255,0.055);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 6px;
+      padding: 0.8rem 1rem;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9rem;
+      color: var(--white);
+      outline: none;
+      transition: border-color 0.2s;
+      width: 100%;
+      -webkit-appearance: none;
+    }
+    .fg input::placeholder,
+    .fg textarea::placeholder { color: rgba(255,255,255,0.2); }
+    .fg input:focus,
+    .fg select:focus,
+    .fg textarea:focus { border-color: var(--teal); }
+    .fg select { color: rgba(255,255,255,0.5); }
+    .fg select option { background: var(--navy); color: var(--white); }
+    .fg textarea { resize: vertical; min-height: 110px; }
+    .btn-send {
+      align-self: flex-start;
+      background: linear-gradient(135deg, var(--teal-dark), var(--teal));
+      color: var(--navy-deep);
+      padding: 1rem 2.5rem;
+      border: none;
+      border-radius: 6px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 900;
+      font-size: 1.05rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.25s;
+    }
+    .btn-send:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(0,196,212,0.35);
+    }
+
+    /* ── FOOTER ─────────────────────────────────────── */
+    footer {
+      background: var(--navy-deep);
+      padding: 3rem 2.5rem;
+      border-top: 1px solid rgba(0,196,212,0.08);
+    }
+    .footer-inner { max-width: 1100px; margin: 0 auto; }
+    .footer-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+    .footer-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+    }
+    .footer-brand img { height: 34px; }
+    .footer-nav {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+      flex-wrap: wrap;
+    }
+    .footer-nav a {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 600;
+      font-size: 0.8rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.35);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .footer-nav a:hover { color: var(--teal); }
+    .footer-bottom {
+      margin-top: 1.75rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+    .footer-copy {
+      font-size: 0.78rem;
+      color: rgba(255,255,255,0.22);
+    }
+
+    /* ── WHATSAPP FLOAT ─────────────────────────────── */
+    .wa-float {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      z-index: 200;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: var(--wa-green);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      box-shadow: 0 4px 18px rgba(37,211,102,0.45);
+      transition: transform 0.25s, box-shadow 0.25s;
+    }
+    .wa-float:hover {
+      transform: scale(1.1);
+      box-shadow: 0 8px 30px rgba(37,211,102,0.55);
+    }
+    .wa-float::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      background: var(--wa-green);
+      animation: waPing 2.4s ease-out infinite;
+    }
+    @keyframes waPing {
+      0%   { transform: scale(1); opacity: 0.5; }
+      100% { transform: scale(2.2); opacity: 0; }
+    }
+    .wa-svg { position: relative; z-index: 1; }
+
+    /* ── DEVICE SHOWCASE ────────────────────────────── */
+    .device-showcase {
+      position: relative;
+      padding-bottom: 80px;
+    }
+    .device-desktop {
+      border-radius: 12px;
+      border: 1px solid rgba(0,196,212,0.2);
+      background: var(--navy-deep);
+      overflow: hidden;
+      box-shadow: 0 24px 60px rgba(0,0,0,0.35), 0 0 0 1px rgba(255,255,255,0.04);
+      position: relative;
+    }
+    .device-desktop::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--teal), var(--teal-dark), transparent);
+      z-index: 1;
+    }
+    .device-desktop-bar {
+      background: rgba(255,255,255,0.04);
+      padding: 9px 14px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .db-dot {
+      width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+    }
+    .db-dot:nth-child(1) { background: #ff5f57; }
+    .db-dot:nth-child(2) { background: #febc2e; }
+    .db-dot:nth-child(3) { background: #28c840; }
+    .db-url {
+      flex: 1;
+      margin-left: 10px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 4px;
+      padding: 3px 0;
+      font-size: 0.7rem;
+      color: rgba(255,255,255,0.25);
+      font-family: 'Inter', sans-serif;
+      text-align: center;
+    }
+    .device-desktop-screen {
+      background: var(--navy-mid);
+      min-height: 220px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .device-desktop-screen img { width: 100%; display: block; }
+    .screen-ph {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+      padding: 3rem;
+    }
+    .screen-ph-icon { font-size: 2.2rem; color: rgba(0,196,212,0.3); }
+    .screen-ph-text {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 0.72rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(0,196,212,0.35);
+      text-align: center;
+      line-height: 1.55;
+    }
+    .device-mobile {
+      position: absolute;
+      bottom: 0;
+      right: 10%;
+      width: 118px;
+      background: var(--navy-deep);
+      border-radius: 22px;
+      border: 1px solid rgba(0,196,212,0.22);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.04);
+      overflow: hidden;
+      padding: 8px 6px 10px;
+    }
+    .device-mobile-notch {
+      width: 36px; height: 6px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 3px;
+      margin: 0 auto 6px;
+    }
+    .device-mobile-screen {
+      background: var(--navy-mid);
+      border-radius: 12px;
+      min-height: 160px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .device-mobile-screen img { width: 100%; display: block; }
+    .device-mobile-screen .screen-ph { padding: 1.5rem 0.5rem; }
+    .device-mobile-screen .screen-ph-icon { font-size: 1.5rem; }
+    .device-mobile-home {
+      width: 28px; height: 3px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 2px;
+      margin: 7px auto 0;
+    }
+
+    /* ── CAROUSEL ────────────────────────────────────── */
+    .carousel { position: relative; margin-top: 3rem; }
+    .carousel-viewport { overflow: hidden; border-radius: 12px; }
+    .carousel-track {
+      display: flex;
+      transition: transform 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+      will-change: transform;
+    }
+    .carousel-slide {
+      flex: 0 0 100%;
+      aspect-ratio: 16 / 9;
+      position: relative;
+    }
+    .carousel-slide .media-item {
+      height: 100%;
+      width: 100%;
+      border-radius: 10px;
+      border: 2px dashed rgba(0,127,140,0.22);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+      background: rgba(0,127,140,0.04);
+      overflow: hidden;
+      position: relative;
+      transition: border-color 0.25s, background 0.25s;
+    }
+    .carousel-slide .media-item:hover { border-color: var(--teal); background: rgba(0,196,212,0.06); }
+    .carousel-slide .media-item img { width: 100%; height: 100%; object-fit: cover; border-radius: 8px; }
+    .carousel-btn {
+      position: absolute;
+      top: calc(50% - 16px);
+      transform: translateY(-50%);
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      border: 1.5px solid rgba(0,127,140,0.3);
+      background: rgba(255,255,255,0.9);
+      color: var(--navy);
+      font-size: 1.7rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+      transition: background 0.2s, border-color 0.2s;
+      backdrop-filter: blur(6px);
+      line-height: 1;
+      padding-bottom: 1px;
+    }
+    .carousel-btn:hover { background: var(--teal); color: var(--navy-deep); border-color: var(--teal); }
+    .carousel-btn:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
+    .carousel-prev { left: -22px; }
+    .carousel-next { right: -22px; }
+    .carousel-dots {
+      margin-top: 1.25rem;
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+    }
+    .carousel-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: rgba(0,127,140,0.22);
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      transition: background 0.3s, transform 0.3s;
+    }
+    .carousel-dot.active { background: var(--teal-dark); transform: scale(1.45); }
+    .carousel-dot:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
+
+    /* ── REVEAL ANIMATIONS ──────────────────────────── */
+    .rv {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .rv.vis { opacity: 1; transform: translateY(0); }
+    .rv-d1 { transition-delay: 0.1s; }
+    .rv-d2 { transition-delay: 0.2s; }
+    .rv-d3 { transition-delay: 0.3s; }
+    .rv-d4 { transition-delay: 0.4s; }
+
+    /* ── RESPONSIVE ─────────────────────────────────── */
+    @media (max-width: 960px) {
+      .hero-inner { grid-template-columns: 1fr; text-align: center; padding-top: 8rem; }
+      .hero-sub { margin-left: auto; margin-right: auto; }
+      .hero-btns { justify-content: center; }
+      .hero-eyebrow { justify-content: center; }
+      .hero-visual { display: none; }
+      .teal-band-inner { grid-template-columns: repeat(2,1fr); gap: 2rem; }
+      .steps-row { grid-template-columns: 1fr; gap: 3rem; }
+      .steps-row::before { display: none; }
+      .machines { grid-template-columns: repeat(3,1fr); }
+      .sistema-layout { grid-template-columns: 1fr; gap: 3rem; }
+      .device-mobile { right: 5%; width: 104px; }
+      .porque-cards { grid-template-columns: 1fr; }
+      .contato-layout { grid-template-columns: 1fr; gap: 3rem; }
+      .form-row { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 640px) {
+      section { padding: 4.5rem 1.5rem; }
+      .machines { grid-template-columns: repeat(2,1fr); }
+      .teal-band-inner { grid-template-columns: repeat(2,1fr); }
+      .footer-top { flex-direction: column; align-items: flex-start; }
+      .footer-bottom { flex-direction: column; }
+      .nav-links { display: none; }
+      .carousel-prev { left: 6px; }
+      .carousel-next { right: 6px; }
+      .carousel-btn { background: rgba(8,15,37,0.65); color: white; border-color: rgba(255,255,255,0.15); }
+      .carousel-btn:hover { background: var(--teal); color: var(--navy-deep); }
+      .device-mobile { width: 88px; right: 4%; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition-duration: 0.01ms !important; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── NAV ─────────────────────────────────────────── -->
+<nav id="nav">
+  <a href="#" class="nav-brand">
+    <img src="img/icon.png" alt="SwiftPay icon">
+  </a>
+  <ul class="nav-links">
+    <li><a href="#funciona">Como Funciona</a></li>
+    <li><a href="#maquinas">Máquinas</a></li>
+    <li><a href="#sistema">Sistema</a></li>
+    <li><a href="#midia">Galeria</a></li>
+    <li><a href="#contato">Contato</a></li>
+  </ul>
+  <a class="nav-cta" href="#contato">Solicitar Demo</a>
+</nav>
+
+<!-- ── HERO ────────────────────────────────────────── -->
+<section id="hero">
+  <div class="speed-canvas" id="speedCanvas"></div>
+
+  <div class="hero-inner">
+    <div class="hero-text">
+      <div class="hero-eyebrow">Tecnologia para máquinas de entretenimento</div>
+      <h1 class="hero-headline">
+        Sua máquina,<br>
+        seu dinheiro.<br>
+        <em>No ritmo certo.</em>
+      </h1>
+      <p class="hero-sub">
+        Plaquinha inteligente + gestão completa de pagamentos e liberação de jogadas para máquinas de ursinhos, café, snacks e muito mais.
+      </p>
+      <div class="hero-btns">
+        <a href="#contato" class="btn-fill teal">
+          Quero uma demo &rarr;
+        </a>
+        <a href="https://wa.me/55XXXXXXXXXX" target="_blank" rel="noopener" class="btn-fill outline">
+          💬 Falar no WhatsApp
+        </a>
+      </div>
+    </div>
+
+    <div class="hero-visual">
+      <div class="hero-halo"></div>
+      <div class="hero-slider" id="heroSlider">
+        <div class="hero-slide active">
+          <img src="../site/img/img1.svg" alt="SwiftPay — imagem 1">
+        </div>
+        <div class="hero-slide">
+          <img src="../site/img/img2.svg" alt="SwiftPay — imagem 2">
+        </div>
+        <div class="hero-slide">
+          <img src="../site/img/img3.svg" alt="SwiftPay — imagem 3">
+        </div>
+        <div class="hero-slider-dots" id="heroSliderDots">
+          <button class="hero-dot active" data-idx="0" aria-label="Slide 1"></button>
+          <button class="hero-dot" data-idx="1" aria-label="Slide 2"></button>
+          <button class="hero-dot" data-idx="2" aria-label="Slide 3"></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── TEAL BAND ─────────────────────────────────── -->
+<div class="teal-band">
+  <div class="teal-band-inner">
+    <div class="rv">
+      <div class="band-stat-value">Pix</div>
+      <div class="band-stat-label">Cartão aceito</div>
+    </div>
+    <div class="rv rv-d1">
+      <div class="band-stat-value">&lt; 3s</div>
+      <div class="band-stat-label">Liberação de jogada</div>
+    </div>
+    <div class="rv rv-d2">
+      <div class="band-stat-value">100%</div>
+      <div class="band-stat-label">Controle remoto</div>
+    </div>
+    <div class="rv rv-d3">
+      <div class="band-stat-value">24/7</div>
+      <div class="band-stat-label">Monitoramento ativo</div>
+    </div>
+  </div>
+</div>
+
+<div class="sweep-divider"></div>
+
+<!-- ── COMO FUNCIONA ──────────────────────────────── -->
+<section id="funciona">
+  <div class="sec">
+    <div class="sec-tag rv">Do pagamento à jogada</div>
+    <h2 class="sec-title rv">Como funciona</h2>
+
+    <div class="steps-row">
+      <div class="step rv">
+        <div class="step-circle-wrap">
+          <svg class="step-ring" viewBox="0 0 100 100" aria-hidden="true">
+            <circle class="step-ring-track" cx="50" cy="50" r="44"/>
+            <circle class="step-ring-fill" cx="50" cy="50" r="44"/>
+          </svg>
+          <div class="step-circle">📦</div>
+        </div>
+        <div class="step-title">Instale a plaquinha</div>
+        <p class="step-body">
+          Fixe o terminal SwiftPay na sua máquina. Setup em minutos, sem fios complicados, sem técnico especializado.
+        </p>
+      </div>
+      <div class="step rv rv-d1">
+        <div class="step-circle-wrap">
+          <svg class="step-ring" viewBox="0 0 100 100" aria-hidden="true">
+            <circle class="step-ring-track" cx="50" cy="50" r="44"/>
+            <circle class="step-ring-fill" cx="50" cy="50" r="44"/>
+          </svg>
+          <div class="step-circle">💳</div>
+        </div>
+        <div class="step-title">Cliente paga</div>
+        <p class="step-body">
+          Pix, crédito ou débito. O cliente escolhe como pagar — rápido, seguro e sem filas nem troco.
+        </p>
+      </div>
+      <div class="step rv rv-d2">
+        <div class="step-circle-wrap">
+          <svg class="step-ring" viewBox="0 0 100 100" aria-hidden="true">
+            <circle class="step-ring-track" cx="50" cy="50" r="44"/>
+            <circle class="step-ring-fill" cx="50" cy="50" r="44"/>
+          </svg>
+          <div class="step-circle">🎮</div>
+        </div>
+        <div class="step-title">Máquina liberada</div>
+        <p class="step-body">
+          Em menos de 3 segundos a jogada é liberada. Você recebe o pagamento em tempo real no seu painel.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="sweep-divider"></div>
+
+<!-- ── MÁQUINAS ───────────────────────────────────── -->
+<section id="maquinas">
+  <div class="sec">
+    <div class="sec-tag light rv">Compatibilidade</div>
+    <h2 class="sec-title light rv">Funciona na sua máquina</h2>
+    <p class="sec-sub light rv">Desenvolvido para o mercado brasileiro de entretenimento e venda automática. Se tem máquina, tem SwiftPay.</p>
+    <div class="machines">
+      <div class="machine-card rv">
+        <span class="machine-emoji">🧸</span>
+        <div class="machine-label">Máquina de Ursinhos</div>
+      </div>
+      <div class="machine-card rv rv-d1">
+        <span class="machine-emoji">☕</span>
+        <div class="machine-label">Máquina de Café</div>
+      </div>
+      <div class="machine-card rv rv-d2">
+        <span class="machine-emoji">🍿</span>
+        <div class="machine-label">Snacks & Vending</div>
+      </div>
+      <div class="machine-card rv rv-d3">
+        <span class="machine-emoji">🕹️</span>
+        <div class="machine-label">Fliperama & Arcade</div>
+      </div>
+      <div class="machine-card rv rv-d4">
+        <span class="machine-emoji">⚡</span>
+        <div class="machine-label">Outros Equipamentos</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="sweep-divider"></div>
+
+<!-- ── SISTEMA ─────────────────────────────────────── -->
+<section id="sistema">
+  <div class="sec">
+    <div class="sistema-layout">
+      <div class="device-showcase rv">
+        <div class="device-desktop">
+          <div class="device-desktop-bar">
+            <span class="db-dot"></span>
+            <span class="db-dot"></span>
+            <span class="db-dot"></span>
+            <span class="db-url">swiftpaysolucoes.com.br/painel</span>
+          </div>
+          <div class="device-desktop-screen">
+            <!-- Para usar: substitua este div por <img src="img/dashboard-desktop.png" alt="Painel SwiftPay — desktop"> -->
+            <div class="screen-ph">
+              <span class="screen-ph-icon">🖥️</span>
+              <span class="screen-ph-text">Adicione aqui<br>dashboard-desktop.png</span>
+            </div>
+          </div>
+        </div>
+        <div class="device-mobile">
+          <div class="device-mobile-notch"></div>
+          <div class="device-mobile-screen">
+            <!-- Para usar: substitua este div por <img src="img/dashboard-mobile.png" alt="Painel SwiftPay — mobile"> -->
+            <div class="screen-ph">
+              <span class="screen-ph-icon">📱</span>
+              <span class="screen-ph-text">dashboard&#8209;mobile.png</span>
+            </div>
+          </div>
+          <div class="device-mobile-home"></div>
+        </div>
+      </div>
+
+      <div class="rv rv-d1">
+        <div class="sec-tag">Painel de controle</div>
+        <h2 class="sec-title">Gestão na<br>palma da mão</h2>
+        <div class="features" style="margin-top: 2.5rem">
+          <div class="feat">
+            <div class="feat-icon">📊</div>
+            <div>
+              <div class="feat-title">Dashboard em tempo real</div>
+              <p class="feat-body">Faturamento, jogadas e transações ao vivo, de qualquer dispositivo e em qualquer lugar.</p>
+            </div>
+          </div>
+          <div class="feat">
+            <div class="feat-icon">📋</div>
+            <div>
+              <div class="feat-title">Relatórios detalhados</div>
+              <p class="feat-body">Histórico completo de receitas por máquina, período e tipo de pagamento.</p>
+            </div>
+          </div>
+          <div class="feat">
+            <div class="feat-icon">🔧</div>
+            <div>
+              <div class="feat-title">Gestão remota</div>
+              <p class="feat-body">Bloqueie, ajuste créditos e monitore o status de cada máquina sem sair de casa.</p>
+            </div>
+          </div>
+          <div class="feat">
+            <div class="feat-icon">🔔</div>
+            <div>
+              <div class="feat-title">Alertas automáticos</div>
+              <p class="feat-body">Notificações de falhas, pagamentos e necessidade de manutenção direto no seu celular.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── MÍDIA ───────────────────────────────────────── -->
+<section id="midia">
+  <div class="sec">
+    <div class="sec-tag rv">Galeria</div>
+    <h2 class="sec-title rv">SwiftPay no mundo real</h2>
+    <p class="sec-sub rv">Veja a solução instalada. Substitua os espaços abaixo com fotos e vídeos das suas instalações.</p>
+    <div class="carousel rv" id="mediaCarousel">
+      <button class="carousel-btn carousel-prev" id="mediaPrev" aria-label="Anterior">&#8249;</button>
+      <div class="carousel-viewport">
+        <div class="carousel-track" id="mediaTrack">
+          <div class="carousel-slide">
+            <div class="media-item">
+              <!-- Para adicionar: <img src="img/foto-1.jpg" alt="Instalação SwiftPay"> -->
+              <span class="media-ph-icon">🎬</span>
+              <span class="media-ph-text">Vídeo principal</span>
+            </div>
+          </div>
+          <div class="carousel-slide">
+            <div class="media-item">
+              <!-- Para adicionar: <img src="img/foto-2.jpg" alt="Foto instalação"> -->
+              <span class="media-ph-icon">📷</span>
+              <span class="media-ph-text">Foto instalação</span>
+            </div>
+          </div>
+          <div class="carousel-slide">
+            <div class="media-item">
+              <!-- Para adicionar: <img src="img/foto-3.jpg" alt="Foto instalação"> -->
+              <span class="media-ph-icon">📷</span>
+              <span class="media-ph-text">Foto instalação</span>
+            </div>
+          </div>
+          <div class="carousel-slide">
+            <div class="media-item">
+              <!-- Para adicionar: <img src="img/foto-4.jpg" alt="Print do dashboard"> -->
+              <span class="media-ph-icon">📷</span>
+              <span class="media-ph-text">Print do dashboard</span>
+            </div>
+          </div>
+          <div class="carousel-slide">
+            <div class="media-item">
+              <!-- Para adicionar: <img src="img/foto-5.jpg" alt="Foto do produto"> -->
+              <span class="media-ph-icon">📷</span>
+              <span class="media-ph-text">Foto do produto</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <button class="carousel-btn carousel-next" id="mediaNext" aria-label="Próximo">&#8250;</button>
+      <div class="carousel-dots" id="mediaDots"></div>
+    </div>
+  </div>
+</section>
+
+<div class="sweep-divider"></div>
+
+<!-- ── POR QUÊ ────────────────────────────────────── -->
+<section id="porque">
+  <div class="sec">
+    <div class="sec-tag light rv">Por que Swift Pay</div>
+    <h2 class="sec-title light rv">Feito para quem opera máquinas</h2>
+    <div class="porque-cards">
+      <div class="pc rv">
+        <div class="pc-bar"></div>
+        <div class="pc-title">Rápido como o nome diz</div>
+        <p class="pc-body">Liberação em menos de 3 segundos após o pagamento. Sem delay, sem cliente esperando, sem venda perdida.</p>
+      </div>
+      <div class="pc rv rv-d1">
+        <div class="pc-bar"></div>
+        <div class="pc-title">Controle total</div>
+        <p class="pc-body">Todas as suas máquinas em um painel. Um login, todas as informações, zero surpresas no fim do mês.</p>
+      </div>
+      <div class="pc rv rv-d2">
+        <div class="pc-bar"></div>
+        <div class="pc-title">Sem complicação</div>
+        <p class="pc-body">Instalação simples, suporte dedicado e integração com os meios de pagamento mais usados no Brasil.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="sweep-divider"></div>
+
+<!-- ── CONTATO ────────────────────────────────────── -->
+<section id="contato">
+  <div class="sec">
+    <div class="sec-tag light rv">Entre em contato</div>
+    <h2 class="sec-title light rv">Vamos conversar sobre<br>a sua operação</h2>
+    <div class="contato-layout">
+      <div class="rv">
+        <p class="sec-sub light" style="margin-top: 1.5rem; max-width: none">
+          Preencha o formulário ou nos chame diretamente pelo WhatsApp. Respondemos rápido — afinal, esse é o nosso negócio.
+        </p>
+        <div class="info-block">
+          <div class="info-item">
+            <span class="info-icon">📱</span>
+            <div>
+              <div class="info-tag">WhatsApp</div>
+              <div class="info-val">(XX) X XXXX-XXXX</div>
+            </div>
+          </div>
+          <div class="info-item">
+            <span class="info-icon">✉️</span>
+            <div>
+              <div class="info-tag">E-mail</div>
+              <div class="info-val">contato@swiftpaysolucoes.com.br</div>
+            </div>
+          </div>
+          <div class="info-item">
+            <span class="info-icon">📍</span>
+            <div>
+              <div class="info-tag">Atendimento</div>
+              <div class="info-val">Todo o Brasil</div>
+            </div>
+          </div>
+        </div>
+        <a href="https://wa.me/55XXXXXXXXXX" target="_blank" rel="noopener" class="wa-cta">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          Chamar no WhatsApp
+        </a>
+      </div>
+
+      <form class="rv rv-d1" onsubmit="return false">
+        <div class="form-row">
+          <div class="fg">
+            <label for="f-nome">Nome</label>
+            <input type="text" id="f-nome" placeholder="Seu nome completo">
+          </div>
+          <div class="fg">
+            <label for="f-tel">WhatsApp</label>
+            <input type="tel" id="f-tel" placeholder="(XX) XXXXX-XXXX">
+          </div>
+        </div>
+        <div class="fg">
+          <label for="f-email">E-mail</label>
+          <input type="email" id="f-email" placeholder="seu@email.com.br">
+        </div>
+        <div class="fg">
+          <label for="f-maquina">Tipo de máquina</label>
+          <select id="f-maquina">
+            <option value="" disabled selected>Selecione o tipo de máquina</option>
+            <option>Máquina de Ursinhos / Guindaste</option>
+            <option>Máquina de Café</option>
+            <option>Snacks / Vending Machine</option>
+            <option>Fliperama / Arcade</option>
+            <option>Outro tipo de máquina</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label for="f-msg">Mensagem</label>
+          <textarea id="f-msg" placeholder="Fale um pouco sobre sua operação — quantas máquinas, onde ficam..."></textarea>
+        </div>
+        <button type="submit" class="btn-send">Enviar mensagem &rarr;</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ─────────────────────────────────────── -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <a href="#" class="footer-brand">
+        <img src="img/icon.png" alt="SwiftPay">
+      </a>
+      <ul class="footer-nav">
+        <li><a href="#funciona">Como Funciona</a></li>
+        <li><a href="#maquinas">Máquinas</a></li>
+        <li><a href="#sistema">Sistema</a></li>
+        <li><a href="#midia">Galeria</a></li>
+        <li><a href="#contato">Contato</a></li>
+      </ul>
+    </div>
+    <div class="footer-bottom">
+      <span class="footer-copy">&copy; 2025 SwiftPay Soluções. Todos os direitos reservados.</span>
+      <span class="footer-copy">Tecnologia para máquinas de entretenimento e venda automática</span>
+    </div>
+  </div>
+</footer>
+
+<!-- ── WHATSAPP FLOAT ──────────────────────────────── -->
+<a href="https://wa.me/55XXXXXXXXXX" target="_blank" rel="noopener" class="wa-float" aria-label="Falar pelo WhatsApp">
+  <svg class="wa-svg" width="28" height="28" viewBox="0 0 24 24" fill="white">
+    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+  </svg>
+</a>
+
+<script>
+  // Nav scroll solidify
+  const nav = document.getElementById('nav');
+  const onScroll = () => nav.classList.toggle('scrolled', window.scrollY > 80);
+  window.addEventListener('scroll', onScroll, { passive: true });
+
+  // Animated speed dashes in hero — the brand's motion lines at scale
+  (function buildDashes() {
+    const canvas = document.getElementById('speedCanvas');
+    const rows = [
+      { top: 12, w: 180, h: 7,  delay: 0.0, dur: 5.2, op: 0.08 },
+      { top: 17, w: 120, h: 6,  delay: 0.4, dur: 5.2, op: 0.07 },
+      { top: 22, w:  75, h: 5,  delay: 0.8, dur: 5.2, op: 0.05 },
+      { top: 28, w:  45, h: 4,  delay: 1.1, dur: 5.2, op: 0.04 },
+      { top: 38, w: 155, h: 7,  delay: 0.2, dur: 6.0, op: 0.07 },
+      { top: 43, w: 100, h: 6,  delay: 0.6, dur: 6.0, op: 0.06 },
+      { top: 48, w:  65, h: 5,  delay: 1.0, dur: 6.0, op: 0.04 },
+      { top: 54, w:  35, h: 4,  delay: 1.3, dur: 6.0, op: 0.03 },
+      { top: 64, w: 200, h: 7,  delay: 0.1, dur: 7.0, op: 0.08 },
+      { top: 69, w: 130, h: 6,  delay: 0.5, dur: 7.0, op: 0.06 },
+      { top: 74, w:  85, h: 5,  delay: 0.9, dur: 7.0, op: 0.05 },
+      { top: 79, w:  50, h: 4,  delay: 1.2, dur: 7.0, op: 0.04 },
+    ];
+    rows.forEach(r => {
+      const el = document.createElement('div');
+      el.className = 'dash';
+      el.style.cssText = `top:${r.top}%; width:${r.w}px; height:${r.h}px; --delay:${r.delay}s; --d:${r.dur}s; --op:${r.op};`;
+      canvas.appendChild(el);
+    });
+  })();
+
+  // Scroll reveal (elements + sweep dividers)
+  const reveals = document.querySelectorAll('.rv, .sweep-divider');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('vis');
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.12 });
+  reveals.forEach(el => observer.observe(el));
+
+  // ── TEAL BAND STATS ANIMATION ────────────────────────
+  (function bandStats() {
+    const inner = document.querySelector('.teal-band-inner');
+    if (!inner) return;
+
+    const items = inner.querySelectorAll('.rv');
+    let fired = false;
+
+    // counter config per stat (index-matched)
+    const configs = [
+      { type: 'text' },
+      { type: 'count', from: 12, to: 3,   format: n => '< ' + n + 's', final: '< 3s',  dur: 900  },
+      { type: 'count', from: 0,  to: 100, format: n => n + '%',         final: '100%', dur: 1100 },
+      { type: 'count', from: 0,  to: 24,  format: n => n + '/7',        final: '24/7', dur: 1000 },
+    ];
+
+    function easeOut(t) { return 1 - Math.pow(1 - t, 3); }
+
+    function runCounter(el, cfg) {
+      const start = performance.now();
+      (function tick(now) {
+        const p = Math.min((now - start) / cfg.dur, 1);
+        el.textContent = cfg.format(Math.round(cfg.from + (cfg.to - cfg.from) * easeOut(p)));
+        if (p < 1) requestAnimationFrame(tick);
+        else el.textContent = cfg.final;
+      })(start);
+    }
+
+    function trigger() {
+      items.forEach((item, i) => {
+        const val = item.querySelector('.band-stat-value');
+        const lbl = item.querySelector('.band-stat-label');
+        const cfg = configs[i] || { type: 'text' };
+        const delay = i * 170;
+
+        setTimeout(() => {
+          val.classList.add('band-pop');
+          if (cfg.type === 'count') runCounter(val, cfg);
+        }, delay);
+
+        setTimeout(() => lbl.classList.add('band-slide'), delay + 300);
+      });
+    }
+
+    const obs = new IntersectionObserver(entries => {
+      if (!entries[0].isIntersecting || fired) return;
+      fired = true;
+      obs.disconnect();
+      trigger();
+    }, { threshold: 0.6 });
+
+    obs.observe(inner);
+
+    // fallback: already visible on load
+    const r = inner.getBoundingClientRect();
+    if (r.top < window.innerHeight && r.bottom > 0) { fired = true; trigger(); }
+  })();
+
+  // ── STEPS RING LOADER + CONFETTI ─────────────────────
+  (function stepsAnimation() {
+    const stepsRow = document.querySelector('#funciona .steps-row');
+    if (!stepsRow) return;
+
+    const rings  = stepsRow.querySelectorAll('.step-ring-fill');
+    const lastStep = stepsRow.querySelectorAll('.step')[rings.length - 1];
+    let fired = false;
+
+    function launchConfetti(originEl) {
+      const rect = originEl.querySelector('.step-circle').getBoundingClientRect();
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height / 2;
+
+      const colors = ['#00C4D4','#00D9E8','#FFFFFF','#FFD600','#FF8C00','#FF4E8E','#007F8C','#0F1E45'];
+      const wrap = document.createElement('div');
+      wrap.style.cssText = 'position:fixed;left:' + cx + 'px;top:' + cy + 'px;pointer-events:none;z-index:9999;width:0;height:0;';
+      document.body.appendChild(wrap);
+
+      for (let i = 0; i < 42; i++) {
+        const p    = document.createElement('div');
+        const ang  = Math.random() * 360;
+        const dist = 55 + Math.random() * 130;
+        const dx   = Math.cos(ang * Math.PI / 180) * dist;
+        const dy   = Math.sin(ang * Math.PI / 180) * dist - 20;
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        const size  = 5 + Math.random() * 8;
+        const rot   = Math.random() * 540 - 270;
+        const dur   = 850 + Math.random() * 650;
+        const isRect = Math.random() > 0.5;
+        const w = isRect ? size * (0.5 + Math.random() * 0.8) : size;
+        const h = isRect ? size * (0.35 + Math.random() * 0.5) : size;
+
+        p.style.cssText = [
+          'position:absolute', 'left:0', 'top:0',
+          'width:' + w + 'px', 'height:' + h + 'px',
+          'background:' + color,
+          'border-radius:' + (isRect ? '2px' : '50%'),
+          'animation:confettiBurst ' + dur + 'ms ease-out forwards',
+          '--dx:' + dx + 'px', '--dy:' + dy + 'px', '--rot:' + rot + 'deg'
+        ].join(';');
+        wrap.appendChild(p);
+      }
+
+      // Second burst slightly delayed for depth
+      setTimeout(() => {
+        for (let i = 0; i < 20; i++) {
+          const p   = document.createElement('div');
+          const ang = Math.random() * 360;
+          const dist = 30 + Math.random() * 80;
+          const dx  = Math.cos(ang * Math.PI / 180) * dist;
+          const dy  = Math.sin(ang * Math.PI / 180) * dist - 10;
+          const color = colors[Math.floor(Math.random() * colors.length)];
+          const size  = 4 + Math.random() * 5;
+          const rot   = Math.random() * 360 - 180;
+          const dur   = 700 + Math.random() * 400;
+
+          p.style.cssText = [
+            'position:absolute', 'left:0', 'top:0',
+            'width:' + size + 'px', 'height:' + size + 'px',
+            'background:' + color, 'border-radius:50%',
+            'animation:confettiBurst ' + dur + 'ms ease-out forwards',
+            '--dx:' + dx + 'px', '--dy:' + dy + 'px', '--rot:' + rot + 'deg'
+          ].join(';');
+          wrap.appendChild(p);
+        }
+      }, 180);
+
+      setTimeout(() => wrap.remove(), 1800);
+    }
+
+    const obs = new IntersectionObserver(entries => {
+      if (!entries[0].isIntersecting || fired) return;
+      fired = true;
+      obs.disconnect();
+
+      // Fill rings sequentially: step 1 → step 2 → step 3
+      const delays = [120, 700, 1280];
+      rings.forEach((ring, i) => {
+        setTimeout(() => { ring.style.strokeDashoffset = '0'; }, delays[i]);
+      });
+
+      // Confetti fires when the last ring finishes (delay + transition duration)
+      setTimeout(() => launchConfetti(lastStep), 1280 + 1300);
+    }, { threshold: 0.5 });
+
+    obs.observe(stepsRow);
+  })();
+
+  // ── HERO SLIDER ──────────────────────────────────────
+  (function heroSlider() {
+    const slider = document.getElementById('heroSlider');
+    if (!slider) return;
+    const slides = slider.querySelectorAll('.hero-slide');
+    const dots   = slider.querySelectorAll('.hero-dot');
+    let current  = 0;
+    let timer;
+
+    function goTo(idx) {
+      const prev = current;
+      slides[prev].classList.remove('active');
+      slides[prev].classList.add('exiting');
+      dots[prev].classList.remove('active');
+
+      current = (idx + slides.length) % slides.length;
+      slides[current].classList.add('active');
+      dots[current].classList.add('active');
+
+      setTimeout(() => slides[prev].classList.remove('exiting'), 860);
+    }
+
+    dots.forEach((dot, i) => {
+      dot.addEventListener('click', () => { goTo(i); resetTimer(); });
+    });
+
+    function startTimer() { timer = setInterval(() => goTo(current + 1), 4200); }
+    function resetTimer() { clearInterval(timer); startTimer(); }
+    startTimer();
+  })();
+
+  // ── MEDIA CAROUSEL ───────────────────────────────────
+  (function mediaCarousel() {
+    const track     = document.getElementById('mediaTrack');
+    const prevBtn   = document.getElementById('mediaPrev');
+    const nextBtn   = document.getElementById('mediaNext');
+    const dotsWrap  = document.getElementById('mediaDots');
+    if (!track) return;
+
+    const slides = track.querySelectorAll('.carousel-slide');
+    const total  = slides.length;
+    let current  = 0;
+    let timer;
+
+    slides.forEach((_, i) => {
+      const dot = document.createElement('button');
+      dot.className = 'carousel-dot' + (i === 0 ? ' active' : '');
+      dot.setAttribute('aria-label', 'Slide ' + (i + 1));
+      dot.addEventListener('click', () => { goTo(i); resetTimer(); });
+      dotsWrap.appendChild(dot);
+    });
+
+    function dots() { return dotsWrap.querySelectorAll('.carousel-dot'); }
+
+    function goTo(idx) {
+      current = (idx + total) % total;
+      track.style.transform = 'translateX(-' + (current * 100) + '%)';
+      dots().forEach((d, i) => d.classList.toggle('active', i === current));
+    }
+
+    prevBtn.addEventListener('click', () => { goTo(current - 1); resetTimer(); });
+    nextBtn.addEventListener('click', () => { goTo(current + 1); resetTimer(); });
+
+    // Touch / swipe
+    let startX = 0;
+    track.parentElement.addEventListener('touchstart', e => { startX = e.touches[0].clientX; }, { passive: true });
+    track.parentElement.addEventListener('touchend', e => {
+      const diff = startX - e.changedTouches[0].clientX;
+      if (Math.abs(diff) > 40) { diff > 0 ? goTo(current + 1) : goTo(current - 1); resetTimer(); }
+    }, { passive: true });
+
+    function startTimer() { timer = setInterval(() => goTo(current + 1), 5000); }
+    function resetTimer() { clearInterval(timer); startTimer(); }
+    startTimer();
+  })();
+</script>
+
+</body>
+</html>

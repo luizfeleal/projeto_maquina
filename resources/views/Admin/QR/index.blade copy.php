@@ -5,7 +5,6 @@
         <div id="guias" class="qr w-100 div-center-column"
                 style=" padding-top: 99px; padding-bottom: 100px;">
 
-                <h1 style="padding-top: 80px; text-align: center; padding-bottom: 50px;">QR Code</h1>
 
             <div class="container section container-platform div-center-column"
                 style="margin-top: 15px; height: 100%;">

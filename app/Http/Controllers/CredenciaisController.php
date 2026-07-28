@@ -26,7 +26,7 @@ class CredenciaisController extends Controller
         // Normalizar para array associativo com chave 'id' (tabela usa id_cred_api_pix)
         $credenciais = array_map(function($c) {
             $c = (array) $c;
-            $c['id'] = $c['id_cred_api_pix'] ?? $c['id'] ?? $c['id_cred'] ?? null;
+            $c['id'] = $c['id_credencial'] ?? $c['id_cred_api_pix'] ?? $c['id'] ?? $c['id_cred'] ?? null;
             return $c;
         }, $credenciais);
 

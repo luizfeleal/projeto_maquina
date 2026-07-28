@@ -1,69 +1,51 @@
 <?php
 
 namespace App\Services;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Mail;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\Http;
 
-
+use App\Support\ApiClient;
 
 class CredApiPixService
 {
-
-
-    public static function criar($dados){
-        $url = env('APP_URL_API') . "/credApiPix";
-    
-        $token = AuthService::getToken();
-    
-        $request = Http::withHeaders([
-            'Authorization' => 'Bearer ' . $token
-        ]);
-    
-        // Verifica se existe um arquivo para enviar
-        if (isset($dados['caminho_certificado'])) {
-            $request->attach(
-                'caminho_certificado', // nome do campo esperado na API
-                file_get_contents($dados['caminho_certificado']->getRealPath()),
-                $dados['caminho_certificado']->getClientOriginalName()
-            );
-        }
-    
-        $response = $request->post($url, [
+    public static function criar($dados)
+    {
+        $payload = [
             'id_cliente' => $dados['id_cliente'],
             'client_secret' => $dados['client_secret'],
             'client_id' => $dados['client_id'],
-            'tipo_cred' => $dados['tipo_cred']
-            // outros campos que deseja enviar
-        ]);
-    
-        // Verifica se a requisição foi bem-sucedida
+            'tipo_cred' => $dados['tipo_cred'],
+        ];
+
+        $attachment = null;
+        if (isset($dados['caminho_certificado'])) {
+            $attachment = [
+                'name' => 'caminho_certificado',
+                'contents' => file_get_contents($dados['caminho_certificado']->getRealPath()),
+                'filename' => $dados['caminho_certificado']->getClientOriginalName(),
+            ];
+        }
+
+        $response = $attachment
+            ? ApiClient::postMultipart('/credApiPix', $payload, $attachment)
+            : ApiClient::post('/credApiPix', $payload);
+
         if ($response->successful()) {
             return [
                 'success' => true,
-                'data' => $response->json()
-            ];
-        } else {
-            return [
-                'success' => false,
-                'status' => $response->status(),
-                'error' => $response->json()
+                'data' => $response->json(),
             ];
         }
+
+        return [
+            'success' => false,
+            'status' => $response->status(),
+            'error' => $response->json(),
+        ];
     }
 
-    public static function coletar(string $id = Null)
+    public static function coletar(string $id = null)
     {
-        if(is_null($id)){
-            $url = env('APP_URL_API') . "/credApiPix";
-        }else{
-            $url = env('APP_URL_API') . "/credApiPix/$id";
-        }
-        $token = AuthService::getToken();
-        $response = Http::withHeaders([
-            'Authorization' => 'Bearer ' . $token
-        ])->get($url);
+        $path = is_null($id) ? '/credApiPix' : "/credApiPix/{$id}";
+        $response = ApiClient::get($path);
 
         if (!is_null($id) && !$response->successful()) {
             return null;
@@ -73,58 +55,33 @@ class CredApiPixService
     }
 
     public static function coletarComFiltro($filtros, $tipo)
-{
-    $url = env('APP_URL_API') . "/usuarios";
+    {
+        $response = ApiClient::get('/credApiPix');
 
-    $token = AuthService::getToken();
-    $response = Http::withHeaders([
-        'Authorization' => 'Bearer ' . $token
-    ])->get($url);
+        if (!$response->successful()) {
+            return [];
+        }
 
-    if ($response->successful()) {
-        // Obtenha os clientes da resposta JSON
-        $usuarios = $response->json();
+        $credenciais = $response->json();
 
-        // Inicializar a variável de filtragem com todos os usuários
-        $usuariosFiltrado = $usuarios;
-
-        // Filtrar os clientes com base nos filtros fornecidos
         foreach ($filtros as $chave => $valor) {
-            // Verifique se o valor do filtro não está vazio
             if ($valor !== null) {
-                // Filtrar os clientes com base no valor do filtro
-                $usuariosFiltrado = array_filter($usuariosFiltrado, function ($usuario) use ($chave, $valor) {
-                    return isset($usuario[$chave]) && $usuario[$chave] == $valor;
+                $credenciais = array_filter($credenciais, function ($item) use ($chave, $valor) {
+                    return isset($item[$chave]) && $item[$chave] == $valor;
                 });
             }
         }
 
-        // Retorna os clientes filtrados
-        return $usuariosFiltrado;
-    } else {
-        // Em caso de falha na chamada à API, retorne um array vazio ou uma mensagem de erro
-        return [];
-    }
-}
-
-
-    public function atualizar($dados, $id){
-        $url = env('APP_URL_API') . "/usuarios/$id";
-
-        $token = AuthService::getToken();
-        $response = Http::withHeaders([
-            'Authorization' => 'Bearer ' . $token
-        ])->post($url, $dados);
-
-        $usuario = $response->json();
-
-        return $usuario;
+        return $credenciais;
     }
 
-    public static function atualizarCredencial($dados, $id){
-        $base = rtrim(env('APP_URL_API'), '/');
-        $token = AuthService::getToken();
+    public function atualizar($dados, $id)
+    {
+        return ApiClient::post("/usuarios/{$id}", $dados)->json();
+    }
 
+    public static function atualizarCredencial($dados, $id)
+    {
         $payload = [
             'id_cliente' => $dados['id_cliente'],
             'client_secret' => $dados['client_secret'],
@@ -135,50 +92,45 @@ class CredApiPixService
         $temCertificado = isset($dados['caminho_certificado']) && $dados['caminho_certificado'];
 
         if ($temCertificado) {
-            // Multipart + PUT: muitos stacks não expõem o arquivo em $request->file(); POST espelha o fluxo de store().
-            $url = "{$base}/credApiPix/{$id}/atualizar";
-            $response = Http::withHeaders([
-                'Authorization' => 'Bearer ' . $token,
-            ])->attach(
-                'caminho_certificado',
-                file_get_contents($dados['caminho_certificado']->getRealPath()),
-                $dados['caminho_certificado']->getClientOriginalName()
-            )->post($url, $payload);
+            $response = ApiClient::postMultipart(
+                "/credApiPix/{$id}/atualizar",
+                $payload,
+                [
+                    'name' => 'caminho_certificado',
+                    'contents' => file_get_contents($dados['caminho_certificado']->getRealPath()),
+                    'filename' => $dados['caminho_certificado']->getClientOriginalName(),
+                ]
+            );
         } else {
-            $url = "{$base}/credApiPix/{$id}";
-            $response = Http::withHeaders([
-                'Authorization' => 'Bearer ' . $token,
-            ])->put($url, $payload);
+            $response = ApiClient::put("/credApiPix/{$id}", $payload);
         }
-    
-        // Verifica se a requisição foi bem-sucedida
+
         if ($response->successful()) {
             return [
                 'success' => true,
-                'data' => $response->json()
-            ];
-        } else {
-            return [
-                'success' => false,
-                'status' => $response->status(),
-                'error' => $response->json()
+                'data' => $response->json(),
             ];
         }
+
+        return [
+            'success' => false,
+            'status' => $response->status(),
+            'error' => $response->json(),
+        ];
     }
 
-    public static function excluirCredencial($id){
-        $url = env('APP_URL_API') . "/credApiPix/$id";
-        $token = AuthService::getToken();
-        $response = Http::withHeaders([
-            'Authorization' => 'Bearer ' . $token
-        ])->delete($url);
+    public static function excluirCredencial($id)
+    {
+        $response = ApiClient::delete("/credApiPix/{$id}");
 
         if ($response->successful()) {
             return ['success' => true];
         }
+
+        $body = $response->json();
         return [
             'success' => false,
-            'error' => $response->json()['message'] ?? $response->json()['response'] ?? 'Erro ao excluir credencial'
+            'error' => $body['message'] ?? $body['response'] ?? 'Erro ao excluir credencial',
         ];
     }
 }

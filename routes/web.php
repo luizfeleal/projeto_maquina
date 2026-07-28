@@ -18,6 +18,8 @@ Route::get('/', function () {
     return redirect()->route('login-view');
 });
 
+Route::get('/vendas', 'App\Http\Controllers\VendasController@index')->name('vendas');
+
 Route::prefix('home')->middleware('permission')->group(function(){
     Route::get('/', 'App\Http\Controllers\HomeController@coletar')->name('home');
 });
@@ -29,12 +31,14 @@ Route::get('/coletarCredencialDescriptografada', 'App\Http\Controllers\Credencia
 
 Route::prefix('maquinas')->middleware('permission')->group(function(){
     Route::get('/', 'App\Http\Controllers\MaquinasController@coletarTodasAsMaquinas')->name('maquinas');
+    Route::get('/dados', 'App\Http\Controllers\MaquinasController@coletarTodasAsMaquinasDados')->name('maquinas-dados');
     Route::get('/criar', 'App\Http\Controllers\MaquinasController@criarMaquinas')->name('maquinas-criar');
     Route::get('/editar', 'App\Http\Controllers\MaquinasController@editarMaquinas')->name('maquinas-editar');
     Route::get('/visualizar', 'App\Http\Controllers\MaquinasController@coletarMaquinaPorId')->name('maquinas-visualizar');
     Route::get('/registrar', 'App\Http\Controllers\MaquinasController@registrarMaquinas')->name('maquinas-registrar');
     Route::get('/gerarIdPlaca', 'App\Http\Controllers\MaquinasController@gerarIdPlaca')->name('maquinas-gerar-id-placa');
     Route::get('/transacoes', 'App\Http\Controllers\MaquinasController@transacaoMaquinas')->name('maquinas-transacoes');
+    Route::get('/transacoes/dados', 'App\Http\Controllers\MaquinasController@transacaoMaquinasDados')->name('maquinas-transacoes-dados');
     Route::get('/acumulado', 'App\Http\Controllers\MaquinasController@acumuladoMaquinas')->name('maquinas-acumulado');
     Route::get('/maquinasCartao', 'App\Http\Controllers\MaquinasController@viewMaquinasCartao')->name('maquinas-cartao');
     Route::get('/maquinasCartao/criar', 'App\Http\Controllers\MaquinasController@viewMaquinasCartaoCriar')->name('maquinas-cartao-criar');
@@ -45,14 +49,16 @@ Route::prefix('maquinas')->middleware('permission')->group(function(){
     Route::post('/atualizar', 'App\Http\Controllers\MaquinasController@atualizarMaquina')->name('maquinas-atualizar');
     Route::post('/liberarJogadaRegistrar', 'App\Http\Controllers\MaquinasController@liberarJogada')->name('maquinas-liberar-jogada');
     Route::get('/liberarJogada', 'App\Http\Controllers\MaquinasController@viewLiberarJogada')->name('view-liberar-jogadas');
+    Route::post('/reset-parcial', 'App\Http\Controllers\MaquinasController@resetParcial')->name('maquinas-reset-parcial');
+    Route::get('/resets-historico', 'App\Http\Controllers\MaquinasController@historicoResets')->name('maquinas-resets-historico');
 });
 
 Route::prefix('clientes-maquinas')->middleware('permission')->group(function(){
     Route::get('/', 'App\Http\Controllers\Clientes\MaquinasController@coletarTodasAsMaquinas')->name('clientes-maquinas');
     Route::get('/transacoes', 'App\Http\Controllers\Clientes\MaquinasController@transacaoMaquinas')->name('clientes-maquinas-transacoes');
     Route::get('/acumulado', 'App\Http\Controllers\Clientes\MaquinasController@acumuladoMaquinas')->name('clientes-maquinas-acumulado');
-    Route::get('/viewLiberarJogada', 'App\Http\Controllers\Clientes\MaquinasController@viewLiberarJogada')->name('view-clientes-maquinas-liberar-jogadas');
-    Route::post('/liberarJogada', 'App\Http\Controllers\Clientes\MaquinasController@liberarJogada')->name('clientes-maquinas-liberar-jogadas');
+    Route::get('/viewLiberarJogada', 'App\Http\Controllers\Clientes\MaquinasController@viewLiberarJogada')->name('view-clientes-maquinas-liberar-jogadas')->middleware('check.inadimplencia');
+    Route::post('/liberarJogada', 'App\Http\Controllers\Clientes\MaquinasController@liberarJogada')->name('clientes-maquinas-liberar-jogadas')->middleware('check.inadimplencia');
     Route::get('/maquinasCartao', 'App\Http\Controllers\Clientes\MaquinasController@viewMaquinasCartao')->name('cliente-maquinas-cartao');
     Route::get('/maquinasCartao/criar', 'App\Http\Controllers\Clientes\MaquinasController@viewMaquinasCartaoCriar')->name('cliente-maquinas-cartao-criar');
     Route::post('/maquinasCartao/registrar', 'App\Http\Controllers\Clientes\MaquinasController@registrarMaquinasCartao')->name('cliente-maquinas-cartao-registrar');
@@ -60,6 +66,10 @@ Route::prefix('clientes-maquinas')->middleware('permission')->group(function(){
     Route::delete('/maquinasCartao/excluir', 'App\Http\Controllers\Clientes\MaquinasController@excluirMaquinasCartao')->name('cliente-maquinas-cartao-excluir');
     Route::get('/editar', 'App\Http\Controllers\Clientes\MaquinasController@editarMaquinas')->name('clientes-maquinas-editar');
     Route::post('/atualizar', 'App\Http\Controllers\Clientes\MaquinasController@atualizarMaquina')->name('clientes-maquinas-atualizar');
+    Route::post('/reset-parcial', 'App\Http\Controllers\Clientes\MaquinasController@resetParcial')->name('clientes-maquinas-reset-parcial');
+    Route::post('/reset-parcial-ajax', 'App\Http\Controllers\Clientes\MaquinasController@resetParcialAjax')->name('clientes-maquinas-reset-parcial-ajax');
+    Route::post('/reset-parcial-todas', 'App\Http\Controllers\Clientes\MaquinasController@resetParcialTodas')->name('clientes-maquinas-reset-parcial-todas');
+    Route::get('/resets-historico', 'App\Http\Controllers\Clientes\MaquinasController@historicoResets')->name('clientes-maquinas-resets-historico');
 });
 
 Route::prefix('clientes-relatorio')->middleware('permission')->group(function(){
@@ -126,6 +136,50 @@ Route::prefix('credenciais')->middleware('permission')->group(function(){
     Route::get('/editar/pagbank/{id}', 'App\Http\Controllers\CredenciaisController@editarCredencialPagbank')->name('credencial-editar-pagbank');
     Route::put('/atualizar/{id}', 'App\Http\Controllers\CredenciaisController@atualizarCredencial')->name('credencial-atualizar');
     Route::delete('/excluir/{id}', 'App\Http\Controllers\CredenciaisController@excluirCredencial')->name('credencial-excluir');
+});
+
+Route::prefix('financeiro-home')->middleware('permission')->group(function () {
+    Route::get('/', 'App\Http\Controllers\Financeiro\FinanceiroController@index')->name('financeiro-home');
+});
+
+Route::prefix('financeiro-clientes')->middleware('permission')->group(function () {
+    Route::get('/', 'App\Http\Controllers\Financeiro\ClientesController@index')->name('financeiro-clientes');
+    Route::get('/criar', 'App\Http\Controllers\Financeiro\ClientesController@create')->name('financeiro-clientes-criar');
+    Route::post('/registrar', 'App\Http\Controllers\Financeiro\ClientesController@store')->name('financeiro-clientes-registrar');
+});
+
+Route::prefix('financeiro-inadimplencia')->middleware('permission')->group(function () {
+    Route::get('/', 'App\Http\Controllers\Financeiro\FinanceiroController@inadimplencia')->name('financeiro-inadimplencia');
+});
+
+Route::prefix('financeiro-despesas')->middleware('permission')->group(function () {
+    Route::get('/', 'App\Http\Controllers\Financeiro\DespesasController@index')->name('financeiro-despesas');
+    Route::get('/criar', 'App\Http\Controllers\Financeiro\DespesasController@create')->name('financeiro-despesas-criar');
+    Route::post('/registrar', 'App\Http\Controllers\Financeiro\DespesasController@store')->name('financeiro-despesas-registrar');
+    Route::post('/excluir', 'App\Http\Controllers\Financeiro\DespesasController@destroy')->name('financeiro-despesas-excluir');
+    Route::get('/{id}', 'App\Http\Controllers\Financeiro\DespesasController@show')->where('id', '[0-9]+')->name('financeiro-despesas-detalhar');
+});
+
+Route::prefix('financeiro-mensalidades')->middleware('permission')->group(function () {
+    Route::get('/', 'App\Http\Controllers\Financeiro\MensalidadesController@index')->name('financeiro-mensalidades');
+    Route::get('/criar', 'App\Http\Controllers\Financeiro\MensalidadesController@create')->name('financeiro-mensalidades-criar');
+    Route::post('/registrar', 'App\Http\Controllers\Financeiro\MensalidadesController@store')->name('financeiro-mensalidades-registrar');
+    Route::post('/excluir', 'App\Http\Controllers\Financeiro\MensalidadesController@destroy')->name('financeiro-mensalidades-excluir');
+    Route::post('/{id}/atualizar', 'App\Http\Controllers\Financeiro\MensalidadesController@update')->where('id', '[0-9]+')->name('financeiro-mensalidades-atualizar');
+    Route::post('/{id}/boleto/gerar', 'App\Http\Controllers\Financeiro\MensalidadesController@gerarBoleto')->where('id', '[0-9]+')->name('financeiro-mensalidades-boleto-gerar');
+    Route::post('/{id}/boleto/cancelar', 'App\Http\Controllers\Financeiro\MensalidadesController@cancelarBoleto')->where('id', '[0-9]+')->name('financeiro-mensalidades-boleto-cancelar');
+    Route::post('/{id}/boleto/reenviar', 'App\Http\Controllers\Financeiro\MensalidadesController@reenviarBoleto')->where('id', '[0-9]+')->name('financeiro-mensalidades-boleto-reenviar');
+    Route::get('/{id}', 'App\Http\Controllers\Financeiro\MensalidadesController@show')->where('id', '[0-9]+')->name('financeiro-mensalidades-detalhar');
+});
+
+Route::prefix('financeiro-estoque')->middleware('permission')->group(function () {
+    Route::get('/', 'App\Http\Controllers\Financeiro\EstoqueController@index')->name('financeiro-estoque');
+    Route::get('/criar', 'App\Http\Controllers\Financeiro\EstoqueController@create')->name('financeiro-estoque-criar');
+    Route::post('/registrar', 'App\Http\Controllers\Financeiro\EstoqueController@store')->name('financeiro-estoque-registrar');
+    Route::post('/excluir', 'App\Http\Controllers\Financeiro\EstoqueController@destroy')->name('financeiro-estoque-excluir');
+    Route::get('/{id}/editar', 'App\Http\Controllers\Financeiro\EstoqueController@edit')->where('id', '[0-9]+')->name('financeiro-estoque-editar');
+    Route::post('/{id}/atualizar', 'App\Http\Controllers\Financeiro\EstoqueController@update')->where('id', '[0-9]+')->name('financeiro-estoque-atualizar');
+    Route::get('/{id}', 'App\Http\Controllers\Financeiro\EstoqueController@show')->where('id', '[0-9]+')->name('financeiro-estoque-detalhar');
 });
 
 Route::get('/login', 'App\Http\Controllers\LoginController@login')->name('login-view');

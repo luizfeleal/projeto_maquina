@@ -5,7 +5,6 @@
         <div id="relatorios" class="relatorios w-100 div-center-column"
                 style=" padding-top: 99px; padding-bottom: 100px;">
 
-                <h1 style="padding-top: 80px; text-align: center;">Relatórios</h1>
             <div class="container section container-platform div-center-column"
                 style=" height: 100%;">
 
@@ -14,7 +13,7 @@
                         <!--<div class="row" style="display: flex; flex-direction: row; justify-content: center; margin-bottom: 20px; width: 100%; margin-top: 50px;">-->
                         <div class="row" style="display: flex; flex-direction: row; justify-content: center; margin-bottom: 20px; width: 100%; margin-top: 100px; ">
                             <div class="col-md-3" style="cursor: pointer;">
-                                <button type="button" class="btn btn-primary  w-100" data-bs-toggle="collapse" href="#multiCollapseExample1" role="button" aria-expanded="true" aria-controls="multiCollapseExample1">Total Transações</button>
+                                <button type="button" class="btn btn-primary  w-100" data-bs-toggle="collapse" href="#multiCollapseExample1" role="button" aria-expanded="true" aria-controls="multiCollapseExample1">Total extrato</button>
                             </div>
                             <div class="col-md-3" style="cursor: pointer;">
                                 <button type="button" class="btn btn-primary w-100"  data-bs-toggle="collapse" data-bs-target="#multiCollapseExample2" aria-expanded="false" aria-controls="multiCollapseExample2">Taxas de Descontos</button>
@@ -31,7 +30,7 @@
                             </div>
                             </div>
                         </div>
-                        <!--RELATÓRIO DE TRANSAÇÕES-->
+                        <!--RELATÓRIO DE EXTRATO-->
                         <div class="collapse multi-collapse " id="multiCollapseExample1" style="width: 100%;">
                             <form action="{{ route('relatorio-criar') }}" method="post" class="form-center">
                                 @csrf
@@ -82,7 +81,7 @@
 
                                     </div>-->
                                     <div class="col-md-8">
-                                        <label for="tipo_transacao" class="form-label">Tipo:</label>
+                                        <label for="tipo_transacao" class="form-label">Forma de pagamento:</label>
                                         <select class="form-select" name="tipo_transacao" id="tipo_transacao" aria-label="Default select example">
                                             <option value="" selected>Escolher...</option>
                                             <option value="PIX">Pix</option>
@@ -261,46 +260,6 @@
 
                     <!--</form>-->
 
-                            @if(session('success'))
-
-                                <div class="modal fade show" id="modalSuccess" tabindex="-1" aria-labelledby="exampleModalCenterTitle" aria-modal="true" role="dialog" style="display: block;">
-                                    <div class="modal-dialog modal-dialog-centered">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h1 class="modal-title fs-5" id="exampleModalCenterTitle">Sucesso</h1>
-                                                <button type="button" class="btn-close" onclick="fechaModal('modalSuccess')" aria-label="Close"></button>
-                                            </div>
-                                            <div class="modal-body">
-                                                <p>{{ session('success') }}</p>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-primary" onclick="fechaModal('modalSuccess')" data-dismiss="modal" aria-label="Close">OK</button>
-                                            </div>
-
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="modal-backdrop fade show" id="modalSuccess-backdrop"></div>
-                            @elseif(session('error'))
-                                <div class="modal fade show" id="modalError" tabindex="-1" aria-labelledby="exampleModalCenterTitle" aria-modal="true" role="dialog" style="display: block;">
-                                        <div class="modal-dialog modal-dialog-centered">
-                                            <div class="modal-content">
-
-                                                <div class="modal-header">
-                                                    <h1 class="modal-title fs-5" id="exampleModalCenterTitle">Erro</h1>
-                                                    <button type="button" class="btn-close" onclick="fechaModal('modalError')" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <p>{{ session('error') }}</p>
-                                                </div>
-                                                <div class="modal-footer">
-                                                        <button type="button" class="btn btn-primary" onclick="fechaModal('modalError')" data-bs-dismiss="modal" aria-label="Close">OK</button>
-                                                </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="modal-backdrop fade show" id="modalError-backdrop"></div>
-                            @endif
             </div>
         </div>
 

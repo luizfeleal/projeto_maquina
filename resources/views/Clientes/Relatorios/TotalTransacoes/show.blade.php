@@ -1,6 +1,6 @@
 @extends('layouts.Clientes.app')
 
-@section('title', 'Relatórios > Total Transações')
+@section('title', 'Relatórios > Total extrato')
 
 @section('content')
     <div id="reports_maquinas_online_offline" class="relatorios div-center-column w-100"
@@ -13,16 +13,68 @@
                 @csrf
                 <input type="hidden" name="tipo_csv" value="total_transacao">
                 <input type="hidden" name="data" value="{{json_encode($bodyReq)}}">
-                <h1>Total Transações</h1>
+
+                <div class="row" style="display: flex; flex-direction: row; justify-content: center; width: 100%; margin-bottom: 24px;">
+                    @if(empty($tipo_transacao) || $tipo_transacao == 'PIX')
+                    <div class="col-md-2">
+                        <p><strong>Pix: </strong> R$
+
+                        @foreach($total as $item)
+                            @if($item['tipo'] == "Pix")
+                            <span id="valor_total_pix">{{number_format($item['total'], 2, ',', '.')}}</span>
+                            @endif
+                        @endforeach
+                         </p>
+                    </div>
+                    @endif
+                    @if(empty($tipo_transacao) || $tipo_transacao == 'Cartão')
+                    <div class="col-md-2">
+                        <p><strong>Cartão: </strong> R$
+                        @foreach($total as $item)
+                            @if($item['tipo'] == "Cartão")
+                            <span id="valor_total_cartao">{{number_format($item['total'], 2, ',', '.')}}</span>
+                            @endif
+                        @endforeach </p>
+                    </div>
+                    @endif
+                    @if(empty($tipo_transacao) || $tipo_transacao == 'Dinheiro')
+                    <div class="col-md-2">
+                        <p><strong>Dinheiro: </strong> R$
+                        @foreach($total as $item)
+                            @if($item['tipo'] == "Dinheiro")
+                            <span id="valor_total_dinheiro">{{number_format($item['total'], 2, ',', '.')}}</span>
+                            @endif
+                        @endforeach </p>
+                    </div>
+                    @endif
+                    @if(empty($tipo_transacao) || $tipo_transacao == 'Estorno')
+                    <div class="col-md-2">
+                        <p><strong>Estorno: </strong> R$
+                        @foreach($total as $item)
+                            @if($item['tipo'] == "Estorno")
+                            <span id="valor_total_estorno">{{number_format($item['total'], 2, ',', '.')}}</span>
+                            @endif
+                        @endforeach </p>
+                    </div>
+                    @endif
+                </div>
+                @if(empty($tipo_transacao))
+                <div class="row" style="display: flex; flex-direction: row; justify-content: center; width: 100%; margin-bottom: 28px;">
+                    <div class="col-md-8">
+                        <h4 style="color: #1e2e5e;"><strong>Total extrato: </strong> R$
+                            <span id="valor_total_transacoes">{{number_format($totalTransacoes, 2, ',', '.')}}</span></h4>
+                    </div>
+                </div>
+                @endif
 
                 <div class="tabela_responsiva">
 
-                    <table id="total_transacoes" class="table table-striped table-responsive" style="width:100%">
+                    <table id="total_transacoes" class="table table-striped table-responsive" style="width:100%" no-card-view>
                         <thead>
                             <tr>
                                 <!--<th>Local</th>-->
                                 <th>Maquina</th>
-                                <th>Tipo Transação</th>
+                                <th>Forma de pagamento</th>
                                 <th>Valor</th>
                                 <th>Data e Hora</th>
                             </tr>
@@ -34,7 +86,7 @@
                             <tr>
                                 <!--<th>Local</th>-->
                                 <th>Maquina</th>
-                                <th>Tipo Transação</th>
+                                <th>Forma de pagamento</th>
                                 <th>Valor</th>
                                 <th>Data e Hora</th>
                             </tr>
@@ -42,93 +94,13 @@
                     </table>
                 </div>
 
-                <div class="row" style="display: flex; flex-direction: row; justify-content: center; width: 100%; margin-top: 50px;">
-                    <div class="col-md-2">
-                        <p><strong>Pix: </strong> R$ 
-
-                        @foreach($total as $item)
-                            @if($item['tipo'] == "Pix")
-                            <span id="valor_total_pix">{{number_format($item['total'], 2, ',', '.')}}</span>
-                            @endif
-                        @endforeach
-                         </p>
-                    </div>
-                    <div class="col-md-2">
-                        <p><strong>Cartão: </strong> R$ 
-                        @foreach($total as $item)
-                            @if($item['tipo'] == "Cartão")
-                            <span id="valor_total_pix">{{number_format($item['total'], 2, ',', '.')}}</span>
-                            @endif
-                        @endforeach </p>
-                    </div>
-                    <div class="col-md-2">
-                        <p><strong>Dinheiro: </strong> R$
-                        @foreach($total as $item)
-                            @if($item['tipo'] == "Dinheiro")
-                            <span id="valor_total_pix">{{number_format($item['total'], 2, ',', '.')}}</span>
-                            @endif
-                        @endforeach </p>
-                    </div>
-                    <div class="col-md-2">
-                        <p><strong>Estorno: </strong> R$ 
-                        @foreach($total as $item)
-                            @if($item['tipo'] == "Estorno")
-                            <span id="valor_total_pix">{{number_format($item['total'], 2, ',', '.')}}</span>
-                            @endif
-                        @endforeach </p>
-                    </div>
-                </div>
-                <div class="row" style="display: flex; flex-direction: row; justify-content: center; width: 100%; margin-top: 10px; margin-bottom: 30px;">
-                    <div class="col-md-8">
-                        <h4 style="color: #242a74;"><strong>Total Transações: </strong> R$
-                            <span id="valor_total_pix">{{number_format($totalTransacoes, 2, ',', '.')}}</span></h4>
-                    </div>
-                </div>
-
-                <div class="div-button" style="padding-top: 70px; padding-bottom: 30px;">
+                <div class="div-button" style="padding-top: 40px; padding-bottom: 30px;">
                     <button class="btn btn-primary" id="btn-baixar-csv" type="submit" style="width: 130px;">Gerar Arquivo</button>
                 </div>
             </form>
         </div>
     </div>
 
-    @if(session('success'))
-        <div class="modal fade show" id="modalSuccess" tabindex="-1" aria-labelledby="exampleModalCenterTitle" aria-modal="true" role="dialog" style="display: block;">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="exampleModalCenterTitle">Sucesso</h1>
-                        <button type="button" class="btn-close" onclick="fechaModal('modalSuccess')" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <p>{{ session('success') }}</p>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" onclick="fechaModal('modalSuccess')" data-dismiss="modal" aria-label="Close">OK</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="modal-backdrop fade show" id="modalSuccess-backdrop"></div>
-    @elseif(session('error'))
-        <div class="modal fade show" id="modalError" tabindex="-1" aria-labelledby="exampleModalCenterTitle" aria-modal="true" role="dialog" style="display: block;">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="exampleModalCenterTitle">Erro</h1>
-                        <button type="button" class="btn-close" onclick="fechaModal('modalError')" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <p>{{ session('error') }}</p>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" onclick="fechaModal('modalError')" data-bs-dismiss="modal" aria-label="Close">OK</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="modal-backdrop fade show" id="modalError-backdrop"></div>
-    @endif
 @endsection
 
 @section('scriptTable')
@@ -167,7 +139,7 @@
         "columns": [
             //{ "data": "local_nome" },
             { "data": "maquina_nome" },
-            { "data": "extrato_operacao_tipo" },
+            { "data": "extrato_operacao_tipo", "title": "Forma de pagamento" },
             {
                 "data": "extrato_operacao_valor",
                 "orderable": true,

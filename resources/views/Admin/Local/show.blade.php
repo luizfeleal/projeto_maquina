@@ -5,7 +5,6 @@
         <div id="local-criar" class="local div-center-column w-100"
                 style="padding-top: 99px;">
 
-                <h1  style="padding-top: 80px; text-align: center;">Detalhar Local</h1>
             <div class="container section container-platform div-center-column"
                 style="margin-top: 15px; height: 100%;">
 
@@ -53,7 +52,7 @@
                                     <th>Total máquina</th>
                                     <th>Total PIX</th>
                                     <th>Total cartão</th>
-                                    <th>Total físico</th>
+                                    <th>Total dinheiro</th>
         
         
                                 </tr>
@@ -73,7 +72,7 @@
                                     <th>Total máquina</th>
                                     <th>Total PIX</th>
                                     <th>Total cartão</th>
-                                    <th>Total físico</th>
+                                    <th>Total dinheiro</th>
                                 </tr>
                             </tfoot>
                         </table>
@@ -101,46 +100,6 @@
                             </div>
                         </div>
                     </div>
-                            @if(session('success'))
-
-                                <div class="modal fade show" id="modalSuccess" tabindex="-1" aria-labelledby="exampleModalCenterTitle" aria-modal="true" role="dialog" style="display: block;">
-                                    <div class="modal-dialog modal-dialog-centered">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h1 class="modal-title fs-5" id="exampleModalCenterTitle">Sucesso</h1>
-                                                <button type="button" class="btn-close" onclick="fechaModal('modalSuccess')" aria-label="Close"></button>
-                                            </div>
-                                            <div class="modal-body">
-                                                <p>{{ session('success') }}</p>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-primary" onclick="fechaModal('modalSuccess')" data-dismiss="modal" aria-label="Close">OK</button>
-                                            </div>
-
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="modal-backdrop fade show" id="modalSuccess-backdrop"></div>
-                            @elseif(session('error'))
-                                <div class="modal fade show" id="modalError" tabindex="-1" aria-labelledby="exampleModalCenterTitle" aria-modal="true" role="dialog" style="display: block;">
-                                        <div class="modal-dialog modal-dialog-centered">
-                                            <div class="modal-content">
-
-                                                <div class="modal-header">
-                                                    <h1 class="modal-title fs-5" id="exampleModalCenterTitle">Erro</h1>
-                                                    <button type="button" class="btn-close" onclick="fechaModal('modalError')" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <p>{{ session('error') }}</p>
-                                                </div>
-                                                <div class="modal-footer">
-                                                        <button type="button" class="btn btn-primary" onclick="fechaModal('modalError')" data-bs-dismiss="modal" aria-label="Close">OK</button>
-                                                </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="modal-backdrop fade show" id="modalError-backdrop"></div>
-                            @endif
             </div>
         </div>
 
@@ -244,7 +203,7 @@
                             },
                             { 
                                 data: 'total_dinheiro', 
-                                title: 'Total físico', 
+                                title: 'Total dinheiro', 
                                 render: function(data) { 
                                     if (data === null || data === undefined) {
                                         return 'R$ 0,00';

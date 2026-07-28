@@ -12,6 +12,8 @@ use App\Services\ClientesService;
 use App\Services\ClienteLocalService;
 use App\Services\AuthService;
 use App\Services\QrCodeService;
+use App\Services\ExtratoMaquinaService;
+use App\Support\ApiClient;
 
 class MaquinasController extends Controller
 {
@@ -112,28 +114,509 @@ class MaquinasController extends Controller
 
     public function coletarTodasAsMaquinas(Request $request)
     {
-        $locais = LocaisService::coletar();
-        $maquinas = MaquinasService::coletar();
-        $maquinas_extrato = MaquinasService::coletarTodasAsMaquinasComUltimaTransacao();
+        return view('Admin.Maquinas.index');
+    }
 
-        // Indexando locais por id_local
-        $locais_indexados = [];
-        foreach ($locais as $local) {
-            $locais_indexados[$local['id_local']] = $local;
+    public function coletarTodasAsMaquinasDados(Request $request)
+    {
+        $maquinas = MaquinasService::coletarTodasAsMaquinasComUltimaTransacao();
+
+        if (!is_array($maquinas)) {
+            return response()->json([]);
         }
 
-        // Se você quiser um array com índices numéricos simples, pode utilizar array_values
-        $resultado = array_values($maquinas_extrato);
+        $todasMaquinas = MaquinasService::coletar();
+        if (!is_array($todasMaquinas)) {
+            $todasMaquinas = [];
+        }
 
+        $maquinasPorId = [];
+        foreach ($todasMaquinas as $m) {
+            if (is_array($m) && isset($m['id_maquina'])) {
+                $maquinasPorId[(string) $m['id_maquina']] = $m;
+            }
+        }
 
+        $locaisPorId = [];
+        foreach (LocaisService::coletar() as $local) {
+            if (is_array($local) && isset($local['id_local'])) {
+                $locaisPorId[$local['id_local']] = $local['local_nome'] ?? '—';
+            }
+        }
 
-        return view('Admin.Maquinas.index', compact('resultado'));
-        //return view('Admin.Maquinas.index');
+        $enriched = [];
+        foreach ($maquinas as $row) {
+            if (!is_array($row)) {
+                continue;
+            }
+
+            $idMaq   = (string) ($row['id_maquina'] ?? '');
+            $base    = $maquinasPorId[$idMaq] ?? [];
+            $idLocal = $base['id_local'] ?? ($row['id_local'] ?? null);
+
+            $localNome = trim((string) ($row['local_nome'] ?? ($base['local_nome'] ?? '')));
+            if ($localNome === '' && $idLocal !== null && isset($locaisPorId[$idLocal])) {
+                $localNome = (string) $locaisPorId[$idLocal];
+            }
+            if ($localNome === '') {
+                $localNome = '—';
+            }
+
+            $idPlaca = trim((string) ($row['id_placa'] ?? ($base['id_placa'] ?? '')));
+            if ($idPlaca === '') {
+                $idPlaca = '—';
+            }
+
+            $enriched[] = array_merge($row, [
+                'id_local'   => $idLocal,
+                'local_nome' => $localNome,
+                'id_placa'   => $idPlaca,
+            ]);
+        }
+
+        return response()->json(array_values($enriched));
     }
 
     public function transacaoMaquinas(Request $request)
     {
-        return view('Admin.Maquinas.Transacoes.index');
+        $idMaquinaSel = $request->input('id_maquina');
+        $idClienteSel = $request->input('id_cliente');
+        $idLocalSel   = $request->input('id_local');
+        $dataInicio   = $request->input('data_inicio');
+        $dataFim      = $request->input('data_fim');
+        $tipoOperacao = $request->input('tipo_operacao');
+        $mostrarTaxas = $request->boolean('mostrar_taxas');
+
+        $clientes     = ClientesService::coletar();
+        $locais       = LocaisService::coletar();
+        $maquinas     = MaquinasService::coletar();
+        $clienteLocal = ClienteLocalService::coletar();
+
+        try {
+            $extratoResponse = ExtratoMaquinaService::coletarComPaginacao([
+                'length' => 5000,
+                'start'  => 0,
+                'order'  => [['column' => 4, 'dir' => 'desc']],
+            ]);
+            $todasTransacoes = array_values(array_filter(
+                $extratoResponse['data'] ?? [],
+                fn($tx) => is_array($tx)
+            ));
+        } catch (\Throwable $e) {
+            $todasTransacoes = [];
+        }
+
+        $maquinasFiltradas = $this->resolveMaquinasFiltradas($idClienteSel, $idLocalSel, $idMaquinaSel);
+
+        $resultado = $todasTransacoes;
+        if ($idClienteSel || $idLocalSel || $idMaquinaSel) {
+            $resultado = array_values(array_filter(
+                $resultado,
+                fn($tx) => $this->transacaoCorrespondeMaquinas($tx, $maquinasFiltradas)
+            ));
+        }
+
+        $resultado = $this->filtrarTransacoesPorData($resultado, $dataInicio, $dataFim);
+        $resultado = $this->filtrarTransacoesPorTipo($resultado, $tipoOperacao);
+
+        if (!$mostrarTaxas) {
+            $resultado = array_values(array_filter(
+                $resultado,
+                fn($tx) => !$this->isTransacaoTaxa($tx)
+            ));
+        }
+
+        $totalPix = $totalCartao = $totalDinheiro = $totalDevolucao = 0.0;
+        foreach ($resultado as $tx) {
+            $valor = (float) ($tx['extrato_operacao_valor'] ?? 0);
+            $tipo  = strtolower($tx['extrato_operacao_tipo'] ?? '');
+            $op    = $tx['extrato_operacao'] ?? 'C';
+
+            if ($op === 'D') {
+                $totalDevolucao += $valor;
+            } elseif (str_contains($tipo, 'pix')) {
+                $totalPix += $valor;
+            } elseif (str_contains($tipo, 'cart')) {
+                $totalCartao += $valor;
+            } elseif (str_contains($tipo, 'dinheir') || str_contains($tipo, 'físic') || str_contains($tipo, 'fisic')) {
+                $totalDinheiro += $valor;
+            }
+        }
+
+        $totalAcumulado = $this->somarTransacoesAdmin($resultado);
+        $totalSaldo     = round($totalAcumulado - $totalDevolucao, 2);
+
+        $resumo = [
+            'total_acumulado' => $totalAcumulado,
+            'total_saldo'     => $totalSaldo,
+            'total_pix'       => $totalPix,
+            'total_cartao'    => $totalCartao,
+            'total_dinheiro'  => $totalDinheiro,
+            'total_devolucao' => $totalDevolucao,
+            'ids_maquinas'    => [],
+        ];
+
+        $maquinaNomeSel = null;
+        if ($idMaquinaSel && is_array($maquinas)) {
+            foreach ($maquinas as $maq) {
+                if ((string) ($maq['id_maquina'] ?? '') === (string) $idMaquinaSel) {
+                    $maquinaNomeSel = $maq['maquina_nome'] ?? null;
+                    break;
+                }
+            }
+        }
+
+        return view('Admin.Maquinas.Transacoes.index', compact(
+            'resultado',
+            'resumo',
+            'clientes',
+            'locais',
+            'maquinas',
+            'clienteLocal',
+            'idMaquinaSel',
+            'idClienteSel',
+            'idLocalSel',
+            'maquinaNomeSel',
+            'dataInicio',
+            'dataFim',
+            'tipoOperacao',
+            'mostrarTaxas'
+        ));
+    }
+
+    private function somarTransacoesAdmin(array $transacoes): float
+    {
+        $total = 0.0;
+        foreach ($transacoes as $tx) {
+            $valor  = (float) ($tx['extrato_operacao_valor'] ?? 0);
+            $op     = $tx['extrato_operacao'] ?? 'C';
+            $total += ($op === 'D') ? -$valor : $valor;
+        }
+
+        return round($total, 2);
+    }
+
+    public function transacaoMaquinasDados(Request $request)
+    {
+        $length      = max((int) $request->input('length', 10), 1);
+        $start       = (int) $request->input('start', 0);
+        $mostrarTaxas = $request->boolean('mostrar_taxas');
+
+        $idCliente = $request->input('id_cliente');
+        $idLocal   = $request->input('id_local');
+        $idMaquina = $request->input('id_maquina');
+
+        $dataInicio   = $request->input('data_inicio');
+        $dataFim      = $request->input('data_fim');
+        $tipoOperacao = $request->input('tipo_operacao');
+
+        $hasFilter = !empty($idCliente) || !empty($idLocal) || !empty($idMaquina);
+        $hasFiltroExtrato = $request->filled('data_inicio')
+            || $request->filled('data_fim')
+            || $request->filled('tipo_operacao');
+        $needsLocalProcessing = $hasFilter || !$mostrarTaxas || $hasFiltroExtrato;
+
+        $params = $this->buildExtratoMaquinaQueryParams($request);
+
+        if ($needsLocalProcessing) {
+            $params['start']  = 0;
+            $params['length'] = 5000;
+        }
+
+        try {
+            $response = ApiClient::get('/extratoMaquina', $params);
+        } catch (\Throwable $e) {
+            \Log::error('[transacaoMaquinasDados] ' . $e->getMessage());
+
+            return response()->json([
+                'draw'            => (int) $request->input('draw', 1),
+                'recordsTotal'    => 0,
+                'recordsFiltered' => 0,
+                'data'            => [],
+            ]);
+        }
+
+        if (!$response->successful()) {
+            \Log::error('[transacaoMaquinasDados] API status ' . $response->status(), [
+                'body' => substr($response->body(), 0, 500),
+            ]);
+
+            return response()->json([
+                'draw'            => (int) $request->input('draw', 1),
+                'recordsTotal'    => 0,
+                'recordsFiltered' => 0,
+                'data'            => [],
+            ]);
+        }
+
+        $body = $response->json();
+        if (!is_array($body)) {
+            return response()->json([
+                'draw'            => (int) $request->input('draw', 1),
+                'recordsTotal'    => 0,
+                'recordsFiltered' => 0,
+                'data'            => [],
+            ]);
+        }
+
+        $data = $body['data'] ?? [];
+        if (!is_array($data)) {
+            $data = [];
+        }
+        $data = array_values(array_filter($data, fn($tx) => is_array($tx)));
+
+        if (!$mostrarTaxas) {
+            $data = array_values(array_filter($data, fn($tx) => !$this->isTransacaoTaxa($tx)));
+        }
+
+        if ($hasFilter) {
+            $maquinasFiltradas = $this->resolveMaquinasFiltradas($idCliente, $idLocal, $idMaquina);
+
+            if (empty($maquinasFiltradas)) {
+                return response()->json([
+                    'draw'            => (int) $request->input('draw', 1),
+                    'recordsTotal'    => 0,
+                    'recordsFiltered' => 0,
+                    'data'            => [],
+                ]);
+            }
+
+            $data = array_values(array_filter(
+                $data,
+                fn($tx) => $this->transacaoCorrespondeMaquinas($tx, $maquinasFiltradas)
+            ));
+        }
+
+        if ($request->filled('data_inicio') || $request->filled('data_fim')) {
+            $data = $this->filtrarTransacoesPorData($data, $dataInicio, $dataFim);
+        }
+
+        if ($request->filled('tipo_operacao')) {
+            $data = $this->filtrarTransacoesPorTipo($data, $tipoOperacao);
+        }
+
+        if ($needsLocalProcessing) {
+            $total = count($data);
+            $data  = array_slice($data, $start, $length);
+
+            return response()->json([
+                'draw'            => (int) $request->input('draw', 1),
+                'recordsTotal'    => $body['recordsTotal'] ?? $total,
+                'recordsFiltered' => $total,
+                'data'            => $data,
+            ]);
+        }
+
+        return response()->json([
+            'draw'            => (int) $request->input('draw', 1),
+            'recordsTotal'    => $body['recordsTotal'] ?? count($data),
+            'recordsFiltered' => $body['recordsFiltered'] ?? count($data),
+            'data'            => $data,
+        ]);
+    }
+
+    private function isTransacaoTaxa(array $tx): bool
+    {
+        $tipo = strtolower(trim((string) ($tx['extrato_operacao_tipo'] ?? '')));
+
+        return str_contains($tipo, 'taxa');
+    }
+
+    private function resolveMaquinasFiltradas(?string $idCliente, ?string $idLocal, ?string $idMaquina): array
+    {
+        $maquinas = MaquinasService::coletar();
+        if (!is_array($maquinas)) {
+            return [];
+        }
+
+        $filtradas = array_values($maquinas);
+
+        if ($idMaquina) {
+            $filtradas = array_values(array_filter(
+                $filtradas,
+                fn($m) => (string) ($m['id_maquina'] ?? '') === (string) $idMaquina
+            ));
+        }
+
+        if ($idLocal) {
+            $filtradas = array_values(array_filter(
+                $filtradas,
+                fn($m) => (string) ($m['id_local'] ?? '') === (string) $idLocal
+            ));
+        }
+
+        if ($idCliente) {
+            $locaisCliente = array_column(
+                array_filter(
+                    ClienteLocalService::coletar(),
+                    fn($cl) => (string) ($cl['id_cliente'] ?? '') === (string) $idCliente
+                ),
+                'id_local'
+            );
+            $filtradas = array_values(array_filter(
+                $filtradas,
+                fn($m) => in_array($m['id_local'] ?? null, $locaisCliente)
+            ));
+        }
+
+        return $filtradas;
+    }
+
+    private function transacaoCorrespondeMaquinas(array $tx, array $maquinasFiltradas): bool
+    {
+        $txMaquina = trim((string) ($tx['maquina_nome'] ?? ''));
+        $txIdMaq   = $tx['id_maquina'] ?? null;
+
+        foreach ($maquinasFiltradas as $maq) {
+            $idMaq = $maq['id_maquina'] ?? null;
+
+            if ($txIdMaq !== null && (string) $txIdMaq === (string) $idMaq) {
+                return true;
+            }
+
+            if ($txMaquina !== '' && strcasecmp($txMaquina, trim((string) ($maq['maquina_nome'] ?? ''))) === 0) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function buildExtratoMaquinaQueryParams(Request $request): array
+    {
+        $params = [];
+
+        foreach ($request->query() as $key => $value) {
+            if ($key === 'search' && is_array($value)) {
+                $params['search'] = $value['value'] ?? '';
+                continue;
+            }
+
+            if (in_array($key, ['search_value', 'page', 'per_page', 'id_cliente', 'id_local', 'id_maquina', 'mostrar_taxas'], true)) {
+                continue;
+            }
+
+            $params[$key] = $value;
+        }
+
+        if (!array_key_exists('search', $params)) {
+            $params['search'] = $request->input('search.value', '');
+        }
+
+        foreach (['data_inicio', 'data_fim', 'tipo_operacao'] as $filtro) {
+            if ($request->filled($filtro)) {
+                $params[$filtro] = $request->input($filtro);
+            }
+        }
+
+        return $params;
+    }
+
+    private function filtrarTransacoesPorTipo(array $transacoes, ?string $tipoOperacao): array
+    {
+        if (empty($tipoOperacao)) {
+            return $transacoes;
+        }
+
+        return array_values(array_filter(
+            $transacoes,
+            fn($tx) => $this->transacaoCorrespondeTipo($tx, $tipoOperacao)
+        ));
+    }
+
+    private function transacaoCorrespondeTipo(array $tx, string $tipoOperacao): bool
+    {
+        $tipo = strtolower($tx['extrato_operacao_tipo'] ?? '');
+
+        return match (strtolower($tipoOperacao)) {
+            'pix' => str_contains($tipo, 'pix'),
+            'cartao', 'cartão' => str_contains($tipo, 'cart'),
+            'dinheiro' => str_contains($tipo, 'dinheir')
+                || str_contains($tipo, 'físic')
+                || str_contains($tipo, 'fisic'),
+            default => $tipo === strtolower($tipoOperacao),
+        };
+    }
+
+    private function filtrarTransacoesPorData(array $transacoes, ?string $dataInicio, ?string $dataFim): array
+    {
+        if (empty($dataInicio) && empty($dataFim)) {
+            return $transacoes;
+        }
+
+        $inicioTs = $dataInicio ? strtotime($dataInicio . ' 00:00:00') : null;
+        $fimTs    = $dataFim ? strtotime($dataFim . ' 23:59:59') : null;
+
+        return array_values(array_filter($transacoes, function ($tx) use ($inicioTs, $fimTs) {
+            $ts = $this->parseDataCriacaoExtrato($tx['data_criacao'] ?? null);
+            if ($ts === null) {
+                return false;
+            }
+            if ($inicioTs !== null && $ts < $inicioTs) {
+                return false;
+            }
+            if ($fimTs !== null && $ts > $fimTs) {
+                return false;
+            }
+
+            return true;
+        }));
+    }
+
+    private function parseDataCriacaoExtrato(?string $value): ?int
+    {
+        if ($value === null || $value === '') {
+            return null;
+        }
+
+        $dt = \DateTime::createFromFormat('d/m/Y H:i', $value);
+        if ($dt !== false) {
+            return $dt->getTimestamp();
+        }
+
+        $ts = strtotime($value);
+
+        return $ts !== false ? $ts : null;
+    }
+
+    public function resetParcial(Request $request)
+    {
+        $request->validate(['id_maquina' => 'required']);
+
+        try {
+            $idMaquina   = $request->input('id_maquina');
+            $realizadoPor = session('id_usuario') ?? session('usuario_id') ?? auth()->id() ?? '1';
+
+            $dados = [
+                'realizado_por' => (string) $realizadoPor,
+                'observacao'    => $request->input('observacao'),
+            ];
+
+            $resultado = ExtratoMaquinaService::resetParcial($idMaquina, $dados);
+
+            if ($resultado['success'] ?? false) {
+                return back()->with('success', 'Reset parcial registrado com sucesso.');
+            }
+
+            return back()->with('error', $resultado['message'] ?? 'Houve um erro ao registrar o reset parcial.');
+        } catch (\Throwable $e) {
+            \Log::error('[resetParcial] Erro: ' . $e->getMessage());
+            return back()->with('error', 'Houve um erro ao registrar o reset parcial.');
+        }
+    }
+
+    public function historicoResets(Request $request)
+    {
+        $filtros = array_filter([
+            'id_maquina' => $request->input('id_maquina'),
+            'data_inicio' => $request->input('data_inicio'),
+            'data_fim'    => $request->input('data_fim'),
+            'page'        => $request->input('page', 1),
+        ]);
+
+        $resets = ExtratoMaquinaService::historicoResets($filtros);
+
+        return view('Admin.Maquinas.Acumulado.historico', compact('resets'));
     }
 
     public function acumuladoMaquinas(Request $request)
@@ -237,9 +720,11 @@ class MaquinasController extends Controller
         foreach ($maquinasCartao as $maquinaCartao) {
             if (isset($maquinasIndexadas[$maquinaCartao['id_maquina']])) {
                 $maquinaCartao['maquina_nome'] = $maquinasIndexadas[$maquinaCartao['id_maquina']]['maquina_nome'];
+                $maquinaCartao['id'] = $maquinaCartao['id_maquina_cartao'] ?? $maquinaCartao['id'] ?? null;
                 $maquinasCartaoFiltradas[] = $maquinaCartao;
             }else{
                 $maquinaCartao['maquina_nome'] = 'Máquina Removida';
+                $maquinaCartao['id'] = $maquinaCartao['id_maquina_cartao'] ?? $maquinaCartao['id'] ?? null;
                 $maquinasCartaoFiltradas[] = $maquinaCartao;
             }
         }

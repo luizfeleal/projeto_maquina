@@ -2,267 +2,251 @@
 @section('title', 'Detalhar Máquina')
 @section('content')
 
-<div id="maquinas" class="maquina div-center-column w-100"
-    style="padding-top: 99px;">
+@php
+    $ativo          = ($maquinas['maquina_status']       ?? 0) == 1;
+    $bloqueioEfi    = ($maquinas['bloqueio_jogada_efi']    ?? 0) == 1;
+    $bloqueioPagbank = ($maquinas['bloqueio_jogada_pagbank'] ?? 0) == 1;
+@endphp
 
-    <h1 style="padding-top: 80px; text-align: center;">Detalhar Máquina</h1>
-    <div class="container section container-platform div-center-column"
-        style="margin-top: 15px; height: 100%;">
+<div class="page-heading">
+    <h1>Detalhar Máquina</h1>
+    <p>Informações e configurações da máquina</p>
+</div>
 
+<div class="content-body" style="padding-top:0;">
 
-        <div style="display: flex; flex-direction: row; justify-content: center;width: 100%; margin-top: 50px;">
+    {{-- ── Cabeçalho da máquina ── --}}
+    <div style="background:#fff; border:1px solid #e8ecf0; border-radius:16px;
+                box-shadow:0 1px 4px rgba(0,0,0,.05); overflow:hidden; margin-bottom:16px;">
 
-            @if($maquinas['maquina_status'] == 0)
-            <p><strong>Status: </strong> <i class="fa-solid fa-circle text-danger"></i></p>
-            @else
-            <p><strong>Status: </strong> <i class="fa-solid fa-circle text-success"></i></p>
-            @endif
+        <div style="padding:20px 24px; border-bottom:1px solid #f3f4f6;
+                    display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;">
+            <div style="display:flex; align-items:center; gap:14px;">
+                <div style="width:52px; height:52px; border-radius:14px; flex-shrink:0;
+                            background:#e0f2fe; display:flex; align-items:center; justify-content:center;">
+                    <iconify-icon icon="solar:monitor-bold-duotone"
+                                  style="font-size:1.6rem; color:#0284c7;"></iconify-icon>
+                </div>
+                <div>
+                    <h2 style="margin:0 0 3px; font-size:1.15rem; font-weight:700; color:#111827;">
+                        {{ $maquinas['maquina_nome'] }}
+                    </h2>
+                    <p style="margin:0; font-size:.8rem; color:#9ca3af;
+                              display:flex; align-items:center; gap:5px;">
+                        <iconify-icon icon="solar:map-point-bold-duotone"
+                                      style="font-size:.9rem;"></iconify-icon>
+                        {{ $locais['local_nome'] }}
+                    </p>
+                </div>
+            </div>
+
+            <span style="font-size:.8rem; font-weight:700; padding:6px 14px; border-radius:20px;
+                         display:flex; align-items:center; gap:6px;
+                         background:{{ $ativo ? '#dcfce7' : '#fee2e2' }};
+                         color:{{ $ativo ? '#16a34a' : '#dc2626' }};">
+                <span style="width:8px; height:8px; border-radius:50%; flex-shrink:0;
+                             background:{{ $ativo ? '#16a34a' : '#dc2626' }};
+                             {{ $ativo ? 'box-shadow:0 0 0 2px #bbf7d0;' : '' }}"></span>
+                {{ $ativo ? 'Online' : 'Offline' }}
+            </span>
         </div>
 
-
-        <div class="row" style="display: flex; flex-direction: row; justify-content: center;width: 100%; margin-top: 100px;">
-            <div class="col-md-4">
-                <label for="maquina_nome" class="form-label">Nome Máquina:</label>
-                <input type="text" name="maquina_nome" id="maquina_nome" value="{{$maquinas['maquina_nome']}}" class="form-control input-text" placeholder="Nome da Máquina" aria-label="Nome da Máquina" disabled>
-                <div class="invalid-feedback">
-                    <p class="invalid-p" id="maquina_nome_mensagem"></p>
-                </div>
-
+        {{-- Dados técnicos --}}
+        <div style="padding:20px 24px; display:grid;
+                    grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:20px;
+                    border-bottom:1px solid #f3f4f6;">
+            <div>
+                <p style="margin:0 0 4px; font-size:.68rem; font-weight:700; text-transform:uppercase;
+                           letter-spacing:.06em; color:#9ca3af;">ID da Placa</p>
+                <p style="margin:0; font-size:.9rem; font-weight:600; color:#374151;">
+                    {{ $maquinas['id_placa'] }}
+                </p>
             </div>
-            <div class="col-md-4">
-                <label for="id_placa" class="form-label">ID da placa:</label>
-                <input type="text" name="id_placa" id="id_placa" value="{{$maquinas['id_placa']}}" class="form-control input-text" placeholder="Nome da Máquina" aria-label="Nome da Máquina" disabled>
-                <div class="invalid-feedback">
-                    <p class="invalid-p invalid-p-name">Campo obrigatório</p>
-                </div>
-
+            <div>
+                <p style="margin:0 0 4px; font-size:.68rem; font-weight:700; text-transform:uppercase;
+                           letter-spacing:.06em; color:#9ca3af;">Último Contato</p>
+                <p style="margin:0; font-size:.9rem; font-weight:600; color:#374151;">
+                    {{ $maquinas['maquina_ultimo_contato'] }}
+                </p>
             </div>
-        </div>
-
-        <div class="row" style="display: flex; flex-direction: row; justify-content: center; margin-top: 10px; width: 100%;">
-            <div class="col-md-8">
-                <label for="local_nome" class="form-label">Local:</label>
-                <input type="text" name="local_nome" id="local_nome" value="{{$locais['local_nome']}}" class="form-control input-text" placeholder="Local" aria-label="Local" disabled>
-
-                <div class="invalid-feedback">
-                    <p class="invalid-p" id="select_local_mensagem">Campo obrigatório</p>
-                </div>
-            </div>
-        </div>
-        <div class="row" style="display: flex; flex-direction: row; justify-content: center; margin-top: 10px; width: 100%;">
-            <div class="col-md-8">
-                <label for="select-cliente" class="form-label">Cliente(s):</label>
-                <select class="select-cliente js-example-basic-multiple js-states form-control" id="select-cliente" placeholder="Selecione" name="select-cliente[]" multiple="multiple" disabled>
-                    @foreach($clientes as $cliente)
-                    <option value="{{$cliente['id_cliente']}}" selected>{{$cliente['cliente_nome']}}</option>
-                    @endforeach
-                </select>
-                <div class="invalid-feedback">
-                    <p class="invalid-p" id="select_cliente_mensagem">Campo obrigatório</p>
-                </div>
-
-            </div>
-        </div>
-        <div class="row" style="display: flex; flex-direction: row; justify-content: center; margin-top: 10px; width: 100%;">
-            <div class="col-md-8">
-                <label for="select-cliente-email" class="form-label">Email(s):</label>
-                <select class="select-cliente-email js-example-basic-multiple js-states form-control" id="select-cliente-email" placeholder="Selecione" name="select-cliente-email[]" multiple="multiple" disabled>
-                    @foreach($clientes as $cliente)
-                    <option value="{{$cliente['cliente_email']}}" selected>{{$cliente['cliente_email']}}</option>
-                    @endforeach
-                </select>
-                <div class="invalid-feedback">
-                    <p class="invalid-p" id="select_cliente_mensagem">Campo obrigatório</p>
-                </div>
-
-            </div>
-        </div>
-
-        <div class="row" style="display: flex; flex-direction: row; justify-content: center; margin-top: 10px;  width: 100%; margin-bottom: 20px;">
-            <div class="col-md-4">
-                <label for="ultimo_acesso" class="form-label">Último contato:</label>
-                <input type="text" name="ultimo_acesso" id="ultimo_acesso" value="{{$maquinas['maquina_ultimo_contato']}}" class="form-control input-text" placeholder="Nome da Máquina" aria-label="Nome da Máquina" disabled>
-                <div class="invalid-feedback">
-                    <p class="invalid-p invalid-p-name">Campo obrigatório</p>
-                </div>
-
-            </div>
-            <div class="col-md-4">
-                <label for="data_criacao" class="form-label">Data de Criação:</label>
-                <input type="text" name="data_criacao" id="data_criacao" value="{{$maquinas['data_criacao']}}" class="form-control input-text" placeholder="Nome da Máquina" aria-label="Nome da Máquina" disabled>
-                <div class="invalid-feedback">
-                    <p class="invalid-p invalid-p-name">Campo obrigatório</p>
-                </div>
-
+            <div>
+                <p style="margin:0 0 4px; font-size:.68rem; font-weight:700; text-transform:uppercase;
+                           letter-spacing:.06em; color:#9ca3af;">Data de Criação</p>
+                <p style="margin:0; font-size:.9rem; font-weight:600; color:#374151;">
+                    {{ $maquinas['data_criacao'] }}
+                </p>
             </div>
         </div>
 
-        <h5>Configurações:</h5>
-        <div class="row"style="display: flex; flex-direction: row; justify-content: center;width: 100%; margin-bottom: 20px;">
-            <div class="col-md-8">
-                <p><b>Máquina de cartão: </b> {{$possuiMaquinaCartaoAssociada ? 'Sim' : 'Não'}}</p>
+        {{-- Clientes associados --}}
+        @if(!empty($clientes))
+        <div style="padding:16px 24px;">
+            <p style="margin:0 0 10px; font-size:.68rem; font-weight:700; text-transform:uppercase;
+                       letter-spacing:.06em; color:#9ca3af;">Clientes Associados</p>
+            <div style="display:flex; flex-wrap:wrap; gap:6px;">
+                @foreach($clientes as $cliente)
+                <span style="background:#f1f5f9; border:1px solid #e2e8f0; border-radius:8px;
+                             padding:4px 12px; font-size:.78rem; font-weight:600; color:#374151;
+                             display:flex; align-items:center; gap:5px;">
+                    <iconify-icon icon="solar:user-bold-duotone"
+                                  style="font-size:.85rem; color:#6366f1;"></iconify-icon>
+                    {{ $cliente['cliente_nome'] }}
+                </span>
+                @endforeach
             </div>
         </div>
-        <div class="row" style="display: flex; flex-direction: row; justify-content: center;width: 100%; margin-bottom: 20px;">
-            <div class="col-md-8">
-                <p><b>QR Code associado: </b> {{$possuiQrCode ? 'Sim' : 'Não'}}</p>
-            </div>
-        </div>
-
-        <h5>Permissões:</h5>
-        <form action="{{route('maquinas-atualizar')}}" method="POST" id="atualizar-permissao" style="width: 100%;">
-            <input type="hidden" name="id_maquina" id="id_maquina" value="{{$maquinas['id_maquina']}}">
-            <div class="row" style="display: flex; flex-direction: row; justify-content: center;width: 100%; margin-bottom: 20px;">
-                <div class="col-md-8">
-                    <div class="form-check form-switch">
-                        @if($maquinas['bloqueio_jogada_efi'] == 1)
-
-                        <input class="form-check-input" name="bloqueio_jogada_efi" type="checkbox" role="switch" id="checkboxEfi" checked>
-                        @else
-
-                        <input class="form-check-input" name="bloqueio_jogada_efi" type="checkbox" role="switch" id="checkboxEfi">
-                        @endif
-                        <label class="form-check-label" for="flexSwitchCheckDefault">Bloquear jogada Pix</label>
-                    </div>
-                </div>
-            </div>
-
-            <div class="row" style="display: flex; flex-direction: row; justify-content: center;width: 100%; margin-bottom: 20px;">
-                <div class="col-md-8">
-                    <div class="form-check form-switch">
-                        @if($maquinas['bloqueio_jogada_pagbank'] == 1)
-                        <input class="form-check-input" name="bloqueio_jogada_pagbank" type="checkbox" role="switch" id="checkboxPagbank" checked>
-                        @else
-                        <input class="form-check-input" name="bloqueio_jogada_pagbank" type="checkbox" role="switch" id="checkboxPagbank">
-                        @endif
-                        <label class="form-check-label" for="flexSwitchCheckDefault">Bloquear jogada Máquininha</label>
-                    </div>
-                </div>
-            </div>
-
-            <div style="display:flex; justify-content: center; align-items: center;  margin-top: 50px;">
-                <button class="btn btn-primary" type="submit">Salvar permissões</button>
-            </div>
-
-        </form>
-
-        @if(session('success'))
-
-        <div class="modal fade show" id="modalSuccess" tabindex="-1" aria-labelledby="exampleModalCenterTitle" aria-modal="true" role="dialog" style="display: block;">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="exampleModalCenterTitle">Sucesso</h1>
-                        <button type="button" class="btn-close" onclick="fechaModal('modalSuccess')" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <p>{{ session('success') }}</p>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" onclick="fechaModal('modalSuccess')" data-dismiss="modal" aria-label="Close">OK</button>
-                    </div>
-
-                </div>
-            </div>
-        </div>
-        <div class="modal-backdrop fade show" id="modalSuccess-backdrop"></div>
-        @elseif(session('error'))
-        <div class="modal fade show" id="modalError" tabindex="-1" aria-labelledby="exampleModalCenterTitle" aria-modal="true" role="dialog" style="display: block;">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-
-                    <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="exampleModalCenterTitle">Erro</h1>
-                        <button type="button" class="btn-close" onclick="fechaModal('modalError')" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <p>{{ session('error') }}</p>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" onclick="fechaModal('modalError')" data-bs-dismiss="modal" aria-label="Close">OK</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="modal-backdrop fade show" id="modalError-backdrop"></div>
         @endif
     </div>
+
+    {{-- ── Grid: Configurações + Permissões ── --}}
+    <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:16px;">
+
+        {{-- Configurações --}}
+        <div style="background:#fff; border:1px solid #e8ecf0; border-radius:16px;
+                    box-shadow:0 1px 4px rgba(0,0,0,.05); overflow:hidden;">
+            <div style="padding:16px 20px; border-bottom:1px solid #f3f4f6;
+                        display:flex; align-items:center; gap:8px;">
+                <iconify-icon icon="solar:settings-bold-duotone"
+                              style="font-size:1.1rem; color:#6366f1;"></iconify-icon>
+                <h3 style="margin:0; font-size:.9rem; font-weight:700; color:#111827;">Configurações</h3>
+            </div>
+            <div style="padding:16px 20px; display:flex; flex-direction:column; gap:12px;">
+
+                {{-- Máquina de cartão --}}
+                <div style="display:flex; align-items:center; justify-content:space-between; gap:8px;
+                            padding:12px; border-radius:10px; border:1px solid #f3f4f6;
+                            background:{{ $possuiMaquinaCartaoAssociada ? '#f0fdf4' : '#fff7f7' }};">
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <iconify-icon icon="solar:card-bold-duotone"
+                                      style="font-size:1.1rem; color:{{ $possuiMaquinaCartaoAssociada ? '#16a34a' : '#dc2626' }};"></iconify-icon>
+                        <span style="font-size:.85rem; font-weight:600; color:#374151;">Máquina de Cartão</span>
+                    </div>
+                    <span style="font-size:.72rem; font-weight:700; padding:3px 10px; border-radius:20px; white-space:nowrap;
+                                 background:{{ $possuiMaquinaCartaoAssociada ? '#dcfce7' : '#fee2e2' }};
+                                 color:{{ $possuiMaquinaCartaoAssociada ? '#16a34a' : '#dc2626' }};">
+                        {{ $possuiMaquinaCartaoAssociada ? 'Configurado' : 'Não configurado' }}
+                    </span>
+                </div>
+
+                {{-- QR Code --}}
+                <div style="display:flex; align-items:center; justify-content:space-between; gap:8px;
+                            padding:12px; border-radius:10px; border:1px solid #f3f4f6;
+                            background:{{ $possuiQrCode ? '#f0fdf4' : '#fff7f7' }};">
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <iconify-icon icon="solar:qr-code-bold-duotone"
+                                      style="font-size:1.1rem; color:{{ $possuiQrCode ? '#16a34a' : '#dc2626' }};"></iconify-icon>
+                        <span style="font-size:.85rem; font-weight:600; color:#374151;">QR Code</span>
+                    </div>
+                    <span style="font-size:.72rem; font-weight:700; padding:3px 10px; border-radius:20px; white-space:nowrap;
+                                 background:{{ $possuiQrCode ? '#dcfce7' : '#fee2e2' }};
+                                 color:{{ $possuiQrCode ? '#16a34a' : '#dc2626' }};">
+                        {{ $possuiQrCode ? 'Configurado' : 'Não configurado' }}
+                    </span>
+                </div>
+
+            </div>
+        </div>
+
+        {{-- Permissões de pagamento --}}
+        <div style="background:#fff; border:1px solid #e8ecf0; border-radius:16px;
+                    box-shadow:0 1px 4px rgba(0,0,0,.05); overflow:hidden;">
+            <div style="padding:16px 20px; border-bottom:1px solid #f3f4f6;
+                        display:flex; align-items:center; gap:8px;">
+                <iconify-icon icon="solar:lock-bold-duotone"
+                              style="font-size:1.1rem; color:#ca8a04;"></iconify-icon>
+                <h3 style="margin:0; font-size:.9rem; font-weight:700; color:#111827;">Permissões de Pagamento</h3>
+            </div>
+
+            <form action="{{ route('maquinas-atualizar') }}" method="POST" id="atualizar-permissao">
+                @csrf
+                <input type="hidden" name="id_maquina" value="{{ $maquinas['id_maquina'] }}">
+
+                <div style="padding:16px 20px; display:flex; flex-direction:column; gap:12px;">
+
+                    {{-- Jogada Pix --}}
+                    <div id="row-efi"
+                         style="display:flex; align-items:center; justify-content:space-between; gap:8px;
+                                padding:12px; border-radius:10px; border:1px solid #f3f4f6;
+                                background:{{ $bloqueioEfi ? '#fff7f7' : '#f0fdf4' }};">
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <iconify-icon id="icon-efi" icon="solar:money-bag-bold-duotone"
+                                          style="font-size:1.1rem; color:{{ $bloqueioEfi ? '#dc2626' : '#16a34a' }};"></iconify-icon>
+                            <div>
+                                <p style="margin:0; font-size:.85rem; font-weight:600; color:#374151;">Jogada Pix</p>
+                                <p id="label-efi"
+                                   style="margin:0; font-size:.72rem; font-weight:700;
+                                          color:{{ $bloqueioEfi ? '#dc2626' : '#16a34a' }};">
+                                    {{ $bloqueioEfi ? 'Bloqueado' : 'Liberado' }}
+                                </p>
+                            </div>
+                        </div>
+                        <div class="form-check form-switch mb-0">
+                            <input class="form-check-input" name="bloqueio_jogada_efi" type="checkbox"
+                                   role="switch" id="checkboxEfi" {{ $bloqueioEfi ? 'checked' : '' }}>
+                        </div>
+                    </div>
+
+                    {{-- Jogada Máquininha --}}
+                    <div id="row-pagbank"
+                         style="display:flex; align-items:center; justify-content:space-between; gap:8px;
+                                padding:12px; border-radius:10px; border:1px solid #f3f4f6;
+                                background:{{ $bloqueioPagbank ? '#fff7f7' : '#f0fdf4' }};">
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <iconify-icon id="icon-pagbank" icon="solar:card-recive-bold-duotone"
+                                          style="font-size:1.1rem; color:{{ $bloqueioPagbank ? '#dc2626' : '#16a34a' }};"></iconify-icon>
+                            <div>
+                                <p style="margin:0; font-size:.85rem; font-weight:600; color:#374151;">Jogada Máquininha</p>
+                                <p id="label-pagbank"
+                                   style="margin:0; font-size:.72rem; font-weight:700;
+                                          color:{{ $bloqueioPagbank ? '#dc2626' : '#16a34a' }};">
+                                    {{ $bloqueioPagbank ? 'Bloqueado' : 'Liberado' }}
+                                </p>
+                            </div>
+                        </div>
+                        <div class="form-check form-switch mb-0">
+                            <input class="form-check-input" name="bloqueio_jogada_pagbank" type="checkbox"
+                                   role="switch" id="checkboxPagbank" {{ $bloqueioPagbank ? 'checked' : '' }}>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div style="padding:0 20px 20px;">
+                    <button class="btn btn-primary w-100" type="submit">Salvar Permissões</button>
+                </div>
+            </form>
+        </div>
+
+    </div>
+
 </div>
 
 @endsection
 
 @section('scriptTable')
-
 <script>
-    $(document).ready(function() {
+$(document).ready(function () {
 
-        $('.select-cliente').select2({
-            theme: 'bootstrap-5'
-        });
-        $('.select-cliente-email').select2({
-            theme: 'bootstrap-5'
-        });
-        $('.select-local').select2({
-            theme: 'bootstrap-5'
-        });
-        $(".select-local").on('change', () => {
-            setComplementoCliente()
-        });
-        $(".select-cliente").on('change', () => {
-            setComplementoLocal()
-        });
+    function updateToggleRow(rowId, iconId, labelId, blocked) {
+        var $row   = $('#' + rowId);
+        var $icon  = $('#' + iconId);
+        var $label = $('#' + labelId);
+        var color  = blocked ? '#dc2626' : '#16a34a';
+        var bg     = blocked ? '#fff7f7' : '#f0fdf4';
 
-        $("#botao-gerar-id-placa").on('click', async function() {
+        $row.css('background', bg);
+        $icon.attr('style', 'font-size:1.1rem; color:' + color + ';');
+        $label.text(blocked ? 'Bloqueado' : 'Liberado').css('color', color);
+    }
 
-            showLoader();
-            var url = $("#url_web").val() + '/api/gerarIdPlaca';
-
-            // Configurações da requisição
-            const options = {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            };
-
-            try {
-                const response = await fetch(url, options);
-                if (!response.ok) {
-                    throw new Error('Erro ao enviar a requisição: ' + response.statusText);
-                }
-
-                const result = await response.json();
-                $("#id_placa").val(result.id_placa)
-                $("#id_placa_input").val(result.id_placa)
-                $("#id_placa").removeClass('is-invalid')
-            } catch (error) {
-                console.log('deu erro:', error); // Trate qualquer erro
-            } finally {
-                hideLoader();
-            }
-        });
-
-        //Eventos de validação
-
-        $("#maquina_nome").on('blur', () => {
-            validarCampoNome('maquina_nome', 'maquina_nome_mensagem');
-        });
-
-        $(".select-local").on('select2:close', () => {
-            validarSelectLocalCliente('select-local', 'select_local_mensagem');
-        });
-        $(".select-local").on('change', () => {
-            validarSelectLocalCliente('select-local', 'select_local_mensagem');
-        });
-
-        $("#select-cliente").on('select2:close', () => {
-            validarSelectLocalCliente('select-cliente', 'select_cliente_mensagem');
-        });
-        $("#select-cliente").on('change', () => {
-            validarSelectLocalCliente('select-cliente', 'select_cliente_mensagem');
-        });
-
+    $('#checkboxEfi').on('change', function () {
+        updateToggleRow('row-efi', 'icon-efi', 'label-efi', this.checked);
     });
-</script>
 
+    $('#checkboxPagbank').on('change', function () {
+        updateToggleRow('row-pagbank', 'icon-pagbank', 'label-pagbank', this.checked);
+    });
+
+});
+</script>
 @endsection

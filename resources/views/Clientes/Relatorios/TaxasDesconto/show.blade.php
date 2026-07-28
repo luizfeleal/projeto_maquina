@@ -13,17 +13,16 @@
                 <form action="{{ route('cliente-relatorio-xlsx-download') }}" method="post" class="form-center" id="form-csv">
                 <input type="hidden" name="data" value="{{json_encode($resultArray)}}">
                     <input type="hidden" name="tipo_csv" value="taxa_desconto">
-                        <h1>Taxas de Desconto</h1>
 
                         @csrf
 
                         
-                        <table id="total_transacoes" class="table table-striped table-responsive" style="width:100%">
+                        <table id="total_transacoes" class="table table-striped table-responsive" style="width:100%" no-card-view>
                             <thead>
                                 <tr>
                                     <th>Local</th>
                                     <th>Maquina</th>
-                                    <th>Tipo Transação</th>
+                                    <th>Forma de pagamento</th>
                                     <th>Valor</th>
                                     <th>Data e Hora</th>
                                 </tr>
@@ -48,7 +47,7 @@
                                 <tr>
                                     <th>Local</th>
                                     <th>Maquina</th>
-                                    <th>Tipo Transação</th>
+                                    <th>Forma de pagamento</th>
                                     <th>Valor</th>
                                     <th>Data e Hora</th>
                                 </tr>
@@ -56,7 +55,7 @@
                         </table>
                         <div class="row" style="display: flex; flex-direction: row; justify-content: center;width: 100%; margin-top: 10px; margin-bottom: 30px;">
                             <div class="col-md-8">
-                                <h4 style="color: #242a74;"><strong>Total Transações: </strong>  R$ {{ number_format($valor_total, 2, ',', '.')}}</h4>
+                                <h4 style="color: #1e2e5e;"><strong>Total extrato: </strong>  R$ {{ number_format($valor_total, 2, ',', '.')}}</h4>
                             </div>
                             
                         </div>
@@ -70,46 +69,6 @@
         </div>
 
 
-        @if(session('success'))
-
-            <div class="modal fade show" id="modalSuccess" tabindex="-1" aria-labelledby="exampleModalCenterTitle" aria-modal="true" role="dialog" style="display: block;">
-                <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h1 class="modal-title fs-5" id="exampleModalCenterTitle">Sucesso</h1>
-                            <button type="button" class="btn-close" onclick="fechaModal('modalSuccess')" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <p>{{ session('success') }}</p>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-primary" onclick="fechaModal('modalSuccess')" data-dismiss="modal" aria-label="Close">OK</button>
-                        </div>
-
-                    </div>
-                </div>
-            </div>
-            <div class="modal-backdrop fade show" id="modalSuccess-backdrop"></div>
-            @elseif(session('error'))
-            <div class="modal fade show" id="modalError" tabindex="-1" aria-labelledby="exampleModalCenterTitle" aria-modal="true" role="dialog" style="display: block;">
-                    <div class="modal-dialog modal-dialog-centered">
-                        <div class="modal-content">
-
-                            <div class="modal-header">
-                                <h1 class="modal-title fs-5" id="exampleModalCenterTitle">Erro</h1>
-                                <button type="button" class="btn-close" onclick="fechaModal('modalError')" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <p>{{ session('error') }}</p>
-                            </div>
-                            <div class="modal-footer">
-                                    <button type="button" class="btn btn-primary" onclick="fechaModal('modalError')" data-bs-dismiss="modal" aria-label="Close">OK</button>
-                            </div>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-backdrop fade show" id="modalError-backdrop"></div>
-        @endif
 
 
 

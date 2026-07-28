@@ -21,28 +21,9 @@ class RelatoriosController extends Controller
 {
     public function view(Request $request)
     {
+        $hash = $request->has('tipo') ? 'relatorios-' . $request->tipo : 'relatorios';
 
-        $id_cliente = session()->get('id_cliente');
-        $localCliente = ClienteLocalService::coletar();
-        $locais = LocaisService::coletar();
-        $clientes = ClientesService::coletar();
-        $maquinas = MaquinasService::coletar();
-
-        $locaisPermitidos = array_filter($localCliente, function ($local) use ($id_cliente) {
-            return $local['id_cliente'] == $id_cliente;
-        });
-
-        $idsLocaisPermitidos = array_column($locaisPermitidos, 'id_local');
-
-        $maquinas = array_filter($maquinas, function ($maquina) use ($idsLocaisPermitidos) {
-            return in_array($maquina['id_local'], $idsLocaisPermitidos);
-        });
-
-        $locais = array_filter($locais, function ($item) use ($idsLocaisPermitidos) {
-            return in_array($item['id_local'], $idsLocaisPermitidos);
-        });
-
-        return view('Clientes.Relatorios.index', compact('locais', 'maquinas'));
+        return redirect(route('cliente-home') . '#' . $hash);
     }
 
     public function exibirRelatorio(Request $request)
@@ -231,29 +212,52 @@ class RelatoriosController extends Controller
     public function downloadXlsxRelatorio(Request $request)
     {
 
-        // Decodifica os dados JSON da requisição
-        $data = json_decode($request->input('data'));
-        $data = (array) $data;
-        if (array_key_exists('tipo_transacao', $data) && (is_null($data['tipo_transacao']) || $data['tipo_transacao'] === '')) {
-            unset($data['tipo_transacao']);
-        }
-        // Normaliza datas (aceita tanto data_inicio/data_fim quanto data_extrato_inicio/data_extrato_fim)
-        if (isset($data['data_extrato_inicio']) && !isset($data['data_inicio'])) {
-            $data['data_inicio'] = $data['data_extrato_inicio'];
-        }
-        if (isset($data['data_extrato_fim']) && !isset($data['data_fim'])) {
-            $data['data_fim'] = $data['data_extrato_fim'];
-        }
-        $isTaxaDesconto = isset($request['tipo_csv']) && $request['tipo_csv'] == 'taxa_desconto';
+        $isTaxaDesconto    = isset($request['tipo_csv']) && $request['tipo_csv'] == 'taxa_desconto';
         $isTotalTransacoes = isset($request['tipo_csv']) && $request['tipo_csv'] == 'total_transacao';
-        if ($isTotalTransacoes) {
-            // Garante filtro por cliente no contexto de "Clientes"
-            $id_cliente = session()->get('id_cliente');
-            $data = ExtratoMaquinaService::coletarRelatorioTotalTransacoes($data, $id_cliente)['data'];
+        $isExtratoFiltrado = isset($request['tipo_csv']) && $request['tipo_csv'] == 'extrato_filtrado';
+
+        if ($isExtratoFiltrado) {
+            $raw = json_decode($request->input('data'), true);
+            if (!is_array($raw) || empty($raw)) {
+                return back()->with('error', 'Não há transações para exportar com os filtros aplicados.');
+            }
+
+            $data = array_map(function ($row) {
+                $item = (array) $row;
+
+                return [
+                    'local_nome'              => $item['local_nome'] ?? '',
+                    'maquina_nome'            => $item['maquina_nome'] ?? '',
+                    'extrato_operacao_tipo'   => $item['extrato_operacao_tipo'] ?? '',
+                    'extrato_operacao_valor'  => $item['extrato_operacao_valor'] ?? 0,
+                    'extrato_operacao'        => $item['extrato_operacao'] ?? '',
+                    'data_criacao'            => $item['data_criacao'] ?? '',
+                ];
+            }, $raw);
+        } else {
+            // Decodifica os dados JSON da requisição
+            $data = json_decode($request->input('data'));
+            $data = (array) $data;
+            if (array_key_exists('tipo_transacao', $data) && (is_null($data['tipo_transacao']) || $data['tipo_transacao'] === '')) {
+                unset($data['tipo_transacao']);
+            }
+            // Normaliza datas (aceita tanto data_inicio/data_fim quanto data_extrato_inicio/data_extrato_fim)
+            if (isset($data['data_extrato_inicio']) && !isset($data['data_inicio'])) {
+                $data['data_inicio'] = $data['data_extrato_inicio'];
+            }
+            if (isset($data['data_extrato_fim']) && !isset($data['data_fim'])) {
+                $data['data_fim'] = $data['data_extrato_fim'];
+            }
+            if ($isTotalTransacoes) {
+                // Garante filtro por cliente no contexto de "Clientes"
+                $id_cliente = session()->get('id_cliente');
+                $data = ExtratoMaquinaService::coletarRelatorioTotalTransacoes($data, $id_cliente)['data'];
+            }
         }
 
-
-        // Definindo os tipos de XLSX
+        if (empty($data)) {
+            return back()->with('error', 'Não há dados para exportar.');
+        }
 
         // Criação do Spreadsheet e do cabeçalho
         $spreadsheet = new Spreadsheet();
@@ -271,10 +275,7 @@ class RelatoriosController extends Controller
         foreach ($data as $item) {
             $itemArray = (array) $item;
 
-            if ($isTaxaDesconto) {
-                $totalValorFinal += $itemArray['extrato_operacao_valor'];
-            }
-            if ($isTotalTransacoes) {
+            if ($isTaxaDesconto || $isTotalTransacoes || $isExtratoFiltrado) {
                 $totalValorFinal += $itemArray['extrato_operacao_valor'];
             }
 
@@ -285,7 +286,7 @@ class RelatoriosController extends Controller
 
 
         //Adicionar a linha de total se necessário
-        if ($isTotalTransacoes || $isTaxaDesconto) {
+        if ($isTotalTransacoes || $isTaxaDesconto || $isExtratoFiltrado) {
             $totalRow = ['Total: R$ ' . number_format($totalValorFinal, 2, ',', '.')];
             $sheet->fromArray($totalRow, NULL, 'A' . $rowNum);
         }

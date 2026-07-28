@@ -1,101 +1,63 @@
 <?php
 
 namespace App\Services;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Mail;
-use Carbon\Carbon;
-use App\Services\LogsService;
-use Illuminate\Support\Facades\Http;
 
-
+use App\Support\ApiClient;
+use Illuminate\Support\Facades\Log;
 
 class AcessosTelaService
 {
-
-
-    public static function criar($dados){
-        $url = env('APP_URL_API') . "/acessosTela";
-
-        $token = AuthService::getToken();
-        $response = Http::withHeaders([
-            'Authorization' => 'Bearer ' . $token
-        ])->post($url, $dados);
-
-        $acessos = $response->json();
-
-        return $acessos;
+    public static function criar($dados)
+    {
+        return ApiClient::post('/acessosTela', $dados)->json();
     }
 
-    public static function coletar(string $id = Null)
+    public static function coletar(string $id = null)
     {
         try {
-            if(is_null($id)){
-                $url = env('APP_URL_API') . "/acessosTela";
-            }else{
-                $url = env('APP_URL_API') . "/acessosTela/$id";
-            }
-            
-            $token = AuthService::getToken();
-            $response = Http::timeout(10)->withHeaders([
-                'Authorization' => 'Bearer ' . $token
-            ])->get($url);
+            $path = is_null($id) ? '/acessosTela' : "/acessosTela/{$id}";
+            $response = ApiClient::get($path);
 
-            if(!$response->successful()){
-                \Log::error('Falha ao buscar acessos', [
+            if (!$response->successful()) {
+                Log::error('Falha ao buscar acessos', [
                     'status' => $response->status(),
-                    'body' => $response->body()
+                    'body' => $response->body(),
                 ]);
                 return [];
             }
 
             $acessos = $response->json();
-            
-            // Garantir que sempre retorna array
             return is_array($acessos) ? $acessos : [];
-            
         } catch (\Exception $e) {
-            \Log::error('Erro ao coletar acessos: ' . $e->getMessage());
+            Log::error('Erro ao coletar acessos: ' . $e->getMessage());
             return [];
         }
     }
 
     public static function coletarComFiltro($filtros, $tipo)
     {
-        $url = env('APP_URL_API') . "/acessosTela";
-        $token = AuthService::getToken();
-        $response = Http::withHeaders([
-            'Authorization' => 'Bearer ' . $token
-        ])->get($url);
+        $response = ApiClient::get('/acessosTela');
 
-        if ($response->successful()) {
-            $acessos = $response->json();
-
-            foreach ($filtros as $chave => $valor) {
-                if (isset($acessos[$chave]) && $valor !== null) {
-                    $acessos = array_filter($acessos, function ($acesso) use ($chave, $valor) {
-                        return $acesso[$chave] === $valor;
-                    });
-                }
-            }
-
-            return $acessos;
-        } else {
-            // Em caso de falha na chamada à API, retorne um array vazio ou uma mensagem de erro
+        if (!$response->successful()) {
             return [];
         }
-    }
-
-    public function atualizar($dados, $id){
-        $url = env('APP_URL_API') . "/acessosTela/$id";
-
-        $token = AuthService::getToken();
-        $response = Http::withHeaders([
-            'Authorization' => 'Bearer ' . $token
-        ])->post($url, $dados);
 
         $acessos = $response->json();
+
+        foreach ($filtros as $chave => $valor) {
+            if ($valor !== null) {
+                $acessos = array_filter($acessos, function ($acesso) use ($chave, $valor) {
+                    return isset($acesso[$chave]) && $acesso[$chave] == $valor;
+                });
+            }
+        }
 
         return $acessos;
     }
 
+    public function atualizar($dados, $id)
+    {
+        return ApiClient::post("/acessosTela/{$id}", $dados)->json();
+    }
 }
+

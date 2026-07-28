@@ -15,7 +15,8 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')->hourly();
+        // Alertas de mensalidade em atraso são enviados pela API (projeto_maquina_api),
+        // que é quem detém os dados reais de cobrança/boleto.
     }
 
     /**

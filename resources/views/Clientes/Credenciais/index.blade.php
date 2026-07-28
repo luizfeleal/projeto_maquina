@@ -3,7 +3,6 @@
 @section('content')
 
 <div class="usuarios div-center-column w-100" style="padding-top: 99px;">
-    <h1 style="padding-top: 80px; text-align: center;">Editar Credenciais API PIX</h1>
     <div class="container section container-platform div-center-column" style="margin-top: 15px; height: 100%;">
 
         @if(session('success'))
@@ -12,6 +11,13 @@
         @if(session('error'))
             <div class="alert alert-danger w-100">{{ session('error') }}</div>
         @endif
+
+        <div class="w-100 mb-3 d-flex justify-content-end">
+            <button type="button" class="btn btn-primary" id="btn-criar-credencial">
+                <iconify-icon icon="solar:add-circle-bold-duotone" style="vertical-align:middle; margin-right:4px;"></iconify-icon>
+                Criar credencial
+            </button>
+        </div>
 
         <form method="GET" action="{{ route('cliente-credencial-listar') }}" class="w-100 mb-4">
             <div class="row g-3 align-items-end">
@@ -45,15 +51,15 @@
                 <tbody>
                     @foreach($credenciais as $credencial)
                         @php
-                            $credId = $credencial['id'] ?? $credencial['id_cred_api_pix'] ?? null;
+                            $credId = $credencial['id_credencial'] ?? $credencial['id'] ?? $credencial['id_cred_api_pix'] ?? null;
                             $tipoCred = $credencial['tipo_cred'] ?? '';
-                            $cliente_nome = !empty($clientes) ? (reset($clientes)['cliente_nome'] ?? 'Meu cadastro') : 'Meu cadastro';
+                            $cliente_nome = $clientes[0]['cliente_nome'] ?? 'Meu cadastro';
                         @endphp
                         <tr>
                             <td>{{ $credId ?? '-' }}</td>
                             <td>{{ $cliente_nome }}</td>
                             <td>
-                                <span class="badge {{ $tipoCred == 'efi' ? 'bg-primary' : 'bg-success' }}">
+                                <span class="badge {{ $tipoCred == 'efi' ? 'badge-cred-efi' : 'badge-cred-pagbank' }}">
                                     {{ strtoupper($tipoCred) }}
                                 </span>
                             </td>
@@ -125,6 +131,36 @@
             language: { url: "https://cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json" }
         });
         @endif
+
+        $('#btn-criar-credencial').on('click', function () {
+            Swal.fire({
+                icon: 'question',
+                title: 'Criar credencial',
+                text: 'Qual tipo de credencial você deseja criar?',
+                input: 'select',
+                inputOptions: {
+                    efi: 'EFI',
+                    pagbank: 'PagBank'
+                },
+                inputPlaceholder: 'Selecione o tipo',
+                showCancelButton: true,
+                confirmButtonText: 'Continuar',
+                cancelButtonText: 'Cancelar',
+                confirmButtonColor: '#2C9BA5',
+                cancelButtonColor: '#6b7280',
+                reverseButtons: true,
+                inputValidator: function (value) {
+                    if (!value) return 'Selecione um tipo de credencial';
+                }
+            }).then(function (result) {
+                if (!result.isConfirmed) return;
+                if (result.value === 'efi') {
+                    window.location.href = '{{ route('cliente-credencial-criar-efi') }}';
+                } else if (result.value === 'pagbank') {
+                    window.location.href = '{{ route('cliente-credencial-criar-pagbank') }}';
+                }
+            });
+        });
 
         $(document).on('click', '.btn-excluir-credencial', function() {
             var id = $(this).data('id');
