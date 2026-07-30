@@ -15,6 +15,28 @@ use App\Http\Controllers\Controller;
 
 class HomeController extends Controller
 {
+    /**
+     * A API pode devolver data_criacao formatado como 'd/m/Y H:i'.
+     * strtotime() interpreta datas com barra como m/d/Y (formato
+     * americano), então dias <= 12 saem com mês e dia trocados
+     * (ex.: 12/07 vira 7 de dezembro). Por isso o parse explícito do
+     * formato vem antes do fallback.
+     */
+    private function parseDataCriacaoExtrato(?string $value): ?int
+    {
+        if ($value === null || $value === '') {
+            return null;
+        }
+
+        $dt = \DateTime::createFromFormat('d/m/Y H:i', $value);
+        if ($dt !== false) {
+            return $dt->getTimestamp();
+        }
+
+        $ts = strtotime($value);
+
+        return $ts !== false ? $ts : null;
+    }
 
     public function coletar(Request $request)
     {
@@ -107,7 +129,10 @@ class HomeController extends Controller
             ? array_values(array_filter($todasTransacoes, fn($tx) => (string)($tx['id_maquina'] ?? '') === (string)$idMaquinaFiltro))
             : $todasTransacoes;
 
-        usort($transacoesFiltradas, fn($a, $b) => strtotime($b['data_criacao'] ?? 0) - strtotime($a['data_criacao'] ?? 0));
+        usort($transacoesFiltradas, fn($a, $b) =>
+            ($this->parseDataCriacaoExtrato($b['data_criacao'] ?? null) ?? 0)
+            - ($this->parseDataCriacaoExtrato($a['data_criacao'] ?? null) ?? 0)
+        );
         $ultimasTransacoes = array_slice($transacoesFiltradas, 0, 15);
 
         $dadosGrafico = [];
@@ -117,7 +142,7 @@ class HomeController extends Controller
             $op    = $tx['extrato_operacao'] ?? 'C';
             $data  = $tx['data_criacao'] ?? null;
             if (!$data || $op === 'D') continue;
-            $ts = strtotime($data);
+            $ts = $this->parseDataCriacaoExtrato($data);
             if (!$ts) continue;
             $ano = (int) date('Y', $ts);
             $mes = (int) date('n', $ts);

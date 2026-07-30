@@ -1,5 +1,14 @@
 @php
     $brl = fn($v) => 'R$ ' . number_format($v, 2, ',', '.');
+    // data_criacao pode vir como 'd/m/Y H:i' (já formatado pela API) ou ISO;
+    // strtotime() sozinho confunde d/m/Y com m/d/Y para dias <= 12.
+    $fmtDataHora = function ($v) {
+        if (empty($v)) return '—';
+        $dt = \DateTime::createFromFormat('d/m/Y H:i', $v);
+        if ($dt !== false) return $dt->format('d/m/Y H:i');
+        $ts = strtotime($v);
+        return $ts !== false ? date('d/m/Y H:i', $ts) : $v;
+    };
 @endphp
 
 <section id="transacoes" class="dash-section">
@@ -95,7 +104,7 @@
                             $tipoLower = strtolower($tx['extrato_operacao_tipo'] ?? '');
                         @endphp
                         <tr data-tipo="{{ $tipoLower }}">
-                            <td style="white-space:nowrap;">{{ date('d/m/Y H:i', strtotime($tx['data_criacao'])) }}</td>
+                            <td style="white-space:nowrap;">{{ $fmtDataHora($tx['data_criacao'] ?? null) }}</td>
                             <td>{{ $tx['maquina_nome'] ?? '—' }}</td>
                             <td>{{ $tx['extrato_operacao_tipo'] ?? '—' }}</td>
                             <td>
