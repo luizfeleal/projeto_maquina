@@ -46,15 +46,27 @@
 
                 <div class="form-group">
                     <label for="senha">Senha</label>
-                    <input
-                        type="password"
-                        name="senha"
-                        id="senha"
-                        class="form-control"
-                        placeholder="Digite sua senha"
-                        required
-                        autocomplete="current-password"
-                    >
+                    <div class="password-field">
+                        <input
+                            type="password"
+                            name="senha"
+                            id="senha"
+                            class="form-control"
+                            placeholder="Digite sua senha"
+                            required
+                            autocomplete="current-password"
+                        >
+                        <button
+                            type="button"
+                            class="password-toggle"
+                            id="toggleSenha"
+                            aria-label="Mostrar senha"
+                            aria-pressed="false"
+                            tabindex="-1"
+                        >
+                            <iconify-icon icon="solar:eye-closed-bold" id="toggleSenhaIcon"></iconify-icon>
+                        </button>
+                    </div>
                     <div class="invalid-feedback">Campo obrigatório. Insira uma senha válida.</div>
                 </div>
 
@@ -75,6 +87,21 @@
 
 <script>
     (function () {
+        var senhaInput = document.getElementById('senha');
+        var toggleBtn  = document.getElementById('toggleSenha');
+        var toggleIcon = document.getElementById('toggleSenhaIcon');
+
+        if (senhaInput && toggleBtn && toggleIcon) {
+            toggleBtn.addEventListener('click', function () {
+                var isHidden = senhaInput.getAttribute('type') === 'password';
+
+                senhaInput.setAttribute('type', isHidden ? 'text' : 'password');
+                toggleBtn.setAttribute('aria-pressed', isHidden ? 'true' : 'false');
+                toggleBtn.setAttribute('aria-label', isHidden ? 'Ocultar senha' : 'Mostrar senha');
+                toggleIcon.setAttribute('icon', isHidden ? 'solar:eye-bold' : 'solar:eye-closed-bold');
+            });
+        }
+
         var form = document.getElementById('form_login');
         var btn  = document.getElementById('btnLogin');
         var text = btn ? btn.querySelector('.btn-login-text') : null;

@@ -31,22 +31,36 @@ class ChecarPermissoes
             return redirect()->route('login-view');
         }
 
-        $acessos = AcessosTelaService::coletar();
-
-        if (!is_array($acessos) || empty($acessos)) {
-            Log::error('AcessosTelaService retornou vazio ou inválido', [
-                'tipo' => gettype($acessos),
-                'total' => is_array($acessos) ? count($acessos) : null,
+        try {
+            $acessos = AcessosTelaService::coletar();
+        } catch (\Throwable $e) {
+            // Falha ao consultar a API de permissões (rede, token interno expirado, API fora do ar, etc.)
+            // é um problema transitório de infraestrutura, não um problema com a sessão do usuário.
+            // Preservamos a sessão para que o usuário não seja deslogado por uma instabilidade momentânea.
+            // Importante: não usar status 401 aqui, pois o front-end (ex.: DataTables) trata 401
+            // como "sessão expirada" e força um redirect para o login.
+            Log::error('Não foi possível verificar permissões, mantendo sessão do usuário', [
+                'erro' => $e->getMessage(),
             ]);
 
-            session()->flush();
-
             if ($request->expectsJson() || $request->ajax()) {
-                return response()->json(['message' => 'Erro ao carregar permissões. Faça login novamente.'], 401);
+                return response()->json(['message' => 'Não foi possível verificar suas permissões no momento. Tente novamente.'], 503);
             }
 
-            return redirect()->route('login-view')
-                ->with('error', 'Erro ao carregar permissões. Tente fazer login novamente.');
+            return back()->with('error', 'Não foi possível verificar suas permissões no momento. Tente novamente em instantes.');
+        }
+
+        if (empty($acessos)) {
+            Log::warning('AcessosTelaService retornou lista vazia de permissões', [
+                'usuario' => session()->get('usuario_nome'),
+                'grupo' => session()->get('id_grupo_acesso'),
+            ]);
+
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json(['message' => 'Nenhuma permissão de acesso encontrada.'], 503);
+            }
+
+            return back()->with('error', 'Nenhuma permissão de acesso encontrada. Contate o administrador.');
         }
 
         $routeName = $request->route()->getName();

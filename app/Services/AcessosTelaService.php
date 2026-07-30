@@ -12,26 +12,30 @@ class AcessosTelaService
         return ApiClient::post('/acessosTela', $dados)->json();
     }
 
+    /**
+     * @throws \RuntimeException quando a API não responde/retorna erro, para que o
+     *         chamador consiga diferenciar "sem permissões" de "falha ao consultar".
+     */
     public static function coletar(string $id = null)
     {
         try {
             $path = is_null($id) ? '/acessosTela' : "/acessosTela/{$id}";
             $response = ApiClient::get($path);
-
-            if (!$response->successful()) {
-                Log::error('Falha ao buscar acessos', [
-                    'status' => $response->status(),
-                    'body' => $response->body(),
-                ]);
-                return [];
-            }
-
-            $acessos = $response->json();
-            return is_array($acessos) ? $acessos : [];
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error('Erro ao coletar acessos: ' . $e->getMessage());
-            return [];
+            throw new \RuntimeException('Falha ao consultar acessos: ' . $e->getMessage(), 0, $e);
         }
+
+        if (!$response->successful()) {
+            Log::error('Falha ao buscar acessos', [
+                'status' => $response->status(),
+                'body' => $response->body(),
+            ]);
+            throw new \RuntimeException('Falha ao buscar acessos: HTTP ' . $response->status());
+        }
+
+        $acessos = $response->json();
+        return is_array($acessos) ? $acessos : [];
     }
 
     public static function coletarComFiltro($filtros, $tipo)
