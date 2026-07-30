@@ -56,6 +56,7 @@ Route::prefix('maquinas')->middleware('permission')->group(function(){
 Route::prefix('clientes-maquinas')->middleware('permission')->group(function(){
     Route::get('/', 'App\Http\Controllers\Clientes\MaquinasController@coletarTodasAsMaquinas')->name('clientes-maquinas');
     Route::get('/transacoes', 'App\Http\Controllers\Clientes\MaquinasController@transacaoMaquinas')->name('clientes-maquinas-transacoes');
+    Route::get('/transacoes/dados', 'App\Http\Controllers\Clientes\MaquinasController@transacaoMaquinasDados')->name('clientes-maquinas-transacoes-dados');
     Route::get('/acumulado', 'App\Http\Controllers\Clientes\MaquinasController@acumuladoMaquinas')->name('clientes-maquinas-acumulado');
     Route::get('/viewLiberarJogada', 'App\Http\Controllers\Clientes\MaquinasController@viewLiberarJogada')->name('view-clientes-maquinas-liberar-jogadas')->middleware('check.inadimplencia');
     Route::post('/liberarJogada', 'App\Http\Controllers\Clientes\MaquinasController@liberarJogada')->name('clientes-maquinas-liberar-jogadas')->middleware('check.inadimplencia');

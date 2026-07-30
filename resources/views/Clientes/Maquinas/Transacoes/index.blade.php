@@ -381,25 +381,6 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach($resultado as $tx)
-                    @php
-                        $isCredito = ($tx['extrato_operacao'] ?? 'C') === 'C';
-                        $valor     = $tx['extrato_operacao_valor'] ?? 0;
-                    @endphp
-                    <tr>
-                        <td>{{ $tx['local_nome'] ?? '—' }}</td>
-                        <td>{{ $tx['maquina_nome'] ?? '—' }}</td>
-                        <td>
-                            <span style="font-weight:700;
-                                         color:{{ $isCredito ? '#16a34a' : '#ef4444' }};
-                                         white-space:nowrap;">
-                                {{ $isCredito ? '+' : '−' }} R$ {{ number_format($valor, 2, ',', '.') }}
-                            </span>
-                        </td>
-                        <td>{{ $tx['extrato_operacao_tipo'] ?? '—' }}</td>
-                        <td>{{ date('d/m/Y H:i:s', strtotime($tx['data_criacao'])) }}</td>
-                    </tr>
-                @endforeach
             </tbody>
             <tfoot>
                 <tr>
@@ -478,6 +459,35 @@ $(document).ready(function () {
 
     $('#tabela_maquinas_transacao').DataTable({
         language: { url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json' },
+        processing: true,
+        serverSide: true,
+        ajax: {
+            url: '{{ route('clientes-maquinas-transacoes-dados') }}',
+            data: function (d) {
+                d.id_maquina    = @json($idMaquinaSel ?? '');
+                d.data_inicio   = @json($dataInicio ?? '');
+                d.data_fim      = @json($dataFim ?? '');
+                d.tipo_operacao = @json($tipoOperacao ?? '');
+                d.mostrar_taxas = {{ ($mostrarTaxas ?? false) ? 'true' : 'false' }};
+            }
+        },
+        columns: [
+            { data: 'local_nome', defaultContent: '—' },
+            { data: 'maquina_nome', defaultContent: '—' },
+            {
+                data: 'extrato_operacao_valor',
+                render: function (data, type, row) {
+                    if (type !== 'display') { return data; }
+                    var isCredito = (row.extrato_operacao || 'C') === 'C';
+                    var valor = parseFloat(data || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                    var cor = isCredito ? '#16a34a' : '#ef4444';
+                    return '<span style="font-weight:700; color:' + cor + '; white-space:nowrap;">' +
+                           (isCredito ? '+' : '−') + ' R$ ' + valor + '</span>';
+                }
+            },
+            { data: 'extrato_operacao_tipo', defaultContent: '—' },
+            { data: 'data_criacao', defaultContent: '—' }
+        ],
         order: [[4, 'desc']],
         pageLength: 25,
         lengthMenu: [10, 25, 50, 100]

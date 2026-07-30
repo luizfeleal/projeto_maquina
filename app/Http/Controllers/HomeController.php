@@ -90,10 +90,8 @@ class HomeController extends Controller
             'local_nome'   => $m['local_nome'] ?? '—',
         ], $maquinasDashboard);
 
-        $extratoResponse = ExtratoMaquinaService::coletarComPaginacao([
-            'length' => 5000,
-            'start'  => 0,
-            'order'  => [['column' => 4, 'dir' => 'desc']],
+        $extratoResponse = ExtratoMaquinaService::coletarTudo([
+            'order' => [['column' => 4, 'dir' => 'desc']],
         ]);
         $rawTransacoes = $extratoResponse['data'] ?? $extratoResponse ?? [];
         $todasTransacoes = array_values(array_filter(

@@ -48,6 +48,9 @@ class ChecarPermissoes
         if ($routeName === 'maquinas-dados') {
             $routeName = 'maquinas';
         }
+        if ($routeName === 'clientes-maquinas-transacoes-dados') {
+            $routeName = 'clientes-maquinas-transacoes';
+        }
 
         $acesso = array_filter($acessos, function ($item) use ($routeName) {
             return isset($item['id_grupo_acesso'])

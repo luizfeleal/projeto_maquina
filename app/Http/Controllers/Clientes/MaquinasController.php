@@ -13,6 +13,7 @@ use App\Services\LiberarJogadaService;
 use App\Services\QrCodeService;
 use App\Services\AuthService;
 use App\Http\Controllers\Controller;
+use App\Support\ApiClient;
 use Exception;
 use Illuminate\Pagination\LengthAwarePaginator;
 
@@ -155,10 +156,8 @@ class MaquinasController extends Controller
         }
 
         // Extrato completo das máquinas do cliente (filtrado localmente por permissão)
-        $extratoResponse = ExtratoMaquinaService::coletarComPaginacao([
-            'length' => 5000,
-            'start'  => 0,
-            'order'  => [['column' => 4, 'dir' => 'desc']],
+        $extratoResponse = ExtratoMaquinaService::coletarTudo([
+            'order' => [['column' => 4, 'dir' => 'desc']],
         ]);
         $todasTransacoes = array_values(array_filter(
             $extratoResponse['data'] ?? [],
@@ -261,6 +260,100 @@ class MaquinasController extends Controller
             'tipoOperacao',
             'mostrarTaxas'
         ));
+    }
+
+    /**
+     * Endpoint AJAX (DataTables server-side) do extrato de máquinas do
+     * cliente logado. A filtragem/paginação é feita pela API (SQL); o
+     * id_cliente nunca vem do request, sempre da sessão.
+     */
+    public function transacaoMaquinasDados(Request $request)
+    {
+        $id_cliente    = session()->get('id_cliente');
+        $idMaquinaSel  = $request->input('id_maquina');
+        $idsPermitidos = $this->coletarIdsMaquinasDoCliente($id_cliente);
+
+        if ($idMaquinaSel && !in_array((string) $idMaquinaSel, $idsPermitidos, true)) {
+            return response()->json([
+                'draw'            => (int) $request->input('draw', 1),
+                'recordsTotal'    => 0,
+                'recordsFiltered' => 0,
+                'data'            => [],
+            ]);
+        }
+
+        $params = $this->buildExtratoMaquinaQueryParamsCliente($request, $id_cliente);
+
+        try {
+            $response = ApiClient::get('/extratoMaquina', $params);
+        } catch (\Throwable $e) {
+            \Log::error('[Clientes/transacaoMaquinasDados] ' . $e->getMessage());
+
+            return response()->json([
+                'draw'            => (int) $request->input('draw', 1),
+                'recordsTotal'    => 0,
+                'recordsFiltered' => 0,
+                'data'            => [],
+            ]);
+        }
+
+        if (!$response->successful()) {
+            \Log::error('[Clientes/transacaoMaquinasDados] API status ' . $response->status(), [
+                'body' => substr($response->body(), 0, 500),
+            ]);
+
+            return response()->json([
+                'draw'            => (int) $request->input('draw', 1),
+                'recordsTotal'    => 0,
+                'recordsFiltered' => 0,
+                'data'            => [],
+            ]);
+        }
+
+        $body = $response->json();
+        $data = is_array($body['data'] ?? null) ? $body['data'] : [];
+        $data = array_values(array_filter($data, fn($tx) => is_array($tx)));
+
+        return response()->json([
+            'draw'            => (int) $request->input('draw', 1),
+            'recordsTotal'    => $body['recordsTotal'] ?? count($data),
+            'recordsFiltered' => $body['recordsFiltered'] ?? count($data),
+            'data'            => $data,
+        ]);
+    }
+
+    private function buildExtratoMaquinaQueryParamsCliente(Request $request, $id_cliente): array
+    {
+        $params = [];
+
+        foreach ($request->query() as $key => $value) {
+            if ($key === 'search' && is_array($value)) {
+                $params['search'] = $value['value'] ?? '';
+                continue;
+            }
+
+            if (in_array($key, ['search_value', 'page', 'per_page', 'mostrar_taxas', 'id_cliente'], true)) {
+                continue;
+            }
+
+            $params[$key] = $value;
+        }
+
+        if (!array_key_exists('search', $params)) {
+            $params['search'] = $request->input('search.value', '');
+        }
+
+        foreach (['data_inicio', 'data_fim', 'tipo_operacao', 'id_maquina'] as $filtro) {
+            if ($request->filled($filtro)) {
+                $params[$filtro] = $request->input($filtro);
+            }
+        }
+
+        // id_cliente nunca vem do cliente: sempre o da sessão autenticada.
+        $params['id_cliente']    = $id_cliente;
+        $params['mostrar_taxas'] = $request->boolean('mostrar_taxas') ? '1' : '0';
+
+        return $params;
     }
 
     private function isTransacaoTaxa(array $tx): bool

@@ -33,6 +33,40 @@ class ExtratoMaquinaService
         ];
     }
 
+    /**
+     * Busca todo o extrato de máquinas percorrendo as páginas da API,
+     * sem limitar a um número fixo de registros.
+     */
+    public static function coletarTudo(array $filtros = []): array
+    {
+        $tamanhoLote = 2000;
+        $maxLotes = 100; // trava de segurança (200 mil registros)
+        unset($filtros['length'], $filtros['start']);
+
+        $todos = [];
+        $start = 0;
+        $lote = 0;
+
+        do {
+            $params = array_merge($filtros, ['length' => $tamanhoLote, 'start' => $start]);
+            $response = ApiClient::get('/extratoMaquina', $params);
+
+            if (!$response->successful()) {
+                break;
+            }
+
+            $body = $response->json();
+            $registros = array_values(array_filter($body['data'] ?? [], 'is_array'));
+            $todos = array_merge($todos, $registros);
+
+            $totalDisponivel = $body['recordsFiltered'] ?? $body['recordsTotal'] ?? count($registros);
+            $start += $tamanhoLote;
+            $lote++;
+        } while (count($registros) === $tamanhoLote && $start < $totalDisponivel && $lote < $maxLotes);
+
+        return ['data' => $todos];
+    }
+
     public static function coletarRelatorioTotalTransacoes($dados, $id_cliente = null)
     {
         if (isset($id_cliente)) {

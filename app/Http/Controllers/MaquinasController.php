@@ -193,10 +193,8 @@ class MaquinasController extends Controller
         $clienteLocal = ClienteLocalService::coletar();
 
         try {
-            $extratoResponse = ExtratoMaquinaService::coletarComPaginacao([
-                'length' => 5000,
-                'start'  => 0,
-                'order'  => [['column' => 4, 'dir' => 'desc']],
+            $extratoResponse = ExtratoMaquinaService::coletarTudo([
+                'order' => [['column' => 4, 'dir' => 'desc']],
             ]);
             $todasTransacoes = array_values(array_filter(
                 $extratoResponse['data'] ?? [],
@@ -296,32 +294,16 @@ class MaquinasController extends Controller
         return round($total, 2);
     }
 
+    /**
+     * Endpoint AJAX (DataTables server-side) do extrato de máquinas.
+     *
+     * A filtragem, ordenação e paginação são feitas pela API (SQL), então
+     * cada requisição só traz a página pedida — nada de carregar 20 mil
+     * registros de uma vez para depois recortar em PHP.
+     */
     public function transacaoMaquinasDados(Request $request)
     {
-        $length      = max((int) $request->input('length', 10), 1);
-        $start       = (int) $request->input('start', 0);
-        $mostrarTaxas = $request->boolean('mostrar_taxas');
-
-        $idCliente = $request->input('id_cliente');
-        $idLocal   = $request->input('id_local');
-        $idMaquina = $request->input('id_maquina');
-
-        $dataInicio   = $request->input('data_inicio');
-        $dataFim      = $request->input('data_fim');
-        $tipoOperacao = $request->input('tipo_operacao');
-
-        $hasFilter = !empty($idCliente) || !empty($idLocal) || !empty($idMaquina);
-        $hasFiltroExtrato = $request->filled('data_inicio')
-            || $request->filled('data_fim')
-            || $request->filled('tipo_operacao');
-        $needsLocalProcessing = $hasFilter || !$mostrarTaxas || $hasFiltroExtrato;
-
         $params = $this->buildExtratoMaquinaQueryParams($request);
-
-        if ($needsLocalProcessing) {
-            $params['start']  = 0;
-            $params['length'] = 5000;
-        }
 
         try {
             $response = ApiClient::get('/extratoMaquina', $params);
@@ -350,62 +332,8 @@ class MaquinasController extends Controller
         }
 
         $body = $response->json();
-        if (!is_array($body)) {
-            return response()->json([
-                'draw'            => (int) $request->input('draw', 1),
-                'recordsTotal'    => 0,
-                'recordsFiltered' => 0,
-                'data'            => [],
-            ]);
-        }
-
-        $data = $body['data'] ?? [];
-        if (!is_array($data)) {
-            $data = [];
-        }
+        $data = is_array($body['data'] ?? null) ? $body['data'] : [];
         $data = array_values(array_filter($data, fn($tx) => is_array($tx)));
-
-        if (!$mostrarTaxas) {
-            $data = array_values(array_filter($data, fn($tx) => !$this->isTransacaoTaxa($tx)));
-        }
-
-        if ($hasFilter) {
-            $maquinasFiltradas = $this->resolveMaquinasFiltradas($idCliente, $idLocal, $idMaquina);
-
-            if (empty($maquinasFiltradas)) {
-                return response()->json([
-                    'draw'            => (int) $request->input('draw', 1),
-                    'recordsTotal'    => 0,
-                    'recordsFiltered' => 0,
-                    'data'            => [],
-                ]);
-            }
-
-            $data = array_values(array_filter(
-                $data,
-                fn($tx) => $this->transacaoCorrespondeMaquinas($tx, $maquinasFiltradas)
-            ));
-        }
-
-        if ($request->filled('data_inicio') || $request->filled('data_fim')) {
-            $data = $this->filtrarTransacoesPorData($data, $dataInicio, $dataFim);
-        }
-
-        if ($request->filled('tipo_operacao')) {
-            $data = $this->filtrarTransacoesPorTipo($data, $tipoOperacao);
-        }
-
-        if ($needsLocalProcessing) {
-            $total = count($data);
-            $data  = array_slice($data, $start, $length);
-
-            return response()->json([
-                'draw'            => (int) $request->input('draw', 1),
-                'recordsTotal'    => $body['recordsTotal'] ?? $total,
-                'recordsFiltered' => $total,
-                'data'            => $data,
-            ]);
-        }
 
         return response()->json([
             'draw'            => (int) $request->input('draw', 1),
@@ -492,7 +420,7 @@ class MaquinasController extends Controller
                 continue;
             }
 
-            if (in_array($key, ['search_value', 'page', 'per_page', 'id_cliente', 'id_local', 'id_maquina', 'mostrar_taxas'], true)) {
+            if (in_array($key, ['search_value', 'page', 'per_page', 'mostrar_taxas'], true)) {
                 continue;
             }
 
@@ -503,11 +431,15 @@ class MaquinasController extends Controller
             $params['search'] = $request->input('search.value', '');
         }
 
-        foreach (['data_inicio', 'data_fim', 'tipo_operacao'] as $filtro) {
+        foreach (['data_inicio', 'data_fim', 'tipo_operacao', 'id_cliente', 'id_local', 'id_maquina'] as $filtro) {
             if ($request->filled($filtro)) {
                 $params[$filtro] = $request->input($filtro);
             }
         }
+
+        // Sempre explícito: a API só filtra taxa quando o parâmetro vem
+        // definido, então "ausente" (outros consumidores) != "false" (aqui).
+        $params['mostrar_taxas'] = $request->boolean('mostrar_taxas') ? '1' : '0';
 
         return $params;
     }

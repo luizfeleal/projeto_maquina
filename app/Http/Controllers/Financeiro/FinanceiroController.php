@@ -14,10 +14,8 @@ class FinanceiroController extends Controller
     public function index(Request $request)
     {
         // Transações dos últimos 12 meses para os gráficos
-        $transacoesRaw = ExtratoMaquinaService::coletarComPaginacao([
-            'length' => 5000,
-            'start'  => 0,
-            'order'  => [['column' => 4, 'dir' => 'desc']],
+        $transacoesRaw = ExtratoMaquinaService::coletarTudo([
+            'order' => [['column' => 4, 'dir' => 'desc']],
         ]);
         $transacoes = collect($transacoesRaw['data'] ?? (is_array($transacoesRaw) ? $transacoesRaw : []))
             ->filter(fn($tx) => is_array($tx) && !empty($tx['data_criacao']))
