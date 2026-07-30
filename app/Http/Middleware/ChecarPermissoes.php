@@ -24,6 +24,10 @@ class ChecarPermissoes
         Log::info('Middleware ChecarPermissoes está sendo executado.');
 
         if (!session()->has('id_usuario')) {
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json(['message' => 'Sessão expirada. Faça login novamente.'], 401);
+            }
+
             return redirect()->route('login-view');
         }
 
@@ -36,6 +40,10 @@ class ChecarPermissoes
             ]);
 
             session()->flush();
+
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json(['message' => 'Erro ao carregar permissões. Faça login novamente.'], 401);
+            }
 
             return redirect()->route('login-view')
                 ->with('error', 'Erro ao carregar permissões. Tente fazer login novamente.');
@@ -72,6 +80,10 @@ class ChecarPermissoes
                 'grupo' => session()->get('id_grupo_acesso'),
                 'rota' => $request->route()->getName(),
             ]);
+
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json(['message' => 'Usuário não possui permissão de acesso.'], 403);
+            }
 
             $homeRoute = resolveHomeRouteForGrupo(session('grupo_nome'));
 

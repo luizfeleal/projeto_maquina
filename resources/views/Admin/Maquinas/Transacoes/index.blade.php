@@ -452,6 +452,11 @@ $(document).ready(function () {
                 d.data_fim      = @json($dataFim ?? '');
                 d.tipo_operacao = @json($tipoOperacao ?? '');
                 d.mostrar_taxas = {{ ($mostrarTaxas ?? false) ? 'true' : 'false' }};
+            },
+            error: function (xhr) {
+                if (xhr.status === 401) {
+                    window.location.href = '{{ route('login-view') }}';
+                }
             }
         },
         columns: [
