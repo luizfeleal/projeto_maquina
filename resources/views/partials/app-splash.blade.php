@@ -27,18 +27,22 @@
         var shownAt = Date.now();
         var minVisibleMs = 500;
 
-        function hideSplash() {
+        function hideSplash(force) {
             if (hidden) {
                 return;
             }
 
-            if (logo && (!logo.complete || logo.naturalWidth === 0)) {
+            // Sem "force", esperamos a logo carregar (ou falhar) pra evitar um pisca de layout.
+            // Mas isso não pode travar a splash pra sempre se o evento load/error do <img> nunca
+            // disparar (rede instável, imagem cacheada de forma estranha pelo service worker,
+            // etc.) — por isso o timeout de segurança abaixo chama hideSplash(true).
+            if (!force && logo && (!logo.complete || logo.naturalWidth === 0)) {
                 return;
             }
 
             var elapsed = Date.now() - shownAt;
-            if (elapsed < minVisibleMs) {
-                setTimeout(hideSplash, minVisibleMs - elapsed);
+            if (!force && elapsed < minVisibleMs) {
+                setTimeout(function () { hideSplash(force); }, minVisibleMs - elapsed);
                 return;
             }
 
@@ -52,11 +56,13 @@
         }
 
         if (logo) {
-            logo.addEventListener('load', hideSplash);
-            logo.addEventListener('error', hideSplash);
+            logo.addEventListener('load', function () { hideSplash(false); });
+            logo.addEventListener('error', function () { hideSplash(false); });
         }
 
-        window.addEventListener('load', hideSplash);
-        setTimeout(hideSplash, 10000);
+        window.addEventListener('load', function () { hideSplash(false); });
+        // Timeout absoluto: garante que a splash nunca fique travada na tela, mesmo se a
+        // imagem nunca terminar de carregar.
+        setTimeout(function () { hideSplash(true); }, 10000);
     })();
 </script>

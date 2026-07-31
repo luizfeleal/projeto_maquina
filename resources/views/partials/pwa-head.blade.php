@@ -79,7 +79,7 @@
     }
 
     @media (max-width: 991px) {
-        html:has(body.has-bottom-nav),
+        html.has-bottom-nav,
         body.has-bottom-nav {
             height: 100%;
             overflow: hidden;

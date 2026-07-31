@@ -2,7 +2,7 @@
     $r = Request::route()->getName();
 @endphp
 
-<script>document.body.classList.add('has-bottom-nav');</script>
+<script>document.documentElement.classList.add('has-bottom-nav'); document.body.classList.add('has-bottom-nav');</script>
 
 <nav class="bottom-nav" aria-label="Navegação principal" data-fixed-nav="true">
 

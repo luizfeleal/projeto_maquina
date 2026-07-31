@@ -49,7 +49,7 @@
     }
 
     @media (max-width: 991px) {
-        html:has(body.has-bottom-nav),
+        html.has-bottom-nav,
         body.has-bottom-nav { height: 100%; overflow: hidden; }
         body.has-bottom-nav .bottom-nav {
             position: fixed; right: 0; bottom: 0; left: 0; z-index: 1100;
