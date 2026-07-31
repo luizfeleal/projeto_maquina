@@ -37,8 +37,9 @@ class ChecarPermissoes
             // Falha ao consultar a API de permissões (rede, token interno expirado, API fora do ar, etc.)
             // é um problema transitório de infraestrutura, não um problema com a sessão do usuário.
             // Preservamos a sessão para que o usuário não seja deslogado por uma instabilidade momentânea.
-            // Importante: não usar status 401 aqui, pois o front-end (ex.: DataTables) trata 401
-            // como "sessão expirada" e força um redirect para o login.
+            // Importante: não usar status 401 aqui (o front-end trata 401 como sessão expirada) nem
+            // back()/redirect (se a falha for persistente, isso gera um loop de redirecionamento entre
+            // a página atual e a anterior). Por isso respondemos direto, sem redirecionar.
             Log::error('Não foi possível verificar permissões, mantendo sessão do usuário', [
                 'erro' => $e->getMessage(),
             ]);
@@ -47,7 +48,9 @@ class ChecarPermissoes
                 return response()->json(['message' => 'Não foi possível verificar suas permissões no momento. Tente novamente.'], 503);
             }
 
-            return back()->with('error', 'Não foi possível verificar suas permissões no momento. Tente novamente em instantes.');
+            return response()->view('errors.permissao-indisponivel', [
+                'mensagem' => 'Não foi possível verificar suas permissões no momento. Sua sessão continua ativa, tente novamente em instantes.',
+            ], 503);
         }
 
         if (empty($acessos)) {
@@ -60,7 +63,9 @@ class ChecarPermissoes
                 return response()->json(['message' => 'Nenhuma permissão de acesso encontrada.'], 503);
             }
 
-            return back()->with('error', 'Nenhuma permissão de acesso encontrada. Contate o administrador.');
+            return response()->view('errors.permissao-indisponivel', [
+                'mensagem' => 'Nenhuma permissão de acesso encontrada para o seu usuário. Contate o administrador.',
+            ], 503);
         }
 
         $routeName = $request->route()->getName();
