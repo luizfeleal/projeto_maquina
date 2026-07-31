@@ -3,13 +3,19 @@
 namespace App\Services;
 
 use App\Support\ApiClient;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
 class AcessosTelaService
 {
+    private const CACHE_KEY = 'acessos_tela_lista';
+    private const CACHE_TTL_MINUTOS = 3;
+
     public static function criar($dados)
     {
-        return ApiClient::post('/acessosTela', $dados)->json();
+        $resultado = ApiClient::post('/acessosTela', $dados)->json();
+        Cache::forget(self::CACHE_KEY);
+        return $resultado;
     }
 
     /**
@@ -18,8 +24,23 @@ class AcessosTelaService
      */
     public static function coletar(string $id = null)
     {
+        // A lista completa é consultada pelo middleware ChecarPermissoes em TODA requisição
+        // protegida, de TODOS os usuários. Como a API autentica com uma única credencial de
+        // máquina, sem cache esse volume estoura o rate limit da API (429) rapidinho em uso
+        // normal. Os dados mudam raramente, então um cache curto elimina a maior parte do
+        // tráfego redundante sem atrasar a propagação de mudanças reais de permissão.
+        if (is_null($id)) {
+            return Cache::remember(self::CACHE_KEY, now()->addMinutes(self::CACHE_TTL_MINUTOS), function () {
+                return self::buscar('/acessosTela');
+            });
+        }
+
+        return self::buscar("/acessosTela/{$id}");
+    }
+
+    private static function buscar(string $path)
+    {
         try {
-            $path = is_null($id) ? '/acessosTela' : "/acessosTela/{$id}";
             $response = ApiClient::get($path);
         } catch (\Throwable $e) {
             Log::error('Erro ao coletar acessos: ' . $e->getMessage());
@@ -61,7 +82,9 @@ class AcessosTelaService
 
     public function atualizar($dados, $id)
     {
-        return ApiClient::post("/acessosTela/{$id}", $dados)->json();
+        $resultado = ApiClient::post("/acessosTela/{$id}", $dados)->json();
+        Cache::forget(self::CACHE_KEY);
+        return $resultado;
     }
 }
 
