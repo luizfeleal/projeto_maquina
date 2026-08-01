@@ -13,7 +13,7 @@
     <p>Informações e configurações da máquina</p>
 </div>
 
-<div class="content-body" style="padding-top:0;">
+<div style="padding-top:0;">
 
     {{-- ── Cabeçalho da máquina ── --}}
     <div style="background:#fff; border:1px solid #e8ecf0; border-radius:16px;

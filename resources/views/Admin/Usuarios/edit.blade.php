@@ -8,7 +8,7 @@
 @endphp
 
 
-<div class="content-body" style="padding-top:0; max-width:720px; margin:0 auto;">
+<div style="padding-top:0; max-width:720px; margin:0 auto;">
 
     <form action="{{ route('usuario-atualizar') }}" id="novo-local-form" class="w-100 needs-validation" method="post" enctype="multipart/form-data" novalidate>
         @csrf

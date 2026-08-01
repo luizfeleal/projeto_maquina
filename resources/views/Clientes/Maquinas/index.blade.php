@@ -7,7 +7,7 @@
     <p>Visão geral das suas máquinas e atalhos de ação</p>
 </div>
 
-<div class="content-body" style="padding-top:0;">
+<div style="padding-top:0;">
 
     <form id="formResetParcialMaquinas" method="POST"
           action="{{ route('clientes-maquinas-reset-parcial') }}" style="display:none">

@@ -91,7 +91,7 @@
     </div>
 </div>
 
-<div class="content-body" style="padding-top:0;">
+<div style="padding-top:0;">
 
     {{-- ── Filtros ──────────────────────────────────────────────────── --}}
     <form method="GET" action="{{ route('clientes-maquinas-transacoes') }}"
