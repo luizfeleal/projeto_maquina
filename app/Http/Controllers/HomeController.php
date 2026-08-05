@@ -2,49 +2,30 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\ExtratoMaquina;
 use Illuminate\Http\Request;
 use App\Services\LocaisService;
 use App\Services\MaquinasService;
 use App\Services\ExtratoMaquinaService;
 use App\Services\ClientesService;
 use App\Services\ClienteLocalService;
-use App\Services\QrCodeService;
 use App\Services\AuthService;
 
 class HomeController extends Controller
 {
-    /**
-     * A API devolve data_criacao já formatado como 'd/m/Y H:i'. strtotime()
-     * interpreta datas com barra como m/d/Y (formato americano), então dias
-     * <= 12 saem com mês e dia trocados (ex.: 12/07 vira 7 de dezembro).
-     * Por isso o parse explícito do formato vem antes do fallback.
-     */
-    private function parseDataCriacaoExtrato(?string $value): ?int
-    {
-        if ($value === null || $value === '') {
-            return null;
-        }
-
-        $dt = \DateTime::createFromFormat('d/m/Y H:i', $value);
-        if ($dt !== false) {
-            return $dt->getTimestamp();
-        }
-
-        $ts = strtotime($value);
-
-        return $ts !== false ? $ts : null;
-    }
-
     public function coletar(Request $request)
     {
         $idMaquinaFiltro = $request->input('id_maquina');
 
-        $saldo      = ExtratoMaquinaService::coletarSaldoTotal();
-        $devolucoes = ExtratoMaquinaService::coletarDevolucoes();
-        $maquinas   = MaquinasService::coletar();
-        $locais     = LocaisService::coletar();
-        $clientes   = ClientesService::coletar();
+        // Resumo consolidado: 1 chamada à API em vez das 7 sequenciais de antes
+        // (saldo, devolucoes, maquinas, locais, clientes, acumulado, qrcode),
+        // com os totais de transações já agregados no banco.
+        $resumo = ExtratoMaquinaService::coletarResumoHome($idMaquinaFiltro);
+
+        $saldo      = $resumo['saldo'] ?? ['hoje' => 0, 'mes_atual' => 0, 'mes_passado' => 0];
+        $devolucoes = $resumo['devolucoes'] ?? ['hoje' => 0, 'mes_atual' => 0, 'mes_passado' => 0];
+        $maquinas   = $resumo['maquinas'] ?? [];
+        $locais     = $resumo['locais'] ?? [];
+        $clientes   = $resumo['clientes'] ?? [];
 
         $locaisPorId = [];
         foreach ($locais as $local) {
@@ -56,19 +37,14 @@ class HomeController extends Controller
         $maquinas_offline = array_values(array_filter($maquinas, fn($item) => $item['maquina_status'] == 0));
         $maquinasRelatorio = $maquinas;
 
-        $acumulado = ExtratoMaquinaService::coletarAcumulado([
-            'length' => 5000,
-            'start'  => 0,
-            'order'  => [['column' => 4, 'dir' => 'desc']],
-        ]);
-        $acumuladoData = $acumulado['data'] ?? (is_array($acumulado) ? $acumulado : []);
+        $acumuladoData = $resumo['acumulado'] ?? [];
         $acumuladoPorId = [];
         foreach ($acumuladoData as $item) {
             $acumuladoPorId[(string) $item['id_maquina']] = $item;
         }
 
         $qrPorMaquina = [];
-        foreach (QrCodeService::coletar() as $qr) {
+        foreach ($resumo['qr_codes'] ?? [] as $qr) {
             if (!is_array($qr) || !isset($qr['id_maquina'])) {
                 continue;
             }
@@ -111,36 +87,21 @@ class HomeController extends Controller
             'local_nome'   => $m['local_nome'] ?? '—',
         ], $maquinasDashboard);
 
-        $extratoResponse = ExtratoMaquinaService::coletarTudo([
-            'order' => [['column' => 4, 'dir' => 'desc']],
-        ]);
-        $rawTransacoes = $extratoResponse['data'] ?? $extratoResponse ?? [];
-        $todasTransacoes = array_values(array_filter(
-            is_array($rawTransacoes) ? $rawTransacoes : [],
-            fn($tx) => is_array($tx)
-        ));
-
-        $transacoesFiltradas = $idMaquinaFiltro
-            ? array_values(array_filter($todasTransacoes, fn($tx) => (string)($tx['id_maquina'] ?? '') === (string)$idMaquinaFiltro))
-            : $todasTransacoes;
-
-        usort($transacoesFiltradas, fn($a, $b) =>
-            ($this->parseDataCriacaoExtrato($b['data_criacao'] ?? null) ?? 0)
-            - ($this->parseDataCriacaoExtrato($a['data_criacao'] ?? null) ?? 0)
-        );
-        $ultimasTransacoes = array_slice($transacoesFiltradas, 0, 15);
+        // Antes: baixava TODAS as transações (coletarTudo, em lotes paginados) e
+        // somava/agrupava em PHP. Agora a API já devolve as últimas 15 prontas
+        // e os totais por tipo/mês agregados via SUM/GROUP BY no banco — o
+        // filtro por id_maquina já foi aplicado do lado da API.
+        $ultimasTransacoes = $resumo['ultimas_transacoes'] ?? [];
 
         $dadosGrafico = [];
-        foreach ($transacoesFiltradas as $tx) {
-            $valor = (float)($tx['extrato_operacao_valor'] ?? 0);
-            $tipo  = strtolower($tx['extrato_operacao_tipo'] ?? '');
-            $op    = $tx['extrato_operacao'] ?? 'C';
-            $data  = $tx['data_criacao'] ?? null;
-            if (!$data || $op === 'D') continue;
-            $ts = $this->parseDataCriacaoExtrato($data);
-            if (!$ts) continue;
-            $ano = (int) date('Y', $ts);
-            $mes = (int) date('n', $ts);
+        $totalPix = $totalCartao = $totalDinheiro = 0.0;
+        foreach ($resumo['totais_por_tipo_mes'] ?? [] as $linha) {
+            $ano   = (int) ($linha['ano'] ?? 0);
+            $mes   = (int) ($linha['mes'] ?? 0);
+            $tipo  = strtolower((string) ($linha['tipo'] ?? ''));
+            $valor = (float) ($linha['total'] ?? 0);
+            if (!$ano || !$mes) continue;
+
             if (!isset($dadosGrafico[$ano])) {
                 for ($i = 1; $i <= 12; $i++) {
                     $dadosGrafico[$ano][$i] = ['pix' => 0.0, 'cartao' => 0.0, 'dinheiro' => 0.0];
@@ -148,30 +109,18 @@ class HomeController extends Controller
             }
             if (str_contains($tipo, 'pix')) {
                 $dadosGrafico[$ano][$mes]['pix'] += $valor;
+                $totalPix += $valor;
             } elseif (str_contains($tipo, 'cart')) {
                 $dadosGrafico[$ano][$mes]['cartao'] += $valor;
+                $totalCartao += $valor;
             } elseif (str_contains($tipo, 'dinheir') || str_contains($tipo, 'físic') || str_contains($tipo, 'fisic')) {
                 $dadosGrafico[$ano][$mes]['dinheiro'] += $valor;
+                $totalDinheiro += $valor;
             }
         }
         krsort($dadosGrafico);
 
-        $totalPix = $totalCartao = $totalDinheiro = $totalDevolucao = 0.0;
-        foreach ($transacoesFiltradas as $tx) {
-            $valor = (float)($tx['extrato_operacao_valor'] ?? 0);
-            $tipo  = strtolower($tx['extrato_operacao_tipo'] ?? '');
-            $op    = $tx['extrato_operacao'] ?? 'C';
-
-            if ($op === 'D') {
-                $totalDevolucao += $valor;
-            } elseif (str_contains($tipo, 'pix')) {
-                $totalPix += $valor;
-            } elseif (str_contains($tipo, 'cart')) {
-                $totalCartao += $valor;
-            } elseif (str_contains($tipo, 'dinheir') || str_contains($tipo, 'físic') || str_contains($tipo, 'fisic')) {
-                $totalDinheiro += $valor;
-            }
-        }
+        $totalDevolucao = (float) ($resumo['total_devolucao_filtro'] ?? 0);
 
         $maquinasFiltradasAcum = $idMaquinaFiltro
             ? array_values(array_filter($maquinasDashboard, fn($m) => (string)$m['id_maquina'] === (string)$idMaquinaFiltro))

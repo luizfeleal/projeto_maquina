@@ -130,6 +130,24 @@ class ExtratoMaquinaService
         return ApiClient::post("/extratoMaquina/{$id}", $dados)->json();
     }
 
+    /**
+     * Resumo consolidado da Home: substitui as 7 chamadas sequenciais (saldo,
+     * devolucoes, maquinas, locais, clientes, acumulado, qrcode) mais o loop
+     * de coletarTudo() por uma única chamada à API, que já devolve os totais
+     * agregados no banco.
+     */
+    public static function coletarResumoHome(?string $idMaquina = null): array
+    {
+        $params = $idMaquina ? ['id_maquina' => $idMaquina] : [];
+        $response = ApiClient::get('/extrato/resumoHome', $params);
+
+        if (!$response->successful()) {
+            throw new \RuntimeException('Falha ao buscar resumo da home: HTTP ' . $response->status());
+        }
+
+        return $response->json();
+    }
+
     public static function coletarSaldoTotal($id = null)
     {
         $path = is_null($id) ? '/extrato/saldo/' : "/extrato/saldo/{$id}";
