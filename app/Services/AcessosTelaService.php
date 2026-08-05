@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Log;
 class AcessosTelaService
 {
     private const CACHE_KEY = 'acessos_tela_lista';
-    private const CACHE_TTL_MINUTOS = 3;
+    private const CACHE_TTL_MINUTOS = 30;
 
     public static function criar($dados)
     {

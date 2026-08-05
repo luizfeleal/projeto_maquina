@@ -20,7 +20,7 @@ class LoginController extends Controller
       $senha = $request['senha'];
 
       if(!empty($usuario_request) && !empty($senha)){
-          $usuarios = UsuariosService::coletar();
+          $usuarios = UsuariosService::buscarPorLoginOuEmail($usuario_request);
           $usuario = array_values(array_filter($usuarios, function ($item) use ($usuario_request, $senha) {
               $loginOuEmail = ($item['usuario_login'] ?? '') === $usuario_request
                   || ($item['usuario_email'] ?? '') === $usuario_request;

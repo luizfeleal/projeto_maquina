@@ -30,6 +30,23 @@ class UsuariosService
         return ApiClient::get($path)->json();
     }
 
+    /**
+     * Busca usuários filtrando por login ou email direto no banco (WHERE),
+     * em vez de baixar a tabela inteira e filtrar em PHP. Usado no login,
+     * onde a tabela completa não é necessária — só o(s) usuário(s) que batem
+     * com o login/email informado.
+     */
+    public static function buscarPorLoginOuEmail(string $valor)
+    {
+        $response = ApiClient::get('/usuarios', ['login' => $valor]);
+
+        if (!$response->successful()) {
+            return [];
+        }
+
+        return $response->json();
+    }
+
     public static function coletarComFiltro($filtros, $tipo)
     {
         $response = ApiClient::get('/usuarios');
