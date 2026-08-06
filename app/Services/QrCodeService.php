@@ -12,11 +12,28 @@ class QrCodeService
         return ApiClient::post('/QRCode', $payload);
     }
 
+    /**
+     * Lista os QR codes sem o campo qr_image (base64 do PNG).
+     *
+     * Telas que só precisam saber quais máquinas possuem QR ativo (dashboards,
+     * listagem de máquinas) devem usar este método: trazer a imagem de todos os
+     * QR codes só para montar um booleano custa megabytes de payload por
+     * requisição.
+     */
+    public static function coletarSemImagem(): array
+    {
+        return self::normalizar(ApiClient::get('/QRCode', ['sem_imagem' => 1]), null);
+    }
+
     public static function coletar(string $id = null)
     {
         $path = is_null($id) ? '/QRCode' : "/QRCode/{$id}";
-        $response = ApiClient::get($path);
 
+        return self::normalizar(ApiClient::get($path), $id);
+    }
+
+    private static function normalizar($response, ?string $id)
+    {
         if (!$response->successful()) {
             return [];
         }

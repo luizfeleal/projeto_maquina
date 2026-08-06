@@ -43,20 +43,22 @@ class HomeController extends Controller
         $id_cliente      = session()->get('id_cliente');
         $idMaquinaFiltro = $request->input('id_maquina');
 
-        $saldo      = ExtratoMaquinaService::coletarSaldoTotal($id_cliente);
-        $devolucoes = ExtratoMaquinaService::coletarDevolucoes($id_cliente);
+        // Resumo consolidado: 1 chamada à API em vez das 7 sequenciais de antes
+        // (saldo, devoluções, cliente_local, máquinas, locais, acumulado, QR
+        // codes) mais a lista de transações. O conteúdo de cada bloco é o mesmo
+        // dos endpoints individuais, então os números da tela não mudam.
+        $resumo = ExtratoMaquinaService::coletarResumoHomeCliente($id_cliente);
 
-        $cliente_local = array_filter(ClienteLocalService::coletar(), fn($item) => $item['id_cliente'] == $id_cliente);
-        $ids_locais    = collect($cliente_local)->pluck('id_local');
-        $ids_locais_arr = $ids_locais->toArray();
+        $saldo      = $resumo['saldo'] ?? ['hoje' => 0, 'mes_atual' => 0, 'mes_passado' => 0];
+        $devolucoes = $resumo['devolucoes'] ?? ['hoje' => 0, 'mes_atual' => 0, 'mes_passado' => 0];
 
-        $maquinas = array_values(array_filter(MaquinasService::coletar(), fn($item) => in_array($item['id_local'], $ids_locais_arr)));
+        $maquinas = array_values($resumo['maquinas'] ?? []);
         $maquinas_ids = collect($maquinas)->pluck('id_maquina')->toArray();
 
         $maquinas_online = array_values(array_filter($maquinas, fn($item) => $item['maquina_status'] == 1));
         $maquinas_offline = array_values(array_filter($maquinas, fn($item) => $item['maquina_status'] == 0));
 
-        $locais = array_values(array_filter(LocaisService::coletar(), fn($item) => in_array($item['id_local'], $ids_locais_arr)));
+        $locais = array_values($resumo['locais'] ?? []);
         $locaisPorId = [];
         foreach ($locais as $local) {
             $locaisPorId[$local['id_local']] = $local['local_nome'] ?? '—';
@@ -64,20 +66,14 @@ class HomeController extends Controller
         $maquinasRelatorio = $maquinas;
 
         // Máquinas enriquecidas (status + financeiro + QR)
-        $acumulado = ExtratoMaquinaService::coletarAcumulado([
-            'id_cliente' => $id_cliente,
-            'length'     => 5000,
-            'start'      => 0,
-            'order'      => [['column' => 4, 'dir' => 'desc']],
-        ]);
-        $acumuladoData = $acumulado['data'] ?? (is_array($acumulado) ? $acumulado : []);
+        $acumuladoData = $resumo['acumulado'] ?? [];
         $acumuladoPorId = [];
         foreach ($acumuladoData as $item) {
             $acumuladoPorId[(string) $item['id_maquina']] = $item;
         }
 
         $qrPorMaquina = [];
-        foreach (QrCodeService::coletar() as $qr) {
+        foreach ($resumo['qr_codes'] ?? [] as $qr) {
             if (!is_array($qr) || !isset($qr['id_maquina'])) {
                 continue;
             }
@@ -120,10 +116,10 @@ class HomeController extends Controller
             'local_nome'   => $m['local_nome'] ?? '—',
         ], $maquinasDashboard);
 
-        // Transações recentes + totais por tipo
-        $todasTransacoes = array_values(
-            ExtratoMaquinaService::coletarExtratoDasMaquinasDeUmCliente(['id_cliente' => $id_cliente])
-        );
+        // Transações recentes + totais por tipo. Mesmo conteúdo que o endpoint
+        // /transacaoMaquinaCliente devolvia (última transação de cada máquina),
+        // agora já vindo junto do resumo.
+        $todasTransacoes = array_values($resumo['transacoes'] ?? []);
 
         $transacoesFiltradas = $idMaquinaFiltro
             ? array_values(array_filter($todasTransacoes, fn($tx) => (string)($tx['id_maquina'] ?? '') === (string)$idMaquinaFiltro))

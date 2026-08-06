@@ -58,16 +58,25 @@
         </p>
     </div>
     <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+        {{-- A exportação envia os filtros e o servidor rebusca as linhas. Antes o
+             JSON com todas as transações vinha embutido neste form, o que pesava
+             megabytes de HTML em cada carregamento da tela. --}}
         <form action="{{ route('relatorio-xlsx-download') }}" method="post" id="form-extrato-export" style="margin:0;">
             @csrf
             <input type="hidden" name="tipo_csv" value="extrato_filtrado">
-            <input type="hidden" name="data" value="{{ json_encode($resultado) }}">
+            <input type="hidden" name="id_cliente"    value="{{ $idClienteSel ?? '' }}">
+            <input type="hidden" name="id_local"      value="{{ $idLocalSel ?? '' }}">
+            <input type="hidden" name="id_maquina"    value="{{ $idMaquinaSel ?? '' }}">
+            <input type="hidden" name="data_inicio"   value="{{ $dataInicio ?? '' }}">
+            <input type="hidden" name="data_fim"      value="{{ $dataFim ?? '' }}">
+            <input type="hidden" name="tipo_operacao" value="{{ $tipoOperacao ?? '' }}">
+            <input type="hidden" name="mostrar_taxas" value="{{ $mostrarTaxas ? 1 : 0 }}">
             <button type="submit" id="btn-exportar-extrato"
-                    @if(empty($resultado)) disabled @endif
-                    style="background:{{ empty($resultado) ? '#e5e7eb' : 'var(--bs-primary, #2C9BA5)' }};
+                    @if(!$possuiResultado) disabled @endif
+                    style="background:{{ !$possuiResultado ? '#e5e7eb' : 'var(--bs-primary, #2C9BA5)' }};
                            border:none; border-radius:10px; padding:12px 20px; font-weight:700;
-                           font-size:.9rem; color:{{ empty($resultado) ? '#9ca3af' : '#fff' }};
-                           cursor:{{ empty($resultado) ? 'not-allowed' : 'pointer' }};
+                           font-size:.9rem; color:{{ !$possuiResultado ? '#9ca3af' : '#fff' }};
+                           cursor:{{ !$possuiResultado ? 'not-allowed' : 'pointer' }};
                            display:flex; align-items:center; gap:8px; white-space:nowrap;">
                 <iconify-icon icon="solar:file-download-bold-duotone" style="font-size:1.1rem;"></iconify-icon>
                 Gerar Arquivo

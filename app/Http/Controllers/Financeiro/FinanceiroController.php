@@ -13,19 +13,15 @@ class FinanceiroController extends Controller
 {
     public function index(Request $request)
     {
-        // Transações dos últimos 12 meses para os gráficos
-        $transacoesRaw = ExtratoMaquinaService::coletarTudo([
-            'order' => [['column' => 4, 'dir' => 'desc']],
-        ]);
-        $transacoes = collect($transacoesRaw['data'] ?? (is_array($transacoesRaw) ? $transacoesRaw : []))
-            ->filter(fn($tx) => is_array($tx) && !empty($tx['data_criacao']))
-            ->filter(fn($tx) => $this->parseDataTransacao($tx['data_criacao']) !== null);
+        // Totais agregados no banco. Antes esta tela baixava TODAS as transações
+        // (em lotes paginados) só para somar receita por mês em PHP.
+        $resumo = ExtratoMaquinaService::coletarResumoFinanceiro();
 
-        // Agrupa por mês (últimos 12 meses)
-        $porMes = $transacoes
-            ->filter(fn($tx) => ($tx['extrato_operacao'] ?? 'C') === 'C')
-            ->groupBy(fn($tx) => $this->parseDataTransacao($tx['data_criacao'])->format('Y-m'))
-            ->map(fn($grupo) => round($grupo->sum(fn($tx) => (float)($tx['extrato_operacao_valor'] ?? 0)), 2))
+        $porMes = collect($resumo['por_mes'])
+            ->mapWithKeys(fn($linha) => [
+                (string) ($linha['mes'] ?? '') => round((float) ($linha['total'] ?? 0), 2),
+            ])
+            ->filter(fn($_, $mes) => $mes !== '')
             ->sortKeys();
 
         if ($porMes->count() > 12) {
@@ -45,8 +41,8 @@ class FinanceiroController extends Controller
         $trimestresValores = $porTrimestre->values()->toArray();
 
         // Totais do dashboard
-        $totalReceitas  = round($transacoes->where('extrato_operacao', 'C')->sum(fn($tx) => (float)($tx['extrato_operacao_valor'] ?? 0)), 2);
-        $totalDespesas  = round($transacoes->where('extrato_operacao', 'D')->sum(fn($tx) => (float)($tx['extrato_operacao_valor'] ?? 0)), 2);
+        $totalReceitas  = round((float) $resumo['total_receitas'], 2);
+        $totalDespesas  = round((float) $resumo['total_despesas'], 2);
         $totalInadimplencia = MensalidadeService::totalInadimplencia((int) env('INADIMPLENCIA_DIAS', 5));
 
         // Máquinas com status_comunicacao

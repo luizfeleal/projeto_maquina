@@ -3,11 +3,16 @@
 namespace App\Services;
 
 use App\Support\ApiClient;
+use App\Support\CacheReferencia;
 
 class ClienteLocalService
 {
+    use CacheReferencia;
+
     public static function criar($dados)
     {
+        self::esquecerCacheReferencia();
+
         $response = ApiClient::post('/clienteLocal', $dados);
 
         if ($response->successful()) {
@@ -26,8 +31,14 @@ class ClienteLocalService
 
     public static function coletar(string $id = null)
     {
-        $path = is_null($id) ? '/clienteLocal' : "/clienteLocal/{$id}";
-        return ApiClient::get($path)->json();
+        if (!is_null($id)) {
+            return ApiClient::get("/clienteLocal/{$id}")->json();
+        }
+
+        // Lista completa: buscada em quase toda tela, muda raramente.
+        return self::lembrarReferencia(
+            fn () => ApiClient::get('/clienteLocal')->json()
+        );
     }
 
     public static function coletarComFiltro($filtros, $tipo)
@@ -53,11 +64,15 @@ class ClienteLocalService
 
     public function atualizar($dados, $id)
     {
+        self::esquecerCacheReferencia();
+
         return ApiClient::post("/clienteLocal/{$id}", $dados)->json();
     }
 
     public static function deletar($id)
     {
+        self::esquecerCacheReferencia();
+
         $response = ApiClient::delete("/clienteLocal/{$id}");
 
         if ($response->successful()) {

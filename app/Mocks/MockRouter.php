@@ -73,6 +73,14 @@ class MockRouter
             return self::json(MockStore::collection('maquinas'));
         }
 
+        // GET /QRCode?sem_imagem=1 — lista sem o base64 do QR
+        if ($method === 'GET' && $path === '/QRCode' && filter_var($query['sem_imagem'] ?? false, FILTER_VALIDATE_BOOLEAN)) {
+            return self::json(array_values(array_map(function ($qr) {
+                unset($qr['qr_image']);
+                return $qr;
+            }, MockStore::collection('qrcode'))));
+        }
+
         if ($method === 'POST' && $path === '/maquinasCartaoAtualizar') {
             $payload = is_array($data) ? $data : [];
             if (isset($payload['id_maquina_cartao'])) {
@@ -137,6 +145,26 @@ class MockRouter
         // GET /extrato/acumulado — retorna dados enriquecidos com campos de reset
         if ($method === 'GET' && $path === '/extrato/acumulado') {
             return self::json(self::buildAcumuladoComReset($query));
+        }
+
+        // GET /extrato/resumoHome — resumo consolidado da Home do admin
+        if ($method === 'GET' && $path === '/extrato/resumoHome') {
+            return self::json(self::buildResumoHome($query));
+        }
+
+        // GET /extrato/resumoHomeCliente — resumo consolidado da Home do cliente
+        if ($method === 'GET' && $path === '/extrato/resumoHomeCliente') {
+            return self::json(self::buildResumoHomeCliente($query));
+        }
+
+        // GET /extrato/resumoTransacoes — totais agregados da tela de Extrato
+        if ($method === 'GET' && $path === '/extrato/resumoTransacoes') {
+            return self::json(self::buildResumoTransacoes($query));
+        }
+
+        // GET /extrato/resumoFinanceiro — totais por mês do dashboard financeiro
+        if ($method === 'GET' && $path === '/extrato/resumoFinanceiro') {
+            return self::json(self::buildResumoFinanceiro());
         }
 
         // POST /maquinas/{id}/reset-parcial
@@ -653,6 +681,217 @@ class MockRouter
             'last_page'       => max(1, (int) ceil($total / $perPage)),
             'total'           => $total,
         ];
+    }
+
+    /**
+     * Transações do extrato já filtradas, sem paginação — base dos resumos.
+     * Reusa os filtros de buildExtratoMaquinaPaginated e acrescenta o de taxa,
+     * que só os endpoints de resumo usam.
+     */
+    private static function filtrarTransacoesParaResumo(array $query): array
+    {
+        $paginado = self::buildExtratoMaquinaPaginated(array_merge($query, [
+            'start'  => 0,
+            'length' => PHP_INT_MAX,
+        ]));
+
+        $items = $paginado['data'] ?? [];
+
+        if (array_key_exists('mostrar_taxas', $query) && !filter_var($query['mostrar_taxas'], FILTER_VALIDATE_BOOLEAN)) {
+            $items = array_values(array_filter(
+                $items,
+                fn($i) => !str_contains(strtolower($i['extrato_operacao_tipo'] ?? ''), 'taxa')
+            ));
+        }
+
+        return $items;
+    }
+
+    /**
+     * Mesma classificação da API: devolução ganha de tudo, depois PIX, Cartão e
+     * Dinheiro, nessa ordem.
+     */
+    private static function somarTotaisPorTipo(array $items): array
+    {
+        $totais = [
+            'total_registros' => count($items),
+            'total_acumulado' => 0.0,
+            'total_saldo'     => 0.0,
+            'total_pix'       => 0.0,
+            'total_cartao'    => 0.0,
+            'total_dinheiro'  => 0.0,
+            'total_devolucao' => 0.0,
+        ];
+
+        foreach ($items as $tx) {
+            $valor = (float) ($tx['extrato_operacao_valor'] ?? 0);
+            $tipo  = strtolower($tx['extrato_operacao_tipo'] ?? '');
+            $op    = $tx['extrato_operacao'] ?? 'C';
+
+            $totais['total_acumulado'] += ($op === 'D') ? -$valor : $valor;
+
+            if ($op === 'D') {
+                $totais['total_devolucao'] += $valor;
+            } elseif (str_contains($tipo, 'pix')) {
+                $totais['total_pix'] += $valor;
+            } elseif (str_contains($tipo, 'cart')) {
+                $totais['total_cartao'] += $valor;
+            } elseif (str_contains($tipo, 'dinheir') || str_contains($tipo, 'físic') || str_contains($tipo, 'fisic')) {
+                $totais['total_dinheiro'] += $valor;
+            }
+        }
+
+        $totais['total_acumulado'] = round($totais['total_acumulado'], 2);
+        $totais['total_devolucao'] = round($totais['total_devolucao'], 2);
+        $totais['total_saldo']     = round($totais['total_acumulado'] - $totais['total_devolucao'], 2);
+        $totais['total_pix']       = round($totais['total_pix'], 2);
+        $totais['total_cartao']    = round($totais['total_cartao'], 2);
+        $totais['total_dinheiro']  = round($totais['total_dinheiro'], 2);
+
+        return $totais;
+    }
+
+    private static function buildResumoTransacoes(array $query): array
+    {
+        return self::somarTotaisPorTipo(self::filtrarTransacoesParaResumo($query));
+    }
+
+    private static function buildResumoHome(array $query): array
+    {
+        $items = self::filtrarTransacoesParaResumo($query);
+
+        usort($items, fn($a, $b) => strtotime($b['data_criacao'] ?? '') <=> strtotime($a['data_criacao'] ?? ''));
+
+        $totaisPorTipoMes = [];
+        foreach ($items as $tx) {
+            if (($tx['extrato_operacao'] ?? 'C') === 'D') {
+                continue;
+            }
+            $ts = strtotime($tx['data_criacao'] ?? '');
+            if ($ts === false) {
+                continue;
+            }
+            $chave = date('Y', $ts) . '-' . date('n', $ts) . '-' . strtolower($tx['extrato_operacao_tipo'] ?? '');
+            if (!isset($totaisPorTipoMes[$chave])) {
+                $totaisPorTipoMes[$chave] = [
+                    'ano'   => (int) date('Y', $ts),
+                    'mes'   => (int) date('n', $ts),
+                    'tipo'  => strtolower($tx['extrato_operacao_tipo'] ?? ''),
+                    'total' => 0.0,
+                ];
+            }
+            $totaisPorTipoMes[$chave]['total'] += (float) ($tx['extrato_operacao_valor'] ?? 0);
+        }
+
+        $totalDevolucao = 0.0;
+        foreach ($items as $tx) {
+            if (($tx['extrato_operacao'] ?? 'C') === 'D') {
+                $totalDevolucao += (float) ($tx['extrato_operacao_valor'] ?? 0);
+            }
+        }
+
+        return [
+            'saldo'                  => self::buildSaldoResumo(),
+            'devolucoes'             => self::buildDevolucoesResumo(),
+            'maquinas'               => array_values(MockStore::collection('maquinas')),
+            'locais'                 => array_values(MockStore::collection('locais')),
+            'clientes'               => array_values(MockStore::collection('clientes')),
+            'qr_codes'               => self::qrCodesSemImagem(),
+            'acumulado'              => self::buildAcumuladoComReset(['length' => 5000, 'start' => 0])['data'] ?? [],
+            'ultimas_transacoes'     => array_slice($items, 0, 15),
+            'totais_por_tipo_mes'    => array_values($totaisPorTipoMes),
+            'total_devolucao_filtro' => round($totalDevolucao, 2),
+        ];
+    }
+
+    private static function buildResumoHomeCliente(array $query): array
+    {
+        $idCliente = $query['id_cliente'] ?? null;
+
+        $idsLocais = [];
+        foreach (MockStore::collection('clienteLocal') as $cl) {
+            if ((string) ($cl['id_cliente'] ?? '') === (string) $idCliente) {
+                $idsLocais[] = $cl['id_local'];
+            }
+        }
+
+        $maquinas = array_values(array_filter(
+            MockStore::collection('maquinas'),
+            fn($m) => in_array($m['id_local'] ?? null, $idsLocais)
+        ));
+
+        $locais = array_values(array_filter(
+            MockStore::collection('locais'),
+            fn($l) => in_array($l['id_local'] ?? null, $idsLocais)
+        ));
+
+        // Mesma semântica do endpoint real: a última transação de cada máquina.
+        $ultimaPorMaquina = [];
+        foreach (self::filtrarTransacoesParaResumo(['id_cliente' => $idCliente]) as $tx) {
+            $idMaq = (string) ($tx['id_maquina'] ?? '');
+            $atual = $ultimaPorMaquina[$idMaq] ?? null;
+            if ($atual === null || strtotime($tx['data_criacao'] ?? '') > strtotime($atual['data_criacao'] ?? '')) {
+                $ultimaPorMaquina[$idMaq] = $tx;
+            }
+        }
+
+        return [
+            'saldo'      => self::buildSaldoResumo(),
+            'devolucoes' => self::buildDevolucoesResumo(),
+            'maquinas'   => $maquinas,
+            'locais'     => $locais,
+            'qr_codes'   => self::qrCodesSemImagem(),
+            'acumulado'  => self::buildAcumuladoClienteComReset($idCliente, ['length' => 5000, 'start' => 0])['data'] ?? [],
+            'transacoes' => array_values($ultimaPorMaquina),
+        ];
+    }
+
+    private static function buildResumoFinanceiro(): array
+    {
+        $porMes = [];
+        $totalReceitas = 0.0;
+        $totalDespesas = 0.0;
+
+        foreach (MockStore::collection('extratoMaquina') as $tx) {
+            $valor = (float) ($tx['extrato_operacao_valor'] ?? 0);
+            $op    = $tx['extrato_operacao'] ?? null;
+
+            if ($op === 'C') {
+                $totalReceitas += $valor;
+
+                $ts = strtotime($tx['data_criacao'] ?? '');
+                if ($ts !== false) {
+                    $mes = date('Y-m', $ts);
+                    $porMes[$mes] = ($porMes[$mes] ?? 0.0) + $valor;
+                }
+            } elseif ($op === 'D') {
+                $totalDespesas += $valor;
+            }
+        }
+
+        ksort($porMes);
+
+        return [
+            'por_mes' => array_map(
+                fn($mes, $total) => ['mes' => $mes, 'total' => round($total, 2)],
+                array_keys($porMes),
+                array_values($porMes)
+            ),
+            'total_receitas' => round($totalReceitas, 2),
+            'total_despesas' => round($totalDespesas, 2),
+        ];
+    }
+
+    /** QR codes sem o base64 da imagem, como faz o endpoint real. */
+    private static function qrCodesSemImagem(): array
+    {
+        return array_values(array_map(function ($qr) {
+            unset($qr['qr_image']);
+            return $qr;
+        }, array_filter(
+            MockStore::collection('qrcode'),
+            fn($qr) => ($qr['ativo'] ?? 0) == 1
+        )));
     }
 
     private static function buildHistoricoResets(array $query): array

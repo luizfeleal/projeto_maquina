@@ -148,6 +148,83 @@ class ExtratoMaquinaService
         return $response->json();
     }
 
+    /**
+     * Totais da tela de Extrato agregados no banco.
+     *
+     * Substitui o coletarTudo() + soma em PHP: em vez de baixar todas as
+     * transações que batem no filtro (em lotes de 2000) só para somar seis
+     * números, a API devolve os totais prontos numa resposta de bytes.
+     */
+    public static function coletarResumoTransacoes(array $filtros = []): array
+    {
+        $vazio = [
+            'total_registros' => 0,
+            'total_acumulado' => 0.0,
+            'total_saldo'     => 0.0,
+            'total_pix'       => 0.0,
+            'total_cartao'    => 0.0,
+            'total_dinheiro'  => 0.0,
+            'total_devolucao' => 0.0,
+        ];
+
+        try {
+            $response = ApiClient::get('/extrato/resumoTransacoes', $filtros);
+        } catch (\Throwable $e) {
+            return $vazio;
+        }
+
+        if (!$response->successful()) {
+            return $vazio;
+        }
+
+        $body = $response->json();
+
+        return is_array($body) ? array_merge($vazio, $body) : $vazio;
+    }
+
+    /**
+     * Resumo consolidado da Home do cliente: 1 chamada à API no lugar das 7
+     * sequenciais (saldo, devoluções, cliente_local, máquinas, locais,
+     * acumulado, QR codes) mais a lista de transações.
+     */
+    public static function coletarResumoHomeCliente($idCliente, ?string $idMaquina = null): array
+    {
+        $params = ['id_cliente' => $idCliente];
+        if ($idMaquina) {
+            $params['id_maquina'] = $idMaquina;
+        }
+
+        $response = ApiClient::get('/extrato/resumoHomeCliente', $params);
+
+        if (!$response->successful()) {
+            throw new \RuntimeException('Falha ao buscar resumo da home do cliente: HTTP ' . $response->status());
+        }
+
+        return $response->json();
+    }
+
+    /**
+     * Totais por mês e totais gerais do dashboard financeiro, agregados no banco.
+     */
+    public static function coletarResumoFinanceiro(): array
+    {
+        $vazio = ['por_mes' => [], 'total_receitas' => 0.0, 'total_despesas' => 0.0];
+
+        try {
+            $response = ApiClient::get('/extrato/resumoFinanceiro');
+        } catch (\Throwable $e) {
+            return $vazio;
+        }
+
+        if (!$response->successful()) {
+            return $vazio;
+        }
+
+        $body = $response->json();
+
+        return is_array($body) ? array_merge($vazio, $body) : $vazio;
+    }
+
     public static function coletarSaldoTotal($id = null)
     {
         $path = is_null($id) ? '/extrato/saldo/' : "/extrato/saldo/{$id}";

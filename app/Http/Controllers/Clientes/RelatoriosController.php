@@ -209,6 +209,26 @@ class RelatoriosController extends Controller
         return view('QR.create', compact('locais', 'clientes', 'maquinas'));
     }
 
+    /**
+     * Filtros da tela de Extrato do cliente no formato que a API espera. O
+     * id_cliente vem sempre da sessão, nunca do request.
+     */
+    private function filtrosExtratoDoRequest(Request $request, $id_cliente): array
+    {
+        $filtros = ['id_cliente' => $id_cliente];
+
+        foreach (['data_inicio', 'data_fim', 'tipo_operacao', 'id_maquina'] as $filtro) {
+            if ($request->filled($filtro)) {
+                $filtros[$filtro] = $request->input($filtro);
+            }
+        }
+
+        $filtros['mostrar_taxas'] = $request->boolean('mostrar_taxas') ? '1' : '0';
+        $filtros['order'] = [['column' => 4, 'dir' => 'desc']];
+
+        return $filtros;
+    }
+
     public function downloadXlsxRelatorio(Request $request)
     {
 
@@ -217,7 +237,13 @@ class RelatoriosController extends Controller
         $isExtratoFiltrado = isset($request['tipo_csv']) && $request['tipo_csv'] == 'extrato_filtrado';
 
         if ($isExtratoFiltrado) {
-            $raw = json_decode($request->input('data'), true);
+            // A tela manda só os filtros e a busca acontece aqui. Antes o extrato
+            // inteiro trafegava embutido no HTML da página e voltava no POST, o
+            // que tornava o carregamento da tela caríssimo mesmo sem exportar.
+            $raw = ExtratoMaquinaService::coletarTudo(
+                $this->filtrosExtratoDoRequest($request, session()->get('id_cliente'))
+            )['data'] ?? [];
+
             if (!is_array($raw) || empty($raw)) {
                 return back()->with('error', 'Não há transações para exportar com os filtros aplicados.');
             }

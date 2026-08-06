@@ -40,7 +40,7 @@ class MaquinasController extends Controller
                 $possuiMaquinaCartaoAssociada = true;
             }
 
-            $qr = QrCodeService::coletar();
+            $qr = QrCodeService::coletarSemImagem();
 
             $qrMaquina = array_filter($qr, function($item) use($id_maquina) {
                 return $item['ativo'] == 1 && $item['id_maquina'] == $id_maquina;
@@ -192,67 +192,27 @@ class MaquinasController extends Controller
         $maquinas     = MaquinasService::coletar();
         $clienteLocal = ClienteLocalService::coletar();
 
-        try {
-            $extratoResponse = ExtratoMaquinaService::coletarTudo([
-                'order' => [['column' => 4, 'dir' => 'desc']],
-            ]);
-            $todasTransacoes = array_values(array_filter(
-                $extratoResponse['data'] ?? [],
-                fn($tx) => is_array($tx)
-            ));
-        } catch (\Throwable $e) {
-            $todasTransacoes = [];
-        }
-
-        $maquinasFiltradas = $this->resolveMaquinasFiltradas($idClienteSel, $idLocalSel, $idMaquinaSel);
-
-        $resultado = $todasTransacoes;
-        if ($idClienteSel || $idLocalSel || $idMaquinaSel) {
-            $resultado = array_values(array_filter(
-                $resultado,
-                fn($tx) => $this->transacaoCorrespondeMaquinas($tx, $maquinasFiltradas)
-            ));
-        }
-
-        $resultado = $this->filtrarTransacoesPorData($resultado, $dataInicio, $dataFim);
-        $resultado = $this->filtrarTransacoesPorTipo($resultado, $tipoOperacao);
-
-        if (!$mostrarTaxas) {
-            $resultado = array_values(array_filter(
-                $resultado,
-                fn($tx) => !$this->isTransacaoTaxa($tx)
-            ));
-        }
-
-        $totalPix = $totalCartao = $totalDinheiro = $totalDevolucao = 0.0;
-        foreach ($resultado as $tx) {
-            $valor = (float) ($tx['extrato_operacao_valor'] ?? 0);
-            $tipo  = strtolower($tx['extrato_operacao_tipo'] ?? '');
-            $op    = $tx['extrato_operacao'] ?? 'C';
-
-            if ($op === 'D') {
-                $totalDevolucao += $valor;
-            } elseif (str_contains($tipo, 'pix')) {
-                $totalPix += $valor;
-            } elseif (str_contains($tipo, 'cart')) {
-                $totalCartao += $valor;
-            } elseif (str_contains($tipo, 'dinheir') || str_contains($tipo, 'físic') || str_contains($tipo, 'fisic')) {
-                $totalDinheiro += $valor;
-            }
-        }
-
-        $totalAcumulado = $this->somarTransacoesAdmin($resultado);
-        $totalSaldo     = round($totalAcumulado - $totalDevolucao, 2);
+        // Os totais do topo vêm agregados da API (SUM/GROUP BY no banco), com os
+        // mesmos filtros que a tabela usa. Antes esta tela baixava TODAS as
+        // transações — em lotes paginados, até 200 mil registros — só para somar
+        // seis números em PHP e ainda embutir o JSON inteiro num input hidden.
+        $resumoApi = ExtratoMaquinaService::coletarResumoTransacoes(
+            $this->buildExtratoResumoParams($request)
+        );
 
         $resumo = [
-            'total_acumulado' => $totalAcumulado,
-            'total_saldo'     => $totalSaldo,
-            'total_pix'       => $totalPix,
-            'total_cartao'    => $totalCartao,
-            'total_dinheiro'  => $totalDinheiro,
-            'total_devolucao' => $totalDevolucao,
+            'total_acumulado' => (float) $resumoApi['total_acumulado'],
+            'total_saldo'     => (float) $resumoApi['total_saldo'],
+            'total_pix'       => (float) $resumoApi['total_pix'],
+            'total_cartao'    => (float) $resumoApi['total_cartao'],
+            'total_dinheiro'  => (float) $resumoApi['total_dinheiro'],
+            'total_devolucao' => (float) $resumoApi['total_devolucao'],
             'ids_maquinas'    => [],
         ];
+
+        // A tabela é carregada por AJAX (DataTables server-side), então a view só
+        // precisa saber se existe alguma linha para habilitar o botão de export.
+        $possuiResultado = ((int) $resumoApi['total_registros']) > 0;
 
         $maquinaNomeSel = null;
         if ($idMaquinaSel && is_array($maquinas)) {
@@ -265,7 +225,7 @@ class MaquinasController extends Controller
         }
 
         return view('Admin.Maquinas.Transacoes.index', compact(
-            'resultado',
+            'possuiResultado',
             'resumo',
             'clientes',
             'locais',
@@ -282,16 +242,25 @@ class MaquinasController extends Controller
         ));
     }
 
-    private function somarTransacoesAdmin(array $transacoes): float
+    /**
+     * Filtros da tela de extrato no formato que a API espera, usados tanto pelo
+     * resumo (totais) quanto pela exportação, para que os dois enxerguem
+     * exatamente o mesmo recorte que a tabela.
+     */
+    private function buildExtratoResumoParams(Request $request): array
     {
-        $total = 0.0;
-        foreach ($transacoes as $tx) {
-            $valor  = (float) ($tx['extrato_operacao_valor'] ?? 0);
-            $op     = $tx['extrato_operacao'] ?? 'C';
-            $total += ($op === 'D') ? -$valor : $valor;
+        $params = [];
+
+        foreach (['data_inicio', 'data_fim', 'tipo_operacao', 'id_cliente', 'id_local', 'id_maquina'] as $filtro) {
+            if ($request->filled($filtro)) {
+                $params[$filtro] = $request->input($filtro);
+            }
         }
 
-        return round($total, 2);
+        // Sempre explícito: a API só filtra taxa quando o parâmetro vem definido.
+        $params['mostrar_taxas'] = $request->boolean('mostrar_taxas') ? '1' : '0';
+
+        return $params;
     }
 
     /**
@@ -343,73 +312,6 @@ class MaquinasController extends Controller
         ]);
     }
 
-    private function isTransacaoTaxa(array $tx): bool
-    {
-        $tipo = strtolower(trim((string) ($tx['extrato_operacao_tipo'] ?? '')));
-
-        return str_contains($tipo, 'taxa');
-    }
-
-    private function resolveMaquinasFiltradas(?string $idCliente, ?string $idLocal, ?string $idMaquina): array
-    {
-        $maquinas = MaquinasService::coletar();
-        if (!is_array($maquinas)) {
-            return [];
-        }
-
-        $filtradas = array_values($maquinas);
-
-        if ($idMaquina) {
-            $filtradas = array_values(array_filter(
-                $filtradas,
-                fn($m) => (string) ($m['id_maquina'] ?? '') === (string) $idMaquina
-            ));
-        }
-
-        if ($idLocal) {
-            $filtradas = array_values(array_filter(
-                $filtradas,
-                fn($m) => (string) ($m['id_local'] ?? '') === (string) $idLocal
-            ));
-        }
-
-        if ($idCliente) {
-            $locaisCliente = array_column(
-                array_filter(
-                    ClienteLocalService::coletar(),
-                    fn($cl) => (string) ($cl['id_cliente'] ?? '') === (string) $idCliente
-                ),
-                'id_local'
-            );
-            $filtradas = array_values(array_filter(
-                $filtradas,
-                fn($m) => in_array($m['id_local'] ?? null, $locaisCliente)
-            ));
-        }
-
-        return $filtradas;
-    }
-
-    private function transacaoCorrespondeMaquinas(array $tx, array $maquinasFiltradas): bool
-    {
-        $txMaquina = trim((string) ($tx['maquina_nome'] ?? ''));
-        $txIdMaq   = $tx['id_maquina'] ?? null;
-
-        foreach ($maquinasFiltradas as $maq) {
-            $idMaq = $maq['id_maquina'] ?? null;
-
-            if ($txIdMaq !== null && (string) $txIdMaq === (string) $idMaq) {
-                return true;
-            }
-
-            if ($txMaquina !== '' && strcasecmp($txMaquina, trim((string) ($maq['maquina_nome'] ?? ''))) === 0) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     private function buildExtratoMaquinaQueryParams(Request $request): array
     {
         $params = [];
@@ -442,73 +344,6 @@ class MaquinasController extends Controller
         $params['mostrar_taxas'] = $request->boolean('mostrar_taxas') ? '1' : '0';
 
         return $params;
-    }
-
-    private function filtrarTransacoesPorTipo(array $transacoes, ?string $tipoOperacao): array
-    {
-        if (empty($tipoOperacao)) {
-            return $transacoes;
-        }
-
-        return array_values(array_filter(
-            $transacoes,
-            fn($tx) => $this->transacaoCorrespondeTipo($tx, $tipoOperacao)
-        ));
-    }
-
-    private function transacaoCorrespondeTipo(array $tx, string $tipoOperacao): bool
-    {
-        $tipo = strtolower($tx['extrato_operacao_tipo'] ?? '');
-
-        return match (strtolower($tipoOperacao)) {
-            'pix' => str_contains($tipo, 'pix'),
-            'cartao', 'cartão' => str_contains($tipo, 'cart'),
-            'dinheiro' => str_contains($tipo, 'dinheir')
-                || str_contains($tipo, 'físic')
-                || str_contains($tipo, 'fisic'),
-            default => $tipo === strtolower($tipoOperacao),
-        };
-    }
-
-    private function filtrarTransacoesPorData(array $transacoes, ?string $dataInicio, ?string $dataFim): array
-    {
-        if (empty($dataInicio) && empty($dataFim)) {
-            return $transacoes;
-        }
-
-        $inicioTs = $dataInicio ? strtotime($dataInicio . ' 00:00:00') : null;
-        $fimTs    = $dataFim ? strtotime($dataFim . ' 23:59:59') : null;
-
-        return array_values(array_filter($transacoes, function ($tx) use ($inicioTs, $fimTs) {
-            $ts = $this->parseDataCriacaoExtrato($tx['data_criacao'] ?? null);
-            if ($ts === null) {
-                return false;
-            }
-            if ($inicioTs !== null && $ts < $inicioTs) {
-                return false;
-            }
-            if ($fimTs !== null && $ts > $fimTs) {
-                return false;
-            }
-
-            return true;
-        }));
-    }
-
-    private function parseDataCriacaoExtrato(?string $value): ?int
-    {
-        if ($value === null || $value === '') {
-            return null;
-        }
-
-        $dt = \DateTime::createFromFormat('d/m/Y H:i', $value);
-        if ($dt !== false) {
-            return $dt->getTimestamp();
-        }
-
-        $ts = strtotime($value);
-
-        return $ts !== false ? $ts : null;
     }
 
     public function resetParcial(Request $request)
@@ -713,7 +548,7 @@ class MaquinasController extends Controller
                 $possuiMaquinaCartaoAssociada = true;
             }
 
-            $qr = QrCodeService::coletar();
+            $qr = QrCodeService::coletarSemImagem();
 
             $qrMaquina = array_filter($qr, function($item) use($id_maquina) {
                 return $item['ativo'] == 1 && $item['id_maquina'] == $id_maquina;

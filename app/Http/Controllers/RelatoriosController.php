@@ -196,6 +196,26 @@ class RelatoriosController extends Controller
         return view('QR.create', compact('locais', 'clientes', 'maquinas'));
     }
 
+    /**
+     * Filtros da tela de Extrato vindos do formulário de exportação, no formato
+     * que a API espera.
+     */
+    private function filtrosExtratoDoRequest(Request $request): array
+    {
+        $filtros = [];
+
+        foreach (['data_inicio', 'data_fim', 'tipo_operacao', 'id_cliente', 'id_local', 'id_maquina'] as $filtro) {
+            if ($request->filled($filtro)) {
+                $filtros[$filtro] = $request->input($filtro);
+            }
+        }
+
+        $filtros['mostrar_taxas'] = $request->boolean('mostrar_taxas') ? '1' : '0';
+        $filtros['order'] = [['column' => 4, 'dir' => 'desc']];
+
+        return $filtros;
+    }
+
     public function downloadXlsxRelatorio(Request $request)
     {
         // Decodifica os dados JSON da requisição
@@ -206,11 +226,24 @@ class RelatoriosController extends Controller
         }
         $isTaxaDesconto = isset($request['tipo_csv']) && $request['tipo_csv'] == 'taxa_desconto';
         $isTotalTransacoes = isset($request['tipo_csv']) && $request['tipo_csv'] == 'total_transacao';
+        $isExtratoFiltrado = isset($request['tipo_csv']) && $request['tipo_csv'] == 'extrato_filtrado';
 
         if ($isTotalTransacoes) {
             // Para este relatório, "data" vem como filtros (cliente, máquina, período, etc.)
             // então precisamos buscar novamente respeitando esses filtros (igual a tela de Total Transações).
             $data = ExtratoMaquinaService::coletarRelatorioTotalTransacoes($data)['data'];
+        }
+
+        if ($isExtratoFiltrado) {
+            // Mesmo padrão do total_transacao: a tela manda só os filtros e a
+            // busca acontece aqui. Antes o extrato inteiro trafegava embutido no
+            // HTML da página e voltava no POST — o que tornava o carregamento da
+            // tela de Extrato caríssimo mesmo quando ninguém exportava nada.
+            $data = ExtratoMaquinaService::coletarTudo($this->filtrosExtratoDoRequest($request))['data'];
+        }
+
+        if (empty($data)) {
+            return back()->with('error', 'Não há registros para exportar com os filtros selecionados.');
         }
 
         // Criação do Spreadsheet e do cabeçalho

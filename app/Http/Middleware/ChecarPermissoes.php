@@ -21,8 +21,6 @@ class ChecarPermissoes
      */
     public function handle(Request $request, Closure $next)
     {
-        Log::info('Middleware ChecarPermissoes está sendo executado.');
-
         if (!session()->has('id_usuario')) {
             if ($request->expectsJson() || $request->ajax()) {
                 return response()->json(['message' => 'Sessão expirada. Faça login novamente.'], 401);
@@ -86,13 +84,9 @@ class ChecarPermissoes
                 && $item['acesso_tela_viewname'] == $routeName;
         });
 
-        Log::info('Verificação de Acesso', [
-            'rota' => $request->route()->getName(),
-            'grupo' => session()->get('id_grupo_acesso'),
-            'total_acessos' => count($acessos),
-            'encontrou' => !empty($acesso),
-        ]);
-
+        // Sem log de sucesso: este middleware roda em toda requisição protegida,
+        // então logar cada verificação bem-sucedida só engorda o arquivo de log.
+        // Negativas e falhas continuam registradas abaixo.
         if (empty($acesso)) {
             Log::warning('Acesso negado', [
                 'usuario' => session()->get('usuario_nome'),
