@@ -67,7 +67,10 @@ return [
     |
     */
 
-    'timezone' => 'UTC',
+    // Mesmo fuso da API (America/Sao_Paulo). O painel formata e compara datas
+    // vindas da API — em UTC, os cortes de "hoje" e "este mês" divergiam 3h do
+    // horário local da operação.
+    'timezone' => env('APP_TIMEZONE', 'America/Sao_Paulo'),
 
     /*
     |--------------------------------------------------------------------------
