@@ -63,8 +63,12 @@
                         </td>
                         <td>
                             <a href="{{ route('usuario-detalhar', $c['id_cliente']) }}"
-                               class="btn btn-outline-primary btn-sm" title="Ver detalhes" aria-label="Ver detalhes">
+                               class="btn btn-outline-secondary btn-sm" title="Ver detalhes" aria-label="Ver detalhes">
                                 <iconify-icon icon="solar:eye-bold-duotone" inline></iconify-icon>
+                            </a>
+                            <a href="{{ route('financeiro-clientes-editar', $c['id_cliente']) }}"
+                               class="btn btn-outline-primary btn-sm" title="Editar cliente" aria-label="Editar cliente">
+                                <iconify-icon icon="solar:pen-bold-duotone" inline></iconify-icon>
                             </a>
                         </td>
                     </tr>

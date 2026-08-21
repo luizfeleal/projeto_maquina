@@ -37,4 +37,24 @@ class ClientesController extends Controller
 
         return redirect()->route('financeiro-clientes')->with('success', 'Cliente cadastrado com sucesso!');
     }
+
+    public function edit($id)
+    {
+        return view('Financeiro.Clientes.edit', ClienteRegistroService::dadosEdicao((int) $id));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $resultado = ClienteRegistroService::atualizar($request, (int) $id);
+
+        if (!($resultado['success'] ?? false)) {
+            return back()->withInput()->with('error', $resultado['message'] ?? 'Houve um erro ao tentar atualizar o cliente.');
+        }
+
+        if (!empty($resultado['warning'])) {
+            return redirect()->route('financeiro-clientes')->with('warning', $resultado['warning']);
+        }
+
+        return redirect()->route('financeiro-clientes')->with('success', 'Cliente atualizado com sucesso!');
+    }
 }
