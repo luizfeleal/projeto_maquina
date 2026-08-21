@@ -28,7 +28,7 @@
                 <thead class="table-light">
                     <tr>
                         <th>Razão social</th>
-                        <th>CNPJ</th>
+                        <th>CPF/CNPJ</th>
                         <th>Cidade/UF</th>
                         <th>Contato</th>
                         <th>Credencial</th>

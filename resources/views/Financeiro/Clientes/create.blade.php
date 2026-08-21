@@ -38,8 +38,8 @@
                         </div>
                     </div>
                     <div class="mb-0">
-                        <label for="cliente_cpf_cnpj" class="form-label">CNPJ*</label>
-                        <input type="text" class="form-control" name="cliente_cpf_cnpj" id="cliente_cpf_cnpj" placeholder="00.000.000/0000-00" maxlength="18" required>
+                        <label for="cliente_cpf_cnpj" class="form-label">CPF/CNPJ*</label>
+                        <input type="text" class="form-control" name="cliente_cpf_cnpj" id="cliente_cpf_cnpj" placeholder="CPF ou CNPJ" maxlength="18" required>
                         <div class="invalid-feedback">
                             <p class="invalid-p invalid-p-cpf-cnpj">Campo obrigatório</p>
                         </div>
@@ -695,17 +695,21 @@
         $('#cliente_cep').mask('00000-000');
 
         $("#cliente_cpf_cnpj").on('input', function () {
-            $(this).val($(this).val().replace(/\D/g, '').replace(/(\d{2})(\d)/, '$1.$2').replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d)/, '$1/$2').replace(/(\d{4})(\d)/, '$1-$2').substring(0, 18));
+            var numeros = $(this).val().replace(/\D/g, '').substring(0, 14);
+            var valor = numeros.length > 11
+                ? numeros.replace(/(\d{2})(\d)/, '$1.$2').replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d)/, '$1/$2').replace(/(\d{4})(\d)/, '$1-$2')
+                : numeros.replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d)/, '$1-$2');
+            $(this).val(valor);
             atualizarPreviewGeral();
         });
         $("#cliente_cpf_cnpj").on('blur', () => {
             var numeros = $("#cliente_cpf_cnpj").val().replace(/\D/g, '');
-            if (numeros.length === 14 && typeof validarCNPJ === 'function' && validarCNPJ(numeros)) {
-                $("#cliente_cpf_cnpj").removeClass('is-invalid').addClass('is-valid');
+            if ((numeros.length === 11 || numeros.length === 14) && typeof validarDocumento === 'function' && validarDocumento($("#cliente_cpf_cnpj").val(), 'cliente_cpf_cnpj')) {
                 $(".invalid-p-cpf-cnpj").text('Campo obrigatório');
+                atualizarPreviewGeral();
             } else {
                 $("#cliente_cpf_cnpj").removeClass('is-valid').addClass('is-invalid');
-                $(".invalid-p-cpf-cnpj").text('CNPJ inválido');
+                $(".invalid-p-cpf-cnpj").text('CPF/CNPJ inválido');
             }
         });
 
