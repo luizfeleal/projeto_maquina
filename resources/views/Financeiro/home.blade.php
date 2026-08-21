@@ -16,7 +16,7 @@
 
 {{-- ── Cards de resumo ── --}}
 <div class="row g-3 mb-4">
-    <div class="col-6 col-xl-3">
+    <div class="col-6 col-xl-4">
         <div class="card border-0 shadow-sm h-100">
             <div class="card-body d-flex align-items-center gap-3 p-3">
                 <div class="rounded-3 p-2 flex-shrink-0" style="background:#e8f5ee;">
@@ -32,7 +32,7 @@
             </div>
         </div>
     </div>
-    <div class="col-6 col-xl-3">
+    <div class="col-6 col-xl-4">
         <div class="card border-0 shadow-sm h-100">
             <div class="card-body d-flex align-items-center gap-3 p-3">
                 <div class="rounded-3 p-2 flex-shrink-0" style="background:#fef2f2;">
@@ -48,7 +48,7 @@
             </div>
         </div>
     </div>
-    <div class="col-6 col-xl-3">
+    <div class="col-6 col-xl-4">
         <a href="{{ route('financeiro-inadimplencia') }}" class="text-decoration-none">
             <div class="card border-0 shadow-sm h-100">
                 <div class="card-body d-flex align-items-center gap-3 p-3">
@@ -65,20 +65,6 @@
                 </div>
             </div>
         </a>
-    </div>
-    <div class="col-6 col-xl-3">
-        <div class="card border-0 shadow-sm h-100">
-            <div class="card-body d-flex align-items-center gap-3 p-3">
-                <div class="rounded-3 p-2 flex-shrink-0" style="background:#eff6ff;">
-                    <iconify-icon icon="solar:chat-round-dots-bold-duotone"
-                                  style="font-size:1.6rem;color:#3b82f6;display:block;"></iconify-icon>
-                </div>
-                <div class="min-w-0">
-                    <div class="text-muted" style="font-size:.7rem; text-transform:uppercase; letter-spacing:.06em; font-weight:600;">Mensagens</div>
-                    <div class="fw-bold" style="font-size:1.05rem; color:#3b82f6;">—</div>
-                </div>
-            </div>
-        </div>
     </div>
 </div>
 
@@ -129,7 +115,7 @@
         </div>
     @else
         <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0">
+            <table id="tbl-status-comunicacao" class="table table-hover align-middle mb-0">
                 <thead class="table-light">
                     <tr style="font-size:.78rem; text-transform:uppercase; letter-spacing:.04em; color:#6b7280;">
                         <th>Máquina</th>
@@ -302,5 +288,13 @@
             '<p class="text-center text-muted py-4 small">Sem dados suficientes para o gráfico trimestral.</p>';
     }
 })();
+
+$(function () {
+    $('#tbl-status-comunicacao').DataTable({
+        language: { url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json' },
+        order: [[0, 'asc']],
+        pageLength: 10,
+    });
+});
 </script>
 @endpush

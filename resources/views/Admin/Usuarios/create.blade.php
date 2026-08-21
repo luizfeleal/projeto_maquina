@@ -31,7 +31,7 @@
                 </header>
                 <div class="cc-section-body">
                     <div class="mb-3">
-                        <label for="cliente_nome" class="form-label">Razão social*</label>
+                        <label for="cliente_nome" class="form-label">Nome completo ou razão social*</label>
                         <input type="text" class="form-control" name="cliente_nome" id="cliente_nome" placeholder="Ex: Comércio de Bebidas Bom Preço LTDA" required>
                         <div class="invalid-feedback">
                             <p class="invalid-p" id="cliente_nome_mensagem">Campo obrigatório</p>

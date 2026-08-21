@@ -25,7 +25,7 @@
             </div>
             <div style="padding:20px 24px;">
                 <div class="mb-3">
-                    <label for="cliente_nome" class="form-label">Nome Completo*</label>
+                    <label for="cliente_nome" class="form-label">Nome completo ou razão social*</label>
                     <input type="text" class="form-control input-text" name="cliente_nome" id="cliente_nome"
                            value="{{ $cliente['cliente_nome'] }}" required>
                     <div class="invalid-feedback">
@@ -56,6 +56,72 @@
                            value="{{ $cliente['cliente_cpf_cnpj'] }}" required>
                     <div class="invalid-feedback">
                         <p class="invalid-p invalid-p-name">Campo obrigatório</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- ── Endereço ── --}}
+        <div style="background:#fff; border:1px solid #e8ecf0; border-radius:16px;
+                    box-shadow:0 1px 4px rgba(0,0,0,.05); overflow:hidden; margin-bottom:16px;">
+            <div style="padding:16px 20px; border-bottom:1px solid #f3f4f6;
+                        display:flex; align-items:center; gap:8px;">
+                <iconify-icon icon="solar:map-point-bold-duotone"
+                              style="font-size:1.1rem; color:#2C9BA5;"></iconify-icon>
+                <h3 style="margin:0; font-size:.9rem; font-weight:700; color:#111827;">Endereço</h3>
+            </div>
+            <div style="padding:20px 24px;">
+                <div class="row g-3 mb-3">
+                    <div class="col-sm-4">
+                        <label for="cliente_cep" class="form-label">CEP*</label>
+                        <input type="text" class="form-control" name="cliente_cep" id="cliente_cep"
+                               value="{{ $cliente['cliente_cep'] ?? '' }}" placeholder="00000-000" maxlength="9" required>
+                        <div class="invalid-feedback">
+                            <p class="invalid-p">Campo obrigatório</p>
+                        </div>
+                        <div class="form-text text-muted">Preenche o endereço automaticamente (ViaCEP).</div>
+                    </div>
+                    <div class="col-sm-8">
+                        <label for="cliente_logradouro" class="form-label">Logradouro*</label>
+                        <input type="text" class="form-control" name="cliente_logradouro" id="cliente_logradouro"
+                               value="{{ $cliente['cliente_logradouro'] ?? '' }}" placeholder="Rua, avenida..." required>
+                        <div class="invalid-feedback">
+                            <p class="invalid-p">Campo obrigatório</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="row g-3 mb-0">
+                    <div class="col-sm-3">
+                        <label for="cliente_numero" class="form-label">Número*</label>
+                        <input type="text" class="form-control" name="cliente_numero" id="cliente_numero"
+                               value="{{ $cliente['cliente_numero'] ?? '' }}" required>
+                        <div class="invalid-feedback">
+                            <p class="invalid-p">Campo obrigatório</p>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <label for="cliente_bairro" class="form-label">Bairro*</label>
+                        <input type="text" class="form-control" name="cliente_bairro" id="cliente_bairro"
+                               value="{{ $cliente['cliente_bairro'] ?? '' }}" required>
+                        <div class="invalid-feedback">
+                            <p class="invalid-p">Campo obrigatório</p>
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <label for="cliente_cidade" class="form-label">Cidade*</label>
+                        <input type="text" class="form-control" name="cliente_cidade" id="cliente_cidade"
+                               value="{{ $cliente['cliente_cidade'] ?? '' }}" required>
+                        <div class="invalid-feedback">
+                            <p class="invalid-p">Campo obrigatório</p>
+                        </div>
+                    </div>
+                    <div class="col-sm-2">
+                        <label for="cliente_uf" class="form-label">UF*</label>
+                        <input type="text" class="form-control text-uppercase" name="cliente_uf" id="cliente_uf"
+                               value="{{ $cliente['cliente_uf'] ?? '' }}" maxlength="2" required>
+                        <div class="invalid-feedback">
+                            <p class="invalid-p">Obrigatório</p>
+                        </div>
                     </div>
                 </div>
             </div>

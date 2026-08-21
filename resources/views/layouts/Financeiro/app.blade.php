@@ -36,9 +36,6 @@
     {{-- Iconify --}}
     <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js" defer></script>
 
-    {{-- ApexCharts --}}
-    <script src="https://cdn.jsdelivr.net/npm/apexcharts@3.45.1/dist/apexcharts.min.js" defer></script>
-
 </head>
 
 <body>
@@ -354,6 +351,9 @@
 
     }(jQuery));
     </script>
+
+    {{-- ApexCharts — disponível para scripts em @yield/'scriptTable' --}}
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts@3.45.1/dist/apexcharts.min.js"></script>
 
     @yield('scriptTable')
     @stack('scriptTable')
