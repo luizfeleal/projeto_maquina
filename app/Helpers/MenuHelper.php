@@ -235,12 +235,6 @@ if (!function_exists('getSidebar')) {
                     ],
                 ],
                 [
-                    'title'         => 'Mensagens',
-                    'icon'          => 'solar:chat-round-dots-bold-duotone',
-                    'route'         => 'financeiro-home',
-                    'active_routes' => ['financeiro-mensagens'],
-                ],
-                [
                     'title'         => 'Sair',
                     'icon'          => 'solar:logout-3-bold-duotone',
                     'route'         => 'logout',

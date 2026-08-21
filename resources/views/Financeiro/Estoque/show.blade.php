@@ -8,7 +8,7 @@
 
         <div class="d-flex align-items-center justify-content-between mb-4 gap-2 flex-wrap">
             <div class="d-flex align-items-center gap-2">
-                <iconify-icon icon="solar:box-bold-duotone" style="font-size:1.5rem; color:#1a6b4a;"></iconify-icon>
+                <iconify-icon icon="solar:box-bold-duotone" style="font-size:1.5rem; color:#2C9BA5;"></iconify-icon>
                 <h4 class="mb-0 fw-semibold">Detalhes do produto</h4>
             </div>
             <a href="{{ route('financeiro-estoque') }}" class="btn btn-outline-secondary btn-sm">

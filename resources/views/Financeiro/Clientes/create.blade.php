@@ -239,7 +239,7 @@
                                 <input type="number" id="produto_quantidade" class="form-control" min="1" value="1">
                             </div>
                             <div class="col-sm-3">
-                                <button type="button" id="btn-add-produto" class="btn btn-outline-success w-100">
+                                <button type="button" id="btn-add-produto" class="btn btn-outline-primary w-100">
                                     <iconify-icon icon="solar:add-circle-bold-duotone" inline></iconify-icon>
                                     Adicionar
                                 </button>

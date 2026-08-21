@@ -5,10 +5,10 @@
 @section('content')
 <div class="d-flex align-items-center justify-content-between mb-4 gap-2 flex-wrap">
     <div class="d-flex align-items-center gap-2">
-        <iconify-icon icon="solar:wallet-money-bold-duotone" style="font-size:1.5rem; color:#1a6b4a;"></iconify-icon>
+        <iconify-icon icon="solar:wallet-money-bold-duotone" style="font-size:1.5rem; color:#2C9BA5;"></iconify-icon>
         <h4 class="mb-0 fw-semibold">Mensalidades</h4>
     </div>
-    <a href="{{ route('financeiro-mensalidades-criar') }}" class="btn btn-success btn-sm">
+    <a href="{{ route('financeiro-mensalidades-criar') }}" class="btn btn-primary btn-sm">
         <iconify-icon icon="solar:add-circle-bold-duotone" inline></iconify-icon>
         Nova mensalidade
     </a>

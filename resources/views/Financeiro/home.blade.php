@@ -7,7 +7,7 @@
 {{-- ── Cabeçalho ── --}}
 <div class="d-flex align-items-center gap-2 mb-4">
     <iconify-icon icon="solar:pie-chart-2-bold-duotone"
-                  style="font-size:1.6rem; color:var(--financeiro-primary,#1a6b4a);"></iconify-icon>
+                  style="font-size:1.6rem; color:#2C9BA5;"></iconify-icon>
     <div>
         <h4 class="mb-0 fw-semibold">Dashboard Financeiro</h4>
         <p class="text-muted small mb-0">Visão geral de receitas, despesas e comunicação das máquinas.</p>
@@ -19,13 +19,13 @@
     <div class="col-6 col-xl-4">
         <div class="card border-0 shadow-sm h-100">
             <div class="card-body d-flex align-items-center gap-3 p-3">
-                <div class="rounded-3 p-2 flex-shrink-0" style="background:#e8f5ee;">
+                <div class="rounded-3 p-2 flex-shrink-0" style="background:#e6f5f6;">
                     <iconify-icon icon="solar:dollar-minimalistic-bold-duotone"
-                                  style="font-size:1.6rem;color:#1a6b4a;display:block;"></iconify-icon>
+                                  style="font-size:1.6rem;color:#2C9BA5;display:block;"></iconify-icon>
                 </div>
                 <div class="min-w-0">
                     <div class="text-muted" style="font-size:.7rem; text-transform:uppercase; letter-spacing:.06em; font-weight:600;">Receitas</div>
-                    <div class="fw-bold" style="font-size:1.05rem; color:#1a6b4a;">
+                    <div class="fw-bold" style="font-size:1.05rem; color:#2C9BA5;">
                         R$ {{ number_format($totalReceitas, 2, ',', '.') }}
                     </div>
                 </div>
@@ -75,7 +75,7 @@
         <div class="card border-0 shadow-sm h-100">
             <div class="card-header bg-white border-bottom d-flex align-items-center gap-2 py-3">
                 <iconify-icon icon="solar:chart-2-bold-duotone"
-                              style="font-size:1.2rem;color:#1a6b4a;"></iconify-icon>
+                              style="font-size:1.2rem;color:#2C9BA5;"></iconify-icon>
                 <span class="fw-semibold" style="font-size:.92rem;">Receitas por Mês</span>
             </div>
             <div class="card-body p-3">
@@ -89,7 +89,7 @@
         <div class="card border-0 shadow-sm h-100">
             <div class="card-header bg-white border-bottom d-flex align-items-center gap-2 py-3">
                 <iconify-icon icon="solar:pie-chart-bold-duotone"
-                              style="font-size:1.2rem;color:#1a6b4a;"></iconify-icon>
+                              style="font-size:1.2rem;color:#2C9BA5;"></iconify-icon>
                 <span class="fw-semibold" style="font-size:.92rem;">Receitas por Trimestre</span>
             </div>
             <div class="card-body p-3">
@@ -103,7 +103,7 @@
 <div class="card border-0 shadow-sm">
     <div class="card-header bg-white border-bottom d-flex align-items-center gap-2 py-3">
         <iconify-icon icon="solar:wifi-bold-duotone"
-                      style="font-size:1.2rem;color:#1a6b4a;"></iconify-icon>
+                      style="font-size:1.2rem;color:#2C9BA5;"></iconify-icon>
         <span class="fw-semibold" style="font-size:.92rem;">Status de Comunicação</span>
         <span class="badge bg-secondary ms-auto" style="font-size:.72rem;">{{ $maquinas->count() }} máquinas</span>
     </div>
@@ -189,9 +189,9 @@
 (function () {
     'use strict';
 
-    const green  = '#1a6b4a';
-    const green2 = '#27ae60';
-    const green3 = '#86efac';
+    const teal     = '#2C9BA5';
+    const tealMid  = '#16526D';
+    const tealDeep = '#0F1A3B';
 
     // ── Gráfico Mensal (barras) ──
     const mesesLabels  = @json($mesesLabels);
@@ -206,7 +206,7 @@
                 toolbar: { show: false },
                 fontFamily: 'inherit',
             },
-            colors: [green],
+            colors: [teal],
             plotOptions: {
                 bar: {
                     borderRadius: 6,
@@ -249,7 +249,7 @@
                 toolbar: { show: false },
                 fontFamily: 'inherit',
             },
-            colors: [green, green2, green3, '#a7f3d0'],
+            colors: [teal, tealMid, tealDeep, '#9FD3D8'],
             dataLabels: {
                 enabled: true,
                 formatter: (val) => val.toFixed(1) + '%',

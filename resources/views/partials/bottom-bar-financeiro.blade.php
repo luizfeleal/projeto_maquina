@@ -31,14 +31,6 @@
         <span>Inadimpl.</span>
     </a>
 
-    {{-- Mensagens --}}
-    <a href="#"
-       class="bottom-nav-item {{ in_array($r, ['financeiro-mensagens']) ? 'active' : '' }}"
-       aria-label="Mensagens">
-        <iconify-icon icon="solar:chat-round-dots-bold-duotone" aria-hidden="true"></iconify-icon>
-        <span>Mensagens</span>
-    </a>
-
     {{-- Mais (abre sidebar como drawer) --}}
     <button type="button"
             class="bottom-nav-item bottom-nav-more"

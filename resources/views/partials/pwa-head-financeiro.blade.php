@@ -1,7 +1,7 @@
 {{-- PWA meta tags — módulo Financeiro --}}
 <link rel="preload" as="image" href="{{ asset('site/img/swift_pay_solucoes_png.png') }}">
 <link rel="manifest" href="{{ asset('site/manifest-financeiro.json') }}">
-<meta name="theme-color" content="#1a6b4a">
+<meta name="theme-color" content="#1E2E5E">
 <meta name="application-name" content="SwiftPay Financeiro">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -20,7 +20,7 @@
     }
     #appSplash .app-splash__backdrop {
         position: absolute; inset: 0; z-index: 0;
-        background: #0f4a33;
+        background: #0F1A3B;
     }
     #appSplash .app-splash__content {
         position: absolute; inset: 0; z-index: 1;

@@ -8,7 +8,7 @@
 
         <div class="d-flex align-items-center justify-content-between mb-4 gap-2 flex-wrap">
             <div class="d-flex align-items-center gap-2">
-                <iconify-icon icon="solar:wallet-money-bold-duotone" style="font-size:1.5rem; color:#1a6b4a;"></iconify-icon>
+                <iconify-icon icon="solar:wallet-money-bold-duotone" style="font-size:1.5rem; color:#2C9BA5;"></iconify-icon>
                 <h4 class="mb-0 fw-semibold">Detalhes da mensalidade</h4>
             </div>
             <a href="{{ route('financeiro-mensalidades') }}" class="btn btn-outline-secondary btn-sm">
@@ -99,7 +99,7 @@
 
         <div class="card border-0 shadow-sm">
             <div class="card-header bg-white border-bottom d-flex align-items-center gap-2 py-3">
-                <iconify-icon icon="solar:bill-check-bold-duotone" style="font-size:1.2rem; color:#1a6b4a;"></iconify-icon>
+                <iconify-icon icon="solar:bill-check-bold-duotone" style="font-size:1.2rem; color:#2C9BA5;"></iconify-icon>
                 <h6 class="mb-0 fw-semibold">Cobrança (boleto Efí)</h6>
             </div>
             <div class="card-body p-4">
@@ -132,7 +132,7 @@
                                 Baixar PDF
                             </a>
                         @endif
-                        <button type="button" class="btn btn-outline-success btn-sm" id="btn-reenviar-boleto">
+                        <button type="button" class="btn btn-outline-primary btn-sm" id="btn-reenviar-boleto">
                             <iconify-icon icon="solar:letter-bold-duotone" inline></iconify-icon>
                             Reenviar por e-mail
                         </button>
@@ -153,7 +153,7 @@
                     <p class="text-muted mb-3">Esta mensalidade ainda não possui boleto gerado.</p>
                     <form action="{{ route('financeiro-mensalidades-boleto-gerar', $mensalidade['id']) }}" method="POST">
                         @csrf
-                        <button type="submit" class="btn btn-success btn-sm">
+                        <button type="submit" class="btn btn-primary btn-sm">
                             <iconify-icon icon="solar:bill-check-bold-duotone" inline></iconify-icon>
                             Gerar boleto
                         </button>

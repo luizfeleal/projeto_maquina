@@ -8,7 +8,7 @@
 
         <div class="card border-0 shadow-sm">
             <div class="card-header bg-white border-bottom d-flex align-items-center gap-2 py-3">
-                <iconify-icon icon="solar:bill-list-bold-duotone" style="font-size:1.4rem; color:#1a6b4a;"></iconify-icon>
+                <iconify-icon icon="solar:bill-list-bold-duotone" style="font-size:1.4rem; color:#2C9BA5;"></iconify-icon>
                 <h5 class="mb-0 fw-semibold">Registrar Despesa</h5>
             </div>
             <div class="card-body p-4 p-lg-5">
@@ -145,7 +145,7 @@
                         <a href="{{ route('financeiro-despesas') }}" class="btn btn-outline-secondary btn-despesa-cancelar">
                             Cancelar
                         </a>
-                        <button type="submit" class="btn btn-success btn-despesa-salvar">
+                        <button type="submit" class="btn btn-primary btn-despesa-salvar">
                             <iconify-icon icon="solar:disk-bold-duotone" inline></iconify-icon>
                             Salvar despesa
                         </button>

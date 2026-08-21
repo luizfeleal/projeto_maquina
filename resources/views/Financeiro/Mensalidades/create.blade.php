@@ -8,7 +8,7 @@
 
         <div class="card border-0 shadow-sm">
             <div class="card-header bg-white border-bottom d-flex align-items-center gap-2 py-3">
-                <iconify-icon icon="solar:wallet-money-bold-duotone" style="font-size:1.4rem; color:#1a6b4a;"></iconify-icon>
+                <iconify-icon icon="solar:wallet-money-bold-duotone" style="font-size:1.4rem; color:#2C9BA5;"></iconify-icon>
                 <h5 class="mb-0 fw-semibold">Nova Mensalidade</h5>
             </div>
             <div class="card-body p-4 p-lg-5">
@@ -95,7 +95,7 @@
 
                     <div class="d-flex gap-2 justify-content-end">
                         <a href="{{ route('financeiro-mensalidades') }}" class="btn btn-outline-secondary">Cancelar</a>
-                        <button type="submit" class="btn btn-success">
+                        <button type="submit" class="btn btn-primary">
                             <iconify-icon icon="solar:disk-bold-duotone" inline></iconify-icon>
                             Salvar mensalidade
                         </button>
