@@ -266,28 +266,6 @@
         {{-- Coluna de pré-visualização --}}
         <aside class="cadastro-cliente-preview-col">
             <div class="cc-preview-sticky">
-                <div class="cc-card" id="previewCard">
-                    <div class="cc-card-chip" aria-hidden="true"></div>
-                    <div class="cc-card-top">
-                        <span class="cc-card-brand">SwiftPay · Cliente</span>
-                        <span class="cc-card-gateway" id="previewGateway">Sem credencial definida</span>
-                    </div>
-                    <div class="cc-card-doc-label" id="previewDocLabel">CNPJ</div>
-                    <div class="cc-card-cnpj" id="previewCnpj">00.000.000/0000-00</div>
-                    <div class="cc-card-razao" id="previewRazao">Razão social da empresa</div>
-                    <div class="cc-card-endereco" id="previewEndereco">O endereço aparece aqui conforme você preenche o CEP</div>
-                    <div class="cc-card-footer">
-                        <div>
-                            <span class="cc-card-label">Contato</span>
-                            <span id="previewContato">—</span>
-                        </div>
-                        <div class="text-end">
-                            <span class="cc-card-label">Acesso liberado</span>
-                            <span id="previewGrupo">Nenhuma credencial</span>
-                        </div>
-                    </div>
-                </div>
-
                 <div class="cc-preview-produtos">
                     <div class="cc-preview-produtos-header">
                         <iconify-icon icon="solar:cart-check-bold-duotone"></iconify-icon>
@@ -483,139 +461,8 @@
     }
     .cc-submit-btn { min-width: 190px; font-weight: 600; }
 
-    /* ---- Cartão de pré-visualização (elemento de assinatura) ---- */
+    /* ---- Pré-visualização de produtos ---- */
     .cc-preview-sticky { position: sticky; top: 16px; display: flex; flex-direction: column; gap: 16px; }
-
-    .cc-card {
-        position: relative;
-        overflow: hidden;
-        border-radius: 20px;
-        padding: 26px 24px 22px;
-        color: #fff;
-        background: linear-gradient(135deg, #0F1A3B 0%, #16526D 100%);
-        box-shadow: 0 20px 40px -14px rgba(15, 26, 59, .55);
-        transition: background .25s ease;
-    }
-
-    .cc-card::after {
-        content: '';
-        position: absolute;
-        width: 220px;
-        height: 220px;
-        border-radius: 50%;
-        background: radial-gradient(circle, rgba(44,155,165,.35), transparent 70%);
-        top: -80px;
-        right: -60px;
-        pointer-events: none;
-    }
-
-    .cc-card-chip {
-        width: 34px;
-        height: 24px;
-        border-radius: 5px;
-        background: linear-gradient(135deg, #d4b962, #f4e4a1 45%, #c9a94a);
-        margin-bottom: 18px;
-        position: relative;
-        z-index: 1;
-    }
-
-    .cc-card-top {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 20px;
-        position: relative;
-        z-index: 1;
-    }
-
-    .cc-card-brand {
-        font-family: 'Space Grotesk', sans-serif;
-        font-size: .72rem;
-        letter-spacing: .1em;
-        text-transform: uppercase;
-        color: rgba(255,255,255,.65);
-    }
-
-    .cc-card-gateway {
-        font-size: .68rem;
-        font-weight: 700;
-        letter-spacing: .04em;
-        padding: 4px 10px;
-        border-radius: 999px;
-        background: rgba(255,255,255,.14);
-        color: #fff;
-        transition: background .2s ease, color .2s ease;
-    }
-    .cc-card.gw-efi .cc-card-gateway { background: #16a34a; }
-    .cc-card.gw-pagbank .cc-card-gateway { background: #2563eb; }
-    .cc-card.gw-both .cc-card-gateway { background: #2C9BA5; }
-
-    .cc-card-doc-label {
-        font-size: .64rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: .1em;
-        color: rgba(255,255,255,.55);
-        margin-bottom: 3px;
-        position: relative;
-        z-index: 1;
-    }
-
-    .cc-card-cnpj {
-        font-family: 'Space Grotesk', sans-serif;
-        font-size: 1.28rem;
-        font-weight: 600;
-        letter-spacing: .06em;
-        font-variant-numeric: tabular-nums;
-        margin-bottom: 6px;
-        position: relative;
-        z-index: 1;
-        word-break: break-all;
-    }
-
-    .cc-card-razao {
-        font-size: .88rem;
-        font-weight: 600;
-        color: rgba(255,255,255,.92);
-        margin-bottom: 4px;
-        position: relative;
-        z-index: 1;
-    }
-
-    .cc-card-endereco {
-        font-size: .76rem;
-        color: rgba(255,255,255,.62);
-        margin-bottom: 20px;
-        min-height: 2.2em;
-        position: relative;
-        z-index: 1;
-    }
-
-    .cc-card-footer {
-        display: flex;
-        align-items: flex-end;
-        justify-content: space-between;
-        gap: 10px;
-        padding-top: 14px;
-        border-top: 1px solid rgba(255,255,255,.16);
-        font-size: .76rem;
-        position: relative;
-        z-index: 1;
-    }
-
-    .cc-card-footer > div { display: flex; flex-direction: column; gap: 2px; max-width: 60%; }
-    .cc-card-footer > div:last-child { max-width: 45%; }
-    .cc-card-label {
-        font-size: .64rem;
-        text-transform: uppercase;
-        letter-spacing: .08em;
-        color: rgba(255,255,255,.5);
-    }
-    .cc-card-footer span:not(.cc-card-label) {
-        color: #fff;
-        font-weight: 600;
-        word-break: break-word;
-    }
 
     .cc-preview-produtos {
         background: #fff;
@@ -673,8 +520,7 @@
     :root[data-theme="dark"] .cadastro-cliente-title,
     :root[data-theme="dark"] .cc-preview-produtos-header,
     :root[data-theme="dark"] .produto-linha-info strong,
-    :root[data-theme="dark"] .cc-preview-produtos-total,
-    :root[data-theme="dark"] .cc-card-footer span:not(.cc-card-label) { color: #f3f4f6; }
+    :root[data-theme="dark"] .cc-preview-produtos-total { color: #f3f4f6; }
     :root[data-theme="dark"] .cc-section-header,
     :root[data-theme="dark"] .cc-gateway-row,
     :root[data-theme="dark"] .produto-linha { border-color: #262f45; background: #1d2437; }
@@ -697,7 +543,6 @@
 
         $("#cliente_nome").on('blur input', () => {
             validarCampoNome('cliente_nome', 'cliente_nome_mensagem');
-            atualizarPreviewGeral();
         });
 
         $("#cliente_celular").on('blur', () => {
@@ -712,13 +557,11 @@
                 ? numeros.replace(/(\d{2})(\d)/, '$1.$2').replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d)/, '$1/$2').replace(/(\d{4})(\d)/, '$1-$2')
                 : numeros.replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d)/, '$1-$2');
             $(this).val(valor);
-            atualizarPreviewGeral();
         });
         $("#cliente_cpf_cnpj").on('blur', () => {
             var numeros = $("#cliente_cpf_cnpj").val().replace(/\D/g, '');
             if ((numeros.length === 11 || numeros.length === 14) && typeof validarDocumento === 'function' && validarDocumento($("#cliente_cpf_cnpj").val(), 'cliente_cpf_cnpj')) {
                 $(".invalid-p-cpf-cnpj").text('Campo obrigatório');
-                atualizarPreviewGeral();
             } else {
                 $("#cliente_cpf_cnpj").removeClass('is-valid').addClass('is-invalid');
                 $(".invalid-p-cpf-cnpj").text('CPF/CNPJ inválido');
@@ -753,10 +596,7 @@
             $('#cliente_cidade').val(dados.localidade || '');
             $('#cliente_uf').val(dados.uf || '');
             $('#cliente_numero').focus();
-            atualizarPreviewGeral();
         });
-
-        $('#cliente_logradouro, #cliente_numero, #cliente_bairro, #cliente_cidade, #cliente_uf, #cliente_email').on('input', atualizarPreviewGeral);
 
         // ---- Toggle credenciais ----
         function updateGatewayRow(rowId, iconId, labelId, enabled, color) {
@@ -767,11 +607,9 @@
 
         $('#checkboxEfi').on('change', function () {
             updateGatewayRow('row-efi', 'icon-efi', 'label-efi', this.checked, '22,163,74');
-            atualizarPreviewGeral();
         });
         $('#checkboxPagbank').on('change', function () {
             updateGatewayRow('row-pagbank', 'icon-pagbank', 'label-pagbank', this.checked, '37,99,235');
-            atualizarPreviewGeral();
         });
 
         // ---- Produtos do estoque ----
@@ -871,48 +709,6 @@
             $('#previewProdutosTotal').text(formatarMoeda(total));
         };
 
-        window.atualizarPreviewGeral = function () {
-            var numerosDoc     = ($('#cliente_cpf_cnpj').val() || '').replace(/\D/g, '');
-            var ehPessoaFisica = numerosDoc.length > 0 && numerosDoc.length <= 11;
-
-            $('#previewDocLabel').text(ehPessoaFisica ? 'CPF' : 'CNPJ');
-            $('#previewRazao').text($('#cliente_nome').val() || (ehPessoaFisica ? 'Nome completo do cliente' : 'Razão social da empresa'));
-            $('#previewCnpj').text($('#cliente_cpf_cnpj').val() || (ehPessoaFisica ? '000.000.000-00' : '00.000.000/0000-00'));
-
-            var linha1 = [$('#cliente_logradouro').val(), $('#cliente_numero').val()].filter(Boolean).join(', ');
-            var cidadeUf = [$('#cliente_cidade').val(), $('#cliente_uf').val()].filter(Boolean).join('/');
-            var linhaEndereco = [linha1, $('#cliente_bairro').val(), cidadeUf].filter(Boolean).join(' — ');
-            $('#previewEndereco').text(linhaEndereco || 'O endereço aparece aqui conforme você preenche o CEP');
-
-            var contato = [$('#cliente_email').val(), $('#cliente_celular').val()].filter(Boolean).join(' · ');
-            $('#previewContato').text(contato || '—');
-
-            var efi = $('#checkboxEfi').is(':checked');
-            var pagbank = $('#checkboxPagbank').is(':checked');
-            var $gateway = $('#previewGateway');
-            var $card = $('#previewCard');
-            $card.removeClass('gw-none gw-efi gw-pagbank gw-both');
-
-            if (efi && pagbank) {
-                $gateway.text('Efí + PagBank');
-                $card.addClass('gw-both');
-                $('#previewGrupo').text('Pix (Efí) e Maquininha (PagBank)');
-            } else if (efi) {
-                $gateway.text('Efí · Pix');
-                $card.addClass('gw-efi');
-                $('#previewGrupo').text('Pix (Efí)');
-            } else if (pagbank) {
-                $gateway.text('PagBank · Maquininha');
-                $card.addClass('gw-pagbank');
-                $('#previewGrupo').text('Maquininha (PagBank)');
-            } else {
-                $gateway.text('Sem credencial definida');
-                $card.addClass('gw-none');
-                $('#previewGrupo').text('Nenhuma credencial');
-            }
-        };
-
-        atualizarPreviewGeral();
         atualizarPreviewProdutos();
 
         // ---- Confirma senhas antes de enviar ----
