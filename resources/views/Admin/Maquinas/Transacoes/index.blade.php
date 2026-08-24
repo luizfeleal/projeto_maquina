@@ -162,6 +162,7 @@
                 <option value="pix" {{ ($tipoOperacao ?? '') === 'pix' ? 'selected' : '' }}>PIX</option>
                 <option value="cartao" {{ ($tipoOperacao ?? '') === 'cartao' ? 'selected' : '' }}>Cartão</option>
                 <option value="dinheiro" {{ ($tipoOperacao ?? '') === 'dinheiro' ? 'selected' : '' }}>Dinheiro</option>
+                <option value="devolucao" {{ ($tipoOperacao ?? '') === 'devolucao' ? 'selected' : '' }}>Devolução</option>
             </select>
         </div>
 

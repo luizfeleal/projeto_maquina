@@ -652,10 +652,14 @@ class MockRouter
             $tipo = strtolower((string) $query['tipo_operacao']);
             $items = array_values(array_filter($items, function ($i) use ($tipo) {
                 $tipoTx = strtolower($i['extrato_operacao_tipo'] ?? '');
+                $op     = $i['extrato_operacao'] ?? 'C';
                 return match ($tipo) {
                     'pix' => str_contains($tipoTx, 'pix'),
                     'cartao', 'cartão' => str_contains($tipoTx, 'cart'),
                     'dinheiro' => str_contains($tipoTx, 'dinheir'),
+                    // Mesmo critério usado no resumo (somarTotaisPorTipo): devolução é
+                    // toda transação de saída (D), independente do texto do tipo.
+                    'devolucao', 'devolução' => $op === 'D',
                     default => $tipoTx === $tipo,
                 };
             }));
