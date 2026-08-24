@@ -657,9 +657,9 @@ class MockRouter
                     'pix' => str_contains($tipoTx, 'pix'),
                     'cartao', 'cartão' => str_contains($tipoTx, 'cart'),
                     'dinheiro' => str_contains($tipoTx, 'dinheir'),
-                    // Mesmo critério usado no resumo (somarTotaisPorTipo): devolução é
+                    // Mesmo critério usado no resumo (somarTotaisPorTipo): estorno é
                     // toda transação de saída (D), independente do texto do tipo.
-                    'devolucao', 'devolução' => $op === 'D',
+                    'estorno' => $op === 'D',
                     default => $tipoTx === $tipo,
                 };
             }));
