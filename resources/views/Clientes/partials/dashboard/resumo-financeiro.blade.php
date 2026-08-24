@@ -40,7 +40,7 @@
             </div>
             @endif
         </div>-->
-        <div class="dash-kpi">
+        <a href="{{ route('clientes-maquinas', ['status' => 'online']) }}" class="dash-kpi" style="text-decoration:none; color:inherit; display:block; cursor:pointer;">
             <div class="dash-kpi-label">
                 <iconify-icon icon="solar:monitor-bold-duotone" style="color:#16a34a;"></iconify-icon>
                 Máquinas online
@@ -54,8 +54,8 @@
                 <div style="height:100%; width:{{ $percOnline }}%; background:#16a34a; border-radius:99px;"></div>
             </div>
             @endif
-        </div>
-        <div class="dash-kpi">
+        </a>
+        <a href="{{ route('clientes-maquinas', ['status' => 'offline']) }}" class="dash-kpi" style="text-decoration:none; color:inherit; display:block; cursor:pointer;">
             <div class="dash-kpi-label">
                 <iconify-icon icon="solar:danger-triangle-bold-duotone" style="color:#dc2626;"></iconify-icon>
                 Máquinas offline
@@ -66,7 +66,7 @@
             <div class="dash-kpi-sub">
                 {{ count($maquinas_offline) > 0 ? 'requer atenção' : 'tudo funcionando' }}
             </div>
-        </div>
+        </a>
     </div>
 
     {{-- Cards detalhados --}}

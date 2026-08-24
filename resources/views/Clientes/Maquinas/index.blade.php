@@ -25,6 +25,7 @@
     @else
         <form id="form-busca-maquinas" method="GET" action="{{ route('clientes-maquinas') }}"
               class="view-toggle-bar" role="search" aria-label="Buscar máquinas">
+            <input type="hidden" name="status" value="{{ $status ?? '' }}">
             <div class="view-search-wrap">
                 <span class="view-search-icon" aria-hidden="true">
                     <iconify-icon icon="solar:magnifer-linear"></iconify-icon>
@@ -42,16 +43,46 @@
             </span>
         </form>
 
+        @php
+            $filtroLink = fn($s) => route('clientes-maquinas', array_filter([
+                'busca'  => $busca !== '' ? $busca : null,
+                'status' => $s,
+            ]));
+        @endphp
+        <div style="display:flex; gap:8px; margin:10px 0 4px;" role="group" aria-label="Filtrar por status">
+            <a href="{{ $filtroLink(null) }}"
+               style="padding:6px 14px; border-radius:999px; font-size:.78rem; font-weight:600; text-decoration:none;
+                      border:1px solid {{ !$status ? '#2C9BA5' : '#e8ecf0' }};
+                      background:{{ !$status ? '#e6f6f7' : '#fff' }};
+                      color:{{ !$status ? '#2C9BA5' : '#6b7280' }};">
+                Todos
+            </a>
+            <a href="{{ $filtroLink('online') }}"
+               style="padding:6px 14px; border-radius:999px; font-size:.78rem; font-weight:600; text-decoration:none;
+                      border:1px solid {{ $status === 'online' ? '#16a34a' : '#e8ecf0' }};
+                      background:{{ $status === 'online' ? '#dcfce7' : '#fff' }};
+                      color:{{ $status === 'online' ? '#15803d' : '#6b7280' }};">
+                Online
+            </a>
+            <a href="{{ $filtroLink('offline') }}"
+               style="padding:6px 14px; border-radius:999px; font-size:.78rem; font-weight:600; text-decoration:none;
+                      border:1px solid {{ $status === 'offline' ? '#dc2626' : '#e8ecf0' }};
+                      background:{{ $status === 'offline' ? '#fee2e2' : '#fff' }};
+                      color:{{ $status === 'offline' ? '#b91c1c' : '#6b7280' }};">
+                Offline
+            </a>
+        </div>
+
         @if($paginator->isEmpty())
             <div style="background:#fff; border:1px dashed #e8ecf0; border-radius:14px;
                         padding:48px 24px; text-align:center; color:#9ca3af;">
                 <iconify-icon icon="solar:magnifer-zoom-in-bold-duotone"
                               style="font-size:2.2rem; display:block; margin:0 auto 12px;"></iconify-icon>
-                <p style="margin:0 0 8px; font-size:.9rem; font-weight:600;">Nenhuma máquina encontrada para esta busca.</p>
-                @if($busca !== '')
+                <p style="margin:0 0 8px; font-size:.9rem; font-weight:600;">Nenhuma máquina encontrada para este filtro.</p>
+                @if($busca !== '' || $status)
                     <a href="{{ route('clientes-maquinas') }}"
                        style="font-size:.82rem; color:#2C9BA5; text-decoration:none; font-weight:600;">
-                        Limpar busca
+                        Limpar filtros
                     </a>
                 @endif
             </div>
@@ -216,8 +247,9 @@
                 $inicio = max(1, $paginaAtual - 2);
                 $fim    = min($ultimaPagina, $paginaAtual + 2);
                 $linkPagina = fn($p) => route('clientes-maquinas', array_filter([
-                    'busca' => $busca !== '' ? $busca : null,
-                    'page'  => $p > 1 ? $p : null,
+                    'busca'  => $busca !== '' ? $busca : null,
+                    'status' => $status,
+                    'page'   => $p > 1 ? $p : null,
                 ]));
             @endphp
             <div class="card-pager" style="padding:16px 0 4px;">

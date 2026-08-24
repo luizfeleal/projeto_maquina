@@ -8,6 +8,15 @@
     <div class="container section container-platform div-center-column"
          style="margin-top: 15px; height: 100%;">
 
+        <div style="width:100%; display:flex; align-items:center; gap:10px; margin-bottom:14px;">
+            <label for="filtroStatusMaquina" style="font-weight:600; font-size:.85rem; margin:0;">Status:</label>
+            <select id="filtroStatusMaquina" class="form-select" style="max-width:180px;">
+                <option value="">Todos</option>
+                <option value="online">Online</option>
+                <option value="offline">Offline</option>
+            </select>
+        </div>
+
         <div class="tabela_responsiva">
             <table id="tabela_maquinas" class="display nowrap table-striped" style="width:100%">
                 <thead>
@@ -94,7 +103,20 @@ $(document).ready(function () {
                'aria-label="' + label + '" title="' + label + '"></span>';
     }
 
-    $('#tabela_maquinas').DataTable({
+    var statusInicial = @json($statusFiltro ?? '');
+    $('#filtroStatusMaquina').val(statusInicial);
+
+    $.fn.dataTable.ext.search.push(function (settings, searchData, dataIndex, rowData) {
+        if (settings.nTable.id !== 'tabela_maquinas') return true;
+
+        var filtro = $('#filtroStatusMaquina').val();
+        if (!filtro) return true;
+
+        var online = Number(rowData.maquina_status) !== 0;
+        return filtro === 'online' ? online : !online;
+    });
+
+    var table = $('#tabela_maquinas').DataTable({
         processing: true,
         deferRender: true,
         ajax: {
@@ -177,6 +199,10 @@ $(document).ready(function () {
                 }
             }
         ]
+    });
+
+    $('#filtroStatusMaquina').on('change', function () {
+        table.draw();
     });
 });
 </script>

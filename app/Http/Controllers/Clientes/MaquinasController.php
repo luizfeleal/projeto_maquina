@@ -23,6 +23,10 @@ class MaquinasController extends Controller
     public function coletarTodasAsMaquinas(Request $request){
         $id_cliente = session()->get('id_cliente');
         $busca      = trim((string) $request->input('busca', ''));
+        $status     = $request->query('status');
+        if (!in_array($status, ['online', 'offline'], true)) {
+            $status = null;
+        }
         $perPage    = 10;
         $page       = max(1, (int) $request->input('page', 1));
 
@@ -89,6 +93,13 @@ class MaquinasController extends Controller
             }));
         }
 
+        if ($status !== null) {
+            $listaBase = array_values(array_filter($listaBase, function ($maq) use ($status) {
+                $online = ($maq['maquina_status'] ?? 1) == 1;
+                return $status === 'online' ? $online : !$online;
+            }));
+        }
+
         $totalItens = count($listaBase);
         $offset     = ($page - 1) * $perPage;
         $paginaBase = array_slice($listaBase, $offset, $perPage);
@@ -136,7 +147,7 @@ class MaquinasController extends Controller
 
         $temMaquinas = count($maquinasPorId) > 0;
 
-        return view('Clientes.Maquinas.index', compact('maquinas', 'paginator', 'busca', 'temMaquinas'));
+        return view('Clientes.Maquinas.index', compact('maquinas', 'paginator', 'busca', 'status', 'temMaquinas'));
     }
 
     public function transacaoMaquinas(Request $request){

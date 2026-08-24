@@ -114,7 +114,12 @@ class MaquinasController extends Controller
 
     public function coletarTodasAsMaquinas(Request $request)
     {
-        return view('Admin.Maquinas.index');
+        $statusFiltro = $request->query('status');
+        if (!in_array($statusFiltro, ['online', 'offline'], true)) {
+            $statusFiltro = null;
+        }
+
+        return view('Admin.Maquinas.index', compact('statusFiltro'));
     }
 
     public function coletarTodasAsMaquinasDados(Request $request)
