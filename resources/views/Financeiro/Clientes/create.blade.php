@@ -272,6 +272,7 @@
                         <span class="cc-card-brand">SwiftPay · Cliente</span>
                         <span class="cc-card-gateway" id="previewGateway">Sem credencial definida</span>
                     </div>
+                    <div class="cc-card-doc-label" id="previewDocLabel">CNPJ</div>
                     <div class="cc-card-cnpj" id="previewCnpj">00.000.000/0000-00</div>
                     <div class="cc-card-razao" id="previewRazao">Razão social da empresa</div>
                     <div class="cc-card-endereco" id="previewEndereco">O endereço aparece aqui conforme você preenche o CEP</div>
@@ -548,6 +549,17 @@
     .cc-card.gw-efi .cc-card-gateway { background: #16a34a; }
     .cc-card.gw-pagbank .cc-card-gateway { background: #2563eb; }
     .cc-card.gw-both .cc-card-gateway { background: #2C9BA5; }
+
+    .cc-card-doc-label {
+        font-size: .64rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .1em;
+        color: rgba(255,255,255,.55);
+        margin-bottom: 3px;
+        position: relative;
+        z-index: 1;
+    }
 
     .cc-card-cnpj {
         font-family: 'Space Grotesk', sans-serif;
@@ -860,8 +872,12 @@
         };
 
         window.atualizarPreviewGeral = function () {
-            $('#previewRazao').text($('#cliente_nome').val() || 'Razão social da empresa');
-            $('#previewCnpj').text($('#cliente_cpf_cnpj').val() || '00.000.000/0000-00');
+            var numerosDoc     = ($('#cliente_cpf_cnpj').val() || '').replace(/\D/g, '');
+            var ehPessoaFisica = numerosDoc.length > 0 && numerosDoc.length <= 11;
+
+            $('#previewDocLabel').text(ehPessoaFisica ? 'CPF' : 'CNPJ');
+            $('#previewRazao').text($('#cliente_nome').val() || (ehPessoaFisica ? 'Nome completo do cliente' : 'Razão social da empresa'));
+            $('#previewCnpj').text($('#cliente_cpf_cnpj').val() || (ehPessoaFisica ? '000.000.000-00' : '00.000.000/0000-00'));
 
             var linha1 = [$('#cliente_logradouro').val(), $('#cliente_numero').val()].filter(Boolean).join(', ');
             var cidadeUf = [$('#cliente_cidade').val(), $('#cliente_uf').val()].filter(Boolean).join('/');
