@@ -183,18 +183,16 @@ $(function () {
                     '<div style="flex:1; text-align:center;">' +
                         '<p style="margin:0 0 2px; font-size:.58rem; font-weight:600; text-transform:uppercase; letter-spacing:.05em; color:var(--sp-text);">Saldo período</p>' +
                         '<p style="margin:0; font-size:.88rem; font-weight:700; color:' + saldoClr + ';">' + brl(saldo) + '</p>' +
+                        '<p class="maq-reset-info" style="margin:6px 0 0; font-size:.6rem; color:var(--sp-text-faint);">' +
+                            '<iconify-icon icon="solar:clock-circle-bold-duotone" style="font-size:.68rem; vertical-align:middle;"></iconify-icon>' +
+                            ' Último reset: <strong style="color:' + (ultimoReset ? 'var(--sp-muted)' : 'var(--sp-text-faint)') + ';">' + escapeHtml(resetLabel) + '</strong>' +
+                        '</p>' +
                     '</div>' +
                     '<div style="width:1px; background:var(--sp-border-subtle);"></div>' +
                     '<div style="flex:1; text-align:center;">' +
                         '<p style="margin:0 0 2px; font-size:.58rem; font-weight:600; text-transform:uppercase; letter-spacing:.05em; color:var(--sp-text);">Total máquina</p>' +
                         '<p style="margin:0; font-size:.88rem; font-weight:700; color:#16a34a;">' + brl(total) + '</p>' +
                     '</div>' +
-                '</div>' +
-                '<div style="margin-top:8px; text-align:center;">' +
-                    '<p style="margin:0; font-size:.65rem; color:var(--sp-text-faint);">' +
-                        '<iconify-icon icon="solar:clock-circle-bold-duotone" style="font-size:.7rem; vertical-align:middle;"></iconify-icon>' +
-                        ' Último reset: <strong style="color:' + (ultimoReset ? 'var(--sp-muted)' : 'var(--sp-text-faint)') + ';">' + escapeHtml(resetLabel) + '</strong>' +
-                    '</p>' +
                 '</div>' +
             '</div>' +
             '<div style="padding:12px 16px; display:flex; flex-wrap:wrap; gap:6px; margin-top:auto;">' +

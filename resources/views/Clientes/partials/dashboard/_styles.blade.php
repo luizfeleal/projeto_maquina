@@ -106,6 +106,11 @@
         border-radius: 14px;
         padding: 18px 20px;
         box-shadow: 0 1px 4px rgba(0,0,0,.05);
+        transition: box-shadow .15s, border-color .15s;
+    }
+    a.dash-kpi:hover {
+        box-shadow: 0 2px 10px rgba(0,0,0,.09);
+        border-color: var(--sp-teal);
     }
     .dash-kpi-label {
         font-size: .68rem; font-weight: 700;
@@ -365,9 +370,25 @@
         color: var(--sp-text);
     }
     [data-theme="dark"] .maq-search-icon { color: var(--sp-text-faint); }
-    [data-theme="dark"] .maq-count-badge { color: var(--sp-muted); }
-    [data-theme="dark"] .maq-card-meta   { color: var(--sp-text-faint); }
-    [data-theme="dark"] .maq-card-meta strong { color: var(--sp-muted); }
+    [data-theme="dark"] .maq-count-badge { color: var(--sp-text); }
+    [data-theme="dark"] .maq-card-meta   { color: var(--sp-text); }
+    [data-theme="dark"] .maq-card-meta strong { color: var(--sp-text); }
+
+    [data-theme="dark"] .dash-action-btn {
+        background: var(--sp-bg);
+        border-color: var(--sp-border);
+        color: var(--sp-text);
+    }
+    [data-theme="dark"] .dash-action-btn:hover {
+        background: var(--sp-border-subtle);
+        color: var(--sp-text);
+    }
+
+    [data-theme="dark"] #maquinas .dash-section-header p { color: var(--sp-text); }
+    [data-theme="dark"] #maquinas .maq-reset-info,
+    [data-theme="dark"] #maquinas .maq-reset-info strong {
+        color: var(--sp-text) !important;
+    }
 
     [data-theme="dark"] .dash-btn-secondary {
         background: var(--sp-bg);
