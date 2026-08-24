@@ -4,8 +4,8 @@
 
 <div class="dash-page">
     @include('Admin.partials.dashboard.acoes-rapidas')
-    @include('Admin.partials.dashboard.resumo-financeiro')
     @include('Admin.partials.dashboard.maquinas-compactas')
+    @include('Admin.partials.dashboard.resumo-financeiro')
     @include('Admin.partials.dashboard.transacoes-recentes')
     @include('Admin.partials.dashboard.grafico-recebimentos')
     @include('Admin.partials.dashboard.relatorios-rapidos')
@@ -50,7 +50,7 @@ $(document).ready(function () {
         $(sel).select2({ theme: 'bootstrap-5', width: '100%' });
     });
 
-    var sections = ['acoes', 'resumo', 'transacoes', 'maquinas', 'grafico', 'relatorios'];
+    var sections = ['acoes', 'maquinas', 'resumo', 'transacoes', 'grafico', 'relatorios'];
     function updateNav() {
         var scrollY = window.scrollY + 100;
         var current = sections[0];
