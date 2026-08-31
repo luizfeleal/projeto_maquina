@@ -152,6 +152,14 @@ class MockData
                     'tipo_cred' => 'pagbank',
                     'data_criacao' => $now,
                 ],
+                [
+                    'id_credencial' => 3,
+                    'id_cliente' => 1,
+                    'client_id' => 'mock-mp-webhook-secret',
+                    'client_secret' => 'mock-mp-access-token',
+                    'tipo_cred' => 'mercadopago',
+                    'data_criacao' => $now,
+                ],
             ],
 
             'qrcode' => [
@@ -166,6 +174,8 @@ class MockData
                     'data_criacao' => $now,
                 ],
             ],
+
+            'mercadopagoqr' => [],
 
             'logs' => [
                 [
@@ -265,8 +275,9 @@ class MockData
                 'clienteLocal' => 2,
                 'maquinas' => 2,
                 'maquinasCartao' => 1,
-                'credApiPix' => 2,
+                'credApiPix' => 3,
                 'qrcode' => 1,
+                'mercadopagoqr' => 0,
                 'logs' => 2,
                 'extratoMaquina' => 4,
                 'extratoCliente' => 0,
@@ -288,8 +299,8 @@ class MockData
             'local-detalhar', 'local-registrar', 'local-excluir', 'usuarios', 'usuario-criar', 'usuario-detalhar',
             'usuario-editar', 'usuario-atualizar', 'usuario-registrar', 'usuario-excluir', 'qr', 'qr-criar',
             'qr-registrar', 'qr-download', 'qr-excluir', 'relatorio-view', 'relatorio-criar', 'relatorio-xlsx-download',
-            'credencial-listar', 'credencial-criar-efi', 'credencial-criar-pagbank', 'credencial-registrar',
-            'credencial-editar-efi', 'credencial-editar-pagbank', 'credencial-atualizar', 'credencial-excluir',
+            'credencial-listar', 'credencial-criar-efi', 'credencial-criar-pagbank', 'credencial-criar-mercadopago', 'credencial-registrar',
+            'credencial-editar-efi', 'credencial-editar-pagbank', 'credencial-editar-mercadopago', 'credencial-atualizar', 'credencial-excluir',
             'financeiro-home', 'financeiro-despesas', 'financeiro-despesas-criar', 'financeiro-despesas-registrar',
             'financeiro-despesas-excluir', 'financeiro-despesas-detalhar', 'financeiro-estoque', 'financeiro-estoque-criar',
             'financeiro-estoque-registrar', 'financeiro-estoque-excluir', 'financeiro-estoque-detalhar', 'financeiro-estoque-editar',

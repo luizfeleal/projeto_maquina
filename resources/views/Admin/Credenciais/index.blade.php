@@ -38,6 +38,7 @@
                         <option value="">Todos os tipos</option>
                         <option value="efi" {{ ($tipo_cred ?? '') == 'efi' ? 'selected' : '' }}>EFI</option>
                         <option value="pagbank" {{ ($tipo_cred ?? '') == 'pagbank' ? 'selected' : '' }}>PagBank</option>
+                        <option value="mercadopago" {{ ($tipo_cred ?? '') == 'mercadopago' ? 'selected' : '' }}>Mercado Pago</option>
                     </select>
                 </div>
                 <div class="col-md-4">
@@ -66,12 +67,17 @@
                             $idCliente = $credencial['id_cliente'] ?? null;
                             $tipoCred = $credencial['tipo_cred'] ?? '';
                             $cliente_nome = collect($clientes)->firstWhere('id_cliente', $idCliente)['cliente_nome'] ?? 'Cliente #' . $idCliente;
+                            $badgeClass = match($tipoCred) {
+                                'efi' => 'badge-cred-efi',
+                                'mercadopago' => 'badge-cred-mercadopago',
+                                default => 'badge-cred-pagbank',
+                            };
                         @endphp
                         <tr>
                             <td>{{ $credId ?? '-' }}</td>
                             <td>{{ $cliente_nome }}</td>
                             <td>
-                                <span class="badge {{ $tipoCred == 'efi' ? 'badge-cred-efi' : 'badge-cred-pagbank' }}">
+                                <span class="badge {{ $badgeClass }}">
                                     {{ strtoupper($tipoCred) }}
                                 </span>
                             </td>
@@ -79,6 +85,10 @@
                                 @if($credId)
                                     @if($tipoCred == 'efi')
                                         <a href="{{ route('credencial-editar-efi', $credId) }}" class="btn btn-sm btn-primary">
+                                            <iconify-icon icon="solar:pen-linear"></iconify-icon> Editar
+                                        </a>
+                                    @elseif($tipoCred == 'mercadopago')
+                                        <a href="{{ route('credencial-editar-mercadopago', $credId) }}" class="btn btn-sm btn-primary">
                                             <iconify-icon icon="solar:pen-linear"></iconify-icon> Editar
                                         </a>
                                     @else
@@ -140,7 +150,8 @@
                 input: 'select',
                 inputOptions: {
                     efi: 'EFI',
-                    pagbank: 'PagBank'
+                    pagbank: 'PagBank',
+                    mercadopago: 'Mercado Pago'
                 },
                 inputPlaceholder: 'Selecione o tipo',
                 showCancelButton: true,
@@ -158,6 +169,8 @@
                     window.location.href = '{{ route('credencial-criar-efi') }}';
                 } else if (result.value === 'pagbank') {
                     window.location.href = '{{ route('credencial-criar-pagbank') }}';
+                } else if (result.value === 'mercadopago') {
+                    window.location.href = '{{ route('credencial-criar-mercadopago') }}';
                 }
             });
         });

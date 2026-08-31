@@ -54,6 +54,10 @@ class CredenciaisController extends Controller
         $clientes = ClientesService::coletar();
         return view('Admin.Credenciais.PagBank.create', compact('clientes'));
     }
+    public function criarCredencialMercadopago(Request $request){
+        $clientes = ClientesService::coletar();
+        return view('Admin.Credenciais.MercadoPago.create', compact('clientes'));
+    }
 
     public function coletarCredenciais(Request $request) {
         $credencial = CredApiPixService::coletar();
@@ -139,6 +143,23 @@ class CredenciaisController extends Controller
         }
         
         return view('Admin.Credenciais.PagBank.edit', compact('clientes', 'credencial'));
+    }
+
+    public function editarCredencialMercadopago(Request $request, $id){
+        $clientes = ClientesService::coletar();
+        $credencial = CredApiPixService::coletar($id);
+
+        if(!$credencial){
+            return redirect()->route('credencial-listar')->with('error', 'Credencial não encontrada');
+        }
+
+        $credencial = (array) $credencial;
+        $credencial['id'] = $credencial['id_cred_api_pix'] ?? $credencial['id'] ?? $id;
+        if(($credencial['tipo_cred'] ?? '') !== 'mercadopago'){
+            return redirect()->route('credencial-listar')->with('error', 'Credencial não encontrada ou tipo incorreto para esta rota.');
+        }
+
+        return view('Admin.Credenciais.MercadoPago.edit', compact('clientes', 'credencial'));
     }
 
     public function atualizarCredencial(Request $request, $id){

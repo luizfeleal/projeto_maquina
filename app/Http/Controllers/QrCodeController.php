@@ -9,6 +9,7 @@ use App\Services\ExtratoMaquinaService;
 use App\Services\ClientesService;
 use App\Services\ClienteLocalService;
 use App\Services\QrCodeService;
+use App\Services\MercadopagoQrService;
 use App\Services\CredApiPixService;
 use App\Services\AuthService;
 use App\Helpers\QrImageHelper;
@@ -109,10 +110,12 @@ class QrCodeController extends Controller
 
             $id_cliente = $cliente_local[0]['id_cliente'];
 
+            $gateway = $request['gateway'] ?? 'efi';
+
             $credenciais = CredApiPixService::coletar();
 
-            $credencial = array_filter($credenciais, function($item) use($id_cliente){
-                return $item['id_cliente'] == $id_cliente && $item['tipo_cred'] == "efi";
+            $credencial = array_filter($credenciais, function($item) use($id_cliente, $gateway){
+                return $item['id_cliente'] == $id_cliente && $item['tipo_cred'] == $gateway;
             });
 
             if(empty($credencial)){
@@ -123,17 +126,24 @@ class QrCodeController extends Controller
             $request['id_usuario'] = $id_usuario_logado;
             $request['id_cliente'] = $cliente_local[0]['id_cliente'];
 
-            $qr = QrCodeService::criar($request);
+            $qr = $gateway === 'mercadopago'
+                ? MercadopagoQrService::criar($request)
+                : QrCodeService::criar($request);
+
+            if($qr->successful()){
+                $body = $qr->json();
+                return back()-> with(['success' => $body['message'] ?? 'QR Code cadastrado com sucesso!', 'id_local' => $request['select_local'], 'id_maquina' =>$request['select_maquina']]);
+            }
+
+            if($gateway === 'mercadopago' && $qr->status() == 400){
+                return back()->with('error', 'Não foi possível gerar o QR: a loja do Mercado Pago deste cliente ainda não foi cadastrada. Solicite ao time técnico que provisione a loja no backend.');
+            }
 
             if(isset($qr['message'])){
-                if($qr['message'] == "Qr Code cadastrado com sucesso!"){
-                    return back()-> with(['success' => $qr['message'], 'id_local' => $request['select_local'], 'id_maquina' =>$request['select_maquina']]);
-                }else{
-                    return back()-> with('error', $qr['message']);
-                }
-            }else{
-                return back()-> with('error', 'Houve um erro ao tentar registrar o QR Code. Verifique se as Credenciais estão cadastradas corretamente e tente novamente.');
+                return back()-> with('error', $qr['message']);
             }
+
+            return back()-> with('error', 'Houve um erro ao tentar registrar o QR Code. Verifique se as Credenciais estão cadastradas corretamente e tente novamente.');
         }catch(\Throwable $e){
             return back()->with('error', 'Houve um erro inesperado ao tentar registrar o QR Code.');
         }

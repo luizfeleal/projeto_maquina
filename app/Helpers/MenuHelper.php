@@ -59,6 +59,8 @@ if (!function_exists('getRouteBreadcrumbs')) {
             'credencial-criar-pagbank'              => [$home, $cred, ['label' => 'Nova Credencial PagBank']],
             'credencial-editar-efi'                 => [$home, $cred, ['label' => 'Editar Credencial EFI']],
             'credencial-editar-pagbank'             => [$home, $cred, ['label' => 'Editar Credencial PagBank']],
+            'credencial-criar-mercadopago'          => [$home, $cred, ['label' => 'Nova Credencial Mercado Pago']],
+            'credencial-editar-mercadopago'         => [$home, $cred, ['label' => 'Editar Credencial Mercado Pago']],
             'qr'                                    => [$home, $qr],
             'qr-criar'                              => [$home, $qr, ['label' => 'Novo QR Code']],
             'relatorio-view'                        => [$home, $relatorio],
@@ -123,7 +125,7 @@ if (!function_exists('getSidebar')) {
                 [
                     'title'         => 'Criar',
                     'icon'          => 'solar:add-circle-bold-duotone',
-                    'active_routes' => ['maquinas-criar', 'local-incluir-usuario', 'local-criar', 'credencial-listar', 'credencial-criar-efi', 'credencial-criar-pagbank', 'credencial-editar-efi', 'credencial-editar-pagbank', 'maquinas-cartao'],
+                    'active_routes' => ['maquinas-criar', 'local-incluir-usuario', 'local-criar', 'credencial-listar', 'credencial-criar-efi', 'credencial-criar-pagbank', 'credencial-criar-mercadopago', 'credencial-editar-efi', 'credencial-editar-pagbank', 'credencial-editar-mercadopago', 'maquinas-cartao'],
                     'sub_menu'      => [
                         ['title' => 'Nova máquina',     'route' => 'maquinas-criar'],
                         ['title' => 'Incluir usuários', 'route' => 'local-incluir-usuario'],
@@ -150,7 +152,7 @@ if (!function_exists('getSidebar')) {
                     ],
                 ],
                 [
-                    'title'         => 'Gerar QR (Efí)',
+                    'title'         => 'Gerar QR Code',
                     'icon'          => 'solar:qr-code-bold-duotone',
                     'active_routes' => ['qr-criar', 'qr'],
                     'sub_menu'      => [
