@@ -4,8 +4,8 @@
 
 <div class="dash-page">
     @include('Clientes.partials.dashboard.acoes-rapidas')
-    @include('Clientes.partials.dashboard.resumo-financeiro')
     @include('Clientes.partials.dashboard.maquinas-compactas')
+    @include('Clientes.partials.dashboard.resumo-financeiro')
     @include('Clientes.partials.dashboard.transacoes-recentes')
     @include('Clientes.partials.dashboard.grafico-recebimentos')
     @include('Clientes.partials.dashboard.relatorios-rapidos')
@@ -51,7 +51,7 @@ $(document).ready(function () {
     });
 
     // Destaque da seção ativa na navegação ao rolar
-    var sections = ['acoes', 'resumo', 'transacoes', 'maquinas', 'grafico', 'relatorios'];
+    var sections = ['acoes', 'maquinas', 'resumo', 'transacoes', 'grafico', 'relatorios'];
     function updateNav() {
         var scrollY = window.scrollY + 100;
         var current = sections[0];
