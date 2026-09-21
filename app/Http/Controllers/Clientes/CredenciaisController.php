@@ -108,13 +108,15 @@ class CredenciaisController extends Controller
             $result = CredApiPixService::criar($dados);
 
             if($result['success'] != true){
-                return back()->with('error', 'Houve um erro ao tentar cadastrar a credencial');
+                $mensagem = $result['error']['message'] ?? 'Houve um erro ao tentar cadastrar a credencial';
+                \Log::error('Erro ao cadastrar credencial (painel cliente): ' . json_encode($result['error'] ?? $result));
+                return back()->with('error', $mensagem);
             }else{
                 return back()->with('success', $result['data']['message']);
             }
         }catch(\Throwable $e){
-            return $e;
-            return back()->with('error', 'Houve um erro ao tentar cadastrar a credencial');
+            \Log::error('Exceção ao cadastrar credencial (painel cliente): ' . $e->getMessage());
+            return back()->with('error', 'Houve um erro ao tentar cadastrar a credencial: ' . $e->getMessage());
         }
     }
 
@@ -210,11 +212,16 @@ class CredenciaisController extends Controller
             $result = CredApiPixService::atualizarCredencial($dados, $id);
 
             if($result['success'] != true){
-                return back()->with('error', 'Houve um erro ao tentar atualizar a credencial');
+                // A API devolve {"response": "<mensagem genérica>", "error": "<detalhe real>"} em erros de update
+                // (diferente do store, que devolve {"message": "..."}) — cobrimos os dois formatos.
+                $mensagem = $result['error']['error'] ?? $result['error']['message'] ?? $result['error']['response'] ?? 'Houve um erro ao tentar atualizar a credencial';
+                \Log::error('Erro ao atualizar credencial (painel cliente, id=' . $id . '): ' . json_encode($result['error'] ?? $result));
+                return back()->with('error', $mensagem);
             }else{
                 return back()->with('success', $result['data']['message']);
             }
         }catch(\Throwable $e){
+            \Log::error('Exceção ao atualizar credencial (painel cliente, id=' . $id . '): ' . $e->getMessage());
             return back()->with('error', 'Houve um erro ao tentar atualizar a credencial: ' . $e->getMessage());
         }
     }
