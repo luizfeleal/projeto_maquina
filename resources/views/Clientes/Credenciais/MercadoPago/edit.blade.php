@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.Clientes.app')
 @section('title', 'Editar Credencial Mercado Pago')
 @section('content')
 
@@ -8,7 +8,7 @@
             <div class="container section container-platform div-center-column"
                 style="margin-top: 15px; height: 100%;">
 
-                <form action="{{ route('credencial-atualizar', $credencial['id'] ?? $credencial['id_cred_api_pix']) }}" id="editar-credencial-form"  class="w-100 needs-validation form-center"  method="post" enctype="multipart/form-data" novalidate>
+                <form action="{{ route('cliente-credencial-atualizar', $credencial['id'] ?? $credencial['id_cred_api_pix']) }}" id="editar-credencial-form"  class="w-100 needs-validation form-center"  method="post" enctype="multipart/form-data" novalidate>
                     @csrf
                     @method('PUT')
 
@@ -16,13 +16,13 @@
                     <div class="row" style="display: flex; flex-direction: row; justify-content: center;  width: 100%;  margin-bottom: 20px;">
                         <div class="col-md-8">
                             <label for="cliente-exibicao" class="form-label">Cliente:</label>
-                            <input type="text" class="form-control bg-light" id="cliente-exibicao" value="{{ collect($clientes)->firstWhere('id_cliente', $credencial['id_cliente'] ?? null)['cliente_nome'] ?? 'Cliente #' . ($credencial['id_cliente'] ?? '') }}" readonly>
+                            <input type="text" class="form-control bg-light" id="cliente-exibicao" value="{{ !empty($clientes) ? (reset($clientes)['cliente_nome'] ?? 'Meu cadastro') : 'Meu cadastro' }}" readonly>
                             <input type="hidden" name="id_cliente" value="{{ $credencial['id_cliente'] ?? '' }}">
                         </div>
                     </div>
                     <div class="row" style="display: flex; flex-direction: row; justify-content: center;width: 100%; margin-bottom: 20px;">
                         <div class="col-md-4">
-                            <label for="cliente_id" class="form-label">Segredo do Webhook: <i class="fa-solid fa-circle-info"  data-bs-toggle="tooltip" data-bs-title="Não é o Client ID do painel do Mercado Pago. Para conseguir: no painel de desenvolvedores, entre em Suas integrações, abra a aplicação do cliente, vá em Webhooks, Configurar notificação, salve a URL de notificação e clique em Revelar chave para ver este segredo."></i></label>
+                            <label for="cliente_id" class="form-label">Segredo do Webhook: <i class="fa-solid fa-circle-info"  data-bs-toggle="tooltip" data-bs-title="Não é o Client ID do painel do Mercado Pago. Para conseguir: no painel de desenvolvedores, entre em Suas integrações, abra sua aplicação, vá em Webhooks, Configurar notificação, salve a URL de notificação e clique em Revelar chave para ver este segredo."></i></label>
                             <input type="text" class="form-control" name="cliente_id" id="cliente_id" value="{{ $credencial['client_id'] ?? '' }}" required>
                             <div class="invalid-feedback">
                                 <p class="invalid-p invalid-p-name">Campo obrigatório</p>
@@ -30,7 +30,7 @@
 
                         </div>
                         <div class="col-md-4">
-                            <label for="cliente_secret" class="form-label">Access Token: <i class="fa-solid fa-circle-info"  data-bs-toggle="tooltip" data-bs-title="No painel de desenvolvedores do Mercado Pago: Suas integrações, abra a aplicação do cliente, vá em Credenciais de produção (ou de teste, para homologação) e copie o Access Token."></i></label>
+                            <label for="cliente_secret" class="form-label">Access Token: <i class="fa-solid fa-circle-info"  data-bs-toggle="tooltip" data-bs-title="No painel de desenvolvedores do Mercado Pago: Suas integrações, abra sua aplicação, vá em Credenciais de produção (ou de teste, para homologação) e copie o Access Token."></i></label>
                             <input type="text" class="form-control" name="cliente_secret" id="cliente_secret" value="{{ $credencial['client_secret'] ?? '' }}" required>
                             <div class="invalid-feedback">
                                 <p class="invalid-p invalid-p-name">Campo obrigatório</p>

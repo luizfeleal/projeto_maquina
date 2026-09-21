@@ -122,9 +122,11 @@ Route::prefix('clientes-credenciais')->middleware('permission')->group(function(
     Route::get('/', 'App\Http\Controllers\Clientes\CredenciaisController@listarCredenciais')->name('cliente-credencial-listar');
     Route::get('/criar/efi', 'App\Http\Controllers\Clientes\CredenciaisController@criarCredencialEfi')->name('cliente-credencial-criar-efi');
     Route::get('/criar/pagbank', 'App\Http\Controllers\Clientes\CredenciaisController@criarCredencialPagbank')->name('cliente-credencial-criar-pagbank');
+    Route::get('/criar/mercadopago', 'App\Http\Controllers\Clientes\CredenciaisController@criarCredencialMercadopago')->name('cliente-credencial-criar-mercadopago');
     Route::post('/registrar', 'App\Http\Controllers\Clientes\CredenciaisController@registrarCredencial')->name('cliente-credencial-registrar');
     Route::get('/editar/efi/{id}', 'App\Http\Controllers\Clientes\CredenciaisController@editarCredencialEfi')->name('cliente-credencial-editar-efi');
     Route::get('/editar/pagbank/{id}', 'App\Http\Controllers\Clientes\CredenciaisController@editarCredencialPagbank')->name('cliente-credencial-editar-pagbank');
+    Route::get('/editar/mercadopago/{id}', 'App\Http\Controllers\Clientes\CredenciaisController@editarCredencialMercadopago')->name('cliente-credencial-editar-mercadopago');
     Route::put('/atualizar/{id}', 'App\Http\Controllers\Clientes\CredenciaisController@atualizarCredencial')->name('cliente-credencial-atualizar');
     Route::delete('/excluir/{id}', 'App\Http\Controllers\Clientes\CredenciaisController@excluirCredencial')->name('cliente-credencial-excluir');
 });

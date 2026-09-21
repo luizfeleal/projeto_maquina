@@ -83,6 +83,8 @@ if (!function_exists('getRouteBreadcrumbs')) {
             'cliente-credencial-listar'             => [$home, $cred],
             'cliente-credencial-criar-efi'          => [$home, $cred, ['label' => 'Nova Credencial EFI']],
             'cliente-credencial-criar-pagbank'      => [$home, $cred, ['label' => 'Nova Credencial PagBank']],
+            'cliente-credencial-criar-mercadopago'  => [$home, $cred, ['label' => 'Nova Credencial Mercado Pago']],
+            'cliente-credencial-editar-mercadopago' => [$home, $cred, ['label' => 'Editar Credencial Mercado Pago']],
             'cliente-qr'                            => [$home, $qr],
             'cliente-qr-criar'                      => [$home, $qr, ['label' => 'Novo QR Code']],
             'cliente-relatorio-view'                => [$home, $relatorio],
@@ -258,14 +260,14 @@ if (!function_exists('getSidebar')) {
             [
                 'title'         => 'Criar',
                 'icon'          => 'solar:add-circle-bold-duotone',
-                'active_routes' => ['cliente-credencial-listar', 'cliente-credencial-criar-efi', 'cliente-credencial-criar-pagbank', 'cliente-credencial-editar-efi', 'cliente-credencial-editar-pagbank', 'cliente-maquinas-cartao'],
+                'active_routes' => ['cliente-credencial-listar', 'cliente-credencial-criar-efi', 'cliente-credencial-criar-pagbank', 'cliente-credencial-criar-mercadopago', 'cliente-credencial-editar-efi', 'cliente-credencial-editar-pagbank', 'cliente-credencial-editar-mercadopago', 'cliente-maquinas-cartao'],
                 'sub_menu'      => [
                     ['title' => 'Credenciais',    'route' => 'cliente-credencial-listar'],
                     ['title' => 'Máquina Cartão (Pagbank)', 'route' => 'cliente-maquinas-cartao'],
                 ],
             ],
             [
-                'title'         => 'Gerar QR (Efí)',
+                'title'         => 'Gerar QR Code',
                 'icon'          => 'solar:qr-code-bold-duotone',
                 'active_routes' => ['cliente-qr-criar', 'cliente-qr'],
                 'sub_menu'      => [

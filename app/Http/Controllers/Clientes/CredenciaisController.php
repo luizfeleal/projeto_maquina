@@ -70,6 +70,16 @@ class CredenciaisController extends Controller
         });
         return view('Clientes.Credenciais.PagBank.create', compact('clientes'));
     }
+    public function criarCredencialMercadopago(Request $request){
+        $id_cliente = session()->get('id_cliente');
+
+        $clientes = ClientesService::coletar();
+
+        $clientes = array_filter($clientes, function($item) use($id_cliente){
+            return $item['id_cliente'] == $id_cliente;
+        });
+        return view('Clientes.Credenciais.MercadoPago.create', compact('clientes'));
+    }
 
     public function registrarCredencial(Request $request){
         try{
@@ -152,6 +162,29 @@ class CredenciaisController extends Controller
         }
         
         return view('Clientes.Credenciais.PagBank.edit', compact('clientes', 'credencial'));
+    }
+
+    public function editarCredencialMercadopago(Request $request, $id){
+        $id_cliente_session = session()->get('id_cliente');
+
+        $clientes = ClientesService::coletar();
+        $clientes = array_filter($clientes, function($item) use($id_cliente_session){
+            return $item['id_cliente'] == $id_cliente_session;
+        });
+
+        $credencial = CredApiPixService::coletar($id);
+
+        if(!$credencial){
+            return redirect()->route('cliente-credencial-listar')->with('error', 'Credencial não encontrada');
+        }
+
+        $credencial = (array) $credencial;
+        $credencial['id'] = $credencial['id_credencial'] ?? $credencial['id_cred_api_pix'] ?? $credencial['id'] ?? $id;
+        if(($credencial['tipo_cred'] ?? '') !== 'mercadopago' || ($credencial['id_cliente'] ?? null) != $id_cliente_session){
+            return redirect()->route('cliente-credencial-listar')->with('error', 'Credencial não encontrada ou sem permissão para editar.');
+        }
+
+        return view('Clientes.Credenciais.MercadoPago.edit', compact('clientes', 'credencial'));
     }
 
     public function atualizarCredencial(Request $request, $id){

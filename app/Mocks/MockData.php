@@ -315,8 +315,8 @@ class MockData
             'cliente-maquinas-cartao-excluir', 'clientes-maquinas-editar', 'clientes-maquinas-atualizar',
             'cliente-relatorio-view', 'cliente-relatorio-criar', 'cliente-relatorio-xlsx-download',
             'cliente-qr', 'cliente-qr-criar', 'cliente-qr-registrar', 'cliente-qr-download', 'cliente-qr-excluir',
-            'cliente-credencial-listar', 'cliente-credencial-criar-efi', 'cliente-credencial-criar-pagbank',
-            'cliente-credencial-registrar', 'cliente-credencial-editar-efi', 'cliente-credencial-editar-pagbank',
+            'cliente-credencial-listar', 'cliente-credencial-criar-efi', 'cliente-credencial-criar-pagbank', 'cliente-credencial-criar-mercadopago',
+            'cliente-credencial-registrar', 'cliente-credencial-editar-efi', 'cliente-credencial-editar-pagbank', 'cliente-credencial-editar-mercadopago',
             'cliente-credencial-atualizar', 'cliente-credencial-excluir',
         ];
 
