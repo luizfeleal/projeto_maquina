@@ -115,9 +115,13 @@ class QrCodeController extends Controller
             if ($request['select_local'] == null || $request['select_maquina'] == null) {
                 return back()->with('error', 'Todos os campos obrigatórios devem ser preenchidos para a criação do QR Code.');
             }
-            $qrExistente = QrCodeService::coletarComFiltro(['id_local' => $request['select_local'], 'id_maquina' => $request['select_maquina']], 'where');
+            // Uma máquina só pode ter 1 QR Code, independente do gateway. Efí e
+            // Mercado Pago guardam os QRs em tabelas separadas (QrCode / MercadopagoPos),
+            // então é preciso checar as duas antes de gerar um novo.
+            $qrExistenteEfi = QrCodeService::coletarComFiltro(['id_local' => $request['select_local'], 'id_maquina' => $request['select_maquina']], 'where');
+            $qrExistenteMp = MercadopagoQrService::coletarComFiltro(['id_local' => $request['select_local'], 'id_maquina' => $request['select_maquina']], 'where');
 
-            if (!empty($qrExistente)) {
+            if (!empty($qrExistenteEfi) || !empty($qrExistenteMp)) {
                 return back()->with('error', 'Não foi possível gerar um QR para os dados passados, pois já existe um QR Code para o local e máquina especificados.');
             }
 
