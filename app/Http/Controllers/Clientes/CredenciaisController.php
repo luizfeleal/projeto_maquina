@@ -70,6 +70,16 @@ class CredenciaisController extends Controller
         });
         return view('Clientes.Credenciais.PagBank.create', compact('clientes'));
     }
+    public function criarCredencialMercadopago(Request $request){
+        $id_cliente = session()->get('id_cliente');
+
+        $clientes = ClientesService::coletar();
+
+        $clientes = array_filter($clientes, function($item) use($id_cliente){
+            return $item['id_cliente'] == $id_cliente;
+        });
+        return view('Clientes.Credenciais.MercadoPago.create', compact('clientes'));
+    }
 
     public function registrarCredencial(Request $request){
         try{
@@ -98,13 +108,15 @@ class CredenciaisController extends Controller
             $result = CredApiPixService::criar($dados);
 
             if($result['success'] != true){
-                return back()->with('error', 'Houve um erro ao tentar cadastrar a credencial');
+                $mensagem = $result['error']['message'] ?? 'Houve um erro ao tentar cadastrar a credencial';
+                \Log::error('Erro ao cadastrar credencial (painel cliente): ' . json_encode($result['error'] ?? $result));
+                return back()->with('error', $mensagem);
             }else{
                 return back()->with('success', $result['data']['message']);
             }
         }catch(\Throwable $e){
-            return $e;
-            return back()->with('error', 'Houve um erro ao tentar cadastrar a credencial');
+            \Log::error('Exceção ao cadastrar credencial (painel cliente): ' . $e->getMessage());
+            return back()->with('error', 'Houve um erro ao tentar cadastrar a credencial: ' . $e->getMessage());
         }
     }
 
@@ -154,6 +166,29 @@ class CredenciaisController extends Controller
         return view('Clientes.Credenciais.PagBank.edit', compact('clientes', 'credencial'));
     }
 
+    public function editarCredencialMercadopago(Request $request, $id){
+        $id_cliente_session = session()->get('id_cliente');
+
+        $clientes = ClientesService::coletar();
+        $clientes = array_filter($clientes, function($item) use($id_cliente_session){
+            return $item['id_cliente'] == $id_cliente_session;
+        });
+
+        $credencial = CredApiPixService::coletar($id);
+
+        if(!$credencial){
+            return redirect()->route('cliente-credencial-listar')->with('error', 'Credencial não encontrada');
+        }
+
+        $credencial = (array) $credencial;
+        $credencial['id'] = $credencial['id_credencial'] ?? $credencial['id_cred_api_pix'] ?? $credencial['id'] ?? $id;
+        if(($credencial['tipo_cred'] ?? '') !== 'mercadopago' || ($credencial['id_cliente'] ?? null) != $id_cliente_session){
+            return redirect()->route('cliente-credencial-listar')->with('error', 'Credencial não encontrada ou sem permissão para editar.');
+        }
+
+        return view('Clientes.Credenciais.MercadoPago.edit', compact('clientes', 'credencial'));
+    }
+
     public function atualizarCredencial(Request $request, $id){
         try{
             $id_cliente_session = session()->get('id_cliente');
@@ -177,11 +212,16 @@ class CredenciaisController extends Controller
             $result = CredApiPixService::atualizarCredencial($dados, $id);
 
             if($result['success'] != true){
-                return back()->with('error', 'Houve um erro ao tentar atualizar a credencial');
+                // A API devolve {"response": "<mensagem genérica>", "error": "<detalhe real>"} em erros de update
+                // (diferente do store, que devolve {"message": "..."}) — cobrimos os dois formatos.
+                $mensagem = $result['error']['error'] ?? $result['error']['message'] ?? $result['error']['response'] ?? 'Houve um erro ao tentar atualizar a credencial';
+                \Log::error('Erro ao atualizar credencial (painel cliente, id=' . $id . '): ' . json_encode($result['error'] ?? $result));
+                return back()->with('error', $mensagem);
             }else{
                 return back()->with('success', $result['data']['message']);
             }
         }catch(\Throwable $e){
+            \Log::error('Exceção ao atualizar credencial (painel cliente, id=' . $id . '): ' . $e->getMessage());
             return back()->with('error', 'Houve um erro ao tentar atualizar a credencial: ' . $e->getMessage());
         }
     }

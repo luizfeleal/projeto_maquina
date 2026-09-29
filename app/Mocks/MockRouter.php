@@ -20,6 +20,7 @@ class MockRouter
         'maquinasCartao' => ['key' => 'maquinasCartao', 'id' => 'id_maquina_cartao'],
         'credApiPix' => ['key' => 'credApiPix', 'id' => 'id_credencial'],
         'QRCode' => ['key' => 'qrcode', 'id' => 'id_qr'],
+        'mercadopagoQr' => ['key' => 'mercadopagoqr', 'id' => 'id_qr'],
         'logs' => ['key' => 'logs', 'id' => 'id'],
         'extratoMaquina' => ['key' => 'extratoMaquina', 'id' => 'id_extrato_maquina'],
         'extratoCliente' => ['key' => 'extratoCliente', 'id' => 'id_extrato_cliente'],
@@ -73,12 +74,13 @@ class MockRouter
             return self::json(MockStore::collection('maquinas'));
         }
 
-        // GET /QRCode?sem_imagem=1 — lista sem o base64 do QR
-        if ($method === 'GET' && $path === '/QRCode' && filter_var($query['sem_imagem'] ?? false, FILTER_VALIDATE_BOOLEAN)) {
+        // GET /QRCode?sem_imagem=1 e GET /mercadopagoQr?sem_imagem=1 — lista sem o base64 do QR
+        if ($method === 'GET' && in_array($path, ['/QRCode', '/mercadopagoQr']) && filter_var($query['sem_imagem'] ?? false, FILTER_VALIDATE_BOOLEAN)) {
+            $collectionKey = $path === '/QRCode' ? 'qrcode' : 'mercadopagoqr';
             return self::json(array_values(array_map(function ($qr) {
                 unset($qr['qr_image']);
                 return $qr;
-            }, MockStore::collection('qrcode'))));
+            }, MockStore::collection($collectionKey))));
         }
 
         if ($method === 'POST' && $path === '/maquinasCartaoAtualizar') {
@@ -303,6 +305,15 @@ class MockRouter
                 ]), $idField);
                 return self::json(['message' => 'Qr Code cadastrado com sucesso!', 'response' => $record]);
 
+            case 'mercadopagoQr':
+                $record = MockStore::create($key, array_merge($payload, [
+                    'ativo' => 1,
+                    'qr_image' => 'data:image/png;base64,' . MockData::QR_IMAGE_BASE64,
+                    'qr_data' => 'mock-mercadopago-qr-data',
+                    'data_criacao' => $now,
+                ]), $idField);
+                return self::json(['message' => 'Qr Code cadastrado com sucesso!', 'response' => $record]);
+
             case 'logs':
                 $record = MockStore::create($key, array_merge($payload, ['data_criacao' => $now]), $idField);
                 return self::json($record);
@@ -412,6 +423,7 @@ class MockRouter
             'maquinas' => 'Máquina removida com sucesso.',
             'maquinasCartao' => 'Máquina de cartão excluída com sucesso.',
             'QRCode' => 'QR Code removido com sucesso.',
+            'mercadopagoQr' => 'QR Code removido com sucesso.',
             'credApiPix' => 'Credencial excluída com sucesso.',
         ];
 

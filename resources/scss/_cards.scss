@@ -592,7 +592,8 @@
 }
 
 .badge-cred-efi,
-.badge-cred-pagbank {
+.badge-cred-pagbank,
+.badge-cred-mercadopago {
   font-size: 0.72rem;
   font-weight: 700;
   padding: 4px 10px;
@@ -607,6 +608,11 @@
 
 .badge-cred-pagbank {
   background: #16a34a;
+  color: #fff;
+}
+
+.badge-cred-mercadopago {
+  background: #009ee3;
   color: #fff;
 }
 

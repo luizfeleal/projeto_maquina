@@ -40,6 +40,13 @@
                             </div>
 
                         </div>
+                        <div class="col-md-4">
+                            <label for="select-gateway" class="form-label">Gateway de pagamento*:</label>
+                            <select class="form-control" name="gateway" id="select-gateway" required>
+                                <option value="efi" selected>Efí</option>
+                                <option value="mercadopago">Mercado Pago</option>
+                            </select>
+                        </div>
                     </div>
                     <!--<div class="row" style="display: flex; flex-direction: row; justify-content: center;  width: 100%; ">
                     <h5 style="text-align: center; padding-top: 25px; padding-bottom: 25px;">Insira as informações contidas na plataforma de pagamento:</h5>
